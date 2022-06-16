@@ -1,5 +1,6 @@
 from abc import ABC
 from typing import Literal
+from typing import Optional
 from typing import Union
 
 from humps.main import camelize
@@ -24,8 +25,8 @@ class XtzAssetType(AbstractAssetType):
 
 
 class AbstractTokenAssetType(AbstractAssetType, ABC):
-    contract: OriginatedAccountAddress
-    token_id: str
+    contract: Optional[OriginatedAccountAddress]
+    token_id: Optional[str]
 
 
 class FungibleTokenAssetType(AbstractTokenAssetType):
@@ -40,5 +41,9 @@ class MultiTokenAssetType(AbstractTokenAssetType):
     asset_class: Literal[AssetClassEnum.MULTI_TOKEN] = AssetClassEnum.MULTI_TOKEN
 
 
-TokenAssetType = Union[FungibleTokenAssetType, NonFungibleTokenAssetType, MultiTokenAssetType]
+class CollectionAssetType(AbstractTokenAssetType):
+    asset_class: Literal[AssetClassEnum.COLLECTION] = AssetClassEnum.COLLECTION
+
+
+TokenAssetType = Union[FungibleTokenAssetType, NonFungibleTokenAssetType, MultiTokenAssetType, CollectionAssetType]
 AssetType = Annotated[Union[XtzAssetType, TokenAssetType], Field(discriminator='asset_class')]
