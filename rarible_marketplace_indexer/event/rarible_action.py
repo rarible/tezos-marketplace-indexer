@@ -202,6 +202,8 @@ class RaribleOrderListEvent(AbstractOrderListEvent):
             take=take,
             start_at=transaction.parameter.s_sale.sale_start,
             end_at=transaction.parameter.s_sale.sale_end,
+            origin_fees=transaction.parameter.s_sale.sale_origin_fees,
+            payouts=transaction.parameter.s_sale.sale_payouts,
         )
 
 
@@ -297,6 +299,8 @@ class RaribleLegacyOrderMatchEvent(AbstractLegacyOrderMatchEvent):
             match_timestamp=transaction.data.timestamp,
             taker=ImplicitAccountAddress(transaction.data.sender_address),
             token_id=int(make.token_id),
+            origin_fees=[],
+            payouts=[],
         )
 
 

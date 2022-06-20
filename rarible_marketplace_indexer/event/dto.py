@@ -1,9 +1,11 @@
 from datetime import datetime
+from typing import List
 from typing import Optional
 
 from pydantic.dataclasses import dataclass
 
 from rarible_marketplace_indexer.types.rarible_api_objects.asset.enum import AssetClassEnum
+from rarible_marketplace_indexer.types.rarible_exchange.parameter.sell import Part
 from rarible_marketplace_indexer.types.tezos_objects.asset_value.asset_value import AssetValue
 from rarible_marketplace_indexer.types.tezos_objects.asset_value.base_value import BaseValue
 from rarible_marketplace_indexer.types.tezos_objects.tezos_object_hash import ImplicitAccountAddress
@@ -34,6 +36,8 @@ class ListDto:
     take: TakeDto
     start_at: Optional[datetime] = None  # for marketplaces with the possibility of a delayed start of sales
     end_at: Optional[datetime] = None  # for marketplaces with the possibility of sales expiration
+    origin_fees: Optional[List[Part]] = None
+    payouts: Optional[List[Part]] = None
 
 
 @dataclass
@@ -63,3 +67,5 @@ class LegacyMatchDto:
     match_amount: Optional[AssetValue]
     start: Optional[datetime] = None  # for marketplaces with the possibility of a delayed start of sales
     end_at: Optional[datetime] = None  # for marketplaces with the possibility of sales expiration
+    origin_fees: Optional[List[Part]] = None
+    payouts: Optional[List[Part]] = None

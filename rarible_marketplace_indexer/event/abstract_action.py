@@ -1,6 +1,7 @@
 from abc import ABC
 from abc import abstractmethod
 from datetime import timedelta
+from typing import List
 from typing import final
 
 from dipdup.datasources.tzkt.datasource import TzktDatasource
@@ -14,6 +15,7 @@ from rarible_marketplace_indexer.models import ActivityModel
 from rarible_marketplace_indexer.models import ActivityTypeEnum
 from rarible_marketplace_indexer.models import OrderModel
 from rarible_marketplace_indexer.models import OrderStatusEnum
+from rarible_marketplace_indexer.types.rarible_exchange.parameter.sell import Part
 from rarible_marketplace_indexer.types.tezos_objects.asset_value.asset_value import AssetValue
 
 
@@ -24,6 +26,16 @@ class EventInterface(ABC):
     @abstractmethod
     async def handle(cls, transaction: Transaction, datasource: TzktDatasource):
         raise NotImplementedError
+
+    @classmethod
+    def get_json_parts(cls, parts: List[Part]):
+        json_parts = []
+        for part in parts:
+            json_parts.append({
+                'account': part.part_account,
+                'value': part.part_value
+            })
+        return json_parts
 
 
 class AbstractOrderListEvent(EventInterface):
@@ -70,11 +82,15 @@ class AbstractOrderListEvent(EventInterface):
                 take_contract=dto.take.contract,
                 take_token_id=dto.take.token_id,
                 take_value=dto.take.value,
+                origin_fees=cls.get_json_parts(dto.origin_fees),
+                payouts=cls.get_json_parts(dto.payouts),
             )
         else:
             order.last_updated_at = transaction.data.timestamp
             order.make_value = dto.make.value
             order.take_value = dto.take.value
+            order.origin_fees = (dto.origin_fees,)
+            order.payouts = dto.payouts
             await order.save()
 
         await ActivityModel.create(
