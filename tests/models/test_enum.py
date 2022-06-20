@@ -23,7 +23,8 @@ class TestStrEnum:
             [PlatformEnum, PlatformEnum.HEN, 'Hen'],
             [PlatformEnum, PlatformEnum.OBJKT, 'Objkt'],
             [PlatformEnum, PlatformEnum.OBJKT_V2, 'Objkt_v2'],
-            [PlatformEnum, PlatformEnum.RARIBLE, 'Rarible'],
+            [PlatformEnum, PlatformEnum.RARIBLE_V1, 'RARIBLE_V1'],
+            [PlatformEnum, PlatformEnum.RARIBLE_V2, 'RARIBLE_V2'],
         ),
     )
     def test_enum(self, enum_class, enum_field, enum_value):

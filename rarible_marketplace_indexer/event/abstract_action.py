@@ -7,6 +7,7 @@ from dipdup.datasources.tzkt.datasource import TzktDatasource
 from dipdup.models import Transaction
 
 from rarible_marketplace_indexer.event.dto import CancelDto
+from rarible_marketplace_indexer.event.dto import LegacyMatchDto
 from rarible_marketplace_indexer.event.dto import ListDto
 from rarible_marketplace_indexer.event.dto import MatchDto
 from rarible_marketplace_indexer.models import ActivityModel
@@ -206,6 +207,67 @@ class AbstractOrderMatchEvent(EventInterface):
 
         order.last_updated_at = transaction.data.timestamp
         order = cls._process_order_match(order, dto)
+
+        await order.save()
+
+
+class AbstractLegacyOrderMatchEvent(EventInterface):
+    @staticmethod
+    @abstractmethod
+    def _get_legacy_match_dto(
+        transaction: Transaction,
+        datasource: TzktDatasource,
+    ) -> LegacyMatchDto:
+        raise NotImplementedError
+
+    @classmethod
+    async def handle(
+        cls,
+        transaction: Transaction,
+        datasource: TzktDatasource,
+    ):
+        dto = cls._get_legacy_match_dto(transaction, datasource)
+
+        order = (
+            await OrderModel.filter(
+                network=datasource.network,
+                platform=cls.platform,
+                internal_order_id=dto.internal_order_id,
+                status=OrderStatusEnum.ACTIVE,
+            )
+            .order_by('-id')
+            .first()
+        )
+
+        if order is None:
+            order = await OrderModel.create(
+                network=datasource.network,
+                platform=cls.platform,
+                internal_order_id=dto.internal_order_id,
+                status=OrderStatusEnum.ACTIVE,
+                start_at=dto.start,
+                end_at=dto.end_at,
+                salt=transaction.data.counter,
+                created_at=transaction.data.timestamp,
+                last_updated_at=transaction.data.timestamp,
+                maker=dto.maker,
+                make_asset_class=dto.make.asset_class,
+                make_contract=dto.make.contract,
+                make_token_id=dto.make.token_id,
+                make_value=dto.make.value,
+                take_asset_class=dto.take.asset_class,
+                take_contract=dto.take.contract,
+                take_token_id=dto.take.token_id,
+                take_value=dto.take.value,
+            )
+
+        order.last_updated_at = transaction.data.timestamp
+
+        order.fill += dto.match_amount
+
+        if order.fill == order.make_value:
+            order.status = OrderStatusEnum.FILLED
+            order.ended_at = dto.match_timestamp
 
         await order.save()
 

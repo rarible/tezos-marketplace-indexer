@@ -44,7 +44,22 @@ class CancelDto:
 @dataclass
 class MatchDto:
     internal_order_id: str
-    taker: str
+    taker: ImplicitAccountAddress
     token_id: Optional[int]
     match_amount: Optional[AssetValue]
     match_timestamp: datetime
+
+
+@dataclass
+class LegacyMatchDto:
+
+    internal_order_id: str
+    maker: ImplicitAccountAddress
+    taker: ImplicitAccountAddress
+    make: MakeDto
+    take: TakeDto
+    match_timestamp: datetime
+    token_id: Optional[int]
+    match_amount: Optional[AssetValue]
+    start: Optional[datetime] = None  # for marketplaces with the possibility of a delayed start of sales
+    end_at: Optional[datetime] = None  # for marketplaces with the possibility of sales expiration

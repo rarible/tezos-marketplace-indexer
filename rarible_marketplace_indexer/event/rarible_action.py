@@ -11,11 +11,13 @@ from rarible_marketplace_indexer.event.abstract_action import AbstractAcceptBidE
 from rarible_marketplace_indexer.event.abstract_action import AbstractAcceptFloorBidEvent
 from rarible_marketplace_indexer.event.abstract_action import AbstractBidCancelEvent
 from rarible_marketplace_indexer.event.abstract_action import AbstractFloorBidCancelEvent
+from rarible_marketplace_indexer.event.abstract_action import AbstractLegacyOrderMatchEvent
 from rarible_marketplace_indexer.event.abstract_action import AbstractOrderCancelEvent
 from rarible_marketplace_indexer.event.abstract_action import AbstractOrderListEvent
 from rarible_marketplace_indexer.event.abstract_action import AbstractOrderMatchEvent
 from rarible_marketplace_indexer.event.abstract_action import AbstractPutBidEvent
 from rarible_marketplace_indexer.event.dto import CancelDto
+from rarible_marketplace_indexer.event.dto import LegacyMatchDto
 from rarible_marketplace_indexer.event.dto import ListDto
 from rarible_marketplace_indexer.event.dto import MakeDto
 from rarible_marketplace_indexer.event.dto import MatchDto
@@ -34,6 +36,11 @@ from rarible_marketplace_indexer.types.rarible_exchange.parameter.buy import Buy
 from rarible_marketplace_indexer.types.rarible_exchange.parameter.cancel_sale import CancelSaleParameter
 from rarible_marketplace_indexer.types.rarible_exchange.parameter.sell import SellParameter
 from rarible_marketplace_indexer.types.rarible_exchange.storage import RaribleExchangeStorage
+from rarible_marketplace_indexer.types.rarible_exchange_legacy.parameter.match_orders import FA2AssetClass
+from rarible_marketplace_indexer.types.rarible_exchange_legacy.parameter.match_orders import FA12AssetClass
+from rarible_marketplace_indexer.types.rarible_exchange_legacy.parameter.match_orders import MatchOrdersParameter
+from rarible_marketplace_indexer.types.rarible_exchange_legacy.parameter.match_orders import XTZAssetClass
+from rarible_marketplace_indexer.types.rarible_exchange_legacy.storage import RaribleExchangeLegacyStorage
 from rarible_marketplace_indexer.types.tezos_objects.asset_value.asset_value import AssetValue
 from rarible_marketplace_indexer.types.tezos_objects.asset_value.xtz_value import Xtz
 from rarible_marketplace_indexer.types.tezos_objects.tezos_object_hash import ImplicitAccountAddress
@@ -151,19 +158,17 @@ class RaribleAware:
     def get_take_dto(cls, sale_type: int, value: int, asset_bytes: Optional[bytes] = None) -> TakeDto:
         method_name = cls.unpack_map_take.get(sale_type)
         take_method = getattr(cls, method_name)
-
         return take_method(value, asset_bytes)
 
     @classmethod
     def get_make_dto(cls, sale_type: int, value: int, asset_bytes: Optional[bytes] = None) -> MakeDto:
         method_name = cls.unpack_map_make.get(sale_type)
         make_method = getattr(cls, method_name)
-
         return make_method(value, asset_bytes)
 
 
 class RaribleOrderListEvent(AbstractOrderListEvent):
-    platform = PlatformEnum.RARIBLE
+    platform = PlatformEnum.RARIBLE_V2
     RaribleListTransaction = Transaction[SellParameter, RaribleExchangeStorage]
 
     @staticmethod
@@ -201,7 +206,7 @@ class RaribleOrderListEvent(AbstractOrderListEvent):
 
 
 class RaribleOrderCancelEvent(AbstractOrderCancelEvent):
-    platform = PlatformEnum.RARIBLE
+    platform = PlatformEnum.RARIBLE_V2
     RaribleCancelTransaction = Transaction[CancelSaleParameter, RaribleExchangeStorage]
 
     @staticmethod
@@ -218,7 +223,7 @@ class RaribleOrderCancelEvent(AbstractOrderCancelEvent):
 
 
 class RaribleOrderMatchEvent(AbstractOrderMatchEvent):
-    platform = PlatformEnum.RARIBLE
+    platform = PlatformEnum.RARIBLE_V2
     RaribleMatchTransaction = Transaction[BuyParameter, RaribleExchangeStorage]
 
     @staticmethod
@@ -235,13 +240,68 @@ class RaribleOrderMatchEvent(AbstractOrderMatchEvent):
             internal_order_id=internal_order_id,
             match_amount=AssetValue(transaction.parameter.b_amount),
             match_timestamp=transaction.data.timestamp,
-            taker=transaction.data.sender_address,
+            taker=ImplicitAccountAddress(transaction.data.sender_address),
             token_id=None,
         )
 
 
+class RaribleLegacyOrderMatchEvent(AbstractLegacyOrderMatchEvent):
+    platform = PlatformEnum.RARIBLE_V1
+    RaribleLegacyMatchTransaction = Transaction[MatchOrdersParameter, RaribleExchangeLegacyStorage]
+
+    @staticmethod
+    def _get_legacy_match_dto(transaction: RaribleLegacyMatchTransaction, datasource: TzktDatasource) -> LegacyMatchDto:
+        make = RaribleAware.get_make_dto(
+            sale_type=2,
+            value=int(transaction.parameter.order_left.make_asset.asset_value),
+            asset_bytes=bytes.fromhex(transaction.parameter.order_left.make_asset.asset_type.asset_data),
+        )
+
+        take_type = (
+            0
+            if transaction.parameter.order_left.take_asset.asset_type.asset_class is XTZAssetClass
+            else 1
+            if transaction.parameter.order_left.take_asset.asset_type.asset_class is FA12AssetClass
+            else 2
+            if transaction.parameter.order_left.take_asset.asset_type.asset_class is FA2AssetClass
+            else 0
+        )
+
+        take_data = None if take_type == 0 else bytes.fromhex(transaction.parameter.order_left.make_asset.asset_type.asset_data)
+
+        take = RaribleAware.get_take_dto(
+            sale_type=take_type,
+            value=int(transaction.parameter.order_left.take_asset.asset_value),
+            asset_bytes=take_data,
+        )
+
+        internal_order_id = RaribleAware.get_order_hash(
+            contract=OriginatedAccountAddress(make.contract),
+            token_id=int(make.token_id),
+            seller=ImplicitAccountAddress(transaction.parameter.order_left.maker),
+            asset_class=take.asset_class,
+            asset=bytes.fromhex(transaction.parameter.order_left.make_asset.asset_type.asset_data),
+        )
+
+        order_start = transaction.parameter.order_left.start
+        start = transaction.parameter.order_left.start if order_start is not None else transaction.data.timestamp
+
+        return LegacyMatchDto(
+            internal_order_id=internal_order_id,
+            maker=ImplicitAccountAddress(transaction.data.sender_address),
+            make=make,
+            take=take,
+            start=start,
+            end_at=transaction.parameter.order_left.end,
+            match_amount=AssetValue(int(transaction.parameter.order_left.make_asset.asset_value)),
+            match_timestamp=transaction.data.timestamp,
+            taker=ImplicitAccountAddress(transaction.data.sender_address),
+            token_id=int(make.token_id),
+        )
+
+
 class RariblePutBidEvent(AbstractPutBidEvent):
-    platform = PlatformEnum.RARIBLE
+    platform = PlatformEnum.RARIBLE_V2
     RariblePutBidTransaction = Transaction[PutBidParameter, RaribleBidsStorage]
 
     @staticmethod
@@ -281,7 +341,7 @@ class RariblePutBidEvent(AbstractPutBidEvent):
 
 
 class RariblePutFloorBidEvent(AbstractPutBidEvent):
-    platform = PlatformEnum.RARIBLE
+    platform = PlatformEnum.RARIBLE_V2
     RariblePutFloorBidTransaction = Transaction[PutFloorBidParameter, RaribleBidsStorage]
 
     @staticmethod
@@ -320,7 +380,7 @@ class RariblePutFloorBidEvent(AbstractPutBidEvent):
 
 
 class RaribleAcceptBidEvent(AbstractAcceptBidEvent):
-    platform = PlatformEnum.RARIBLE
+    platform = PlatformEnum.RARIBLE_V2
     RaribleAcceptBidTransaction = Transaction[AcceptBidParameter, RaribleBidsStorage]
 
     @staticmethod
@@ -336,14 +396,14 @@ class RaribleAcceptBidEvent(AbstractAcceptBidEvent):
         return MatchDto(
             internal_order_id=internal_order_id,
             match_timestamp=transaction.data.timestamp,
-            taker=transaction.data.sender_address,
+            taker=ImplicitAccountAddress(transaction.data.sender_address),
             token_id=int(transaction.parameter.ab_asset_token_id),
             match_amount=None,
         )
 
 
 class RaribleAcceptFloorBidEvent(AbstractAcceptFloorBidEvent):
-    platform = PlatformEnum.RARIBLE
+    platform = PlatformEnum.RARIBLE_V2
     RaribleAcceptFloorBidTransaction = Transaction[AcceptFloorBidParameter, RaribleBidsStorage]
 
     @staticmethod
@@ -358,14 +418,14 @@ class RaribleAcceptFloorBidEvent(AbstractAcceptFloorBidEvent):
         return MatchDto(
             internal_order_id=internal_order_id,
             match_timestamp=transaction.data.timestamp,
-            taker=transaction.data.sender_address,
+            taker=ImplicitAccountAddress(transaction.data.sender_address),
             token_id=int(transaction.parameter.afb_asset_token_id),
             match_amount=None,
         )
 
 
 class RaribleBidCancelEvent(AbstractBidCancelEvent):
-    platform = PlatformEnum.RARIBLE
+    platform = PlatformEnum.RARIBLE_V2
     RaribleCancelBidTransaction = Transaction[CancelBidParameter, RaribleBidsStorage]
 
     @staticmethod
@@ -382,7 +442,7 @@ class RaribleBidCancelEvent(AbstractBidCancelEvent):
 
 
 class RaribleFloorBidCancelEvent(AbstractFloorBidCancelEvent):
-    platform = PlatformEnum.RARIBLE
+    platform = PlatformEnum.RARIBLE_V2
     RaribleCancelFloorBidTransaction = Transaction[CancelFloorBidParameter, RaribleBidsStorage]
 
     @staticmethod

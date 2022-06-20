@@ -7,6 +7,9 @@ contracts:
   rarible_exchange_ithacanet:
     address: KT199VxDKE7TLxoHwc3pbu9NgKhaUSki8x9i
     typename: rarible_exchange
+  rarible_exchange_legacy_ithacanet:
+    address: KT1S6H2FWxrpaD7aPRSW1cTTE1xPucXBSTL5
+    typename: rarible_exchange_legacy
   rarible_bids_ithacanet:
     address: KT1MwKGYWWbXtfYdnQfwspwz5ZGfqGwiJuQF
     typename: rarible_bids
@@ -22,16 +25,26 @@ indexes:
         pattern:
           - destination: rarible_exchange_ithacanet
             entrypoint: sell
-
       - callback: rarible_order_cancel_list
         pattern:
           - destination: rarible_exchange_ithacanet
             entrypoint: cancel_sale
-
       - callback: rarible_order_match
         pattern:
           - destination: rarible_exchange_ithacanet
             entrypoint: buy
+
+  rarible_exchange_legacy_actions:
+    kind: operation
+    datasource: tzkt_ithacanet
+    contracts:
+      - rarible_exchange_legacy_ithacanet
+    handlers:
+      - callback: rarible_match_order_legacy
+        pattern:
+          - destination: rarible_exchange_legacy_ithacanet
+            entrypoint: match_orders
+
   rarible_bids_actions:
     kind: operation
     datasource: tzkt_ithacanet
@@ -63,3 +76,16 @@ indexes:
           - destination: rarible_bids_ithacanet
             entrypoint: cancel_floor_bid
 
+  token_transfers:
+    kind: token_transfer
+    datasource: tzkt_ithacanet
+    handlers:
+      - callback: on_transfer
+
+advanced:
+  reindex:
+    manual: wipe
+    migration: exception
+    rollback: exception
+    config_modified: ignore
+    schema_modified: ignore

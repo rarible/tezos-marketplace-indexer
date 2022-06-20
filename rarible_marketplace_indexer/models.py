@@ -55,7 +55,8 @@ class PlatformEnum(str, Enum):
     HEN: _StrEnumValue = 'Hen'
     OBJKT: _StrEnumValue = 'Objkt'
     OBJKT_V2: _StrEnumValue = 'Objkt_v2'
-    RARIBLE: _StrEnumValue = 'Rarible'
+    RARIBLE_V1: _StrEnumValue = 'RARIBLE_V1'
+    RARIBLE_V2: _StrEnumValue = 'RARIBLE_V2'
 
 
 class ActivityModel(Model):
