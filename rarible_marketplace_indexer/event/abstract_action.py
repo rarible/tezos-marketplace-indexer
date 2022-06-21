@@ -89,8 +89,8 @@ class AbstractOrderListEvent(EventInterface):
             order.last_updated_at = transaction.data.timestamp
             order.make_value = dto.make.value
             order.take_value = dto.take.value
-            order.origin_fees = (dto.origin_fees,)
-            order.payouts = dto.payouts
+            order.origin_fees = cls.get_json_parts(dto.origin_fees)
+            order.payouts = cls.get_json_parts(dto.payouts)
             await order.save()
 
         await ActivityModel.create(
@@ -275,7 +275,14 @@ class AbstractLegacyOrderMatchEvent(EventInterface):
                 take_contract=dto.take.contract,
                 take_token_id=dto.take.token_id,
                 take_value=dto.take.value,
+                origin_fees=cls.get_json_parts(dto.origin_fees),
+                payouts=cls.get_json_parts(dto.payouts),
             )
+        else:
+            order.make_value = dto.make.value
+            order.take_value = dto.take.value
+            order.origin_fees = cls.get_json_parts(dto.origin_fees)
+            order.payouts = cls.get_json_parts(dto.payouts)
 
         order.last_updated_at = transaction.data.timestamp
 
@@ -333,11 +340,15 @@ class AbstractPutBidEvent(EventInterface):
                 take_contract=dto.take.contract,
                 take_token_id=dto.take.token_id,
                 take_value=dto.take.value,
+                origin_fees=cls.get_json_parts(dto.origin_fees),
+                payouts=cls.get_json_parts(dto.payouts),
             )
         else:
             order.last_updated_at = transaction.data.timestamp
             order.make_value = dto.make.value
             order.take_value = dto.take.value
+            order.origin_fees = cls.get_json_parts(dto.origin_fees),
+            order.payouts = cls.get_json_parts(dto.payouts),
             await order.save()
 
         await ActivityModel.create(
@@ -408,11 +419,15 @@ class AbstractPutFloorBidEvent(EventInterface):
                 take_contract=dto.take.contract,
                 take_token_id=dto.take.token_id,
                 take_value=dto.take.value,
+                origin_fees=cls.get_json_parts(dto.origin_fees),
+                payouts=cls.get_json_parts(dto.payouts),
             )
         else:
             order.last_updated_at = transaction.data.timestamp
             order.make_value = dto.make.value
             order.take_value = dto.take.value
+            order.origin_fees = cls.get_json_parts(dto.origin_fees),
+            order.payouts = cls.get_json_parts(dto.payouts),
             await order.save()
 
         await ActivityModel.create(
@@ -486,8 +501,9 @@ class AbstractAcceptBidEvent(EventInterface):
         )
         order.last_updated_at = transaction.data.timestamp
         order.taker = transaction.data.sender_address
+        order.origin_fees = order.origin_fees + cls.get_json_parts(dto.origin_fees),
+        order.payouts = order.payouts + cls.get_json_parts(dto.payouts),
         order = cls._process_bid_match(order, dto)
-
         await order.save()
 
 
@@ -540,6 +556,8 @@ class AbstractAcceptFloorBidEvent(EventInterface):
         )
         order.last_updated_at = transaction.data.timestamp
         order.taker = transaction.data.sender_address
+        order.origin_fees = order.origin_fees + cls.get_json_parts(dto.origin_fees),
+        order.payouts = order.payouts + cls.get_json_parts(dto.payouts),
         order = cls._process_floor_bid_match(order, dto)
 
         await order.save()

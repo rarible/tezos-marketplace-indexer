@@ -7,6 +7,9 @@ from base58 import b58encode_check
 from dipdup.datasources.tzkt.datasource import TzktDatasource
 from dipdup.models import Transaction
 
+from pytezos.michelson.types import MichelsonType
+from pytezos.michelson.parse import michelson_to_micheline
+
 from rarible_marketplace_indexer.event.abstract_action import AbstractAcceptBidEvent
 from rarible_marketplace_indexer.event.abstract_action import AbstractAcceptFloorBidEvent
 from rarible_marketplace_indexer.event.abstract_action import AbstractBidCancelEvent
@@ -288,6 +291,9 @@ class RaribleLegacyOrderMatchEvent(AbstractLegacyOrderMatchEvent):
         order_start = transaction.parameter.order_left.start
         start = transaction.parameter.order_left.start if order_start is not None else transaction.data.timestamp
 
+        fees_type = MichelsonType.match(michelson_to_micheline('(pair (list (pair (address %part_account) (nat %part_value))) (list (pair (address %part_account) (nat %part_value))))'))
+        fees = fees_type.unpack(bytes.fromhex(transaction.parameter.order_right.data)).to_python_object()
+
         return LegacyMatchDto(
             internal_order_id=internal_order_id,
             maker=ImplicitAccountAddress(transaction.data.sender_address),
@@ -299,8 +305,8 @@ class RaribleLegacyOrderMatchEvent(AbstractLegacyOrderMatchEvent):
             match_timestamp=transaction.data.timestamp,
             taker=ImplicitAccountAddress(transaction.data.sender_address),
             token_id=int(make.token_id),
-            origin_fees=[],
-            payouts=[],
+            origin_fees=fees[1],
+            payouts=fees[0],
         )
 
 
@@ -341,6 +347,8 @@ class RariblePutBidEvent(AbstractPutBidEvent):
             take=take,
             start_at=transaction.data.timestamp,
             end_at=transaction.parameter.pb_bid.bid_expiry_date,
+            origin_fees=transaction.parameter.pb_bid.bid_origin_fees,
+            payouts=transaction.parameter.pb_bid.bid_payouts,
         )
 
 
@@ -380,6 +388,8 @@ class RariblePutFloorBidEvent(AbstractPutBidEvent):
             take=take,
             start_at=transaction.data.timestamp,
             end_at=transaction.parameter.pfb_bid.bid_expiry_date,
+            origin_fees=transaction.parameter.pfb_bid.bid_origin_fees,
+            payouts=transaction.parameter.pfb_bid.bid_payouts,
         )
 
 

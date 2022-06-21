@@ -1,3 +1,4 @@
+from dataclasses import field
 from datetime import datetime
 from typing import List
 from typing import Optional
@@ -36,8 +37,8 @@ class ListDto:
     take: TakeDto
     start_at: Optional[datetime] = None  # for marketplaces with the possibility of a delayed start of sales
     end_at: Optional[datetime] = None  # for marketplaces with the possibility of sales expiration
-    origin_fees: Optional[List[Part]] = None
-    payouts: Optional[List[Part]] = None
+    origin_fees: List[Part] = field(default_factory=list)
+    payouts: List[Part] = field(default_factory=list)
 
 
 @dataclass
@@ -52,6 +53,8 @@ class MatchDto:
     token_id: Optional[int]
     match_amount: Optional[AssetValue]
     match_timestamp: datetime
+    origin_fees: List[Part] = field(default_factory=list)
+    payouts: List[Part] = field(default_factory=list)
 
 
 @dataclass
@@ -67,5 +70,5 @@ class LegacyMatchDto:
     match_amount: Optional[AssetValue]
     start: Optional[datetime] = None  # for marketplaces with the possibility of a delayed start of sales
     end_at: Optional[datetime] = None  # for marketplaces with the possibility of sales expiration
-    origin_fees: Optional[List[Part]] = None
-    payouts: Optional[List[Part]] = None
+    origin_fees: List[Part] = field(default_factory=list)
+    payouts: List[Part] = field(default_factory=list)
