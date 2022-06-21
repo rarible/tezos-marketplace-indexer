@@ -6,9 +6,8 @@ from uuid import uuid5
 from base58 import b58encode_check
 from dipdup.datasources.tzkt.datasource import TzktDatasource
 from dipdup.models import Transaction
-
-from pytezos.michelson.types import MichelsonType
 from pytezos.michelson.parse import michelson_to_micheline
+from pytezos.michelson.types import MichelsonType
 
 from rarible_marketplace_indexer.event.abstract_action import AbstractAcceptBidEvent
 from rarible_marketplace_indexer.event.abstract_action import AbstractAcceptFloorBidEvent
@@ -291,7 +290,11 @@ class RaribleLegacyOrderMatchEvent(AbstractLegacyOrderMatchEvent):
         order_start = transaction.parameter.order_left.start
         start = transaction.parameter.order_left.start if order_start is not None else transaction.data.timestamp
 
-        fees_type = MichelsonType.match(michelson_to_micheline('(pair (list (pair (address %part_account) (nat %part_value))) (list (pair (address %part_account) (nat %part_value))))'))
+        fees_type = MichelsonType.match(
+            michelson_to_micheline(
+                '(pair (list (pair (address %part_account) (nat %part_value))) (list (pair (address %part_account) (nat %part_value))))'
+            )
+        )
         fees = fees_type.unpack(bytes.fromhex(transaction.parameter.order_right.data)).to_python_object()
 
         return LegacyMatchDto(

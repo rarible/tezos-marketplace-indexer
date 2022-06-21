@@ -6,6 +6,7 @@ from rarible_marketplace_indexer.models import OrderModel
 from rarible_marketplace_indexer.models import OrderStatusEnum
 from rarible_marketplace_indexer.models import PlatformEnum
 from rarible_marketplace_indexer.types.rarible_api_objects.asset.enum import AssetClassEnum
+from rarible_marketplace_indexer.types.rarible_exchange.parameter.sell import Part
 from rarible_marketplace_indexer.types.tezos_objects.asset_value.asset_value import AssetValue
 from rarible_marketplace_indexer.types.tezos_objects.asset_value.xtz_value import Xtz
 from rarible_marketplace_indexer.types.tezos_objects.tezos_object_hash import ImplicitAccountAddress
@@ -35,4 +36,12 @@ order_model = OrderModel(
     take_contract=None,
     take_token_id=None,
     take_value=Xtz(1),
+    origin_fees=[Part(
+        part_account="tz1Mxsc66En4HsVHr6rppYZW82ZpLhpupToC",
+        part_value=100
+    )],
+    payouts=[Part(
+        part_account="tz1Mxsc66En4HsVHr6rppYZW82ZpLhpupToC",
+        part_value=200
+    )],
 )
