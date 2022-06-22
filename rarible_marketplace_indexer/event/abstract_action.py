@@ -29,7 +29,7 @@ class EventInterface(ABC):
 
     @classmethod
     def get_json_parts(cls, parts: List[Part]):
-        json_parts = []
+        json_parts: List[Part] = []
         for part in parts:
             json_parts.append({'account': part.part_account, 'value': part.part_value})
         return json_parts
@@ -344,8 +344,8 @@ class AbstractPutBidEvent(EventInterface):
             order.last_updated_at = transaction.data.timestamp
             order.make_value = dto.make.value
             order.take_value = dto.take.value
-            order.origin_fees = (cls.get_json_parts(dto.origin_fees),)
-            order.payouts = (cls.get_json_parts(dto.payouts),)
+            order.origin_fees = cls.get_json_parts(order.origin_fees) + cls.get_json_parts(dto.origin_fees)
+            order.payouts = cls.get_json_parts(order.payouts) + cls.get_json_parts(dto.payouts)
             await order.save()
 
         await ActivityModel.create(
@@ -423,8 +423,8 @@ class AbstractPutFloorBidEvent(EventInterface):
             order.last_updated_at = transaction.data.timestamp
             order.make_value = dto.make.value
             order.take_value = dto.take.value
-            order.origin_fees = (cls.get_json_parts(dto.origin_fees),)
-            order.payouts = (cls.get_json_parts(dto.payouts),)
+            order.origin_fees = cls.get_json_parts(order.origin_fees) + cls.get_json_parts(dto.origin_fees)
+            order.payouts = cls.get_json_parts(order.payouts) + cls.get_json_parts(dto.payouts)
             await order.save()
 
         await ActivityModel.create(
@@ -498,8 +498,8 @@ class AbstractAcceptBidEvent(EventInterface):
         )
         order.last_updated_at = transaction.data.timestamp
         order.taker = transaction.data.sender_address
-        order.origin_fees = (order.origin_fees + cls.get_json_parts(dto.origin_fees),)
-        order.payouts = (order.payouts + cls.get_json_parts(dto.payouts),)
+        order.origin_fees = cls.get_json_parts(order.origin_fees) + cls.get_json_parts(dto.origin_fees)
+        order.payouts = cls.get_json_parts(order.payouts) + cls.get_json_parts(dto.payouts)
         order = cls._process_bid_match(order, dto)
         await order.save()
 
@@ -553,8 +553,8 @@ class AbstractAcceptFloorBidEvent(EventInterface):
         )
         order.last_updated_at = transaction.data.timestamp
         order.taker = transaction.data.sender_address
-        order.origin_fees = (order.origin_fees + cls.get_json_parts(dto.origin_fees),)
-        order.payouts = (order.payouts + cls.get_json_parts(dto.payouts),)
+        order.origin_fees = cls.get_json_parts(order.origin_fees) + cls.get_json_parts(dto.origin_fees)
+        order.payouts = cls.get_json_parts(order.payouts) + cls.get_json_parts(dto.payouts)
         order = cls._process_floor_bid_match(order, dto)
 
         await order.save()

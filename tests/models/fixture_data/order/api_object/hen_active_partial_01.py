@@ -1,5 +1,4 @@
 from datetime import datetime
-from typing import List
 from uuid import UUID
 
 from pytz import UTC
@@ -42,13 +41,7 @@ order_api_object = RaribleApiOrder(
         asset_type=XtzAssetType(),
         asset_value=Xtz(1),
     ),
-    origin_fees=[Part(
-        part_account="tz1Mxsc66En4HsVHr6rppYZW82ZpLhpupToC",
-        part_value=100
-    )],
-    payouts=[Part(
-        part_account="tz1Mxsc66En4HsVHr6rppYZW82ZpLhpupToC",
-        part_value=200
-    )],
+    origin_fees=[Part(part_account="tz1Mxsc66En4HsVHr6rppYZW82ZpLhpupToC", part_value=100)],
+    payouts=[Part(part_account="tz1Mxsc66En4HsVHr6rppYZW82ZpLhpupToC", part_value=200)],
     salt=1207026,
 )

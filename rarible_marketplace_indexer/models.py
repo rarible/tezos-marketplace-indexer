@@ -145,8 +145,8 @@ class OrderModel(Model):
     take_contract = AccountAddressField(null=True)
     take_token_id = fields.TextField(null=True)
     take_value = AssetValueField(null=True)
-    origin_fees = fields.JSONField(null=True)
-    payouts = fields.JSONField(null=True)
+    origin_fees = fields.JSONField()
+    payouts = fields.JSONField()
 
     def __init__(self, **kwargs: Any) -> None:
         try:

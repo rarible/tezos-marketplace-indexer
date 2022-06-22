@@ -1,9 +1,21 @@
+from typing import List
+
+from tortoise.fields import JSONField
+
 from rarible_marketplace_indexer.models import OrderModel
 from rarible_marketplace_indexer.types.rarible_api_objects.asset.asset import Asset
 from rarible_marketplace_indexer.types.rarible_api_objects.order.order import RaribleApiOrder
+from rarible_marketplace_indexer.types.rarible_exchange.parameter.sell import Part
 
 
 class RaribleApiOrderFactory:
+    @staticmethod
+    def get_parts(json_parts: JSONField) -> List[Part]:
+        parts: List[Part] = []
+        for part in json_parts:
+            parts.append(Part(part_account=part.get("account"), part_value=part.get("value")))
+        return parts
+
     @staticmethod
     def build(order: OrderModel) -> RaribleApiOrder:
         return RaribleApiOrder(
@@ -22,7 +34,7 @@ class RaribleApiOrderFactory:
             taker=order.taker,
             make=Asset.make_from_model(order),
             take=Asset.take_from_model(order),
-            origin_fees=order.origin_fees,
-            payouts=order.payouts,
+            origin_fees=RaribleApiOrderFactory.get_parts(order.origin_fees),
+            payouts=RaribleApiOrderFactory.get_parts(order.payouts),
             salt=order.salt,
         )
