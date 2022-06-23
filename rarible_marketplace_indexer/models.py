@@ -59,6 +59,10 @@ class PlatformEnum(str, Enum):
     RARIBLE_V2: _StrEnumValue = 'RARIBLE_V2'
 
 
+class IndexEnum(str, Enum):
+    COLLECTION: _StrEnumValue = 'COLLECTION'
+
+
 class ActivityModel(Model):
     class Meta:
         table = 'marketplace_activity'
@@ -166,6 +170,13 @@ class OrderModel(Model):
         oid = '.'.join(map(str, filter(bool, [network, platform, internal_order_id, maker, created_at])))
         return uuid5(namespace=uuid.NAMESPACE_OID, name=oid)
 
+
+class IndexingStatus(Model):
+    class Meta:
+        table = 'indexing_status'
+
+    index = fields.CharEnumField(IndexEnum, index=True, pk=True, required=True)
+    last_level = fields.BigIntField()
 
 @post_save(OrderModel)
 async def signal_order_post_save(

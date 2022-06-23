@@ -1,86 +1,127 @@
 datasources:
-  tzkt_ithacanet:
+  tzkt:
     kind: tzkt
     url: ${TZKT_URL:-https://api.ithacanet.tzkt.io}
+    buffer_size: 2
 
 contracts:
-  rarible_exchange_ithacanet:
+  rarible_exchange:
     address: KT199VxDKE7TLxoHwc3pbu9NgKhaUSki8x9i
     typename: rarible_exchange
-  rarible_exchange_legacy_ithacanet:
+  rarible_exchange_legacy:
     address: KT1S6H2FWxrpaD7aPRSW1cTTE1xPucXBSTL5
     typename: rarible_exchange_legacy
-  rarible_bids_ithacanet:
+  rarible_bids:
     address: KT1MwKGYWWbXtfYdnQfwspwz5ZGfqGwiJuQF
     typename: rarible_bids
+  objkt_v2:
+    address: KT1UXAF3XTdJbNbKDCjsznBRj5ouWMvDHpL4
+    typename: objkt_marketplace_v2
 
 indexes:
   rarible_exchange_actions:
     kind: operation
-    datasource: tzkt_ithacanet
+    datasource: tzkt
     contracts:
-      - rarible_exchange_ithacanet
+      - rarible_exchange
     handlers:
       - callback: rarible_order_list
         pattern:
-          - destination: rarible_exchange_ithacanet
+          - destination: rarible_exchange
             entrypoint: sell
       - callback: rarible_order_cancel_list
         pattern:
-          - destination: rarible_exchange_ithacanet
+          - destination: rarible_exchange
             entrypoint: cancel_sale
       - callback: rarible_order_match
         pattern:
-          - destination: rarible_exchange_ithacanet
+          - destination: rarible_exchange
             entrypoint: buy
 
   rarible_exchange_legacy_actions:
     kind: operation
-    datasource: tzkt_ithacanet
+    datasource: tzkt
     contracts:
-      - rarible_exchange_legacy_ithacanet
+      - rarible_exchange_legacy
     handlers:
       - callback: rarible_match_order_legacy
         pattern:
-          - destination: rarible_exchange_legacy_ithacanet
+          - destination: rarible_exchange_legacy
             entrypoint: match_orders
 
   rarible_bids_actions:
     kind: operation
-    datasource: tzkt_ithacanet
+    datasource: tzkt
     contracts:
-      - rarible_bids_ithacanet
+      - rarible_bids
     handlers:
       - callback: rarible_put_bid
         pattern:
-          - destination: rarible_bids_ithacanet
+          - destination: rarible_bids
             entrypoint: put_bid
       - callback: rarible_put_floor_bid
         pattern:
-          - destination: rarible_bids_ithacanet
+          - destination: rarible_bids
             entrypoint: put_floor_bid
       - callback: rarible_accept_bid
         pattern:
-          - destination: rarible_bids_ithacanet
+          - destination: rarible_bids
             entrypoint: accept_bid
       - callback: rarible_accept_floor_bid
         pattern:
-          - destination: rarible_bids_ithacanet
+          - destination: rarible_bids
             entrypoint: accept_floor_bid
       - callback: rarible_cancel_bid
         pattern:
-          - destination: rarible_bids_ithacanet
+          - destination: rarible_bids
             entrypoint: cancel_bid
       - callback: rarible_cancel_floor_bid
         pattern:
-          - destination: rarible_bids_ithacanet
+          - destination: rarible_bids
             entrypoint: cancel_floor_bid
+
+  objkt_v2_actions:
+    kind: operation
+    datasource: tzkt
+    contracts:
+      - objkt_v2
+    handlers:
+      - callback: objkt_v2_order_list
+        pattern:
+          - destination: objkt_v2
+            entrypoint: ask
+
+      - callback: objkt_v2_order_cancel_list
+        pattern:
+          - destination: objkt_v2
+            entrypoint: retract_ask
+
+      - callback: objkt_v2_order_match
+        pattern:
+          - destination: objkt_v2
+            entrypoint: fulfill_ask
 
   token_transfers:
     kind: token_transfer
-    datasource: tzkt_ithacanet
+    datasource: tzkt
     handlers:
       - callback: on_transfer
+
+  origination:
+    kind: head
+    datasource: tzkt
+    handlers:
+      - callback: on_head
+
+hooks:
+  process_collection_events:
+    callback: process_collection_events
+    atomic: False
+    args:
+      start_level: int
+      force_reindex: bool
+      head: int
+
 
 advanced:
   reindex:
