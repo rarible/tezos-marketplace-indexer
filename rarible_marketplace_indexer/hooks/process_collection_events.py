@@ -10,7 +10,6 @@ from rarible_marketplace_indexer.types.rarible_api_objects.collection.factory im
 
 async def process_collection_events(
     ctx: HookContext,
-    start_level: int,
     force_reindex: bool,
     head: int,
 ) -> None:
@@ -23,15 +22,15 @@ async def process_collection_events(
         current_level = index.last_level if index is not None \
             else 0
 
-        if (current_level == 0 and start_level > 0) or force_reindex is True:
-            current_level = start_level
+        if current_level == 0 and force_reindex is False:
+            current_level = head - 1
 
         last_id = 0
         cr_filter = ""
         while last_id is not None:
             originations = await tzkt.request(
                 method='get',
-                url=f"v1/operations/originations?limit=100&level.ge={current_level}{cr_filter}",
+                url=f"v1/operations/originations?limit=100&level.gt={current_level}{cr_filter}",
                 cache=False
             )
             for origination in originations:
