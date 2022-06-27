@@ -69,4 +69,6 @@ class ObjktV2OrderMatchEvent(AbstractOrderMatchEvent):
             internal_order_id=transaction.parameter.ask_id,
             match_amount=AssetValue(1),
             match_timestamp=transaction.data.timestamp,
+            taker=transaction.data.sender_address,
+            token_id=None
         )

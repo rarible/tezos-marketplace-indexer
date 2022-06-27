@@ -3,6 +3,9 @@ datasources:
     kind: tzkt
     url: ${TZKT_URL:-https://api.ithacanet.tzkt.io}
     buffer_size: 2
+    http:
+      cache: false
+      connection_timeout: 60
 
 contracts:
   rarible_exchange:
@@ -15,7 +18,7 @@ contracts:
     address: KT1MwKGYWWbXtfYdnQfwspwz5ZGfqGwiJuQF
     typename: rarible_bids
   objkt_v2:
-    address: KT1UXAF3XTdJbNbKDCjsznBRj5ouWMvDHpL4
+    address: KT1T1JMFGipL6EdCmeL8tDfLiTi1BFZ1yAKV
     typename: objkt_marketplace_v2
 
 indexes:
@@ -118,7 +121,6 @@ hooks:
     callback: process_collection_events
     atomic: False
     args:
-      start_level: int
       force_reindex: bool
       head: int
 

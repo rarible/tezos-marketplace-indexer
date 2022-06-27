@@ -1,7 +1,7 @@
 datasources:
   tzkt:
     kind: tzkt
-    url: ${TZKT_URL:-http://localhost:5000}
+    url: ${TZKT_URL:-https://dev-tezos-tzkt.rarible.org}
     buffer_size: 2
 
 contracts:
