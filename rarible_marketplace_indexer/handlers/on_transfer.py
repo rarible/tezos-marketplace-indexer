@@ -4,7 +4,6 @@ from dipdup.models import TokenTransferData
 
 from rarible_marketplace_indexer.producer.helper import producer_send
 from rarible_marketplace_indexer.types.rarible_api_objects.activity.token.factory import RaribleApiTokenActivityFactory
-from rarible_marketplace_indexer.types.rarible_api_objects.collection.factory import RaribleApiCollectionFactory
 
 
 async def on_transfer(

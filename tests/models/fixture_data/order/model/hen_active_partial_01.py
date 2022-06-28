@@ -35,6 +35,6 @@ order_model = OrderModel(
     take_contract=None,
     take_token_id=None,
     take_value=Xtz(1),
-    origin_fees=[{"account": "tz1Mxsc66En4HsVHr6rppYZW82ZpLhpupToC", "value": "100"}],
-    payouts=[{"account": "tz1Mxsc66En4HsVHr6rppYZW82ZpLhpupToC", "value": "200"}],
+    origin_fees=[{"part_account": "tz1Mxsc66En4HsVHr6rppYZW82ZpLhpupToC", "part_value": "100"}],
+    payouts=[{"part_account": "tz1Mxsc66En4HsVHr6rppYZW82ZpLhpupToC", "part_value": "200"}],
 )

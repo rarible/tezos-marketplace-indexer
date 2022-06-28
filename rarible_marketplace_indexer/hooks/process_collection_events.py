@@ -3,7 +3,8 @@ import logging
 from dipdup.context import HookContext
 from dipdup.utils.database import in_global_transaction
 
-from rarible_marketplace_indexer.models import IndexingStatus, IndexEnum
+from rarible_marketplace_indexer.models import IndexEnum
+from rarible_marketplace_indexer.models import IndexingStatus
 from rarible_marketplace_indexer.producer.helper import producer_send
 from rarible_marketplace_indexer.types.rarible_api_objects.collection.factory import RaribleApiCollectionFactory
 
@@ -16,11 +17,8 @@ async def process_collection_events(
     async with in_global_transaction():
         logger = logging.getLogger('dipdup.collection')
         tzkt = ctx.get_tzkt_datasource('tzkt')
-        index = await IndexingStatus.get_or_none(
-            index=IndexEnum.COLLECTION
-        )
-        current_level = index.last_level if index is not None \
-            else 0
+        index = await IndexingStatus.get_or_none(index=IndexEnum.COLLECTION)
+        current_level = index.last_level if index is not None else 0
 
         if current_level == 0 and force_reindex is False:
             current_level = head - 1
@@ -29,16 +27,10 @@ async def process_collection_events(
         cr_filter = ""
         while last_id is not None:
             originations = await tzkt.request(
-                method='get',
-                url=f"v1/operations/originations?limit=100&level.gt={current_level}{cr_filter}",
-                cache=False
+                method='get', url=f"v1/operations/originations?limit=100&level.gt={current_level}{cr_filter}", cache=False
             )
             for origination in originations:
-                contract = await tzkt.request(
-                    method='get',
-                    url=f"v1/contracts/{origination['originatedContract']['address']}",
-                    cache=False
-                )
+                contract = await tzkt.request(method='get', url=f"v1/contracts/{origination['originatedContract']['address']}", cache=False)
                 current_level = origination['level']
                 last_id = origination['id']
                 cr_filter = f"&id.cr={last_id}"
@@ -54,11 +46,7 @@ async def process_collection_events(
             if len(originations) < 100:
                 last_id = None
         if index is None:
-            await IndexingStatus.create(
-                index=IndexEnum.COLLECTION,
-                last_level=head
-            )
+            await IndexingStatus.create(index=IndexEnum.COLLECTION, last_level=head)
         else:
             index.last_level = head
             await index.save()
-

@@ -1,7 +1,6 @@
 from abc import ABC
 from abc import abstractmethod
 from datetime import timedelta
-from typing import List
 from typing import final
 
 from dipdup.datasources.tzkt.datasource import TzktDatasource
@@ -15,7 +14,6 @@ from rarible_marketplace_indexer.models import ActivityModel
 from rarible_marketplace_indexer.models import ActivityTypeEnum
 from rarible_marketplace_indexer.models import OrderModel
 from rarible_marketplace_indexer.models import OrderStatusEnum
-from rarible_marketplace_indexer.types.rarible_exchange.parameter.sell import Part
 from rarible_marketplace_indexer.types.tezos_objects.asset_value.asset_value import AssetValue
 
 
@@ -26,13 +24,6 @@ class EventInterface(ABC):
     @abstractmethod
     async def handle(cls, transaction: Transaction, datasource: TzktDatasource):
         raise NotImplementedError
-
-    @classmethod
-    def get_json_parts(cls, parts: List[Part]):
-        json_parts: List[Part] = []
-        for part in parts:
-            json_parts.append({'account': part.part_account, 'value': part.part_value})
-        return json_parts
 
 
 class AbstractOrderListEvent(EventInterface):

@@ -178,6 +178,7 @@ class IndexingStatus(Model):
     index = fields.CharEnumField(IndexEnum, index=True, pk=True, required=True)
     last_level = fields.BigIntField()
 
+
 @post_save(OrderModel)
 async def signal_order_post_save(
     sender: OrderModel,

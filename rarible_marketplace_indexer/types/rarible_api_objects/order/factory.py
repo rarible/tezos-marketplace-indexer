@@ -13,7 +13,7 @@ class RaribleApiOrderFactory:
     def get_parts(json_parts: JSONField) -> List[Part]:
         parts: List[Part] = []
         for part in json_parts:
-            parts.append(Part(part_account=part.get("account"), part_value=part.get("value")))
+            parts.append(Part(part_account=part.get("part_account"), part_value=part.get("part_value")))
         return parts
 
     @staticmethod

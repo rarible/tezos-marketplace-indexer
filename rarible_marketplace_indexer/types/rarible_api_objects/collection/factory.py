@@ -3,7 +3,8 @@ from uuid import uuid5
 
 from dipdup.datasources.tzkt.datasource import TzktDatasource
 
-from rarible_marketplace_indexer.types.rarible_api_objects.collection.collection import RaribleApiCollection, Collection
+from rarible_marketplace_indexer.types.rarible_api_objects.collection.collection import Collection
+from rarible_marketplace_indexer.types.rarible_api_objects.collection.collection import RaribleApiCollection
 
 
 class RaribleApiCollectionFactory:
@@ -19,6 +20,6 @@ class RaribleApiCollectionFactory:
                 name=event['alias'],
                 minters=[],
                 standard='fa2',
-                symbol=None
-            )
+                symbol=None,
+            ),
         )
