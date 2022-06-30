@@ -61,6 +61,7 @@ class PlatformEnum(str, Enum):
 
 class IndexEnum(str, Enum):
     COLLECTION: _StrEnumValue = 'COLLECTION'
+    LEGACY_ORDERS: _StrEnumValue = 'LEGACY_ORDERS'
 
 
 class ActivityModel(Model):
@@ -135,7 +136,7 @@ class OrderModel(Model):
     start_at = fields.DatetimeField()
     end_at = fields.DatetimeField(null=True)
     cancelled = fields.BooleanField(default=False)
-    salt = fields.BigIntField()
+    salt = fields.TextField()
     created_at = fields.DatetimeField(index=True)
     ended_at = fields.DatetimeField(null=True)
     last_updated_at = fields.DatetimeField(index=True)
@@ -176,7 +177,7 @@ class IndexingStatus(Model):
         table = 'indexing_status'
 
     index = fields.CharEnumField(IndexEnum, index=True, pk=True, required=True)
-    last_level = fields.BigIntField()
+    last_level = fields.TextField()
 
 
 @post_save(OrderModel)
