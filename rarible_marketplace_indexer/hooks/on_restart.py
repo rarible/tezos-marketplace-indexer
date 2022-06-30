@@ -40,7 +40,7 @@ async def on_restart(
         continuation = index.last_level
 
     while continuation is not None:
-        orders = requests.get(f"https://tezos-api.rarible.org/v0.1/orders/all?sort=EARLIEST_FIRST&status=ACTIVE&size=100{continuation}").json()
+        orders = requests.get(f"https://tezos-api.rarible.org/v0.1/orders/all?sort=EARLIEST_FIRST&status=ACTIVE&size=1000{continuation}").json()
 
         continuation_param = orders.get("continuation")
         if continuation_param is not None:
