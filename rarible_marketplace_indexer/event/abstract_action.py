@@ -351,6 +351,16 @@ class AbstractLegacyOrderMatchEvent(EventInterface):
             .first()
         )
 
+        last_list_activity = (
+            await ActivityModel.filter(
+                network=datasource.network,
+                platform=cls.platform,
+                internal_order_id=dto.internal_order_id,
+            )
+            .order_by('-operation_level')
+            .first()
+        )
+
         if order is None:
             order = await OrderModel.create(
                 network=datasource.network,
@@ -389,6 +399,16 @@ class AbstractLegacyOrderMatchEvent(EventInterface):
             order.ended_at = dto.match_timestamp
 
         await order.save()
+
+        match_activity = last_list_activity.apply(transaction)
+
+        match_activity.type = ActivityTypeEnum.ORDER_MATCH
+        match_activity.taker = transaction.data.sender_address
+
+        match_activity.make_value = dto.match_amount
+        match_activity.take_value = AssetValue(order.take_value * dto.match_amount)
+
+        await match_activity.save()
 
 
 class AbstractPutBidEvent(EventInterface):
