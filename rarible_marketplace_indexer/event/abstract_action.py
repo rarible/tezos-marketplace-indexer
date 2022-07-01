@@ -162,6 +162,105 @@ class AbstractOrderCancelEvent(EventInterface):
 
         await order.save()
 
+class AbstractOrderCancelEvent(EventInterface):
+    @staticmethod
+    @abstractmethod
+    def _get_cancel_dto(
+        transaction: Transaction,
+        datasource: TzktDatasource,
+    ) -> CancelDto:
+        raise NotImplementedError
+
+    @classmethod
+    @final
+    async def handle(
+        cls,
+        transaction: Transaction,
+        datasource: TzktDatasource,
+    ):
+        dto = cls._get_cancel_dto(transaction, datasource)
+        last_order_activity = (
+            await ActivityModel.filter(
+                network=datasource.network,
+                platform=cls.platform,
+                internal_order_id=dto.internal_order_id,
+            )
+            .order_by('-operation_level')
+            .first()
+        )
+        cancel_activity = last_order_activity.apply(transaction)
+
+        cancel_activity.type = ActivityTypeEnum.ORDER_CANCEL
+        await cancel_activity.save()
+
+        order = (
+            await OrderModel.filter(
+                network=datasource.network,
+                platform=cls.platform,
+                internal_order_id=dto.internal_order_id,
+                status=OrderStatusEnum.ACTIVE,
+            )
+            .order_by('-id')
+            .first()
+        )
+
+        order.status = OrderStatusEnum.CANCELLED
+        order.cancelled = True
+        order.ended_at = transaction.data.timestamp
+        order.last_updated_at = transaction.data.timestamp
+
+        await order.save()
+
+
+class AbstractLegacyOrderCancelEvent(EventInterface):
+    @staticmethod
+    @abstractmethod
+    def _get_legacy_cancel_dto(
+        transaction: Transaction,
+        datasource: TzktDatasource,
+    ) -> CancelDto:
+        raise NotImplementedError
+
+    @classmethod
+    @final
+    async def handle(
+        cls,
+        transaction: Transaction,
+        datasource: TzktDatasource,
+    ):
+        dto = cls._get_legacy_cancel_dto(transaction, datasource)
+        last_order_activity = (
+            await ActivityModel.filter(
+                network=datasource.network,
+                platform=cls.platform,
+                internal_order_id=dto.internal_order_id,
+            )
+            .order_by('-operation_level')
+            .first()
+        )
+        cancel_activity = last_order_activity.apply(transaction)
+
+        cancel_activity.type = ActivityTypeEnum.ORDER_CANCEL
+        await cancel_activity.save()
+
+        order = (
+            await OrderModel.filter(
+                network=datasource.network,
+                platform=cls.platform,
+                internal_order_id=dto.internal_order_id,
+                status=OrderStatusEnum.ACTIVE,
+            )
+            .order_by('-id')
+            .first()
+        )
+
+        order.status = OrderStatusEnum.CANCELLED
+        order.cancelled = True
+        order.ended_at = transaction.data.timestamp
+        order.last_updated_at = transaction.data.timestamp
+
+        await order.save()
+
 
 class AbstractOrderMatchEvent(EventInterface):
     @staticmethod

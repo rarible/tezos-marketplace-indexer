@@ -3,13 +3,14 @@ from typing import Dict
 from typing import Optional
 from uuid import uuid5
 
+import pytezos
 from base58 import b58encode_check
 from dipdup.datasources.tzkt.datasource import TzktDatasource
 from dipdup.models import Transaction
 from pytezos.michelson.parse import michelson_to_micheline
 from pytezos.michelson.types import MichelsonType
 
-from rarible_marketplace_indexer.event.abstract_action import AbstractAcceptBidEvent
+from rarible_marketplace_indexer.event.abstract_action import AbstractAcceptBidEvent, AbstractLegacyOrderCancelEvent
 from rarible_marketplace_indexer.event.abstract_action import AbstractAcceptFloorBidEvent
 from rarible_marketplace_indexer.event.abstract_action import AbstractBidCancelEvent
 from rarible_marketplace_indexer.event.abstract_action import AbstractFloorBidCancelEvent
@@ -38,6 +39,7 @@ from rarible_marketplace_indexer.types.rarible_exchange.parameter.buy import Buy
 from rarible_marketplace_indexer.types.rarible_exchange.parameter.cancel_sale import CancelSaleParameter
 from rarible_marketplace_indexer.types.rarible_exchange.parameter.sell import SellParameter
 from rarible_marketplace_indexer.types.rarible_exchange.storage import RaribleExchangeStorage
+from rarible_marketplace_indexer.types.rarible_exchange_legacy.parameter.cancel import CancelParameter
 from rarible_marketplace_indexer.types.rarible_exchange_legacy.parameter.match_orders import FA2AssetClass
 from rarible_marketplace_indexer.types.rarible_exchange_legacy.parameter.match_orders import FA12AssetClass
 from rarible_marketplace_indexer.types.rarible_exchange_legacy.parameter.match_orders import MatchOrdersParameter
@@ -136,25 +138,25 @@ class RaribleAware:
 
     @staticmethod
     def get_order_hash(
-        contract: OriginatedAccountAddress, token_id: int, seller: ImplicitAccountAddress, asset_class: str = None, asset: str = None
+        contract: OriginatedAccountAddress, token_id: int, seller: ImplicitAccountAddress, platform: PlatformEnum, asset_class: str = None, asset: str = None
     ) -> str:
         return uuid5(
-            namespace=uuid.NAMESPACE_OID, name=f'{TransactionTypeEnum.SALE}-{contract}:{token_id}@{seller}/{asset_class}-{asset}'
+            namespace=uuid.NAMESPACE_OID, name=f'{platform}/{TransactionTypeEnum.SALE}-{contract}:{token_id}@{seller}/{asset_class}-{asset}'
         ).hex
 
     @staticmethod
     def get_bid_hash(
-        contract: OriginatedAccountAddress, token_id: int, bidder: ImplicitAccountAddress, asset_class: str = None, asset: str = None
+        contract: OriginatedAccountAddress, token_id: int, bidder: ImplicitAccountAddress, platform: PlatformEnum, asset_class: str = None, asset: str = None
     ) -> str:
         return uuid5(
-            namespace=uuid.NAMESPACE_OID, name=f'{TransactionTypeEnum.BID}-{contract}:{token_id}@{bidder}/{asset_class}-{asset}'
+            namespace=uuid.NAMESPACE_OID, name=f'{platform}/{TransactionTypeEnum.BID}-{contract}:{token_id}@{bidder}/{asset_class}-{asset}'
         ).hex
 
     @staticmethod
     def get_floor_bid_hash(
-        contract: OriginatedAccountAddress, bidder: ImplicitAccountAddress, asset_class: str = None, asset: str = None
+        contract: OriginatedAccountAddress, bidder: ImplicitAccountAddress, platform: PlatformEnum, asset_class: str = None, asset: str = None
     ) -> str:
-        return uuid5(namespace=uuid.NAMESPACE_OID, name=f'{TransactionTypeEnum.FLOOR_BID}-{contract}@{bidder}/{asset_class}-{asset}').hex
+        return uuid5(namespace=uuid.NAMESPACE_OID, name=f'{platform}/{TransactionTypeEnum.FLOOR_BID}-{contract}@{bidder}/{asset_class}-{asset}').hex
 
     @classmethod
     def get_take_dto(cls, sale_type: int, value: int, asset_bytes: Optional[bytes] = None) -> TakeDto:
@@ -182,6 +184,7 @@ class RaribleOrderListEvent(AbstractOrderListEvent):
             contract=OriginatedAccountAddress(transaction.parameter.s_asset_contract),
             token_id=int(transaction.parameter.s_asset_token_id),
             seller=ImplicitAccountAddress(transaction.data.sender_address),
+            platform=RaribleOrderListEvent.platform,
             asset_class=transaction.parameter.s_sale_type,
             asset=transaction.parameter.s_sale_asset,
         )
@@ -219,8 +222,54 @@ class RaribleOrderCancelEvent(AbstractOrderCancelEvent):
             contract=OriginatedAccountAddress(transaction.parameter.cs_asset_contract),
             token_id=int(transaction.parameter.cs_asset_token_id),
             seller=ImplicitAccountAddress(transaction.data.sender_address),
+            platform=RaribleOrderCancelEvent.platform,
             asset_class=transaction.parameter.cs_sale_type,
             asset=transaction.parameter.cs_sale_asset,
+        )
+
+        return CancelDto(internal_order_id=internal_order_id)
+
+
+class RaribleLegacyOrderCancelEvent(AbstractLegacyOrderCancelEvent):
+    platform = PlatformEnum.RARIBLE_V1
+    RaribleCancelTransaction = Transaction[CancelParameter, RaribleExchangeLegacyStorage]
+
+    @staticmethod
+    def _get_legacy_cancel_dto(transaction: RaribleCancelTransaction, datasource: TzktDatasource) -> CancelDto:
+        make = RaribleAware.get_make_dto(
+            sale_type=2,
+            value=int(transaction.parameter.make_asset.asset_value),
+            asset_bytes=bytes.fromhex(transaction.parameter.make_asset.asset_type.asset_data),
+        )
+
+        take_type = (
+            0
+            if transaction.parameter.take_asset.asset_type.asset_class is XTZAssetClass
+            else 1
+            if transaction.parameter.take_asset.asset_type.asset_class is FA12AssetClass
+            else 2
+            if transaction.parameter.take_asset.asset_type.asset_class is FA2AssetClass
+            else 0
+        )
+
+        take_data = None if take_type == 0 else bytes.fromhex(
+            transaction.parameter.take_asset.asset_type.asset_data)
+
+        take = RaribleAware.get_take_dto(
+            sale_type=take_type,
+            value=int(transaction.parameter.take_asset.asset_value),
+            asset_bytes=take_data,
+        )
+        maker_pk = transaction.parameter.maker
+        pkh = pytezos.Key.from_encoded_key(maker_pk).public_key_hash()
+        print(pkh)
+        internal_order_id = RaribleAware.get_order_hash(
+            contract=OriginatedAccountAddress(make.contract),
+            token_id=int(make.token_id),
+            seller=ImplicitAccountAddress(pkh),
+            platform=RaribleLegacyOrderCancelEvent.platform,
+            asset_class=take.asset_class,
+            asset=bytes.fromhex(transaction.parameter.make_asset.asset_type.asset_data),
         )
 
         return CancelDto(internal_order_id=internal_order_id)
@@ -236,6 +285,7 @@ class RaribleOrderMatchEvent(AbstractOrderMatchEvent):
             contract=OriginatedAccountAddress(transaction.parameter.b_asset_contract),
             token_id=int(transaction.parameter.b_asset_token_id),
             seller=ImplicitAccountAddress(transaction.parameter.b_seller),
+            platform=RaribleOrderMatchEvent.platform,
             asset_class=transaction.parameter.b_sale_type,
             asset=transaction.parameter.b_sale_asset,
         )
@@ -283,6 +333,7 @@ class RaribleLegacyOrderMatchEvent(AbstractLegacyOrderMatchEvent):
             contract=OriginatedAccountAddress(make.contract),
             token_id=int(make.token_id),
             seller=ImplicitAccountAddress(transaction.parameter.order_left.maker),
+            platform=RaribleLegacyOrderMatchEvent.platform,
             asset_class=take.asset_class,
             asset=bytes.fromhex(transaction.parameter.order_left.make_asset.asset_type.asset_data),
         )
@@ -326,6 +377,7 @@ class RariblePutBidEvent(AbstractPutBidEvent):
             contract=OriginatedAccountAddress(transaction.parameter.pb_asset_contract),
             bidder=ImplicitAccountAddress(transaction.data.sender_address),
             token_id=int(transaction.parameter.pb_asset_token_id),
+            platform=RariblePutBidEvent.platform,
             asset_class=transaction.parameter.pb_bid_type,
             asset=transaction.parameter.pb_bid_asset,
         )
@@ -367,6 +419,7 @@ class RariblePutFloorBidEvent(AbstractPutBidEvent):
         internal_order_id = RaribleAware.get_floor_bid_hash(
             contract=OriginatedAccountAddress(transaction.parameter.pfb_asset_contract),
             bidder=ImplicitAccountAddress(transaction.data.sender_address),
+            platform=RariblePutFloorBidEvent.platform,
             asset_class=transaction.parameter.pfb_bid_type,
             asset=transaction.parameter.pfb_bid_asset,
         )
@@ -406,6 +459,7 @@ class RaribleAcceptBidEvent(AbstractAcceptBidEvent):
             contract=OriginatedAccountAddress(transaction.parameter.ab_asset_contract),
             token_id=int(transaction.parameter.ab_asset_token_id),
             bidder=ImplicitAccountAddress(transaction.parameter.ab_bidder),
+            platform=RaribleAcceptBidEvent.platform,
             asset_class=transaction.parameter.ab_bid_type,
             asset=transaction.parameter.ab_bid_asset,
         )
@@ -428,6 +482,7 @@ class RaribleAcceptFloorBidEvent(AbstractAcceptFloorBidEvent):
         internal_order_id = RaribleAware.get_floor_bid_hash(
             contract=OriginatedAccountAddress(transaction.parameter.afb_asset_contract),
             bidder=ImplicitAccountAddress(transaction.parameter.afb_bidder),
+            platform=RaribleAcceptFloorBidEvent.platform,
             asset_class=transaction.parameter.afb_bid_type,
             asset=transaction.parameter.afb_bid_asset,
         )
@@ -451,6 +506,7 @@ class RaribleBidCancelEvent(AbstractBidCancelEvent):
             contract=OriginatedAccountAddress(transaction.parameter.cb_asset_contract),
             token_id=int(transaction.parameter.cb_asset_token_id),
             bidder=ImplicitAccountAddress(transaction.data.sender_address),
+            platform=RaribleBidCancelEvent.platform,
             asset_class=transaction.parameter.cb_bid_type,
             asset=transaction.parameter.cb_bid_asset,
         )
@@ -467,6 +523,7 @@ class RaribleFloorBidCancelEvent(AbstractFloorBidCancelEvent):
         internal_order_id = RaribleAware.get_floor_bid_hash(
             contract=OriginatedAccountAddress(transaction.parameter.cfb_asset_contract),
             bidder=ImplicitAccountAddress(transaction.data.sender_address),
+            platform=RaribleFloorBidCancelEvent.platform,
             asset_class=transaction.parameter.cfb_bid_type,
             asset=transaction.parameter.cfb_bid_asset,
         )

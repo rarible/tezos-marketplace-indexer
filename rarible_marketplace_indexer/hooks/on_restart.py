@@ -10,7 +10,7 @@ from rarible_marketplace_indexer.event.abstract_action import EventInterface
 from rarible_marketplace_indexer.event.dto import MakeDto, TakeDto
 from rarible_marketplace_indexer.event.rarible_action import RaribleAware
 from rarible_marketplace_indexer.models import IndexingStatus, IndexEnum, OrderModel, PlatformEnum, OrderStatusEnum, \
-    LegacyOrderModel
+    LegacyOrderModel, ActivityModel, ActivityTypeEnum
 from rarible_marketplace_indexer.producer.container import ProducerContainer
 from rarible_marketplace_indexer.types.rarible_api_objects.asset.enum import AssetClassEnum
 from rarible_marketplace_indexer.types.rarible_exchange.parameter.sell import Part
@@ -41,7 +41,7 @@ async def on_restart(
         continuation = index.last_level
 
     while continuation is not None:
-        orders = requests.get(f"https://tezos-api.rarible.org/v0.1/orders/all?sort=EARLIEST_FIRST&status=ACTIVE&size=1000{continuation}").json()
+        orders = requests.get(f"{os.getenv('LEGACY_API')}/v0.1/orders/all?sort=EARLIEST_FIRST&status=ACTIVE&size=1000{continuation}").json()
 
         continuation_param = orders.get("continuation")
         if continuation_param is not None:
@@ -104,6 +104,7 @@ async def on_restart(
                 contract=OriginatedAccountAddress(make.contract),
                 token_id=int(make.token_id),
                 seller=ImplicitAccountAddress(order["maker"]),
+                platform=PlatformEnum.RARIBLE_V1,
                 asset_class=take.asset_class,
                 asset=asset,
             )
@@ -171,11 +172,51 @@ async def on_restart(
                 order_model.fill = order["fill"]
                 await order_model.save()
 
-            await LegacyOrderModel.create(
-                hash=order["hash"],
-                id=order_model.id,
-                data=order
+            last_order_activity = (
+                await ActivityModel.filter(
+                    network=os.getenv("NETWORK"),
+                    platform=PlatformEnum.RARIBLE_V1,
+                    internal_order_id=internal_order_id,
+                    operation_timestamp=datetime.strptime(order["createdAt"], date_pattern),
+                    operation_hash=str("o" + order["hash"])[:64 - 13],
+                    operation_counter=int(str(order["salt"])[:84 - 76]),
+                )
+                .order_by('-operation_level')
+                .first()
             )
+
+            if last_order_activity is None:
+                await ActivityModel.create(
+                    type=ActivityTypeEnum.ORDER_LIST,
+                    network=os.getenv('NETWORK'),
+                    platform=PlatformEnum.RARIBLE_V1,
+                    order_id=order_model.id,
+                    internal_order_id=internal_order_id,
+                    maker=order_model.maker,
+                    make_asset_class=make.asset_class,
+                    make_contract=make.contract,
+                    make_token_id=make.token_id,
+                    make_value=make.value,
+                    take_asset_class=take.asset_class,
+                    take_contract=take.contract,
+                    take_token_id=take.token_id,
+                    take_value=take.value,
+                    operation_level=1,
+                    operation_timestamp=datetime.strptime(order["createdAt"], date_pattern),
+                    operation_hash=str("o"+order["hash"])[:64-13],
+                    operation_counter=int(str(order["salt"])[:84-76]),
+                    operation_nonce=None,
+                )
+
+            legacy_order = await LegacyOrderModel.get_or_none(
+                hash=order["hash"]
+            )
+            if legacy_order is None:
+                await LegacyOrderModel.create(
+                    hash=order["hash"],
+                    id=order_model.id,
+                    data=order
+                )
 
     if index is None:
         await IndexingStatus.create(index=IndexEnum.LEGACY_ORDERS, last_level=continuation)
