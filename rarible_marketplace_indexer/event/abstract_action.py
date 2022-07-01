@@ -235,13 +235,15 @@ class AbstractLegacyOrderCancelEvent(EventInterface):
                 platform=cls.platform,
                 internal_order_id=dto.internal_order_id,
             )
-            .order_by('-operation_level')
+            .order_by('-operation_timestamp')
             .first()
         )
-        cancel_activity = last_order_activity.apply(transaction)
 
-        cancel_activity.type = ActivityTypeEnum.ORDER_CANCEL
-        await cancel_activity.save()
+        if last_order_activity is not None:
+            cancel_activity = last_order_activity.apply(transaction)
+
+            cancel_activity.type = ActivityTypeEnum.ORDER_CANCEL
+            await cancel_activity.save()
 
         order = (
             await OrderModel.filter(
@@ -254,12 +256,13 @@ class AbstractLegacyOrderCancelEvent(EventInterface):
             .first()
         )
 
-        order.status = OrderStatusEnum.CANCELLED
-        order.cancelled = True
-        order.ended_at = transaction.data.timestamp
-        order.last_updated_at = transaction.data.timestamp
+        if order is not None:
+            order.status = OrderStatusEnum.CANCELLED
+            order.cancelled = True
+            order.ended_at = transaction.data.timestamp
+            order.last_updated_at = transaction.data.timestamp
 
-        await order.save()
+            await order.save()
 
 
 class AbstractOrderMatchEvent(EventInterface):
@@ -357,7 +360,7 @@ class AbstractLegacyOrderMatchEvent(EventInterface):
                 platform=cls.platform,
                 internal_order_id=dto.internal_order_id,
             )
-            .order_by('-operation_level')
+            .order_by('-operation_timestamp')
             .first()
         )
 

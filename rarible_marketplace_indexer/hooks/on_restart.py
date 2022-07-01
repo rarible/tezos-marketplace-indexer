@@ -1,5 +1,7 @@
 import logging
 import os
+import random
+import string
 from datetime import datetime
 
 import requests
@@ -18,6 +20,9 @@ from rarible_marketplace_indexer.types.tezos_objects.asset_value.asset_value imp
 from rarible_marketplace_indexer.types.tezos_objects.tezos_object_hash import OriginatedAccountAddress, \
     ImplicitAccountAddress
 
+
+def generate_random_unique_ophash(size=50, chars=(string.ascii_lowercase + string.ascii_uppercase + string.digits)):
+    return ''.join(random.choice(chars) for _ in range(size))
 
 async def on_restart(
     ctx: HookContext,
@@ -38,7 +43,10 @@ async def on_restart(
     continuation = ""
 
     if index is not None:
-        continuation = index.last_level
+        if index.last_level == "SYNCED":
+            continuation = None
+        else:
+            continuation = index.last_level
 
     while continuation is not None:
         orders = requests.get(f"{os.getenv('LEGACY_API')}/v0.1/orders/all?sort=EARLIEST_FIRST&status=ACTIVE&size=1000{continuation}").json()
@@ -113,11 +121,17 @@ async def on_restart(
             if start_at is None:
                 start_at = datetime.strptime(order["createdAt"], date_pattern)
             else:
-                start_at = datetime.strptime(order["start"], date_pattern)
+                if type(start_at) is str:
+                    start_at = datetime.strptime(order["start"], date_pattern)
+                else:
+                    datetime.fromtimestamp(order["start"])
 
             end_at = order.get("end")
             if end_at is not None:
-                end_at = datetime.strptime(order["end"], date_pattern)
+                if type(end_at) is str:
+                    end_at = datetime.strptime(order["end"], date_pattern)
+                else:
+                    datetime.fromtimestamp(order["end"])
 
             origin_fees = []
             payouts = []
@@ -177,11 +191,9 @@ async def on_restart(
                     network=os.getenv("NETWORK"),
                     platform=PlatformEnum.RARIBLE_V1,
                     internal_order_id=internal_order_id,
-                    operation_timestamp=datetime.strptime(order["createdAt"], date_pattern),
-                    operation_hash=str("o" + order["hash"])[:64 - 13],
-                    operation_counter=int(str(order["salt"])[:84 - 76]),
+                    operation_timestamp=datetime.strptime(order["createdAt"], date_pattern)
                 )
-                .order_by('-operation_level')
+                .order_by('-operation_timestamp')
                 .first()
             )
 
@@ -203,7 +215,7 @@ async def on_restart(
                     take_value=take.value,
                     operation_level=1,
                     operation_timestamp=datetime.strptime(order["createdAt"], date_pattern),
-                    operation_hash=str("o"+order["hash"])[:64-13],
+                    operation_hash=f"o{generate_random_unique_ophash()}",
                     operation_counter=int(str(order["salt"])[:84-76]),
                     operation_nonce=None,
                 )
@@ -217,6 +229,9 @@ async def on_restart(
                     id=order_model.id,
                     data=order
                 )
+
+    if continuation is None:
+        continuation = "SYNCED"
 
     if index is None:
         await IndexingStatus.create(index=IndexEnum.LEGACY_ORDERS, last_level=continuation)
