@@ -400,15 +400,16 @@ class AbstractLegacyOrderMatchEvent(EventInterface):
 
         await order.save()
 
-        match_activity = last_list_activity.apply(transaction)
+        if last_list_activity is not None:
+            match_activity = last_list_activity.apply(transaction)
 
-        match_activity.type = ActivityTypeEnum.ORDER_MATCH
-        match_activity.taker = transaction.data.sender_address
+            match_activity.type = ActivityTypeEnum.ORDER_MATCH
+            match_activity.taker = transaction.data.sender_address
 
-        match_activity.make_value = dto.match_amount
-        match_activity.take_value = AssetValue(order.take_value * dto.match_amount)
+            match_activity.make_value = dto.match_amount
+            match_activity.take_value = AssetValue(order.take_value * dto.match_amount)
 
-        await match_activity.save()
+            await match_activity.save()
 
 
 class AbstractPutBidEvent(EventInterface):
