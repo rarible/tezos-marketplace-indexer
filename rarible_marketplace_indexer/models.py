@@ -180,6 +180,15 @@ class IndexingStatus(Model):
     last_level = fields.TextField()
 
 
+class LegacyOrderModel(Model):
+    class Meta:
+        table = 'legacy_orders'
+
+    hash = fields.CharField(index=True, pk=True, required=True, max_length=64)
+    id = fields.UUIDField(generated=False, required=True)
+    data = fields.JSONField()
+
+
 @post_save(OrderModel)
 async def signal_order_post_save(
     sender: OrderModel,

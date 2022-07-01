@@ -9,7 +9,8 @@ from pytezos import MichelsonType, michelson_to_micheline
 from rarible_marketplace_indexer.event.abstract_action import EventInterface
 from rarible_marketplace_indexer.event.dto import MakeDto, TakeDto
 from rarible_marketplace_indexer.event.rarible_action import RaribleAware
-from rarible_marketplace_indexer.models import IndexingStatus, IndexEnum, OrderModel, PlatformEnum, OrderStatusEnum
+from rarible_marketplace_indexer.models import IndexingStatus, IndexEnum, OrderModel, PlatformEnum, OrderStatusEnum, \
+    LegacyOrderModel
 from rarible_marketplace_indexer.producer.container import ProducerContainer
 from rarible_marketplace_indexer.types.rarible_api_objects.asset.enum import AssetClassEnum
 from rarible_marketplace_indexer.types.rarible_exchange.parameter.sell import Part
@@ -138,7 +139,7 @@ async def on_restart(
             )
 
             if order_model is None:
-                await OrderModel.create(
+                order_model = await OrderModel.create(
                     network=os.getenv('NETWORK'),
                     platform=PlatformEnum.RARIBLE_V1,
                     internal_order_id=internal_order_id,
@@ -169,6 +170,13 @@ async def on_restart(
                 order_model.payouts = EventInterface.get_json_parts(payouts)
                 order_model.fill = order["fill"]
                 await order_model.save()
+
+            await LegacyOrderModel.create(
+                hash=order["hash"],
+                id=order_model.id,
+                data=order
+            )
+
     if index is None:
         await IndexingStatus.create(index=IndexEnum.LEGACY_ORDERS, last_level=continuation)
     else:
