@@ -145,3 +145,7 @@ cython_debug/
 
 .vscode
 .idea/
+
+# infra stuff
+cicd
+Jenkinsfile
