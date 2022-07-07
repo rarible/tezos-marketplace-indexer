@@ -1,0 +1,3 @@
+tezos-markeplace-indexer:
+  environments:
+    APPLICATION_NETWORK: 'mainnet'

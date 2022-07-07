@@ -1,0 +1,9 @@
+
+apiVersion: v2
+name: tezos-markeplace-indexer
+version: 0.1.0
+dependencies:
+- name: rarible-helm-chart
+  alias: tezos-markeplace-indexer
+  repository: file://../resources/helm/rarible
+  version: 0.1.0

@@ -1,0 +1,18 @@
+tezos-markeplace-indexer:
+  image:
+    repository: tezos-markeplace-indexer
+  command: [ 
+    "dipdup", "-c", "dipdup.yml",
+    "-c", "dipdup.${APPLICATION_NETWORK:-mainnet}", 
+    "-c", "dipdup.${APPLICATION_ENVIRONMENT:-prod}}.yml"
+  ]
+  environments:
+    APPLICATION_ENVIRONMENT: '{{ include "service.env" $ }}'
+  livenessProbe: false
+  readinessProbe: false
+  # resources:
+  #   requests:
+  #     memory: 128M
+  #   limits:
+  #     memory: 256M
+  
