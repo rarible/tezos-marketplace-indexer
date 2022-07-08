@@ -3,7 +3,7 @@ tezos-markeplace-indexer:
     repository: tezos-markeplace-indexer
   command: [ 
     "dipdup", "-c", "dipdup.yml",
-    "-c", "dipdup.${APPLICATION_NETWORK:-mainnet}.yml"
+    "-c", "dipdup.${BLOCKHAIN_NETWORK:-mainnet}.yml"
     ]
   environments:
     APPLICATION_ENVIRONMENT: '{{ include "service.env" $ }}'
