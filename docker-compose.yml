@@ -9,11 +9,11 @@ services:
     depends_on:
       - db
       - kafka0
-    command: [ "-c", "dipdup.yml", "-c", "dipdup.${RARIBLE_ENV:-mainnet}.yml", "-c", "dipdup.prod.yml", "run" ]
+    command: [ "-c", "dipdup.yml", "-c", "dipdup.${RARIBLE_ENV:-mainnet}.yml", "run" ]
     restart: "no"
     environment:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-changeme}
-      - ADMIN_SECRET=${ADMIN_SECRET:-changeme}
+      - HASURA_ADMIN_SECRET=${ADMIN_SECRET:-changeme}
       - KAFKA_URL=kafka0:9094
       - KAFKA_ENABLED=true
       - KAFKA_SECURITY_PROTOCOL=SASL_PLAINTEXT

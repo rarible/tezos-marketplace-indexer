@@ -3,18 +3,25 @@ package: rarible_marketplace_indexer
 
 database:
   kind: postgres
-  host: db
-  port: 5432
+  host: ${POSTGRES_HOST:-db}
+  port: ${POSTGRES_PORT:-5432}
   user: ${POSTGRES_USER:-dipdup}
-  password: ${POSTGRES_PASSWORD:-changeme}
+  password: ${POSTGRES_PASS:-changeme}
   database: ${POSTGRES_DB:-dipdup}
 
 hasura:
-  url: http://hasura:8080
-  admin_secret: ${ADMIN_SECRET:-changeme}
-  select_limit: ${SELECT_LIMIT:-1000}
+  url: ${HASURA_URL:-http://hasura:8080}
+  admin_secret: ${HASURA_ADMIN_SECRET:-changeme}
+  select_limit: ${HASURA_SELECT_LIMIT:-1000}
   allow_aggregations: false
   rest: true
 
 custom:
-  enabled: false
+  enabled: ${KAFKA_ENABLED:-false}
+  kafka_address: ${KAFKA_URL:-}
+  client_id: dipdup-rarible-${APPLICATION_NETWORK:-mainnet}-producer
+  kafka_security_protocol: ${KAFKA_SECURITY_PROTOCOL:-SASL_PLAINTEXT}
+  sasl:
+    mechanism: ${KAFKA_SASL_MECHANISM:-PLAIN}
+    username: ${KAFKA_USERNAME}
+    password: ${KAFKA_PASSWORD}
