@@ -7,6 +7,17 @@ tezos-markeplace-indexer:
     ]
   environments:
     APPLICATION_ENVIRONMENT: '{{ include "service.env" $ }}'
+    # provided via secrets
+    # POSTGRES_HOST:
+    # POSTGRES_DB:
+    # POSTGRES_USERNAME:
+    # POSTGRES_PASSWORD:
+    # KAFKA_ADDRESS:
+    # KAFKA_SASL_MECHANISM:
+    # KAFKA_USERNAME:
+    # KAFKA_PASSWORD:
+    # HASURA_ADMIN_SECRET:
+
   livenessProbe: false
   readinessProbe: false
   # resources:
@@ -15,3 +26,19 @@ tezos-markeplace-indexer:
   #   limits:
   #     memory: 256M
   
+hasura:
+  image: 
+    repository: hasura/graphql-engine
+    tag: v2.2.0
+  service:
+    enabled: true
+  environments:
+    HASURA_GRAPHQL_ENABLE_CONSOLE: "true"
+    HASURA_GRAPHQL_DEV_MODE: "true"
+    HASURA_GRAPHQL_ENABLED_LOG_TYPES: "startup, http-log, webhook-log, websocket-log, query-log"
+    HASURA_GRAPHQL_UNAUTHORIZED_ROLE: user
+    HASURA_GRAPHQL_STRINGIFY_NUMERIC_TYPES: "true"
+    # provided via secrets
+    # HASURA_ADMIN_SECRET:
+    # HASURA_GRAPHQL_DATABASE_URL:
+ 
