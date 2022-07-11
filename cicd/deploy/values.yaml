@@ -3,7 +3,8 @@ tezos-marketplace-indexer:
     repository: tezos-marketplace-indexer
   command: [ 
     "dipdup", "-c", "dipdup.yml",
-    "-c", "dipdup.${BLOCKHAIN_NETWORK:-mainnet}.yml"
+    "-c", "dipdup.${BLOCKHAIN_NETWORK:-mainnet}.yml",
+    "run"
     ]
   environments:
     APPLICATION_ENVIRONMENT: '{{ include "service.env" $ }}'
