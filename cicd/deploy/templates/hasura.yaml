@@ -39,6 +39,7 @@ spec:
           protocol: TCP
         resources: {}
 ---
+{{ if .Values.hasura.service }}
 apiVersion: v1
 kind: Service
 metadata:
@@ -52,3 +53,4 @@ spec:
     targetPort: 8080
   selector:
     app: hasura
+{{ end }}
