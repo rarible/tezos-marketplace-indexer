@@ -1,4 +1,4 @@
-{{- if and .Values.global.deployToKube }}
+{{- if and .Values.global .Values.global.deployToKube }}
 ---
 apiVersion: apps/v1
 kind: Deployment
