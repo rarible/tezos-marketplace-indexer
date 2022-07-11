@@ -34,8 +34,14 @@ hasura:
     tag: v2.2.0
   service:
     enabled: true
-  livenessProbe: false
-  readinessProbe: false
+  podAnnotations:
+    prometheus.io/scrape: 'false'
+  livenessProbe: 
+    httpGet:
+      path: /healthz
+  readinessProbe: 
+    httpGet:
+      path: /healthz
   environments:
     HASURA_GRAPHQL_ENABLE_CONSOLE: "true"
     HASURA_GRAPHQL_DEV_MODE: "true"
