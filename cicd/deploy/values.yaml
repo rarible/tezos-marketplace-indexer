@@ -17,7 +17,7 @@ tezos-marketplace-indexer:
     # KAFKA_SASL_MECHANISM:
     # KAFKA_USERNAME:
     # KAFKA_PASSWORD:
-    # HASURA_ADMIN_SECRET:
+    # HASURA_GRAPHQL_ADMIN_SECRET:
 
   livenessProbe: false
   readinessProbe: false
@@ -41,6 +41,6 @@ hasura:
     HASURA_GRAPHQL_UNAUTHORIZED_ROLE: user
     HASURA_GRAPHQL_STRINGIFY_NUMERIC_TYPES: "true"
     # provided via secrets
-    # HASURA_ADMIN_SECRET:
+    # HASURA_GRAPHQL_ADMIN_SECRET:
     # HASURA_GRAPHQL_DATABASE_URL:
  

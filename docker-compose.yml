@@ -13,7 +13,7 @@ services:
     restart: "no"
     environment:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-changeme}
-      - HASURA_ADMIN_SECRET=${ADMIN_SECRET:-changeme}
+      - HASURA_GRAPHQL_ADMIN_SECRET=${ADMIN_SECRET:-changeme}
       - KAFKA_ADDRESS=kafka0:9094
       - KAFKA_ENABLED=true
       - KAFKA_SECURITY_PROTOCOL=SASL_PLAINTEXT
