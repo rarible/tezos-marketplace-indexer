@@ -4,7 +4,7 @@ aiosqlite==0.17.0
 base58==2.1.1
 certifi==2021.10.8
 datamodel-code-generator==0.11.20
-dipdup==5.0.2
+git+https://github.com/dipdup-net/dipdup-py.git@feat/token-index#egg=dipdup
 email-validator==1.1.3
 flake8==4.0.1
 flakeheaven==0.11.1
