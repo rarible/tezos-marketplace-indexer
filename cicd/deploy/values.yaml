@@ -3,7 +3,7 @@ tezos-marketplace-indexer:
     repository: tezos-marketplace-indexer
   command: [ 
     "dipdup", "-c", "dipdup.yml",
-    "-c", "dipdup.${BLOCKHAIN_NETWORK:-mainnet}.yml",
+    "-c", 'dipdup.{{ include "service.env" $ }}.yml',
     "run"
     ]
   environments:
@@ -11,8 +11,8 @@ tezos-marketplace-indexer:
     # provided via secrets
     # POSTGRES_HOST:
     # POSTGRES_DB:
-    # POSTGRES_USERNAME:
-    # POSTGRES_PASSWORD:
+    # POSTGRES_USER:
+    # POSTGRES_PASS:
     # KAFKA_ADDRESS:
     # KAFKA_SASL_MECHANISM:
     # KAFKA_USERNAME:
@@ -29,6 +29,7 @@ tezos-marketplace-indexer:
   
 hasura:
   image: 
+    registry: docker.io
     repository: hasura/graphql-engine
     tag: v2.2.0
   service:

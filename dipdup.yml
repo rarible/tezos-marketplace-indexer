@@ -19,7 +19,7 @@ hasura:
 custom:
   enabled: ${KAFKA_ENABLED:-false}
   kafka_address: ${KAFKA_ADDRESS:-}
-  client_id: dipdup-rarible-${BLOCKCHAIN_NETWORK:-mainnet}-producer
+  client_id: dipdup-rarible-${APPLICATION_ENVIRONMENT:-mainnet}-producer
   kafka_security_protocol: ${KAFKA_SECURITY_PROTOCOL:-SASL_PLAINTEXT}
   sasl:
     mechanism: ${KAFKA_SASL_MECHANISM:-PLAIN}

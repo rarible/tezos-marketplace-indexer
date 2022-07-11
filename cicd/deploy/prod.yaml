@@ -1,3 +1,0 @@
-tezos-markeplace-indexer:
-  environments:
-    BLOCKCHAIN_NETWORK: 'mainnet'
