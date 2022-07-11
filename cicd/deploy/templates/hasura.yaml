@@ -1,0 +1,54 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: hasura
+  name: hasura
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hasura
+  template:
+    metadata:
+      labels:
+        app: hasura
+    spec:
+      containers:
+      - image: {{ .Values.hasura.repository }}:{{ .Values.hasura.tag }}
+        imagePullPolicy: IfNotPresent
+        name: hasura
+          env:
+          {{- range $key, $value := .Values.environments }}
+            - name: {{ $key }}
+              value: {{ include "common.tplvalues.render" (dict "value" $value "context" $) | quote }}
+          {{- end }}
+          envFrom:
+            - secretRef:
+                name: apps-common
+                optional: true
+            - secretRef:
+                name: '{{ .Release.Name }}-stack'
+                optional: true
+            - secretRef:
+                name: 'hasura-app'
+                optional: true
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+        resources: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: hasura
+  name: hasura
+spec:
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 8080
+  selector:
+    app: hasura

@@ -1,6 +1,6 @@
-tezos-markeplace-indexer:
+tezos-marketplace-indexer:
   image:
-    repository: tezos-markeplace-indexer
+    repository: tezos-marketplace-indexer
   command: [ 
     "dipdup", "-c", "dipdup.yml",
     "-c", "dipdup.${BLOCKHAIN_NETWORK:-mainnet}.yml"
