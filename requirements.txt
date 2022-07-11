@@ -10,4 +10,4 @@ flake8==4.0.1
 flakeheaven==0.11.1
 iso8601==0.1.16
 prance==0.21.8.0
-tortoise-orm==0.17.8
+tortoise-orm==0.19.1
