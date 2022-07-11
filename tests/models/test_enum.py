@@ -20,10 +20,11 @@ class TestStrEnum:
             [ActivityTypeEnum, ActivityTypeEnum.TOKEN_MINT, 'MINT'],
             [ActivityTypeEnum, ActivityTypeEnum.TOKEN_TRANSFER, 'TRANSFER'],
             [ActivityTypeEnum, ActivityTypeEnum.TOKEN_BURN, 'BURN'],
-            [PlatformEnum, PlatformEnum.HEN, 'Hen'],
-            [PlatformEnum, PlatformEnum.OBJKT, 'Objkt'],
-            [PlatformEnum, PlatformEnum.OBJKT_V2, 'Objkt_v2'],
-            [PlatformEnum, PlatformEnum.RARIBLE, 'Rarible'],
+            [PlatformEnum, PlatformEnum.HEN, 'HEN'],
+            [PlatformEnum, PlatformEnum.OBJKT, 'OBJKT'],
+            [PlatformEnum, PlatformEnum.OBJKT_V2, 'OBJKT_V2'],
+            [PlatformEnum, PlatformEnum.RARIBLE_V1, 'RARIBLE_V1'],
+            [PlatformEnum, PlatformEnum.RARIBLE_V2, 'RARIBLE_V2'],
         ),
     )
     def test_enum(self, enum_class, enum_field, enum_value):

@@ -1,6 +1,8 @@
 /.pytest_cache
 /.mypy_cache
 __pycache__
+.idea
+# infra stuff
 cicd/resources
 cicd/**/charts
 cicd/deploy/Chart.lock

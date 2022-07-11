@@ -24,7 +24,12 @@ RUN apt-get update \
         # deps for building python deps
         build-essential \
         git \
-    \
+        libgmp3-dev \
+        libgmp-dev \
+        libsodium-dev \
+        libsecp256k1-dev \
+        libsecp256k1-0 \
+        pkg-config \
     # install poetry
  && curl -sSL https://install.python-poetry.org | python - \
     \
@@ -43,7 +48,7 @@ FROM builder-base as builder-production
 
 COPY ["poetry.lock", "pyproject.toml", "./"]
 
-RUN poetry install --no-dev --remove-untracked --no-interaction --no-ansi -vvv \
+RUN poetry install --remove-untracked --no-interaction --no-ansi -vvv \
  && rm -rf /tmp \
  && rm -rf /root/.cache \
  && rm -rf $VIRTUAL_ENV/src \
@@ -61,6 +66,12 @@ WORKDIR $APP_PATH
 ARG APP_USER
 RUN useradd -ms /bin/bash $APP_USER
 
+RUN apt-get update \
+ && apt-get install --no-install-recommends -y \
+        libgmp-dev \
+        libsodium-dev \
+        libsecp256k1-dev \
+        libsecp256k1-0
 FROM runtime-base as runtime
 
 

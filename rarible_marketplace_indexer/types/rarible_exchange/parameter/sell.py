@@ -10,15 +10,7 @@ from pydantic import BaseModel
 from pydantic import Extra
 
 
-class SaleOriginFee(BaseModel):
-    class Config:
-        extra = Extra.forbid
-
-    part_account: str
-    part_value: str
-
-
-class SalePayout(BaseModel):
+class Part(BaseModel):
     class Config:
         extra = Extra.forbid
 
@@ -30,8 +22,8 @@ class SSale(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    sale_origin_fees: List[SaleOriginFee]
-    sale_payouts: List[SalePayout]
+    sale_origin_fees: List[Part]
+    sale_payouts: List[Part]
     sale_amount: str
     sale_asset_qty: str
     sale_start: Optional[str]
