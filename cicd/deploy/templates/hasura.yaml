@@ -16,13 +16,13 @@ spec:
         app: hasura
     spec:
       containers:
-      - image: {{ .Values.hasura.repository }}:{{ .Values.hasura.tag }}
+      - image: {{ .Values.hasura.image.repository }}:{{ .Values.hasura.image.tag }}
         imagePullPolicy: IfNotPresent
         name: hasura
         env:
-        {{- range $key, $value := .Values.environments }}
-          - name: {{ $key }}
-            value: {{ include "common.tplvalues.render" (dict "value" $value "context" $) | quote }}
+        {{- range $key, $value := .Values.hasura.environments }}
+        - name: {{ $key }}
+          value: {{ include "common.tplvalues.render" (dict "value" $value "context" $) | quote }}
         {{- end }}
         envFrom:
           - secretRef:
@@ -37,7 +37,6 @@ spec:
         ports:
         - containerPort: 8080
           protocol: TCP
-        resources: {}
 ---
 {{ if .Values.hasura.service }}
 apiVersion: v1
