@@ -1,0 +1,56 @@
+{{- if .Values.tzkt.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: tzkt-config
+data:
+  appsettings.json: |
+    {
+      "Protocols": {
+        "Diagnostics": false,
+        "Validation": true
+      },
+      "TezosNode": {
+        "Timeout": 60
+      },
+      "Quotes": {
+        "Async": true,
+        "Provider": {
+          "Name": "TzktQuotes"
+        }
+      },
+      "HealthChecks": {
+        "Enabled": false,
+        "Delay": 10,
+        "Period": 10,
+        "FilePath": "/tmp/sync.health"
+      },
+      "TokenMetadata": {
+        "Enabled": true,
+        "BatchSize": 100,
+        "PeriodSec": 30,
+        "OverriddenMetadata": [],
+        "DipDup": [
+          {
+            "MetadataTable": "token_metadata",
+            "HeadStatusTable": "dipdup_head_status",
+            "Network": "ithacanet"
+          }
+        ]
+      },
+      "Logging": {
+        "LogLevel": {
+          "Default": "Information",
+          "Microsoft": "Warning",
+          "Microsoft.Hosting.Lifetime": "Information",
+          "Tzkt.Sync.Services.TokenMetadata": "Information"
+        },
+        "Console": {
+          "FormatterName": "simple",
+          "FormatterOptions": {
+            "UseUtcTimestamp": true
+          }
+        }
+      }
+    }
+{{- end }}

@@ -52,3 +52,22 @@ hasura:
     # HASURA_GRAPHQL_ADMIN_SECRET:
     # HASURA_GRAPHQL_DATABASE_URL:
  
+tzkt: 
+  enabled: false
+  api:
+    image:
+      repository: bakingbad/tzkt-api
+      tag: 1.8.4
+  indexer:
+    image:
+      repository: bakingbad/tzkt-sync
+      tag: 1.8.4
+  service:
+    port: 5000
+    nodePort: false
+  environments:
+    Logging__LogLevel__Default: Warning
+    TokenMetadata__DipDup__Url: http://hasura:8080/v1/graphql
+    TezosNode__Endpoint: http://dev-tezos-node:8732/
+    # provided via secrets
+    # ConnectionStrings__DefaultConnection: 

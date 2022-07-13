@@ -1,0 +1,10 @@
+hasura:
+  service:
+    nodePort: 30339
+
+tzkt:
+  enabled: true
+  service:
+    nodePort: 30340
+  environments:
+    TezosNode__Endpoint: http://dev-node.tezos-node:8732/

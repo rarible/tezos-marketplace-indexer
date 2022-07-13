@@ -1,0 +1,104 @@
+{{- if .Values.tzkt.enabled }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tzkt
+  labels:
+    app: tzkt
+spec:
+  {{- if .Values.tzkt.service.nodePort }}
+  type: NodePort
+  {{- else }}
+  type: ClusterIP
+  {{- end }}
+  ports:
+    - port: {{ .Values.tzkt.service.port }}
+      name: tzkt-http
+      targetPort: {{ .Values.tzkt.service.port }}
+      protocol: TCP
+      {{- if .Values.tzkt.service.nodePort }}
+      nodePort: {{ .Values.tzkt.service.nodePort }}
+      {{- end }}
+  selector:
+    app: tzkt
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: tzkt
+  labels:
+    app: tzkt
+spec:
+  replicas: 1
+  serviceName: tzkt
+  selector:
+    matchLabels:
+      app: tzkt
+  template:
+    metadata:
+      labels:
+        app: tzkt
+    spec:
+      containers:
+        - image: "{{ .Values.tzkt.api.image.repository }}:{{ .Values.tzkt.api.image.tag }}"
+          name: api
+          ports:
+            - containerPort: {{ .Values.tzkt.service.port }}
+              name: tzkt
+              protocol: TCP
+          env:
+          - name: Kestrel__Endpoints__Http__Url
+            value: http://0.0.0.0:{{ .Values.tzkt.service.port }}
+          {{- range $key, $value := .Values.tzkt.environments }}
+          - name: {{ $key }}
+            {{- if $value }}
+            value: {{ $value | quote }}
+            {{- end }}
+          {{- end }}
+          envFrom:
+          - secretRef:
+              name: apps-common
+              optional: true
+          - secretRef:
+              name: tezos-marketplace-indexer-stack
+              optional: true
+          - secretRef:
+              name: tzkt-app
+              optional: true
+        - image: "{{ .Values.tzkt.indexer.image.repository }}:{{ .Values.tzkt.indexer.image.tag }}"
+          name: indexer
+          env:
+          - name: TokenMetadata__Enabled
+            value: "true"
+          {{- range $key, $value := .Values.tzkt.environments }}
+          - name: {{ $key }}
+            {{- if $value }}
+            value: {{ $value | quote }}
+            {{- end }}
+          {{- end }}
+          envFrom:
+          - secretRef:
+              name: apps-common
+              optional: true
+          - secretRef:
+              name: tezos-marketplace-indexer-stack
+              optional: true
+          - secretRef:
+              name: tzkt-app
+              optional: true
+          command: ["/bin/bash", "-c"]
+          args:
+            - |
+              # Set TezosNode__ChainId env var
+              . /etc/tzkt/tzkt.env
+              dotnet Tzkt.Sync.dll
+          volumeMounts:
+            - name: tzkt-config
+              mountPath: /app/appsettings.json
+              subPath: appsettings.json
+      volumes:
+        - name: tzkt-config
+          configMap:
+            name: tzkt-config
+{{- end }}
