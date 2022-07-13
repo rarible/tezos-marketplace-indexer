@@ -64,7 +64,7 @@ tzkt:
       tag: 1.8.4
   service:
     port: 5000
-    nodePort: false
+    # nodePort: 
   environments:
     Logging__LogLevel__Default: Warning
     TokenMetadata__DipDup__Url: http://hasura:8080/v1/graphql
