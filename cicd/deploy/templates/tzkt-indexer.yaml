@@ -1,4 +1,4 @@
-{{- if .Values.tzkt.enabled }}
+{{- if and .Values.global.deployToKube .Values.tzkt.enabled }}
 ---
 apiVersion: v1
 kind: Service
