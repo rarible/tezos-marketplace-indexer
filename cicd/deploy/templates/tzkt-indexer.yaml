@@ -1,4 +1,5 @@
-{{- if and .Values.tzkt.enabled (.Values.global.deployToKube | default false) }}
+{{- if .Values.global }}
+{{- if and .Values.tzkt.enabled .Values.global.deployToKube }}
 ---
 apiVersion: v1
 kind: Service
@@ -101,4 +102,5 @@ spec:
         - name: tzkt-config
           configMap:
             name: tzkt-config
+{{- end }}
 {{- end }}

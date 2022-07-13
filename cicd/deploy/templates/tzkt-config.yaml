@@ -1,4 +1,5 @@
-{{- if and .Values.tzkt.enabled (.Values.global.deployToKube | default false) }}
+{{- if .Values.global }}
+{{- if and .Values.tzkt.enabled .Values.global.deployToKube }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -53,4 +54,5 @@ data:
         }
       }
     }
+{{- end }}
 {{- end }}
