@@ -278,7 +278,7 @@ class RaribleLegacyOrderCancelEvent(AbstractLegacyOrderCancelEvent):
         )
         maker_pk = transaction.parameter.maker
         pkh = pytezos.Key.from_encoded_key(maker_pk).public_key_hash()
-        print(pkh)
+
         internal_order_id = RaribleAware.get_order_hash(
             contract=OriginatedAccountAddress(make.contract),
             token_id=int(make.token_id),

@@ -1,90 +1,139 @@
 datasources:
-  tzkt_mainnet:
+  tzkt:
     kind: tzkt
     url: ${TZKT_URL:-https://api.tzkt.io}
 
 contracts:
-  hen_mainnet:
-    address: KT1HbQepzV1nVGg8QVznG7z4RcHseD5kwqBn
-    typename: hen_marketplace
-
-  objkt_mainnet:
-    address: KT1FvqJwEDWb1Gwc55Jd1jjTHRVWbYKUUpyq
-    typename: objkt_marketplace
-
-  objkt_v2_mainnet:
-    address: KT1WvzYHCNBvDSdwafTHv7nJ1dWmZ8GCYuuC
-    typename: objkt_marketplace_v2
+  rarible_exchange_legacy:
+    address: KT198mqFKkiWerXLmMCw69YB1i6yzYtmGVrC
+    typename: rarible_exchange_legacy
+  rarible_exchange:
+    address: KT1GbPqXZ3yLUNWa7MdMiksJddD7TskTpuGU
+    typename: rarible_exchange
+#  hen_mainnet:
+#    address: KT1HbQepzV1nVGg8QVznG7z4RcHseD5kwqBn
+#    typename: hen_marketplace
+#
+#  objkt_mainnet:
+#    address: KT1FvqJwEDWb1Gwc55Jd1jjTHRVWbYKUUpyq
+#    typename: objkt_marketplace
+#
+#  objkt_v2_mainnet:
+#    address: KT1WvzYHCNBvDSdwafTHv7nJ1dWmZ8GCYuuC
+#    typename: objkt_marketplace_v2
 
 indexes:
-  hen_actions:
+  rarible_exchange_actions:
+      kind: operation
+      datasource: tzkt
+      contracts:
+          - rarible_exchange
+      handlers:
+          - callback: rarible_order_list
+            pattern:
+              - destination: rarible_exchange
+                entrypoint: sell
+          - callback: rarible_order_cancel_list
+            pattern:
+              - destination: rarible_exchange
+                entrypoint: cancel_sale
+          - callback: rarible_order_match
+            pattern:
+              - destination: rarible_exchange
+                entrypoint: buy
+  rarible_exchange_legacy_actions:
     kind: operation
-    datasource: tzkt_mainnet
+    datasource: tzkt
     contracts:
-      - hen_mainnet
+      - rarible_exchange_legacy
     handlers:
-      - callback: hen_order_list
+      - callback: rarible_match_order_legacy
         pattern:
-          - destination: hen_mainnet
-            entrypoint: swap
-
-      - callback: hen_order_cancel_list
+          - destination: rarible_exchange_legacy
+            entrypoint: match_orders
+      - callback: rarible_cancel_order_legacy
         pattern:
-          - destination: hen_mainnet
-            entrypoint: cancel_swap
-
-      - callback: hen_order_match
-        pattern:
-          - destination: hen_mainnet
-            entrypoint: collect
-
-  objkt_actions:
-    kind: operation
-    datasource: tzkt_mainnet
-    contracts:
-      - objkt_mainnet
-    handlers:
-      - callback: objkt_order_list
-        pattern:
-          - destination: objkt_mainnet
-            entrypoint: ask
-
-      - callback: objkt_order_cancel_list
-        pattern:
-          - destination: objkt_mainnet
-            entrypoint: retract_ask
-
-      - callback: objkt_order_match
-        pattern:
-          - destination: objkt_mainnet
-            entrypoint: fulfill_ask
-
-  objkt_v2_actions:
-    kind: operation
-    datasource: tzkt_mainnet
-    contracts:
-      - objkt_v2_mainnet
-    handlers:
-      - callback: objkt_v2_order_list
-        pattern:
-          - destination: objkt_v2_mainnet
-            entrypoint: ask
-
-      - callback: objkt_v2_order_cancel_list
-        pattern:
-          - destination: objkt_v2_mainnet
-            entrypoint: retract_ask
-
-      - callback: objkt_v2_order_match
-        pattern:
-          - destination: objkt_v2_mainnet
-            entrypoint: fulfill_ask
+          - destination: rarible_exchange_legacy
+            entrypoint: cancel
+#  hen_actions:
+#    kind: operation
+#    datasource: tzkt_mainnet
+#    contracts:
+#      - hen_mainnet
+#    handlers:
+#      - callback: hen_order_list
+#        pattern:
+#          - destination: hen_mainnet
+#            entrypoint: swap
+#
+#      - callback: hen_order_cancel_list
+#        pattern:
+#          - destination: hen_mainnet
+#            entrypoint: cancel_swap
+#
+#      - callback: hen_order_match
+#        pattern:
+#          - destination: hen_mainnet
+#            entrypoint: collect
+#
+#  objkt_actions:
+#    kind: operation
+#    datasource: tzkt_mainnet
+#    contracts:
+#      - objkt_mainnet
+#    handlers:
+#      - callback: objkt_order_list
+#        pattern:
+#          - destination: objkt_mainnet
+#            entrypoint: ask
+#
+#      - callback: objkt_order_cancel_list
+#        pattern:
+#          - destination: objkt_mainnet
+#            entrypoint: retract_ask
+#
+#      - callback: objkt_order_match
+#        pattern:
+#          - destination: objkt_mainnet
+#            entrypoint: fulfill_ask
+#
+#  objkt_v2_actions:
+#    kind: operation
+#    datasource: tzkt_mainnet
+#    contracts:
+#      - objkt_v2_mainnet
+#    handlers:
+#      - callback: objkt_v2_order_list
+#        pattern:
+#          - destination: objkt_v2_mainnet
+#            entrypoint: ask
+#
+#      - callback: objkt_v2_order_cancel_list
+#        pattern:
+#          - destination: objkt_v2_mainnet
+#            entrypoint: retract_ask
+#
+#      - callback: objkt_v2_order_match
+#        pattern:
+#          - destination: objkt_v2_mainnet
+#            entrypoint: fulfill_ask
 
   token_transfers:
     kind: token_transfer
-    datasource: tzkt_mainnet
+    datasource: tzkt
     handlers:
       - callback: on_transfer
+
+hooks:
+  process_collection_events:
+    callback: process_collection_events
+    atomic: False
+    args:
+      force_reindex: bool
+      head: int
+  import_legacy_orders:
+    callback: import_legacy_orders
+    atomic: False
 
 advanced:
   reindex:

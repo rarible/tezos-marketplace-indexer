@@ -9,7 +9,7 @@ services:
     depends_on:
       - db
       - kafka0
-    command: [ "-c", "dipdup.yml", "-c", "dipdup.ithacanet.yml", "-c", "dipdup.prod.yml", "run" ]
+    command: [ "-c", "dipdup.yml", "-c", "dipdup.mainnet.yml", "-c", "dipdup.prod.yml", "run" ]
     restart: "no"
     environment:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-changeme}
@@ -20,6 +20,8 @@ services:
       - KAFKA_SASL_MECHANISM=PLAIN
       - KAFKA_USERNAME=rarible
       - KAFKA_PASSWORD=changeme
+      - NETWORK=mainnet
+      - LEGACY_API=https://tezos-api.rarible.org
 
   db:
     image: postgres:12
