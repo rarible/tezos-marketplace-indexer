@@ -8,7 +8,7 @@ contracts:
     address: KT198mqFKkiWerXLmMCw69YB1i6yzYtmGVrC
     typename: rarible_exchange_legacy
   rarible_exchange:
-    address: KT1GbPqXZ3yLUNWa7MdMiksJddD7TskTpuGU
+    address: KT1N4Rrm6BU6229drs6scrH3vard1pPngMyA
     typename: rarible_exchange
 #  hen_mainnet:
 #    address: KT1HbQepzV1nVGg8QVznG7z4RcHseD5kwqBn
