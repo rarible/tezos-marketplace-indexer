@@ -33,3 +33,5 @@ up: prepare_services
 
 down:
 	docker-compose down --volumes
+
+reset: down prepare_services
