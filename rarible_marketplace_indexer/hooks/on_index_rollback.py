@@ -1,4 +1,3 @@
-
 from dipdup.index import Index
 from dipdup.enums import ReindexingReason
 from dipdup.context import HookContext
