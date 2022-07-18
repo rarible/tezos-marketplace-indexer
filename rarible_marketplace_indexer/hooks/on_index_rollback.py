@@ -1,6 +1,7 @@
-from dipdup.index import Index
-from dipdup.enums import ReindexingReason
 from dipdup.context import HookContext
+from dipdup.enums import ReindexingReason
+from dipdup.index import Index
+
 
 async def on_index_rollback(
     ctx: HookContext,

@@ -10,10 +10,11 @@ from dipdup.models import Transaction
 from pytezos.michelson.parse import michelson_to_micheline
 from pytezos.michelson.types import MichelsonType
 
-from rarible_marketplace_indexer.event.abstract_action import AbstractAcceptBidEvent, AbstractLegacyOrderCancelEvent
+from rarible_marketplace_indexer.event.abstract_action import AbstractAcceptBidEvent
 from rarible_marketplace_indexer.event.abstract_action import AbstractAcceptFloorBidEvent
 from rarible_marketplace_indexer.event.abstract_action import AbstractBidCancelEvent
 from rarible_marketplace_indexer.event.abstract_action import AbstractFloorBidCancelEvent
+from rarible_marketplace_indexer.event.abstract_action import AbstractLegacyOrderCancelEvent
 from rarible_marketplace_indexer.event.abstract_action import AbstractLegacyOrderMatchEvent
 from rarible_marketplace_indexer.event.abstract_action import AbstractOrderCancelEvent
 from rarible_marketplace_indexer.event.abstract_action import AbstractOrderListEvent
@@ -138,7 +139,12 @@ class RaribleAware:
 
     @staticmethod
     def get_order_hash(
-        contract: OriginatedAccountAddress, token_id: int, seller: ImplicitAccountAddress, platform: PlatformEnum, asset_class: str = None, asset: str = None
+        contract: OriginatedAccountAddress,
+        token_id: int,
+        seller: ImplicitAccountAddress,
+        platform: PlatformEnum,
+        asset_class: str = None,
+        asset: str = None,
     ) -> str:
         return uuid5(
             namespace=uuid.NAMESPACE_OID, name=f'{platform}/{TransactionTypeEnum.SALE}-{contract}:{token_id}@{seller}/{asset_class}-{asset}'
@@ -146,7 +152,12 @@ class RaribleAware:
 
     @staticmethod
     def get_bid_hash(
-        contract: OriginatedAccountAddress, token_id: int, bidder: ImplicitAccountAddress, platform: PlatformEnum, asset_class: str = None, asset: str = None
+        contract: OriginatedAccountAddress,
+        token_id: int,
+        bidder: ImplicitAccountAddress,
+        platform: PlatformEnum,
+        asset_class: str = None,
+        asset: str = None,
     ) -> str:
         return uuid5(
             namespace=uuid.NAMESPACE_OID, name=f'{platform}/{TransactionTypeEnum.BID}-{contract}:{token_id}@{bidder}/{asset_class}-{asset}'
@@ -154,9 +165,15 @@ class RaribleAware:
 
     @staticmethod
     def get_floor_bid_hash(
-        contract: OriginatedAccountAddress, bidder: ImplicitAccountAddress, platform: PlatformEnum, asset_class: str = None, asset: str = None
+        contract: OriginatedAccountAddress,
+        bidder: ImplicitAccountAddress,
+        platform: PlatformEnum,
+        asset_class: str = None,
+        asset: str = None,
     ) -> str:
-        return uuid5(namespace=uuid.NAMESPACE_OID, name=f'{platform}/{TransactionTypeEnum.FLOOR_BID}-{contract}@{bidder}/{asset_class}-{asset}').hex
+        return uuid5(
+            namespace=uuid.NAMESPACE_OID, name=f'{platform}/{TransactionTypeEnum.FLOOR_BID}-{contract}@{bidder}/{asset_class}-{asset}'
+        ).hex
 
     @classmethod
     def get_take_dto(cls, sale_type: int, value: int, asset_bytes: Optional[bytes] = None) -> TakeDto:
@@ -252,8 +269,7 @@ class RaribleLegacyOrderCancelEvent(AbstractLegacyOrderCancelEvent):
             else 0
         )
 
-        take_data = None if take_type == 0 else bytes.fromhex(
-            transaction.parameter.take_asset.asset_type.asset_data)
+        take_data = None if take_type == 0 else bytes.fromhex(transaction.parameter.take_asset.asset_type.asset_data)
 
         take = RaribleAware.get_take_dto(
             sale_type=take_type,
