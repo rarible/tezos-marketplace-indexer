@@ -364,6 +364,29 @@ class AbstractLegacyOrderMatchEvent(EventInterface):
             match_activity.take_value = AssetValue(order.take_value * dto.match_amount)
 
             await match_activity.save()
+        else:
+            await ActivityModel.create(
+                type=ActivityTypeEnum.ORDER_MATCH,
+                network=datasource.network,
+                platform=cls.platform,
+                order_id=order.id,
+                internal_order_id=dto.internal_order_id,
+                maker=dto.maker,
+                make_asset_class=dto.make.asset_class,
+                make_contract=dto.make.contract,
+                make_token_id=dto.make.token_id,
+                make_value=dto.match_amount,
+                take_asset_class=dto.take.asset_class,
+                take_contract=dto.take.contract,
+                take_token_id=dto.take.token_id,
+                take_value=AssetValue(order.take_value * dto.match_amount),
+                taker=transaction.data.sender_address,
+                operation_level=transaction.data.level,
+                operation_timestamp=transaction.data.timestamp,
+                operation_hash=transaction.data.hash,
+                operation_counter=transaction.data.counter,
+                operation_nonce=transaction.data.nonce,
+            )
 
 
 class AbstractPutBidEvent(EventInterface):
