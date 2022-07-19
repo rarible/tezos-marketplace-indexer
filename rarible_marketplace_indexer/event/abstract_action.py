@@ -190,12 +190,6 @@ class AbstractLegacyOrderCancelEvent(EventInterface):
             .first()
         )
 
-        if last_order_activity is not None:
-            cancel_activity = last_order_activity.apply(transaction)
-
-            cancel_activity.type = ActivityTypeEnum.ORDER_CANCEL
-            await cancel_activity.save()
-
         order = (
             await OrderModel.filter(
                 network=datasource.network,
@@ -214,6 +208,35 @@ class AbstractLegacyOrderCancelEvent(EventInterface):
             order.last_updated_at = transaction.data.timestamp
 
             await order.save()
+
+        if last_order_activity is not None:
+            cancel_activity = last_order_activity.apply(transaction)
+
+            cancel_activity.type = ActivityTypeEnum.ORDER_CANCEL
+            await cancel_activity.save()
+        else:
+            await ActivityModel.create(
+                type=ActivityTypeEnum.ORDER_CANCEL,
+                network=datasource.network,
+                platform=cls.platform,
+                order_id=order.id,
+                internal_order_id=order.internal_order_id,
+                maker=order.maker,
+                make_asset_class=order.make_asset_class,
+                make_contract=order.make_contract,
+                make_token_id=order.make_token_id,
+                make_value=order.make_value,
+                take_asset_class=order.take_asset_class,
+                take_contract=order.take_contract,
+                take_token_id=order.take_token_id,
+                take_value=order.take_value,
+                taker=order.taker,
+                operation_level=transaction.data.level,
+                operation_timestamp=transaction.data.timestamp,
+                operation_hash=transaction.data.hash,
+                operation_counter=transaction.data.counter,
+                operation_nonce=transaction.data.nonce,
+            )
 
 
 class AbstractOrderMatchEvent(EventInterface):
