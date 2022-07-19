@@ -279,12 +279,16 @@ class RaribleLegacyOrderCancelEvent(AbstractLegacyOrderCancelEvent):
         maker_pk = transaction.parameter.maker
         pkh = pytezos.Key.from_encoded_key(maker_pk).public_key_hash()
 
-        return LegacyCancelDto(
-            contract=make.contract,
-            token_id=make.token_id,
-            maker=pkh,
-            salt=transaction.parameter.salt
+        internal_order_id = RaribleAware.get_order_hash(
+            contract=OriginatedAccountAddress(make.contract),
+            token_id=int(make.token_id),
+            seller=ImplicitAccountAddress(pkh),
+            platform=PlatformEnum.RARIBLE_V1,
+            asset_class=take.asset_class,
+            asset=bytes.fromhex(transaction.parameter.take_asset.asset_type.asset_data),
         )
+
+        return CancelDto(internal_order_id=internal_order_id)
 
 
 class RaribleOrderMatchEvent(AbstractOrderMatchEvent):
@@ -347,7 +351,7 @@ class RaribleLegacyOrderMatchEvent(AbstractLegacyOrderMatchEvent):
             seller=ImplicitAccountAddress(transaction.parameter.order_left.maker),
             platform=RaribleLegacyOrderMatchEvent.platform,
             asset_class=take.asset_class,
-            asset=bytes.fromhex(transaction.parameter.order_left.make_asset.asset_type.asset_data),
+            asset=bytes.fromhex(transaction.parameter.order_left.take_asset.asset_type.asset_data),
         )
 
         order_start = transaction.parameter.order_left.start
