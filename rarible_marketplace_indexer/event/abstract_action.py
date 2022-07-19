@@ -7,7 +7,7 @@ from typing import final
 from dipdup.datasources.tzkt.datasource import TzktDatasource
 from dipdup.models import Transaction
 
-from rarible_marketplace_indexer.event.dto import CancelDto
+from rarible_marketplace_indexer.event.dto import CancelDto, LegacyCancelDto
 from rarible_marketplace_indexer.event.dto import LegacyMatchDto
 from rarible_marketplace_indexer.event.dto import ListDto
 from rarible_marketplace_indexer.event.dto import MatchDto
@@ -169,7 +169,7 @@ class AbstractLegacyOrderCancelEvent(EventInterface):
     def _get_legacy_cancel_dto(
         transaction: Transaction,
         datasource: TzktDatasource,
-    ) -> CancelDto:
+    ) -> LegacyCancelDto:
         raise NotImplementedError
 
     @classmethod
@@ -180,24 +180,28 @@ class AbstractLegacyOrderCancelEvent(EventInterface):
         datasource: TzktDatasource,
     ):
         dto = cls._get_legacy_cancel_dto(transaction, datasource)
-        last_order_activity = (
-            await ActivityModel.filter(
-                network=datasource.network,
-                platform=cls.platform,
-                internal_order_id=dto.internal_order_id,
-            )
-            .order_by('-operation_timestamp')
-            .first()
-        )
 
         order = (
             await OrderModel.filter(
                 network=datasource.network,
                 platform=cls.platform,
-                internal_order_id=dto.internal_order_id,
+                salt=dto.salt,
+                make_contract=dto.contract,
+                make_token_id=dto.token_id,
+                maker=dto.maker,
                 status=OrderStatusEnum.ACTIVE,
             )
             .order_by('-id')
+            .first()
+        )
+
+        last_order_activity = (
+            await ActivityModel.filter(
+                network=datasource.network,
+                platform=cls.platform,
+                order_id=order.id,
+            )
+            .order_by('-operation_timestamp')
             .first()
         )
 

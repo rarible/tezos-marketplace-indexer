@@ -20,7 +20,7 @@ from rarible_marketplace_indexer.event.abstract_action import AbstractOrderCance
 from rarible_marketplace_indexer.event.abstract_action import AbstractOrderListEvent
 from rarible_marketplace_indexer.event.abstract_action import AbstractOrderMatchEvent
 from rarible_marketplace_indexer.event.abstract_action import AbstractPutBidEvent
-from rarible_marketplace_indexer.event.dto import CancelDto
+from rarible_marketplace_indexer.event.dto import CancelDto, LegacyCancelDto
 from rarible_marketplace_indexer.event.dto import LegacyMatchDto
 from rarible_marketplace_indexer.event.dto import ListDto
 from rarible_marketplace_indexer.event.dto import MakeDto
@@ -252,7 +252,7 @@ class RaribleLegacyOrderCancelEvent(AbstractLegacyOrderCancelEvent):
     RaribleCancelTransaction = Transaction[CancelParameter, RaribleExchangeLegacyStorage]
 
     @staticmethod
-    def _get_legacy_cancel_dto(transaction: RaribleCancelTransaction, datasource: TzktDatasource) -> CancelDto:
+    def _get_legacy_cancel_dto(transaction: RaribleCancelTransaction, datasource: TzktDatasource) -> LegacyCancelDto:
         make = RaribleAware.get_make_dto(
             sale_type=2,
             value=int(transaction.parameter.make_asset.asset_value),
@@ -279,16 +279,12 @@ class RaribleLegacyOrderCancelEvent(AbstractLegacyOrderCancelEvent):
         maker_pk = transaction.parameter.maker
         pkh = pytezos.Key.from_encoded_key(maker_pk).public_key_hash()
 
-        internal_order_id = RaribleAware.get_order_hash(
-            contract=OriginatedAccountAddress(make.contract),
-            token_id=int(make.token_id),
-            seller=ImplicitAccountAddress(pkh),
-            platform=RaribleLegacyOrderCancelEvent.platform,
-            asset_class=take.asset_class,
-            asset=bytes.fromhex(transaction.parameter.make_asset.asset_type.asset_data),
+        return LegacyCancelDto(
+            contract=make.contract,
+            token_id=make.token_id,
+            maker=pkh,
+            salt=transaction.parameter.salt
         )
-
-        return CancelDto(internal_order_id=internal_order_id)
 
 
 class RaribleOrderMatchEvent(AbstractOrderMatchEvent):
