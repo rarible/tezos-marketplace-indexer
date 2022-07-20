@@ -11,7 +11,7 @@ from tests.models.conftest import compare_kafka_messages
 class TestRaribleApiActivity:
     def test_kafka_topic(self, activity_model_data_provider):
         activity_api_object = RaribleApiOrderActivityFactory.build(activity_model_data_provider.test_model)
-        assert activity_api_object.kafka_topic == 'activity_topic_mainnet'
+        assert activity_api_object.kafka_topic == 'protocol.dev.tezos.indexer.activity'
 
     def test_factory(self, activity_model_data_provider):
         activity_api_object = RaribleApiOrderActivityFactory.build(activity_model_data_provider.test_model)
