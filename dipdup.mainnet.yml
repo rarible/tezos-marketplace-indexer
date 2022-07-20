@@ -7,6 +7,9 @@ contracts:
   rarible_exchange_legacy:
     address: KT198mqFKkiWerXLmMCw69YB1i6yzYtmGVrC
     typename: rarible_exchange_legacy
+  rarible_exchange_legacy_data:
+    address: KT1D2fZiUNo6RPj3zKofH8DqDDgoV7KoyEbb
+    typename: rarible_exchange_legacy_data
   rarible_exchange:
     address: KT1N4Rrm6BU6229drs6scrH3vard1pPngMyA
     typename: rarible_exchange
@@ -23,38 +26,44 @@ contracts:
 #    typename: objkt_marketplace_v2
 
 indexes:
-  rarible_exchange_actions:
-      kind: operation
-      datasource: tzkt
-      contracts:
-          - rarible_exchange
-      handlers:
-          - callback: rarible_order_list
-            pattern:
-              - destination: rarible_exchange
-                entrypoint: sell
-          - callback: rarible_order_cancel_list
-            pattern:
-              - destination: rarible_exchange
-                entrypoint: cancel_sale
-          - callback: rarible_order_match
-            pattern:
-              - destination: rarible_exchange
-                entrypoint: buy
+#  rarible_exchange_actions:
+#      kind: operation
+#      datasource: tzkt
+#      contracts:
+#          - rarible_exchange
+#      handlers:
+#          - callback: rarible_order_list
+#            pattern:
+#              - destination: rarible_exchange
+#                entrypoint: sell
+#          - callback: rarible_order_cancel_list
+#            pattern:
+#              - destination: rarible_exchange
+#                entrypoint: cancel_sale
+#          - callback: rarible_order_match
+#            pattern:
+#              - destination: rarible_exchange
+#                entrypoint: buy
   rarible_exchange_legacy_actions:
     kind: operation
     datasource: tzkt
     contracts:
       - rarible_exchange_legacy
     handlers:
-      - callback: rarible_match_order_legacy
+      - callback: rarible_match_orders_legacy
         pattern:
           - destination: rarible_exchange_legacy
             entrypoint: match_orders
+  rarible_exchange_legacy_data_actions:
+    kind: operation
+    datasource: tzkt
+    contracts:
+      - rarible_exchange_legacy_data
+    handlers:
       - callback: rarible_cancel_order_legacy
         pattern:
-          - destination: rarible_exchange_legacy
-            entrypoint: cancel
+          - destination: rarible_exchange_legacy_data
+            entrypoint: remove
 #  hen_actions:
 #    kind: operation
 #    datasource: tzkt_mainnet

@@ -59,7 +59,6 @@ class MatchDto:
 
 @dataclass
 class LegacyMatchDto:
-
     internal_order_id: str
     maker: ImplicitAccountAddress
     taker: ImplicitAccountAddress
@@ -72,10 +71,3 @@ class LegacyMatchDto:
     end_at: Optional[datetime] = None  # for marketplaces with the possibility of sales expiration
     origin_fees: List[Part] = field(default_factory=list)
     payouts: List[Part] = field(default_factory=list)
-
-@dataclass
-class LegacyCancelDto:
-    contract: OriginatedAccountAddress
-    token_id: str
-    maker: ImplicitAccountAddress
-    salt: str
