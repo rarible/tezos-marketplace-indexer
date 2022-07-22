@@ -1,9 +1,12 @@
+import logging
+import os
 from abc import ABC
 from abc import abstractmethod
 from datetime import timedelta
 from typing import List
 from typing import final
 
+import requests
 from dipdup.datasources.tzkt.datasource import TzktDatasource
 from dipdup.models import Transaction
 
@@ -180,8 +183,10 @@ class AbstractLegacyOrderCancelEvent(EventInterface):
         transaction: Transaction,
         datasource: TzktDatasource,
     ):
+        logger = logging.getLogger('dipdup.legacy_cancel')
+
         dto = cls._get_legacy_cancel_dto(transaction, datasource)
-        print(dto.internal_order_id)
+        logger.info(f"Legacy order hash = {dto.internal_order_id}")
         legacy_order = (
             await LegacyOrderModel.filter(
                 hash=dto.internal_order_id,
@@ -213,7 +218,11 @@ class AbstractLegacyOrderCancelEvent(EventInterface):
             order.cancelled = True
             order.ended_at = transaction.data.timestamp
             order.last_updated_at = transaction.data.timestamp
-
+            response = requests.post(f"{os.getenv('UNION_API')}/v0.1/refresh/item/TEZOS:{order.make_contract}:{order.make_token_id}/reconcile?full=true")
+            if not response.ok:
+                logger.info(f"{order.make_contract}:{order.make_token_id} need reconcile: Error {response.status_code} - {response.reason}")
+            else:
+                logger.info(f"{order.make_contract}:{order.make_token_id} synced properly after legacy cancel")
             await order.save()
 
         if last_order_activity is not None:
