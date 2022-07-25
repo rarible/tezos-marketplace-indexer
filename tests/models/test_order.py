@@ -6,7 +6,7 @@ from tests.models.conftest import compare_kafka_messages
 class TestRaribleApiOrder:
     def test_kafka_topic(self, order_data_provider):
         order_api_object = RaribleApiOrderFactory.build(order_data_provider.test_model)
-        assert order_api_object.kafka_topic == 'protocol.dev.tezos.indexer.order'
+        assert order_api_object.kafka_topic == 'order_topic_mainnet'
 
     def test_factory(self, order_data_provider):
         order_api_object = RaribleApiOrderFactory.build(order_data_provider.test_model)
