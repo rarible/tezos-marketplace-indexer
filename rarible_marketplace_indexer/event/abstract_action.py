@@ -82,7 +82,7 @@ class AbstractOrderListEvent(EventInterface):
                 take_asset_class=dto.take.asset_class,
                 take_contract=dto.take.contract,
                 take_token_id=dto.take.token_id,
-                take_value=dto.take.value,
+                take_value=dto.take.value * dto.make.value,
                 origin_fees=cls.get_json_parts(dto.origin_fees),
                 payouts=cls.get_json_parts(dto.payouts),
             )
