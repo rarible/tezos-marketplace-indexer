@@ -59,7 +59,6 @@ class MatchDto:
 
 @dataclass
 class LegacyMatchDto:
-
     internal_order_id: str
     maker: ImplicitAccountAddress
     taker: ImplicitAccountAddress

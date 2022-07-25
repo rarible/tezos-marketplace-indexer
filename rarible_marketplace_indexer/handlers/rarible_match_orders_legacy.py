@@ -6,7 +6,7 @@ from rarible_marketplace_indexer.types.rarible_exchange_legacy.parameter.match_o
 from rarible_marketplace_indexer.types.rarible_exchange_legacy.storage import RaribleExchangeLegacyStorage
 
 
-async def rarible_match_order_legacy(
+async def rarible_match_orders_legacy(
     ctx: HandlerContext,
     match_orders: Transaction[MatchOrdersParameter, RaribleExchangeLegacyStorage],
 ) -> None:
