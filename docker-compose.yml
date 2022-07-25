@@ -19,6 +19,8 @@ services:
       - KAFKA_PASSWORD=changeme
       - NETWORK=mainnet
       - LEGACY_API=https://tezos-api.rarible.org
+      - UNION_API=https://api.rarible.org
+      - APPLICATION_ENVIRONMENT=prod
 
   db:
     image: postgres:12
