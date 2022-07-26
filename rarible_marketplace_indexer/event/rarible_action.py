@@ -335,7 +335,7 @@ class RaribleLegacyOrderMatchEvent(AbstractLegacyOrderMatchEvent):
             take=take,
             start=start,
             end_at=transaction.parameter.order_left.end,
-            match_amount=AssetValue(int(transaction.parameter.order_left.make_asset.asset_value)),
+            match_amount=AssetValue(int(transaction.parameter.order_right.take_asset.asset_value)),
             match_timestamp=transaction.data.timestamp,
             taker=ImplicitAccountAddress(transaction.data.sender_address),
             token_id=int(make.token_id),

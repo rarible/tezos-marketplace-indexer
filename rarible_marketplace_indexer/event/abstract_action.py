@@ -82,7 +82,7 @@ class AbstractOrderListEvent(EventInterface):
                 take_asset_class=dto.take.asset_class,
                 take_contract=dto.take.contract,
                 take_token_id=dto.take.token_id,
-                take_value=dto.take.value * dto.make.value,
+                take_value=dto.take.value,
                 origin_fees=cls.get_json_parts(dto.origin_fees),
                 payouts=cls.get_json_parts(dto.payouts),
             )
@@ -418,7 +418,7 @@ class AbstractLegacyOrderMatchEvent(EventInterface):
                 take_asset_class=dto.take.asset_class,
                 take_contract=dto.take.contract,
                 take_token_id=dto.take.token_id,
-                take_value=AssetValue(order.take_value * dto.match_amount),
+                take_value=AssetValue(order.take_value),
                 taker=transaction.data.sender_address,
                 operation_level=transaction.data.level,
                 operation_timestamp=transaction.data.timestamp,
