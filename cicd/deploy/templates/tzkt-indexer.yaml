@@ -25,14 +25,15 @@ spec:
     app: tzkt
 ---
 apiVersion: apps/v1
-kind: StatefulSet
+kind: Deployment
 metadata:
   name: tzkt
   labels:
     app: tzkt
 spec:
   replicas: 1
-  serviceName: tzkt
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       app: tzkt
