@@ -9,7 +9,7 @@ datasources:
 
 contracts:
   rarible_exchange:
-    address: KT199VxDKE7TLxoHwc3pbu9NgKhaUSki8x9i
+    address: KT1NcKyhPnomH9PKGeDfvMiGH2PDgKCd5YuM
     typename: rarible_exchange
   rarible_exchange_legacy:
     address: KT1S6H2FWxrpaD7aPRSW1cTTE1xPucXBSTL5

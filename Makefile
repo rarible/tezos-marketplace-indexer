@@ -34,4 +34,9 @@ up: prepare_services
 down:
 	docker-compose down --volumes
 
+build:
+	docker build . -t rarible_indexer:dev --platform linux/amd64
+
+build_and_run: build up
+
 reset: down prepare_services

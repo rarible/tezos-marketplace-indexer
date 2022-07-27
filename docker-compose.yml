@@ -2,24 +2,25 @@ version: "3.8"
 
 services:
   indexer:
-    build:
-      context: .
-      dockerfile: Dockerfile
     image: rarible_indexer:dev
     depends_on:
       - db
       - kafka0
-    command: [ "-c", "dipdup.yml", "-c", "dipdup.testnet.yml", "run" ]
+    command: [ "-c", "dipdup.yml", "-c", "dipdup.prod.yml", "run" ]
     restart: "no"
     environment:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-changeme}
-      - HASURA_GRAPHQL_ADMIN_SECRET=${ADMIN_SECRET:-changeme}
-      - KAFKA_ADDRESS=kafka0:9094
+      - ADMIN_SECRET=${ADMIN_SECRET:-changeme}
+      - KAFKA_URL=kafka0:9094
       - KAFKA_ENABLED=true
       - KAFKA_SECURITY_PROTOCOL=SASL_PLAINTEXT
       - KAFKA_SASL_MECHANISM=PLAIN
       - KAFKA_USERNAME=rarible
       - KAFKA_PASSWORD=changeme
+      - NETWORK=mainnet
+      - LEGACY_API=https://tezos-api.rarible.org
+      - UNION_API=https://api.rarible.org
+      - APPLICATION_ENVIRONMENT=prod
 
   db:
     image: postgres:12
@@ -27,7 +28,7 @@ services:
     ports:
       - "127.0.0.1:5432:5432"
     environment:
-      - POSTGRES_USERNAME=dipdup
+      - POSTGRES_USER=dipdup
       - POSTGRES_DB=dipdup
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-changeme}
     healthcheck:

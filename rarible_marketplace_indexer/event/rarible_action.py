@@ -3,17 +3,17 @@ from typing import Dict
 from typing import Optional
 from uuid import uuid5
 
-import pytezos
 from base58 import b58encode_check
 from dipdup.datasources.tzkt.datasource import TzktDatasource
 from dipdup.models import Transaction
 from pytezos.michelson.parse import michelson_to_micheline
 from pytezos.michelson.types import MichelsonType
 
-from rarible_marketplace_indexer.event.abstract_action import AbstractAcceptBidEvent, AbstractLegacyOrderCancelEvent
+from rarible_marketplace_indexer.event.abstract_action import AbstractAcceptBidEvent
 from rarible_marketplace_indexer.event.abstract_action import AbstractAcceptFloorBidEvent
 from rarible_marketplace_indexer.event.abstract_action import AbstractBidCancelEvent
 from rarible_marketplace_indexer.event.abstract_action import AbstractFloorBidCancelEvent
+from rarible_marketplace_indexer.event.abstract_action import AbstractLegacyOrderCancelEvent
 from rarible_marketplace_indexer.event.abstract_action import AbstractLegacyOrderMatchEvent
 from rarible_marketplace_indexer.event.abstract_action import AbstractOrderCancelEvent
 from rarible_marketplace_indexer.event.abstract_action import AbstractOrderListEvent
@@ -39,12 +39,12 @@ from rarible_marketplace_indexer.types.rarible_exchange.parameter.buy import Buy
 from rarible_marketplace_indexer.types.rarible_exchange.parameter.cancel_sale import CancelSaleParameter
 from rarible_marketplace_indexer.types.rarible_exchange.parameter.sell import SellParameter
 from rarible_marketplace_indexer.types.rarible_exchange.storage import RaribleExchangeStorage
-from rarible_marketplace_indexer.types.rarible_exchange_legacy.parameter.cancel import CancelParameter
 from rarible_marketplace_indexer.types.rarible_exchange_legacy.parameter.match_orders import FA2AssetClass
 from rarible_marketplace_indexer.types.rarible_exchange_legacy.parameter.match_orders import FA12AssetClass
 from rarible_marketplace_indexer.types.rarible_exchange_legacy.parameter.match_orders import MatchOrdersParameter
 from rarible_marketplace_indexer.types.rarible_exchange_legacy.parameter.match_orders import XTZAssetClass
 from rarible_marketplace_indexer.types.rarible_exchange_legacy.storage import RaribleExchangeLegacyStorage
+from rarible_marketplace_indexer.types.rarible_exchange_legacy_data.parameter.remove import RemoveParameter
 from rarible_marketplace_indexer.types.tezos_objects.asset_value.asset_value import AssetValue
 from rarible_marketplace_indexer.types.tezos_objects.asset_value.xtz_value import Xtz
 from rarible_marketplace_indexer.types.tezos_objects.tezos_object_hash import ImplicitAccountAddress
@@ -138,7 +138,12 @@ class RaribleAware:
 
     @staticmethod
     def get_order_hash(
-        contract: OriginatedAccountAddress, token_id: int, seller: ImplicitAccountAddress, platform: PlatformEnum, asset_class: str = None, asset: str = None
+        contract: OriginatedAccountAddress,
+        token_id: int,
+        seller: ImplicitAccountAddress,
+        platform: PlatformEnum,
+        asset_class: str = None,
+        asset: str = None,
     ) -> str:
         return uuid5(
             namespace=uuid.NAMESPACE_OID, name=f'{platform}/{TransactionTypeEnum.SALE}-{contract}:{token_id}@{seller}/{asset_class}-{asset}'
@@ -146,7 +151,12 @@ class RaribleAware:
 
     @staticmethod
     def get_bid_hash(
-        contract: OriginatedAccountAddress, token_id: int, bidder: ImplicitAccountAddress, platform: PlatformEnum, asset_class: str = None, asset: str = None
+        contract: OriginatedAccountAddress,
+        token_id: int,
+        bidder: ImplicitAccountAddress,
+        platform: PlatformEnum,
+        asset_class: str = None,
+        asset: str = None,
     ) -> str:
         return uuid5(
             namespace=uuid.NAMESPACE_OID, name=f'{platform}/{TransactionTypeEnum.BID}-{contract}:{token_id}@{bidder}/{asset_class}-{asset}'
@@ -154,9 +164,15 @@ class RaribleAware:
 
     @staticmethod
     def get_floor_bid_hash(
-        contract: OriginatedAccountAddress, bidder: ImplicitAccountAddress, platform: PlatformEnum, asset_class: str = None, asset: str = None
+        contract: OriginatedAccountAddress,
+        bidder: ImplicitAccountAddress,
+        platform: PlatformEnum,
+        asset_class: str = None,
+        asset: str = None,
     ) -> str:
-        return uuid5(namespace=uuid.NAMESPACE_OID, name=f'{platform}/{TransactionTypeEnum.FLOOR_BID}-{contract}@{bidder}/{asset_class}-{asset}').hex
+        return uuid5(
+            namespace=uuid.NAMESPACE_OID, name=f'{platform}/{TransactionTypeEnum.FLOOR_BID}-{contract}@{bidder}/{asset_class}-{asset}'
+        ).hex
 
     @classmethod
     def get_take_dto(cls, sale_type: int, value: int, asset_bytes: Optional[bytes] = None) -> TakeDto:
@@ -232,47 +248,11 @@ class RaribleOrderCancelEvent(AbstractOrderCancelEvent):
 
 class RaribleLegacyOrderCancelEvent(AbstractLegacyOrderCancelEvent):
     platform = PlatformEnum.RARIBLE_V1
-    RaribleCancelTransaction = Transaction[CancelParameter, RaribleExchangeLegacyStorage]
+    RaribleCancelTransaction = Transaction[RemoveParameter, RaribleExchangeLegacyStorage]
 
     @staticmethod
     def _get_legacy_cancel_dto(transaction: RaribleCancelTransaction, datasource: TzktDatasource) -> CancelDto:
-        make = RaribleAware.get_make_dto(
-            sale_type=2,
-            value=int(transaction.parameter.make_asset.asset_value),
-            asset_bytes=bytes.fromhex(transaction.parameter.make_asset.asset_type.asset_data),
-        )
-
-        take_type = (
-            0
-            if transaction.parameter.take_asset.asset_type.asset_class is XTZAssetClass
-            else 1
-            if transaction.parameter.take_asset.asset_type.asset_class is FA12AssetClass
-            else 2
-            if transaction.parameter.take_asset.asset_type.asset_class is FA2AssetClass
-            else 0
-        )
-
-        take_data = None if take_type == 0 else bytes.fromhex(
-            transaction.parameter.take_asset.asset_type.asset_data)
-
-        take = RaribleAware.get_take_dto(
-            sale_type=take_type,
-            value=int(transaction.parameter.take_asset.asset_value),
-            asset_bytes=take_data,
-        )
-        maker_pk = transaction.parameter.maker
-        pkh = pytezos.Key.from_encoded_key(maker_pk).public_key_hash()
-        print(pkh)
-        internal_order_id = RaribleAware.get_order_hash(
-            contract=OriginatedAccountAddress(make.contract),
-            token_id=int(make.token_id),
-            seller=ImplicitAccountAddress(pkh),
-            platform=RaribleLegacyOrderCancelEvent.platform,
-            asset_class=take.asset_class,
-            asset=bytes.fromhex(transaction.parameter.make_asset.asset_type.asset_data),
-        )
-
-        return CancelDto(internal_order_id=internal_order_id)
+        return CancelDto(internal_order_id=transaction.parameter.__root__)
 
 
 class RaribleOrderMatchEvent(AbstractOrderMatchEvent):
@@ -335,7 +315,7 @@ class RaribleLegacyOrderMatchEvent(AbstractLegacyOrderMatchEvent):
             seller=ImplicitAccountAddress(transaction.parameter.order_left.maker),
             platform=RaribleLegacyOrderMatchEvent.platform,
             asset_class=take.asset_class,
-            asset=bytes.fromhex(transaction.parameter.order_left.make_asset.asset_type.asset_data),
+            asset=bytes.fromhex(transaction.parameter.order_left.take_asset.asset_type.asset_data),
         )
 
         order_start = transaction.parameter.order_left.start
