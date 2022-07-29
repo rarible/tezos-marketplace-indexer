@@ -1,8 +1,10 @@
 import logging
+import math
 import os
 from abc import ABC
 from abc import abstractmethod
 from datetime import timedelta
+from decimal import Decimal
 from typing import List
 from typing import final
 
@@ -19,6 +21,7 @@ from rarible_marketplace_indexer.models import ActivityTypeEnum
 from rarible_marketplace_indexer.models import LegacyOrderModel
 from rarible_marketplace_indexer.models import OrderModel
 from rarible_marketplace_indexer.models import OrderStatusEnum
+from rarible_marketplace_indexer.types.rarible_api_objects.asset.enum import AssetClassEnum
 from rarible_marketplace_indexer.types.rarible_exchange.parameter.sell import Part
 from rarible_marketplace_indexer.types.tezos_objects.asset_value.asset_value import AssetValue
 
@@ -62,6 +65,21 @@ class AbstractOrderListEvent(EventInterface):
         order = await OrderModel.get_or_none(
             internal_order_id=dto.internal_order_id, network=datasource.network, platform=cls.platform, status=OrderStatusEnum.ACTIVE
         )
+
+        if dto.take.asset_class == AssetClassEnum.FUNGIBLE_TOKEN:
+            ft_result = None
+            if dto.take.token_id is not None:
+                ft_result = await datasource.request(
+                    method='get', url=f"v1/tokens?contract={dto.take.contract}&tokenId={dto.take.token_id}", cache=False
+                )
+            else:
+                ft_result = await datasource.request(
+                    method='get', url=f"v1/tokens?contract={dto.take.contract}", cache=False
+                )
+            if ft_result is not None:
+                ft = ft_result[0]
+                decimals = int(ft["metadata"]["decimals"])
+                dto.take.value = dto.take.value / Decimal(math.pow(10, decimals))
 
         if order is None:
             order = await OrderModel.create(
