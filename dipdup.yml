@@ -17,11 +17,11 @@ hasura:
   rest: true
 
 custom:
-  enabled: ${KAFKA_ENABLED:-false}
-  kafka_address: ${KAFKA_ADDRESS:-}
+  enabled: ${KAFKA_ENABLED:-true}
+  kafka_address: ${KAFKA_ADDRESS:-kafka0:9094}
   client_id: dipdup-rarible-${APPLICATION_ENVIRONMENT:-mainnet}-producer
   kafka_security_protocol: ${KAFKA_SECURITY_PROTOCOL:-SASL_PLAINTEXT}
   sasl:
     mechanism: ${KAFKA_SASL_MECHANISM:-PLAIN}
-    username: ${KAFKA_USERNAME}
-    password: ${KAFKA_PASSWORD}
+    username: ${KAFKA_USERNAME:-rarible}
+    password: ${KAFKA_PASSWORD:-changeme}
