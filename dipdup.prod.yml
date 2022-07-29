@@ -24,6 +24,9 @@ contracts:
 #  objkt_v2_mainnet:
 #    address: KT1WvzYHCNBvDSdwafTHv7nJ1dWmZ8GCYuuC
 #    typename: objkt_marketplace_v2
+  fxhash_market_v1:
+    address: KT1Xo5B7PNBAeynZPmca4bRh6LQow4og1Zb9
+    typename: fxhash_market_v1
 
 indexes:
 #  rarible_exchange_actions:
@@ -127,11 +130,26 @@ indexes:
 #          - destination: objkt_v2_mainnet
 #            entrypoint: fulfill_ask
 
-  token_transfers:
-    kind: token_transfer
+  fxhash:
+    kind: operation
     datasource: tzkt
+    contracts:
+      - fxhash_market_v1
+    first_level: 1832146
     handlers:
-      - callback: on_transfer
+      - callback: fxhash_v1_order_list
+        pattern:
+          - destination: fxhash_market_v1
+            entrypoint: offer
+      - callback: fxhash_v1_order_cancel
+        pattern:
+          - destination: fxhash_market_v1
+            entrypoint: cancel_offer
+      - callback: fxhash_v1_order_match
+        pattern:
+          - destination: fxhash_market_v1
+            entrypoint: collect
+
 
 hooks:
   process_collection_events:
