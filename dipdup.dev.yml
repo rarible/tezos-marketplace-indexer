@@ -5,117 +5,109 @@ datasources:
     buffer_size: 2
 
 contracts:
-#  rarible_exchange:
-#    address: KT198cr9bKZDGVtgj7P4DazAjq38r74hFSVu
-#    typename: rarible_exchange
-#  rarible_exchange_legacy:
-#    address: KT18isH58SBp7UaRWB652UwLMPxCe1bsjMMe
-#    typename: rarible_exchange_legacy
-#  rarible_bids:
-#    address: KT1DJxerfM2nPYYsVNBxaevppwhkCGwZzsGT
-#    typename: rarible_bids
-#  objkt_v2:
-#    address: KT1X1sxF2kqNKMKcNatbrx3d5M11LhSthQ3L
-#    typename: objkt_marketplace_v2
+  rarible_exchange:
+    address: KT198cr9bKZDGVtgj7P4DazAjq38r74hFSVu
+    typename: rarible_exchange
+  rarible_exchange_legacy:
+    address: KT18isH58SBp7UaRWB652UwLMPxCe1bsjMMe
+    typename: rarible_exchange_legacy
+  rarible_bids:
+    address: KT1DJxerfM2nPYYsVNBxaevppwhkCGwZzsGT
+    typename: rarible_bids
+  objkt_v2:
+    address: KT1X1sxF2kqNKMKcNatbrx3d5M11LhSthQ3L
+    typename: objkt_marketplace_v2
   hen:
     address: KT1BCcHJuWyKCWE4q6wJwnaPqfifhm3bWTpS
     typename: hen_marketplace
 
 indexes:
-#  rarible_exchange_actions:
-#    kind: operation
-#    datasource: tzkt
-#    contracts:
-#      - rarible_exchange
-#    handlers:
-#      - callback: rarible_order_list
-#        pattern:
-#          - destination: rarible_exchange
-#            entrypoint: sell
-#      - callback: rarible_order_cancel_list
-#        pattern:
-#          - destination: rarible_exchange
-#            entrypoint: cancel_sale
-#      - callback: rarible_order_match
-#        pattern:
-#          - destination: rarible_exchange
-#            entrypoint: buy
-#
-#  rarible_exchange_legacy_actions:
-#    kind: operation
-#    datasource: tzkt
-#    contracts:
-#      - rarible_exchange_legacy
-#    handlers:
-#      - callback: rarible_match_order_legacy
-#        pattern:
-#          - destination: rarible_exchange_legacy
-#            entrypoint: match_orders
-#
-#  rarible_bids_actions:
-#    kind: operation
-#    datasource: tzkt
-#    contracts:
-#      - rarible_bids
-#    handlers:
-#      - callback: rarible_put_bid
-#        pattern:
-#          - destination: rarible_bids
-#            entrypoint: put_bid
-#      - callback: rarible_put_floor_bid
-#        pattern:
-#          - destination: rarible_bids
-#            entrypoint: put_floor_bid
-#      - callback: rarible_accept_bid
-#        pattern:
-#          - destination: rarible_bids
-#            entrypoint: accept_bid
-#      - callback: rarible_accept_floor_bid
-#        pattern:
-#          - destination: rarible_bids
-#            entrypoint: accept_floor_bid
-#      - callback: rarible_cancel_bid
-#        pattern:
-#          - destination: rarible_bids
-#            entrypoint: cancel_bid
-#      - callback: rarible_cancel_floor_bid
-#        pattern:
-#          - destination: rarible_bids
-#            entrypoint: cancel_floor_bid
-#
-#  objkt_v2_actions:
-#    kind: operation
-#    datasource: tzkt
-#    contracts:
-#      - objkt_v2
-#    handlers:
-#      - callback: objkt_v2_order_list
-#        pattern:
-#          - destination: objkt_v2
-#            entrypoint: ask
-#
-#      - callback: objkt_v2_order_cancel_list
-#        pattern:
-#          - destination: objkt_v2
-#            entrypoint: retract_ask
-#
-#      - callback: objkt_v2_order_match
-#        pattern:
-#          - destination: objkt_v2
-#            entrypoint: fulfill_ask
-#
-#  token_transfers:
-#    kind: token_transfer
-#    datasource: tzkt
-#    handlers:
-#      - callback: on_transfer
-#
-#  origination:
-#    kind: head
-#    datasource: tzkt
-#    handlers:
-#      - callback: on_head
-
+  rarible_exchange_actions:
+    kind: operation
+    datasource: tzkt
+    contracts:
+      - rarible_exchange
+    handlers:
+      - callback: rarible_order_list
+        pattern:
+          - destination: rarible_exchange
+            entrypoint: sell
+      - callback: rarible_order_cancel_list
+        pattern:
+          - destination: rarible_exchange
+            entrypoint: cancel_sale
+      - callback: rarible_order_match
+        pattern:
+          - destination: rarible_exchange
+            entrypoint: buy
+  rarible_exchange_legacy_actions:
+    kind: operation
+    datasource: tzkt
+    contracts:
+      - rarible_exchange_legacy
+    handlers:
+      - callback: rarible_match_order_legacy
+        pattern:
+          - destination: rarible_exchange_legacy
+            entrypoint: match_orders
+  rarible_bids_actions:
+    kind: operation
+    datasource: tzkt
+    contracts:
+      - rarible_bids
+    handlers:
+      - callback: rarible_put_bid
+        pattern:
+          - destination: rarible_bids
+            entrypoint: put_bid
+      - callback: rarible_put_floor_bid
+        pattern:
+          - destination: rarible_bids
+            entrypoint: put_floor_bid
+      - callback: rarible_accept_bid
+        pattern:
+          - destination: rarible_bids
+            entrypoint: accept_bid
+      - callback: rarible_accept_floor_bid
+        pattern:
+          - destination: rarible_bids
+            entrypoint: accept_floor_bid
+      - callback: rarible_cancel_bid
+        pattern:
+          - destination: rarible_bids
+            entrypoint: cancel_bid
+      - callback: rarible_cancel_floor_bid
+        pattern:
+          - destination: rarible_bids
+            entrypoint: cancel_floor_bid
+  objkt_v2_actions:
+    kind: operation
+    datasource: tzkt
+    contracts:
+      - objkt_v2
+    handlers:
+      - callback: objkt_v2_order_list
+        pattern:
+          - destination: objkt_v2
+            entrypoint: ask
+      - callback: objkt_v2_order_cancel_list
+        pattern:
+          - destination: objkt_v2
+            entrypoint: retract_ask
+      - callback: objkt_v2_order_match
+        pattern:
+          - destination: objkt_v2
+            entrypoint: fulfill_ask
+  token_transfers:
+    kind: token_transfer
+    datasource: tzkt
+    handlers:
+      - callback: on_transfer
+  origination:
+    kind: head
+    datasource: tzkt
+    handlers:
+      - callback: on_head
   hen_actions:
     kind: operation
     datasource: tzkt
@@ -136,14 +128,17 @@ indexes:
         pattern:
           - destination: hen
             entrypoint: collect
-hooks:
-#  process_collection_events:
-#    callback: process_collection_events
-#    atomic: False
-#    args:
-#      force_reindex: bool
-#      head: int
 
+hooks:
+  process_collection_events:
+    callback: process_collection_events
+    atomic: False
+    args:
+      force_reindex: bool
+      head: int
+  import_legacy_orders:
+    callback: import_legacy_orders
+    atomic: False
 
 advanced:
   reindex:

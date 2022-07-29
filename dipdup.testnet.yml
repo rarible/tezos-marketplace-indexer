@@ -10,7 +10,7 @@ datasources:
 contracts:
   rarible_exchange:
     address: KT1NcKyhPnomH9PKGeDfvMiGH2PDgKCd5YuM
-    typename: rarible_exchange
+    typename: rarible_exchangeKT1SakgxbHuJmkMLSsTb37DNtHLz6LzyaMhx
   rarible_exchange_legacy:
     address: KT1S6H2FWxrpaD7aPRSW1cTTE1xPucXBSTL5
     typename: rarible_exchange_legacy
@@ -20,6 +20,9 @@ contracts:
   objkt_v2:
     address: KT1T1JMFGipL6EdCmeL8tDfLiTi1BFZ1yAKV
     typename: objkt_marketplace_v2
+  hen:
+    address: KT1SakgxbHuJmkMLSsTb37DNtHLz6LzyaMhx
+    typename: hen_marketplace
 
 indexes:
   rarible_exchange_actions:
@@ -40,7 +43,6 @@ indexes:
         pattern:
           - destination: rarible_exchange
             entrypoint: buy
-
   rarible_exchange_legacy_actions:
     kind: operation
     datasource: tzkt
@@ -51,7 +53,6 @@ indexes:
         pattern:
           - destination: rarible_exchange_legacy
             entrypoint: match_orders
-
   rarible_bids_actions:
     kind: operation
     datasource: tzkt
@@ -82,7 +83,6 @@ indexes:
         pattern:
           - destination: rarible_bids
             entrypoint: cancel_floor_bid
-
   objkt_v2_actions:
     kind: operation
     datasource: tzkt
@@ -103,18 +103,34 @@ indexes:
         pattern:
           - destination: objkt_v2
             entrypoint: fulfill_ask
-
   token_transfers:
     kind: token_transfer
     datasource: tzkt
     handlers:
       - callback: on_transfer
-
   origination:
     kind: head
     datasource: tzkt
     handlers:
       - callback: on_head
+  hen_actions:
+    kind: operation
+    datasource: tzkt
+    contracts:
+      - hen
+    handlers:
+      - callback: hen_order_list
+        pattern:
+          - destination: hen
+            entrypoint: swap
+      - callback: hen_order_cancel_list
+        pattern:
+          - destination: hen
+            entrypoint: cancel_swap
+      - callback: hen_order_match
+        pattern:
+          - destination: hen
+            entrypoint: collect
 
 hooks:
   process_collection_events:
@@ -123,7 +139,9 @@ hooks:
     args:
       force_reindex: bool
       head: int
-
+  import_legacy_orders:
+    callback: import_legacy_orders
+    atomic: False
 
 advanced:
   reindex:
