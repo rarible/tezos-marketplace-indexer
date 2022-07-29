@@ -10,7 +10,7 @@ datasources:
 contracts:
   rarible_exchange:
     address: KT1NcKyhPnomH9PKGeDfvMiGH2PDgKCd5YuM
-    typename: rarible_exchangeKT1SakgxbHuJmkMLSsTb37DNtHLz6LzyaMhx
+    typename: rarible_exchange
   rarible_exchange_legacy:
     address: KT1S6H2FWxrpaD7aPRSW1cTTE1xPucXBSTL5
     typename: rarible_exchange_legacy
