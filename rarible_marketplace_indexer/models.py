@@ -57,6 +57,7 @@ class PlatformEnum(str, Enum):
     OBJKT_V2: _StrEnumValue = 'OBJKT_V2'
     RARIBLE_V1: _StrEnumValue = 'RARIBLE_V1'
     RARIBLE_V2: _StrEnumValue = 'RARIBLE_V2'
+    FXHASH_V1: _StrEnumValue = 'FXHASH_V1'
 
 
 class IndexEnum(str, Enum):
