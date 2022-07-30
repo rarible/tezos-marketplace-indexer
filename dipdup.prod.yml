@@ -150,6 +150,11 @@ indexes:
           - destination: fxhash_market_v1
             entrypoint: collect
 
+  token_transfers:
+    kind: token_transfer
+    datasource: tzkt
+    handlers:
+      - callback: on_transfer
 
 hooks:
   process_collection_events:
