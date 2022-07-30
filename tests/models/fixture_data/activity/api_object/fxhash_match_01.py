@@ -17,25 +17,25 @@ from rarible_marketplace_indexer.types.tezos_objects.tezos_object_hash import Op
 from rarible_marketplace_indexer.types.tezos_objects.tezos_object_hash import OriginatedAccountAddress
 
 activity_api_object = RaribleApiOrderMatchActivity(
-    id=UUID('45b51339-c32e-56ab-a44f-66463b7d4fad'),
+    id=UUID('0412dbe9-ae58-543c-9a02-04974ccec9af'),
     network='mainnet',
     type=ActivityTypeEnum.ORDER_MATCH,
     source=PlatformEnum.FXHASH_V1,
-    order_id=UUID('1603ff55-2507-5cba-b50c-3ae50162c5ee'),
-    hash=OperationHash('opNDzGBFo31EhitebgvBDzxV97P5tDMXQHtxwZtEtNAUAr8du2z'),
-    date=datetime(2021, 7, 1, 21, 9, 38, tzinfo=UTC),
+    order_id=UUID('702b483c-8b5f-5731-b1ad-ce4c10b24743'),
+    hash=OperationHash('onqH9Z8T54frxN3j9HfoZRdkJKFGeKaJ6yz8ZkCGRSgH7u185Tt'),
+    date=datetime(2021, 12, 7, 21, 23, 10, tzinfo=UTC),
     reverted=False,
     nft=TokenAsset(
         asset_type=MultiTokenAssetType(
-            contract=OriginatedAccountAddress('KT1RJ6PbjHpwc3M5rw5s2Nbmefwbuwbdxton'),
-            token_id='157097',
+            contract=OriginatedAccountAddress('KT1KEa8z6vWXDJrVqtMrAeDVzsvxat3kHaCE'),
+            token_id='128493',
         ),
-        asset_value=AssetValue(9),
+        asset_value=AssetValue(1),
     ),
     payment=XtzAsset(
         asset_type=XtzAssetType(),
-        asset_value=Xtz(3),
+        asset_value=Xtz(9),
     ),
-    buyer=ImplicitAccountAddress('tz29tCQDFw8KwaMaBuroze6Sv2qd47nnP5Hv'),
-    seller=ImplicitAccountAddress('tz1bn9ud4BmNGSCTWT86gB23ynR7tuWk8gAk'),
+    buyer=ImplicitAccountAddress('tz1QjzQd8AuAbLKLa9Jp7bYp3gPrrTsHxDSe'),
+    seller=ImplicitAccountAddress('tz1Ms3JA2ZUSBNKqVABoGpeg3gv2e685XWvf'),
 )
