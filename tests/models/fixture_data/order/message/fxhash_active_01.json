@@ -1,23 +1,23 @@
 {
-    "id": "20f0ff17-3420-51d2-be4a-f0099de916a2",
+    "id": "a2beb69a-a505-5a6c-a75a-83e66ac477af",
     "network": "mainnet",
     "platform": "FXHASH_V1",
     "fill": "0",
     "status": "ACTIVE",
-    "startAt": "2022-01-05T17:10:40+00:00",
+    "startAt": "2021-12-06T09:39:20+00:00",
     "endAt": null,
     "endedAt": null,
     "cancelled": false,
-    "salt": "32053506",
-    "createdAt": "2022-01-05T17:10:40+00:00",
-    "lastUpdatedAt": "2022-01-05T17:10:40+00:00",
-    "maker": "tz1UzJUT5tUkXBtQgEecX2Asq1hGaNV26rvH",
+    "salt": "22385716",
+    "createdAt": "2021-12-06T09:39:20+00:00",
+    "lastUpdatedAt": "2021-12-06T09:39:20+00:00",
+    "maker": "tz1gfc1S3RQoMeQNnbs61NxomqjKbMQZCLoc",
     "taker": null,
     "make": {
         "assetType": {
             "assetClass": "TEZOS_MT",
             "contract": "KT1KEa8z6vWXDJrVqtMrAeDVzsvxat3kHaCE",
-            "tokenId": "295758"
+            "tokenId": "30706"
         },
         "assetValue": "1"
     },
@@ -25,6 +25,8 @@
         "assetType": {
             "assetClass": "XTZ"
         },
-        "assetValue": "4.5"
-    }
+        "assetValue": "35"
+    },
+    "originFees": [],
+    "payouts": []
 }

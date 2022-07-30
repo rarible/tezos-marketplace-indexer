@@ -17,29 +17,31 @@ from rarible_marketplace_indexer.types.tezos_objects.tezos_object_hash import Im
 from rarible_marketplace_indexer.types.tezos_objects.tezos_object_hash import OriginatedAccountAddress
 
 order_api_object = RaribleApiOrder(
-    id=UUID('1b13c452-114e-5ebd-a618-9ae9bfa5403a'),
+    id=UUID('a2beb69a-a505-5a6c-a75a-83e66ac477af'),
     network='mainnet',
     fill=0,
     platform=PlatformEnum.FXHASH_V1,
     status=OrderStatusEnum.ACTIVE,
-    start_at=datetime(2021, 12, 22, 0, 54, 6, tzinfo=UTC),
+    start_at=datetime(2021, 12, 6, 9, 39, 20, tzinfo=UTC),
     end_at=None,
     ended_at=None,
     cancelled=False,
-    salt=24209687,
-    created_at=datetime(2021, 12, 22, 0, 54, 6, tzinfo=UTC),
-    last_updated_at=datetime(2021, 12, 23, 0, 54, 6, tzinfo=UTC),
-    maker=ImplicitAccountAddress('tz1e9cuHbqgrJobzakykJYXUqGaPMS9vpbD2'),
+    salt=22385716,
+    created_at=datetime(2021, 12, 6, 9, 39, 20, tzinfo=UTC),
+    last_updated_at=datetime(2021, 12, 6, 9, 39, 20, tzinfo=UTC),
+    maker=ImplicitAccountAddress('tz1gfc1S3RQoMeQNnbs61NxomqjKbMQZCLoc'),
     taker=None,
     make=TokenAsset(
         asset_type=MultiTokenAssetType(
             contract=OriginatedAccountAddress('KT1KEa8z6vWXDJrVqtMrAeDVzsvxat3kHaCE'),
-            token_id='176675',
+            token_id='30706',
         ),
         asset_value=AssetValue(1),
     ),
     take=XtzAsset(
         asset_type=XtzAssetType(),
-        asset_value=Xtz(9),
+        asset_value=Xtz(35),
     ),
+    origin_fees=[],
+    payouts=[],
 )
