@@ -20,10 +20,10 @@ from rarible_marketplace_indexer.types.fxhash_market_v1.parameter.collect import
 from rarible_marketplace_indexer.types.fxhash_market_v1.storage import FxhashMarketV1Storage
 
 
-# V1 Listing
+# V1
 
 
-class FxhashListingV1OrderListEvent(AbstractOrderListEvent):
+class FxhashV1OrderListEvent(AbstractOrderListEvent):
     platform = PlatformEnum.FXHASH_V1
     FxhashListTransaction = Transaction[OfferParameter, FxhashMarketV1Storage]
 
@@ -53,7 +53,7 @@ class FxhashListingV1OrderListEvent(AbstractOrderListEvent):
         )
 
 
-class FxhashListingV1OrderCancelEvent(AbstractOrderCancelEvent):
+class FxhashV1OrderCancelEvent(AbstractOrderCancelEvent):
     platform = PlatformEnum.FXHASH_V1
     FxhashCancelTransaction = Transaction[CancelOfferParameter, FxhashMarketV1Storage]
 
@@ -64,7 +64,7 @@ class FxhashListingV1OrderCancelEvent(AbstractOrderCancelEvent):
         return CancelDto(internal_order_id=transaction.parameter.__root__)
 
 
-class FxhashListingV1OrderMatchEvent(AbstractOrderMatchEvent):
+class FxhashV1OrderMatchEvent(AbstractOrderMatchEvent):
     platform = PlatformEnum.FXHASH_V1
     FxhashMatchTransaction = Transaction[CollectParameter, FxhashMarketV1Storage]
 
