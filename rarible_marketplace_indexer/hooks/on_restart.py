@@ -15,4 +15,4 @@ async def on_restart(
 
     ProducerContainer.create_instance(ctx.config.custom, ctx.logger)
     await ProducerContainer.get_instance().start()
-    await ctx.fire_hook("import_legacy_orders")
+    # await ctx.fire_hook("import_legacy_orders")
