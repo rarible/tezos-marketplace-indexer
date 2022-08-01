@@ -1,6 +1,5 @@
 @Library('shared-library') _
 
-def pipelineConfig = [
-]
+def pipelineConfig = [:]
 
 serviceCI(pipelineConfig)
