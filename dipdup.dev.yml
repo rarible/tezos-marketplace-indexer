@@ -1,11 +1,7 @@
 datasources:
   tzkt:
     kind: tzkt
-    url: ${TZKT_URL:-https://dev-tezos-tzkt.rarible.org}
-    http:
-      retry_count: 10  # none for infinite
-      retry_sleep: 1
-      retry_multiplier: 1.1
+    url: http://tzkt:5000/
     buffer_size: 2
 
 contracts:
@@ -133,5 +129,3 @@ advanced:
     rollback: exception
     config_modified: ignore
     schema_modified: ignore
-
-logging: verbose
