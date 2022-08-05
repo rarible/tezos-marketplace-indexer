@@ -67,7 +67,7 @@ tzkt:
     port: 5000
     # nodePort: 
   environments:
-    Logging__LogLevel__Default: Warning
+    Logging__LogLevel__Default: Debug
     TokenMetadata__DipDup__Url: http://hasura:8080/v1/graphql
     TezosNode__Endpoint: http://dev-tezos-node:8732/
     # provided via secrets
