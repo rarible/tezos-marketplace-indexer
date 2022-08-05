@@ -3,6 +3,10 @@ datasources:
     kind: tzkt
     url: ${TZKT_URL:-https://dev-tezos-tzkt.rarible.org}
     buffer_size: 2
+    http:
+      retry_count:  # none for infinite
+      retry_sleep: 1
+      retry_multiplier: 1.1
 
 contracts:
   rarible_exchange:
