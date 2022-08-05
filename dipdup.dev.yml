@@ -3,7 +3,7 @@ datasources:
     kind: tzkt
     url: ${TZKT_URL:-https://dev-tezos-tzkt.rarible.org}
     http:
-      retry_count:  # none for infinite
+      retry_count: 10  # none for infinite
       retry_sleep: 1
       retry_multiplier: 1.1
     buffer_size: 2
