@@ -1,7 +1,7 @@
 datasources:
   tzkt:
     kind: tzkt
-    url: ${TZKT_URL:-https://api.ghostnet.tzkt.io}
+    url: ${TZKT_URL:-https://dev-tezos-tzkt.rarible.org}
     buffer_size: 2
 
 contracts:
