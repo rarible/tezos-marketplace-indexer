@@ -27,16 +27,25 @@ class ProducerContainer:
     @classmethod
     def create_instance(cls, config: Dict[str, Any], logger: Logger) -> None:
         if config['enabled'] != 'false':
-            producer = AIOKafkaProducer(
-                bootstrap_servers=[config['kafka_address']],
-                client_id=config['client_id'],
-                security_protocol=config['kafka_security_protocol'],
-                sasl_mechanism=config['sasl']['mechanism'],
-                sasl_plain_username=config['sasl']['username'],
-                sasl_plain_password=config['sasl']['password'],
-                value_serializer=kafka_value_serializer,
-                key_serializer=kafka_key_serializer,
-            )
+            if config['sasl']['mechanism'] == 'PLAIN':
+                producer = AIOKafkaProducer(
+                    bootstrap_servers=[config['kafka_address']],
+                    client_id=config['client_id'],
+                    sasl_mechanism=config['sasl']['mechanism'],
+                    value_serializer=kafka_value_serializer,
+                    key_serializer=kafka_key_serializer,
+                )
+            else:
+                producer = AIOKafkaProducer(
+                    bootstrap_servers=[config['kafka_address']],
+                    client_id=config['client_id'],
+                    security_protocol=config['kafka_security_protocol'],
+                    sasl_mechanism=config['sasl']['mechanism'],
+                    sasl_plain_username=config['sasl']['username'],
+                    sasl_plain_password=config['sasl']['password'],
+                    value_serializer=kafka_value_serializer,
+                    key_serializer=kafka_key_serializer,
+                )
         else:
             producer = NullKafkaProducer(logger)
 
