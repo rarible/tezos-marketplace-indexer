@@ -112,27 +112,39 @@ class AbstractOrderListEvent(EventInterface):
             order.payouts = cls.get_json_parts(dto.payouts)
             await order.save()
 
-        await ActivityModel.create(
-            type=ActivityTypeEnum.ORDER_LIST,
-            network=datasource.network,
-            platform=cls.platform,
-            order_id=order.id,
-            internal_order_id=dto.internal_order_id,
-            maker=dto.maker,
-            make_asset_class=dto.make.asset_class,
-            make_contract=dto.make.contract,
-            make_token_id=dto.make.token_id,
-            make_value=dto.make.value,
-            take_asset_class=dto.take.asset_class,
-            take_contract=dto.take.contract,
-            take_token_id=dto.take.token_id,
-            take_value=dto.take.value,
-            operation_level=transaction.data.level,
-            operation_timestamp=transaction.data.timestamp,
-            operation_hash=transaction.data.hash,
-            operation_counter=transaction.data.counter,
-            operation_nonce=transaction.data.nonce,
+        list_activity = (
+            await ActivityModel.filter(
+                network=datasource.network,
+                platform=cls.platform,
+                internal_order_id=dto.internal_order_id,
+                type=ActivityTypeEnum.ORDER_LIST
+            )
+            .order_by('-operation_level')
+            .first()
         )
+
+        if list_activity is None:
+            await ActivityModel.create(
+                type=ActivityTypeEnum.ORDER_LIST,
+                network=datasource.network,
+                platform=cls.platform,
+                order_id=order.id,
+                internal_order_id=dto.internal_order_id,
+                maker=dto.maker,
+                make_asset_class=dto.make.asset_class,
+                make_contract=dto.make.contract,
+                make_token_id=dto.make.token_id,
+                make_value=dto.make.value,
+                take_asset_class=dto.take.asset_class,
+                take_contract=dto.take.contract,
+                take_token_id=dto.take.token_id,
+                take_value=dto.take.value,
+                operation_level=transaction.data.level,
+                operation_timestamp=transaction.data.timestamp,
+                operation_hash=transaction.data.hash,
+                operation_counter=transaction.data.counter,
+                operation_nonce=transaction.data.nonce,
+            )
 
 
 class AbstractOrderCancelEvent(EventInterface):
@@ -213,64 +225,44 @@ class AbstractLegacyOrderCancelEvent(EventInterface):
             .first()
         )
 
-        order = (
-            await OrderModel.filter(
-                id=legacy_order.id,
+        if legacy_order is not None:
+            order = (
+                await OrderModel.filter(
+                    id=legacy_order.id,
+                )
+                .order_by('-id')
+                .first()
             )
-            .order_by('-id')
-            .first()
-        )
 
-        last_order_activity = (
-            await ActivityModel.filter(
-                network=datasource.network,
-                platform=cls.platform,
-                order_id=order.id,
-            )
-            .order_by('-operation_timestamp')
-            .first()
-        )
+            if order is not None:
+                order.status = OrderStatusEnum.CANCELLED
+                order.cancelled = True
+                order.ended_at = transaction.data.timestamp
+                order.last_updated_at = transaction.data.timestamp
+                response = requests.post(f"{os.getenv('UNION_API')}/v0.1/refresh/item/TEZOS:{order.make_contract}:{order.make_token_id}/reconcile?full=true")
+                if not response.ok:
+                    logger.info(f"{order.make_contract}:{order.make_token_id} need reconcile: Error {response.status_code} - {response.reason}")
+                else:
+                    logger.info(f"{order.make_contract}:{order.make_token_id} synced properly after legacy cancel")
+                await order.save()
 
-        if order is not None:
-            order.status = OrderStatusEnum.CANCELLED
-            order.cancelled = True
-            order.ended_at = transaction.data.timestamp
-            order.last_updated_at = transaction.data.timestamp
-            response = requests.post(f"{os.getenv('UNION_API')}/v0.1/refresh/item/TEZOS:{order.make_contract}:{order.make_token_id}/reconcile?full=true")
-            if not response.ok:
-                logger.info(f"{order.make_contract}:{order.make_token_id} need reconcile: Error {response.status_code} - {response.reason}")
-            else:
-                logger.info(f"{order.make_contract}:{order.make_token_id} synced properly after legacy cancel")
-            await order.save()
+                last_order_activity = (
+                    await ActivityModel.filter(
+                        network=datasource.network,
+                        platform=cls.platform,
+                        order_id=order.id,
+                        type=ActivityTypeEnum.ORDER_CANCEL
+                    )
+                    .order_by('-operation_timestamp')
+                    .first()
+                )
+                if last_order_activity is not None:
+                    cancel_activity = last_order_activity.apply(transaction)
 
-        if last_order_activity is not None:
-            cancel_activity = last_order_activity.apply(transaction)
-
-            cancel_activity.type = ActivityTypeEnum.ORDER_CANCEL
-            await cancel_activity.save()
+                    cancel_activity.type = ActivityTypeEnum.ORDER_CANCEL
+                    await cancel_activity.save()
         else:
-            await ActivityModel.create(
-                type=ActivityTypeEnum.ORDER_CANCEL,
-                network=datasource.network,
-                platform=cls.platform,
-                order_id=order.id,
-                internal_order_id=order.internal_order_id,
-                maker=order.maker,
-                make_asset_class=order.make_asset_class,
-                make_contract=order.make_contract,
-                make_token_id=order.make_token_id,
-                make_value=order.make_value,
-                take_asset_class=order.take_asset_class,
-                take_contract=order.take_contract,
-                take_token_id=order.take_token_id,
-                take_value=order.take_value,
-                taker=order.taker,
-                operation_level=transaction.data.level,
-                operation_timestamp=transaction.data.timestamp,
-                operation_hash=transaction.data.hash,
-                operation_counter=transaction.data.counter,
-                operation_nonce=transaction.data.nonce,
-            )
+            logger.error(f"Error: legacy order {dto.internal_order_id} is missing")
 
 
 class AbstractOrderMatchEvent(EventInterface):
