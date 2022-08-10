@@ -80,7 +80,7 @@ async def import_legacy_order(order: dict):
         token_id=int(make.token_id),
         seller=ImplicitAccountAddress(order["maker"]),
         platform=PlatformEnum.RARIBLE_V1,
-        asset_class=take.asset_class,
+        asset_class=take_type,
         asset=asset,
     )
 
