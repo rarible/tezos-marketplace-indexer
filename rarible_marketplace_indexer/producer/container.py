@@ -29,7 +29,7 @@ class ProducerContainer:
         if config['enabled'] != 'false':
             if config['sasl']['mechanism'] == 'PLAIN':
                 producer = AIOKafkaProducer(
-                    bootstrap_servers=[config['kafka_address']],
+                    bootstrap_servers=config['kafka_address'].split(','),
                     client_id=config['client_id'],
                     sasl_mechanism=config['sasl']['mechanism'],
                     value_serializer=kafka_value_serializer,
