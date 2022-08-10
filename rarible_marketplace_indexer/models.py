@@ -130,7 +130,7 @@ class OrderModel(Model):
 
     id = fields.UUIDField(pk=True, generated=False, required=True)
     network = fields.CharField(max_length=16, index=True)
-    fill = XtzField(default=0)
+    fill = AssetValueField(default=0)
     platform = fields.CharEnumField(PlatformEnum, index=True)
     internal_order_id = fields.CharField(max_length=32, index=True)
     status = fields.CharEnumField(OrderStatusEnum, index=True)
@@ -147,10 +147,12 @@ class OrderModel(Model):
     make_contract = AccountAddressField(null=True)
     make_token_id = fields.TextField(null=True)
     make_value = AssetValueField()
+    make_price = AssetValueField(null=True)
     take_asset_class = fields.CharEnumField(AssetClassEnum, null=True)
     take_contract = AccountAddressField(null=True)
     take_token_id = fields.TextField(null=True)
     take_value = AssetValueField(null=True)
+    take_price = AssetValueField(null=True)
     origin_fees = fields.JSONField()
     payouts = fields.JSONField()
 

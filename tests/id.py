@@ -101,10 +101,10 @@ print(f"wrong id = {wrong_internal_order_id}")
 
 internal_order_id = RaribleUtils.get_order_hash(
             contract=OriginatedAccountAddress("KT18pVpRXKPY2c4U2yFEGSH3ZnhB2kL8kwXS"),
-            token_id=70850,
+            token_id=int(70850),
             seller=ImplicitAccountAddress("edpkv8Wo2t5ALJLx8ie3znraLDTk7myLSuPofh55XTmRcphH7wQ4hx"),
             platform=PlatformEnum.RARIBLE_V1,
-            asset_class=AssetClassEnum.XTZ,
-            asset='',
+            asset_class=0,
+            asset='b',
         )
 print(f"wrong id = {internal_order_id}")
