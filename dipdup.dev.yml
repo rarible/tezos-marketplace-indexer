@@ -1,7 +1,7 @@
 datasources:
   tzkt:
     kind: tzkt
-    url: http://tzkt:5000/
+    url: ${TZKT_URL:-https://api.tzkt.io}
     buffer_size: 2
 
 contracts:
