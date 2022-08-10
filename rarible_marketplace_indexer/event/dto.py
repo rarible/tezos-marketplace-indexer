@@ -65,6 +65,7 @@ class LegacyMatchDto:
     make: MakeDto
     take: TakeDto
     match_timestamp: datetime
+    salt: str
     token_id: Optional[int]
     match_amount: Optional[AssetValue]
     start: Optional[datetime] = None  # for marketplaces with the possibility of a delayed start of sales

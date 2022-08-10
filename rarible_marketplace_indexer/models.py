@@ -101,15 +101,16 @@ class ActivityModel(Model):
         super().__init__(**kwargs)
 
     @staticmethod
-    def get_id(operation_hash, operation_counter, operation_nonce, *args, **kwargs):
+    def get_id(operation_hash, operation_counter, operation_nonce, order_id, *args, **kwargs):
         assert operation_hash
         assert operation_counter
+        assert order_id
 
-        oid = '.'.join(map(str, filter(bool, [operation_hash, operation_counter, operation_nonce])))
+        oid = '.'.join(map(str, filter(bool, [operation_hash, operation_counter, operation_nonce, order_id])))
         return uuid5(namespace=uuid.NAMESPACE_OID, name=oid)
 
     def apply(self, transaction: Transaction):
-        new_id = self.get_id(transaction.data.hash, transaction.data.counter, transaction.data.nonce)
+        new_id = self.get_id(transaction.data.hash, transaction.data.counter, transaction.data.nonce, self.order_id)
         activity = self.clone(pk=new_id)
 
         activity.operation_level = transaction.data.level
