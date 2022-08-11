@@ -11,4 +11,4 @@ tzkt:
   service:
     nodePort: 30440
   environments:
-    TezosNode__Endpoint: https://rpc.tzkt.io/mainnet
+    TezosNode__Endpoint: https://rpc.tzkt.io/ithacanet
