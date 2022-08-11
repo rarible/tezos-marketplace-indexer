@@ -87,7 +87,7 @@ class AbstractOrderListEvent(EventInterface):
                 make_contract=dto.make.contract,
                 make_token_id=dto.make.token_id,
                 make_value=dto.make.value,
-                make_price=dto.take.value / dto.make.value,
+                make_price=dto.take.value,
                 take_asset_class=dto.take.asset_class,
                 take_contract=dto.take.contract,
                 take_token_id=dto.take.token_id,
@@ -356,7 +356,6 @@ class AbstractLegacyOrderMatchEvent(EventInterface):
             .first()
         )
 
-        make_price = dto.take.value / dto.make.value
         if order is None:
             order = await OrderModel.create(
                 network=datasource.network,
@@ -373,7 +372,7 @@ class AbstractLegacyOrderMatchEvent(EventInterface):
                 make_contract=dto.make.contract,
                 make_token_id=dto.make.token_id,
                 make_value=dto.make.value,
-                make_price=make_price,
+                make_price=dto.take.value,
                 take_asset_class=dto.take.asset_class,
                 take_contract=dto.take.contract,
                 take_token_id=dto.take.token_id,
@@ -445,7 +444,7 @@ class AbstractLegacyOrderMatchEvent(EventInterface):
                 take_asset_class=dto.take.asset_class,
                 take_contract=dto.take.contract,
                 take_token_id=dto.take.token_id,
-                take_value=make_price * dto.match_amount,
+                take_value=dto.take.value * dto.match_amount,
                 taker=transaction.data.sender_address,
                 operation_level=transaction.data.level,
                 operation_timestamp=transaction.data.timestamp,
@@ -500,7 +499,7 @@ class AbstractPutBidEvent(EventInterface):
                 take_contract=dto.take.contract,
                 take_token_id=dto.take.token_id,
                 take_value=dto.take.value,
-                take_price=dto.make.value / dto.take.value,
+                take_price=dto.make.value,
                 origin_fees=get_json_parts(dto.origin_fees),
                 payouts=get_json_parts(dto.payouts),
             )
@@ -580,7 +579,7 @@ class AbstractPutFloorBidEvent(EventInterface):
                 take_contract=dto.take.contract,
                 take_token_id=dto.take.token_id,
                 take_value=dto.take.value,
-                take_price=dto.make.value / dto.take.value,
+                take_price=dto.make.value,
                 origin_fees=get_json_parts(dto.origin_fees),
                 payouts=get_json_parts(dto.payouts),
             )
