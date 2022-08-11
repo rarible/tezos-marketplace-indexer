@@ -1,6 +1,6 @@
 hasura:
   service:
-    nodePort: 30339
+    nodePort: 30139
 
 tezos-marketplace-indexer:
   environments: 
@@ -9,6 +9,6 @@ tezos-marketplace-indexer:
 tzkt:
   enabled: true
   service:
-    nodePort: 30340
+    nodePort: 30140
   environments:
-    TezosNode__Endpoint: http://dev-node.tezos-node:8732/
+    TezosNode__Endpoint: https://rpc.tzkt.io/mainnet

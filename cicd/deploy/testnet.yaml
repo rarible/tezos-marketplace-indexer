@@ -1,14 +1,15 @@
 hasura:
   service:
-    nodePort: 30339
+    nodePort: 30439
 
 tezos-marketplace-indexer:
+  replicas: 0
   environments: 
     TZKT_URL: http://tzkt:5000
 
 tzkt:
   enabled: true
   service:
-    nodePort: 30340
+    nodePort: 30440
   environments:
-    TezosNode__Endpoint: http://dev-node.tezos-node:8732/
+    TezosNode__Endpoint: https://rpc.tzkt.io/ithacanet
