@@ -150,7 +150,7 @@ class RaribleLegacyOrderMatchEvent(AbstractLegacyOrderMatchEvent):
         )
 
         make.asset_class = AssetClassEnum.MULTI_TOKEN
-        maker = ImplicitAccountAddress(Key.from_encoded_key(transaction.parameter.order_left.maker))
+        maker = ImplicitAccountAddress(Key.from_encoded_key(transaction.parameter.order_left.maker).public_key_hash())
 
         take_type = (
             0
