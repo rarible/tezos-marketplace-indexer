@@ -243,6 +243,7 @@ class AbstractLegacyOrderCancelEvent(EventInterface):
                 order.cancelled = True
                 order.ended_at = transaction.data.timestamp
                 order.last_updated_at = transaction.data.timestamp
+                #TODO: need to uncomment if reconcile is still needed
                 # response = requests.post(f"{os.getenv('UNION_API')}/v0.1/refresh/item/TEZOS:{order.make_contract}:{order.make_token_id}/reconcile?full=true")
                 # if not response.ok:
                 #     logger.info(f"{order.make_contract}:{order.make_token_id} need reconcile: Error {response.status_code} - {response.reason}")
@@ -439,7 +440,7 @@ class AbstractLegacyOrderMatchEvent(EventInterface):
                 make_asset_class=dto.make.asset_class,
                 make_contract=dto.make.contract,
                 make_token_id=dto.make.token_id,
-                make_value=dto.make.value,
+                make_value=dto.match_amount,
                 take_asset_class=dto.take.asset_class,
                 take_contract=dto.take.contract,
                 take_token_id=dto.take.token_id,
@@ -520,11 +521,11 @@ class AbstractPutBidEvent(EventInterface):
             make_asset_class=dto.make.asset_class,
             make_contract=dto.make.contract,
             make_token_id=dto.make.token_id,
-            make_value=dto.make.value,
+            make_value=dto.make.value * dto.take.value,
             take_asset_class=dto.take.asset_class,
             take_contract=dto.take.contract,
             take_token_id=dto.take.token_id,
-            take_value=dto.take.value * dto.make.value,
+            take_value=dto.take.value,
             operation_level=transaction.data.level,
             operation_timestamp=transaction.data.timestamp,
             operation_hash=transaction.data.hash,
@@ -573,12 +574,11 @@ class AbstractPutFloorBidEvent(EventInterface):
                 make_asset_class=dto.make.asset_class,
                 make_contract=dto.make.contract,
                 make_token_id=dto.make.token_id,
-                make_value=dto.make.value,
-                make_price=dto.take.value / dto.make.value,
+                make_value=dto.make.value * dto.take.value,
                 take_asset_class=dto.take.asset_class,
                 take_contract=dto.take.contract,
                 take_token_id=dto.take.token_id,
-                take_value=dto.take.value * dto.make.value,
+                take_value=dto.take.value,
                 take_price=dto.make.value / dto.take.value,
                 origin_fees=get_json_parts(dto.origin_fees),
                 payouts=get_json_parts(dto.payouts),
