@@ -27,15 +27,7 @@ class ProducerContainer:
     @classmethod
     def create_instance(cls, config: Dict[str, Any], logger: Logger) -> None:
         if config['enabled'] != 'false':
-            if config['sasl']['mechanism'] == 'PLAIN':
-                producer = AIOKafkaProducer(
-                    bootstrap_servers=config['kafka_address'].split(','),
-                    client_id=config['client_id'],
-                    sasl_mechanism=config['sasl']['mechanism'],
-                    value_serializer=kafka_value_serializer,
-                    key_serializer=kafka_key_serializer,
-                )
-            else:
+            if config['kafka_security_protocol'] == 'SASL_PLAINTEXT':
                 producer = AIOKafkaProducer(
                     bootstrap_servers=[config['kafka_address']],
                     client_id=config['client_id'],
@@ -43,6 +35,14 @@ class ProducerContainer:
                     sasl_mechanism=config['sasl']['mechanism'],
                     sasl_plain_username=config['sasl']['username'],
                     sasl_plain_password=config['sasl']['password'],
+                    value_serializer=kafka_value_serializer,
+                    key_serializer=kafka_key_serializer,
+                )
+            else:
+                producer = AIOKafkaProducer(
+                    bootstrap_servers=config['kafka_address'].split(','),
+                    client_id=config['client_id'],
+                    sasl_mechanism=config['sasl']['mechanism'],
                     value_serializer=kafka_value_serializer,
                     key_serializer=kafka_key_serializer,
                 )
