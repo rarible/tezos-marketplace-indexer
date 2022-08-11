@@ -22,7 +22,7 @@ class AbstractRaribleApiObject(BaseModel):
 
     @property
     def kafka_topic(self) -> str:
-        return self._kafka_topic
+        return f'{self._kafka_topic}_{self.network}'
 
     @classmethod
     def _get_value(cls, v: Any, *args, **kwargs) -> Any:

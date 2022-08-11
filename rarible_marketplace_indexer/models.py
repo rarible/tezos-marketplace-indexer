@@ -101,15 +101,16 @@ class ActivityModel(Model):
         super().__init__(**kwargs)
 
     @staticmethod
-    def get_id(operation_hash, operation_counter, operation_nonce, *args, **kwargs):
+    def get_id(operation_hash, operation_counter, operation_nonce, order_id, *args, **kwargs):
         assert operation_hash
         assert operation_counter
+        assert order_id
 
-        oid = '.'.join(map(str, filter(bool, [operation_hash, operation_counter, operation_nonce])))
+        oid = '.'.join(map(str, filter(bool, [operation_hash, operation_counter, operation_nonce, order_id])))
         return uuid5(namespace=uuid.NAMESPACE_OID, name=oid)
 
     def apply(self, transaction: Transaction):
-        new_id = self.get_id(transaction.data.hash, transaction.data.counter, transaction.data.nonce)
+        new_id = self.get_id(transaction.data.hash, transaction.data.counter, transaction.data.nonce, self.order_id)
         activity = self.clone(pk=new_id)
 
         activity.operation_level = transaction.data.level
@@ -129,7 +130,7 @@ class OrderModel(Model):
 
     id = fields.UUIDField(pk=True, generated=False, required=True)
     network = fields.CharField(max_length=16, index=True)
-    fill = XtzField(default=0)
+    fill = AssetValueField(default=0)
     platform = fields.CharEnumField(PlatformEnum, index=True)
     internal_order_id = fields.CharField(max_length=32, index=True)
     status = fields.CharEnumField(OrderStatusEnum, index=True)
@@ -146,10 +147,12 @@ class OrderModel(Model):
     make_contract = AccountAddressField(null=True)
     make_token_id = fields.TextField(null=True)
     make_value = AssetValueField()
+    make_price = AssetValueField(null=True)
     take_asset_class = fields.CharEnumField(AssetClassEnum, null=True)
     take_contract = AccountAddressField(null=True)
     take_token_id = fields.TextField(null=True)
     take_value = AssetValueField(null=True)
+    take_price = AssetValueField(null=True)
     origin_fees = fields.JSONField()
     payouts = fields.JSONField()
 
