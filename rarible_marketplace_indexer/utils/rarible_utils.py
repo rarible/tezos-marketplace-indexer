@@ -135,9 +135,8 @@ async def import_legacy_order(order: dict):
             take_asset_class=take.asset_class,
             take_contract=take.contract,
             take_token_id=take.token_id,
-            take_value=take.value * make.value,
-            take_price=make.value / take.value,
-            fill=AssetValue(AssetValue(int(order["fill"])) / AssetValue(1000000) / AssetValue(take.value / make.value)),
+            take_value=take.value,
+            fill=make.value - AssetValue(order["makeStock"]),
             origin_fees=get_json_parts(origin_fees),
             payouts=get_json_parts(payouts),
         )
@@ -147,7 +146,7 @@ async def import_legacy_order(order: dict):
         order_model.take_value = take.value
         order_model.origin_fees = get_json_parts(origin_fees)
         order_model.payouts = get_json_parts(payouts)
-        order_model.fill = order["fill"]
+        order_model.fill = make.value - AssetValue(order["makeStock"])
         await order_model.save()
 
     last_order_activity = (
@@ -157,8 +156,8 @@ async def import_legacy_order(order: dict):
             internal_order_id=internal_order_id,
             operation_timestamp=datetime.strptime(order["createdAt"], date_pattern),
         )
-            .order_by('-operation_timestamp')
-            .first()
+        .order_by('-operation_timestamp')
+        .first()
     )
 
     if last_order_activity is None:

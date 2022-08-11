@@ -372,17 +372,18 @@ class AbstractLegacyOrderMatchEvent(EventInterface):
                 make_contract=dto.make.contract,
                 make_token_id=dto.make.token_id,
                 make_value=dto.make.value,
-                make_price=dto.take.value,
+                make_price=dto.take.value / dto.make.value,
                 take_asset_class=dto.take.asset_class,
                 take_contract=dto.take.contract,
                 take_token_id=dto.take.token_id,
-                take_value=dto.take.value * dto.make.value,
+                take_value=dto.take.value,
                 origin_fees=get_json_parts(dto.origin_fees),
                 payouts=get_json_parts(dto.payouts),
             )
         else:
             order.make_value = dto.make.value
-            order.take_value = dto.take.value * dto.make.value
+            order.take_value = dto.take.value
+            order.make_price = dto.take.value / dto.make.value
             order.origin_fees = get_json_parts(dto.origin_fees)
             order.payouts = get_json_parts(dto.payouts)
 

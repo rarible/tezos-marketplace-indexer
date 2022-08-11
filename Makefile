@@ -26,7 +26,7 @@ mypy:
 lint: isort ssort black flake
 
 prepare_services:
-	docker-compose up -d --remove-orphans db hasura kafdrop kafka0 zookeeper0
+	docker-compose up -d --remove-orphans db hasura kafdrop kafka zookeeper
 
 up: prepare_services
 	docker-compose up --build --remove-orphans --force-recreate --no-deps --abort-on-container-exit indexer
