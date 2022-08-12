@@ -16,7 +16,7 @@ contracts:
     typename: rarible_bids
   objkt_v1:
     address: KT1Qa7sQdZrsuPMA7NFg5hMF9iadtoYSF8m9
-    typename: objkt_marketplace_v1
+    typename: objkt_marketplace
   objkt_v2:
     address: KT1LXKe92pjd8RJecjFS14ZRdmHPVec3twAD
     typename: objkt_marketplace_v2
@@ -50,7 +50,7 @@ indexes:
     contracts:
       - rarible_exchange_legacy
     handlers:
-      - callback: rarible_match_order_legacy
+      - callback: rarible_match_orders_legacy
         pattern:
           - destination: rarible_exchange_legacy
             entrypoint: match_orders
@@ -164,7 +164,6 @@ hooks:
     args:
       force_reindex: bool
       head: int
-
 
 advanced:
   reindex:
