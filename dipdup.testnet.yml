@@ -17,9 +17,9 @@ contracts:
   rarible_bids:
     address: KT1MwKGYWWbXtfYdnQfwspwz5ZGfqGwiJuQF
     typename: rarible_bids
-  objkt_v1:
-    address: KT1Ax5fm2UNxjXGmrMDytREfqvYoCXoBB4Jo
-    typename: objkt_marketplace_v1
+#  objkt_v1:
+#    address: KT1Ax5fm2UNxjXGmrMDytREfqvYoCXoBB4Jo
+#    typename: objkt_marketplace_v1
   objkt_v2:
     address: KT1GiZuR6TdkgxZGQGZSdbC3Jox9JTSbqTB6
     typename: objkt_marketplace_v2
