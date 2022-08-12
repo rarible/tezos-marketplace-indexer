@@ -1,4 +1,5 @@
 import logging
+import os
 
 from dipdup.context import HookContext
 
@@ -15,4 +16,5 @@ async def on_restart(
 
     ProducerContainer.create_instance(ctx.config.custom, ctx.logger)
     await ProducerContainer.get_instance().start()
-    await ctx.fire_hook("import_legacy_orders")
+    if os.getenv('APPLICATION_ENVIRONMENT') != 'dev':
+        await ctx.fire_hook("import_legacy_orders")
