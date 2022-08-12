@@ -53,7 +53,7 @@ indexes:
     contracts:
       - rarible_exchange_legacy
     handlers:
-      - callback: rarible_match_order_legacy
+      - callback: rarible_match_orders_legacy
         pattern:
           - destination: rarible_exchange_legacy
             entrypoint: match_orders
