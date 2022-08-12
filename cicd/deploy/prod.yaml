@@ -7,6 +7,7 @@ tezos-marketplace-indexer:
   replicas: 1
   environments: 
     TZKT_URL: http://tzkt:5000
+    LEGACY_API: https://tezos-api.rarible.org
 
 tzkt:
   enabled: true
