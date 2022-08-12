@@ -108,6 +108,9 @@ class AbstractOrderListEvent(EventInterface):
                 network=datasource.network,
                 platform=cls.platform,
                 internal_order_id=dto.internal_order_id,
+                operation_hash=transaction.data.hash,
+                operation_level=transaction.data.level,
+                operation_counter=transaction.data.counter,
                 type=ActivityTypeEnum.ORDER_LIST
             )
             .order_by('-operation_level')
@@ -164,10 +167,11 @@ class AbstractOrderCancelEvent(EventInterface):
             .order_by('-operation_level')
             .first()
         )
-        cancel_activity = last_order_activity.apply(transaction)
+        if last_order_activity is not None:
+            cancel_activity = last_order_activity.apply(transaction)
 
-        cancel_activity.type = ActivityTypeEnum.ORDER_CANCEL
-        await cancel_activity.save()
+            cancel_activity.type = ActivityTypeEnum.ORDER_CANCEL
+            await cancel_activity.save()
 
         order = (
             await OrderModel.filter(
@@ -180,12 +184,13 @@ class AbstractOrderCancelEvent(EventInterface):
             .first()
         )
 
-        order.status = OrderStatusEnum.CANCELLED
-        order.cancelled = True
-        order.ended_at = transaction.data.timestamp
-        order.last_updated_at = transaction.data.timestamp
+        if order is not None:
+            order.status = OrderStatusEnum.CANCELLED
+            order.cancelled = True
+            order.ended_at = transaction.data.timestamp
+            order.last_updated_at = transaction.data.timestamp
 
-        await order.save()
+            await order.save()
 
 
 class AbstractLegacyOrderCancelEvent(EventInterface):
@@ -306,27 +311,32 @@ class AbstractOrderMatchEvent(EventInterface):
             .first()
         )
 
-        order = await OrderModel.get(
-            network=datasource.network,
-            platform=cls.platform,
-            internal_order_id=dto.internal_order_id,
-            status=OrderStatusEnum.ACTIVE,
+        order = (
+            await OrderModel.filter(
+                network=datasource.network,
+                platform=cls.platform,
+                internal_order_id=dto.internal_order_id,
+                status=OrderStatusEnum.ACTIVE,
+            )
+            .order_by('-id')
+            .first()
         )
 
-        match_activity = last_list_activity.apply(transaction)
+        if order is not None:
+            order.last_updated_at = transaction.data.timestamp
+            order = cls._process_order_match(order, dto)
+            await order.save()
 
-        match_activity.type = ActivityTypeEnum.ORDER_MATCH
-        match_activity.taker = transaction.data.sender_address
+        if last_list_activity is not None:
+            match_activity = last_list_activity.apply(transaction)
 
-        match_activity.make_value = dto.match_amount
-        match_activity.take_value = AssetValue(order.make_price * dto.match_amount)
+            match_activity.type = ActivityTypeEnum.ORDER_MATCH
+            match_activity.taker = transaction.data.sender_address
 
-        await match_activity.save()
+            match_activity.make_value = dto.match_amount
+            match_activity.take_value = AssetValue(order.make_price * dto.match_amount)
 
-        order.last_updated_at = transaction.data.timestamp
-        order = cls._process_order_match(order, dto)
-
-        await order.save()
+            await match_activity.save()
 
 
 class AbstractLegacyOrderMatchEvent(EventInterface):
