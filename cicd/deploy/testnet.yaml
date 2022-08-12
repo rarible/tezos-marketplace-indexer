@@ -3,7 +3,7 @@ hasura:
     nodePort: 30439
 
 tezos-marketplace-indexer:
-  replicas: 0
+  replicas: 1
   environments: 
     TZKT_URL: http://tzkt:5000
 

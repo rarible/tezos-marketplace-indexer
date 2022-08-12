@@ -9,6 +9,7 @@ tezos-marketplace-indexer:
   environments:
     APPLICATION_ENVIRONMENT: '{{ include "app.env" $ }}'
     KAFKA_ENABLED: "true"
+    KAFKA_SECURITY_PROTOCOL: "PLAINTEXT"
     # provided via secrets
     # POSTGRES_HOST:
     # POSTGRES_DB:
@@ -58,11 +59,11 @@ tzkt:
   api:
     image:
       repository: bakingbad/tzkt-api
-      tag: 1.8.4
+      tag: 1.9.4
   indexer:
     image:
       repository: bakingbad/tzkt-sync
-      tag: 1.8.4
+      tag: 1.9.4
   service:
     port: 5000
     # nodePort: 
