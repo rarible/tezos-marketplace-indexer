@@ -9,6 +9,7 @@ tezos-marketplace-indexer:
   environments:
     APPLICATION_ENVIRONMENT: '{{ include "app.env" $ }}'
     KAFKA_ENABLED: "true"
+    KAFKA_SECURITY_PROTOCOL: "PLAINTEXT"
     # provided via secrets
     # POSTGRES_HOST:
     # POSTGRES_DB:
