@@ -41,16 +41,16 @@ indexes:
           - destination: rarible_exchange
             entrypoint: buy
 
-#  rarible_exchange_legacy_actions:
-#    kind: operation
-#    datasource: tzkt
-#    contracts:
-#      - rarible_exchange_legacy
-#    handlers:
-#      - callback: rarible_match_order_legacy
-#        pattern:
-#          - destination: rarible_exchange_legacy
-#            entrypoint: match_orders
+  rarible_exchange_legacy_actions:
+    kind: operation
+    datasource: tzkt
+    contracts:
+      - rarible_exchange_legacy
+    handlers:
+      - callback: rarible_match_order_legacy
+        pattern:
+          - destination: rarible_exchange_legacy
+            entrypoint: match_orders
 
   rarible_bids_actions:
     kind: operation
