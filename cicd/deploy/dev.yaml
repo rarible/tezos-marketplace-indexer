@@ -13,3 +13,4 @@ tzkt:
     nodePort: 30340
   environments:
     TezosNode__Endpoint: http://dev-node.tezos-node:8732/
+    TokenMetadata__DipDup__Url: http://hasura:8080/v1/graphql

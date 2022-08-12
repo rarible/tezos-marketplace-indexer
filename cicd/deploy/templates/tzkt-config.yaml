@@ -32,11 +32,29 @@ data:
         "PeriodSec": 30,
         "OverriddenMetadata": [],
         "DipDup": [
+          {{- if eq .Values.tzkt.network "mainnet" }}
           {
+            "Url": "https://metadata.dipdup.net/v1/graphql",
+            "MetadataTable": "token_metadata",
+            "HeadStatusTable": "dipdup_head_status",
+            "Network": "mainnet"
+          },
+          {
+            "Url": "https://domains.dipdup.net/v1/graphql",
+            "Network": "mainnet"
+          },
+          {
+            "Url": "https://quartz.dipdup.net/v1/graphql",
+            "Network": "mainnet"
+          }
+          {{ else }}
+          {
+            "Url": "{{ .Values.tzkt.environments.TokenMetadata__DipDup__Url }}",
             "MetadataTable": "token_metadata",
             "HeadStatusTable": "dipdup_head_status",
             "Network": "{{ .Values.tzkt.network }}"
-          }
+          }    
+          {{- end }}
         ]
       },
       "Logging": {

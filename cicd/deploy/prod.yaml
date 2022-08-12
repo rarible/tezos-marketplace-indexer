@@ -13,6 +13,7 @@ tezos-marketplace-indexer:
 
 tzkt:
   enabled: true
+  network: mainnet
   service:
     nodePort: 30140
   environments:
