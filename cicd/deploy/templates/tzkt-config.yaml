@@ -35,7 +35,7 @@ data:
           {
             "MetadataTable": "token_metadata",
             "HeadStatusTable": "dipdup_head_status",
-            "Network": "ithacanet"
+            "Network": "{{ .Values.tzkt.network }}"
           }
         ]
       },

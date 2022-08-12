@@ -17,3 +17,4 @@ tzkt:
     nodePort: 30140
   environments:
     TezosNode__Endpoint: https://rpc.tzkt.io/mainnet
+    TokenMetadata__DipDup__Url: https://metadata.dipdup.net/v1/graphql

@@ -12,7 +12,9 @@ tezos-marketplace-indexer:
 
 tzkt:
   enabled: true
+  network: ithacanet
   service:
     nodePort: 30440
   environments:
     TezosNode__Endpoint: https://rpc.tzkt.io/ithacanet
+    TokenMetadata__DipDup__Url: https://metadata.dipdup.net/v1/graphql

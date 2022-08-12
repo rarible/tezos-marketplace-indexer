@@ -56,6 +56,7 @@ hasura:
  
 tzkt: 
   enabled: false
+  network: mainnet
   api:
     image:
       repository: bakingbad/tzkt-api

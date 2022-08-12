@@ -8,6 +8,7 @@ tezos-marketplace-indexer:
 
 tzkt:
   enabled: true
+  network: privatenet
   service:
     nodePort: 30340
   environments:
