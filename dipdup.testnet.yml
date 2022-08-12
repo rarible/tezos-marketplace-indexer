@@ -148,11 +148,11 @@ indexes:
           - destination: hen
             entrypoint: collect
 
-#  token_transfers:
-#    kind: token_transfer
-#    datasource: tzkt
-#    handlers:
-#      - callback: on_transfer
+  token_transfers:
+    kind: token_transfer
+    datasource: tzkt
+    handlers:
+      - callback: on_transfer
 
   origination:
     kind: head

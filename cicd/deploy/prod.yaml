@@ -1,10 +1,14 @@
 hasura:
+  replicas: 1
   service:
     nodePort: 30139
 
 tezos-marketplace-indexer:
+  replicas: 1
   environments: 
     TZKT_URL: http://tzkt:5000
+    LEGACY_API: https://tezos-api.rarible.org
+    UNION_API: https://api.rarible.org
 
 tzkt:
   enabled: true
