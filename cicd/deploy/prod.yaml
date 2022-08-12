@@ -1,4 +1,5 @@
 hasura:
+  replicas: 0
   service:
     nodePort: 30139
 
