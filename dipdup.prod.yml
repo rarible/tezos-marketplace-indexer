@@ -26,24 +26,24 @@ contracts:
 #    typename: objkt_marketplace_v2
 
 indexes:
-#  rarible_exchange_actions:
-#      kind: operation
-#      datasource: tzkt
-#      contracts:
-#          - rarible_exchange
-#      handlers:
-#          - callback: rarible_order_list
-#            pattern:
-#              - destination: rarible_exchange
-#                entrypoint: sell
-#          - callback: rarible_order_cancel_list
-#            pattern:
-#              - destination: rarible_exchange
-#                entrypoint: cancel_sale
-#          - callback: rarible_order_match
-#            pattern:
-#              - destination: rarible_exchange
-#                entrypoint: buy
+  rarible_exchange_actions:
+      kind: operation
+      datasource: tzkt
+      contracts:
+          - rarible_exchange
+      handlers:
+          - callback: rarible_order_list
+            pattern:
+              - destination: rarible_exchange
+                entrypoint: sell
+          - callback: rarible_order_cancel_list
+            pattern:
+              - destination: rarible_exchange
+                entrypoint: cancel_sale
+          - callback: rarible_order_match
+            pattern:
+              - destination: rarible_exchange
+                entrypoint: buy
   rarible_exchange_legacy_actions:
     kind: operation
     datasource: tzkt
@@ -132,6 +132,12 @@ indexes:
     datasource: tzkt
     handlers:
       - callback: on_transfer
+
+  origination:
+    kind: head
+    datasource: tzkt
+    handlers:
+      - callback: on_head
 
 hooks:
   process_collection_events:

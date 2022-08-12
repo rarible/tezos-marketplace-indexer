@@ -14,9 +14,15 @@ contracts:
   rarible_bids:
     address: KT1DJxerfM2nPYYsVNBxaevppwhkCGwZzsGT
     typename: rarible_bids
+  objkt_v1:
+    address: KT1Qa7sQdZrsuPMA7NFg5hMF9iadtoYSF8m9
+    typename: objkt_marketplace_v1
   objkt_v2:
-    address: KT1X1sxF2kqNKMKcNatbrx3d5M11LhSthQ3L
+    address: KT1LXKe92pjd8RJecjFS14ZRdmHPVec3twAD
     typename: objkt_marketplace_v2
+  hen:
+    address: KT1MoWbKvxhsuckLUnQUPjrnGRugiret3pSQ
+    typename: hen_marketplace
 
 indexes:
   rarible_exchange_actions:
@@ -38,16 +44,16 @@ indexes:
           - destination: rarible_exchange
             entrypoint: buy
 
-#  rarible_exchange_legacy_actions:
-#    kind: operation
-#    datasource: tzkt
-#    contracts:
-#      - rarible_exchange_legacy
-#    handlers:
-#      - callback: rarible_match_order_legacy
-#        pattern:
-#          - destination: rarible_exchange_legacy
-#            entrypoint: match_orders
+  rarible_exchange_legacy_actions:
+    kind: operation
+    datasource: tzkt
+    contracts:
+      - rarible_exchange_legacy
+    handlers:
+      - callback: rarible_match_order_legacy
+        pattern:
+          - destination: rarible_exchange_legacy
+            entrypoint: match_orders
 
   rarible_bids_actions:
     kind: operation
@@ -80,6 +86,25 @@ indexes:
           - destination: rarible_bids
             entrypoint: cancel_floor_bid
 
+  objkt_actions:
+    kind: operation
+    datasource: tzkt
+    contracts:
+      - objkt_v1
+    handlers:
+      - callback: objkt_order_list
+        pattern:
+          - destination: objkt_v1
+            entrypoint: ask
+      - callback: objkt_order_cancel_list
+        pattern:
+          - destination: objkt_v1
+            entrypoint: retract_ask
+      - callback: objkt_order_match
+        pattern:
+          - destination: objkt_v1
+            entrypoint: fulfill_ask
+
   objkt_v2_actions:
     kind: operation
     datasource: tzkt
@@ -101,6 +126,25 @@ indexes:
           - destination: objkt_v2
             entrypoint: fulfill_ask
 
+  hen_actions:
+    kind: operation
+    datasource: tzkt
+    contracts:
+      - hen
+    handlers:
+      - callback: hen_order_list
+        pattern:
+          - destination: hen
+            entrypoint: swap
+      - callback: hen_order_cancel_list
+        pattern:
+          - destination: hen
+            entrypoint: cancel_swap
+      - callback: hen_order_match
+        pattern:
+          - destination: hen
+            entrypoint: collect
+  
   token_transfers:
     kind: token_transfer
     datasource: tzkt
