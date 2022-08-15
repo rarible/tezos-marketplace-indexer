@@ -10,6 +10,7 @@ tezos-marketplace-indexer:
     APPLICATION_ENVIRONMENT: '{{ include "app.env" $ }}'
     KAFKA_ENABLED: "true"
     KAFKA_SECURITY_PROTOCOL: "PLAINTEXT"
+    UNION_API: 'http://protocol-union-api.{{ include "app.env" $ }}-protocol:8080'
     # provided via secrets
     # POSTGRES_HOST:
     # POSTGRES_DB:
@@ -61,10 +62,24 @@ tzkt:
     image:
       repository: bakingbad/tzkt-api
       tag: 1.9.4
+    resources:
+      limits:
+        cpu: 300m
+        memory: 384Mi
+      requests:
+        cpu: 100m
+        memory: 256Mi
   indexer:
     image:
       repository: bakingbad/tzkt-sync
       tag: 1.9.4
+    resources:
+      limits:
+        cpu: 300m
+        memory: 384Mi
+      requests:
+        cpu: 100m
+        memory: 192Mi
   service:
     port: 5000
     # nodePort: 
