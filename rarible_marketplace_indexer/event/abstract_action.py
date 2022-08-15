@@ -48,6 +48,7 @@ class AbstractOrderListEvent(EventInterface):
         transaction: Transaction,
         datasource: TzktDatasource,
     ):
+        logger = logging.getLogger('dipdup.order_list_event')
         dto = cls._get_list_dto(transaction, datasource)
         if not dto.start_at:
             dto.start_at = transaction.data.timestamp
@@ -68,8 +69,11 @@ class AbstractOrderListEvent(EventInterface):
                 )
             if ft_result is not None:
                 ft = ft_result[0]
-                decimals = int(ft["metadata"]["decimals"])
-                dto.take.value = dto.take.value / Decimal(math.pow(10, decimals))
+                try:
+                    decimals = int(ft["metadata"]["decimals"])
+                    dto.take.value = dto.take.value / Decimal(math.pow(10, decimals))
+                except Exception:
+                    logger.info(f"Failed to get decimals for FT token {dto.take.contract}:{dto.take.token_id} with meta: {ft['metadata']}")
 
         if order is None:
             order = await OrderModel.create(
