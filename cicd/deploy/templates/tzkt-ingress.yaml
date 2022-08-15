@@ -25,21 +25,4 @@ spec:
                   {{- else if (typeIs "int" .backend.port) }}
                   number: {{ .backend.port | int }}
                   {{- end }}
-  {{- if .tls }}
-  tls:
-    - hosts:
-        - {{ .hostname }}
-      secretName: {{ printf "%s-tls" .hostname }}
-  {{- end }}
-{{- if .tls }}
----
-apiVersion: v1
-kind: Secret
-metadata:
-  name: {{- printf "%s-tls" .hostname }}
-type: kubernetes.io/tls
-data:
-  tls.crt: {{ tpl .cert $ | b64enc }}
-  tls.key: {{ tpl .key $ | b64enc }}
-{{- end }}
 {{- end }}
