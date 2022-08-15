@@ -67,7 +67,8 @@ class AbstractOrderListEvent(EventInterface):
                 ft_result = await datasource.request(
                     method='get', url=f"v1/tokens?contract={dto.take.contract}", cache=False
                 )
-            if ft_result is not None:
+            # TODO: We need to double-check code below
+            if ft_result is not None and "metadata" in ft_result[0]:
                 ft = ft_result[0]
                 meta = ft["metadata"]
                 try:
