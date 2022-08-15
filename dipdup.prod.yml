@@ -2,8 +2,6 @@ datasources:
   tzkt:
     kind: tzkt
     url: ${TZKT_URL:-https://api.tzkt.io}
-    http:
-      batch_size: 10000
 
 contracts:
   rarible_exchange_legacy:
