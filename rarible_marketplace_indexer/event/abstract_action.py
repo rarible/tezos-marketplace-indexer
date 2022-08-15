@@ -69,8 +69,8 @@ class AbstractOrderListEvent(EventInterface):
                 )
             if ft_result is not None:
                 ft = ft_result[0]
+                meta = ft["metadata"]
                 try:
-                    meta = ft["metadata"]
                     decimals = int(meta["decimals"])
                     dto.take.value = dto.take.value / Decimal(math.pow(10, decimals))
                 except Exception:
