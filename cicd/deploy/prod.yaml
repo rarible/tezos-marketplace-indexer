@@ -16,14 +16,18 @@ tzkt:
   api:
     resources:
       limits:
+        cpu: 400m
         memory: 1768Mi
       requests:
+        cpu: 200m
         memory: 1384Mi
   indexer:
     resources:
       limits:
+        cpu: 400m
         memory: 512Mi
       requests:
+        cpu: 200m
         memory: 384Mi
   network: mainnet
   service:
