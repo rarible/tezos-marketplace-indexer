@@ -130,6 +130,7 @@ indexes:
   token_transfers:
     kind: token_transfer
     datasource: tzkt
+    first_level: 2614021
     handlers:
       - callback: on_transfer
 
