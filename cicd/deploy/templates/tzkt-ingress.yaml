@@ -1,0 +1,45 @@
+{{ with .Values.tzkt.ingress }}
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ .hostname }}
+  annotations: {{ .annotations }}
+spec:
+  ingressClassName: {{ .ingressClassName }}
+  rules:
+    - host: {{ .hostname }}
+      http:
+        paths:
+          {{- if .extraPaths }}
+          {{- toYaml .extraPaths | nindent 10 }}
+          {{- end }}
+          - path: {{ .path }}
+            pathType: {{ .pathType | default "ImplementationSpecific" }}
+            backend: 
+              service:
+                name: {{ tpl .backend.service $ }}
+                port:
+                  {{- if typeIs "string" .backend.port }}
+                  name: {{ .backend.port }}
+                  {{- else if (typeIs "int" .backend.port) }}
+                  number: {{ .backend.port | int }}
+                  {{- end }}
+  {{- if .tls }}
+  tls:
+    - hosts:
+        - {{ .hostname }}
+      secretName: {{ printf "%s-tls" .hostname }}
+  {{- end }}
+{{- if .tls }}
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{- printf "%s-tls" .hostname }}
+type: kubernetes.io/tls
+data:
+  tls.crt: {{ tpl .cert $ | b64enc }}
+  tls.key: {{ tpl .key $ | b64enc }}
+{{- end }}
+{{- end }}

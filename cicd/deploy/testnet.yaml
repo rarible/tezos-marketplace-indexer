@@ -18,3 +18,10 @@ tzkt:
   environments:
     TezosNode__Endpoint: https://rpc.tzkt.io/ithacanet
     TokenMetadata__DipDup__Url: https://metadata.dipdup.net/v1/graphql
+  ingress:
+    hostname: 'tezos-tzkt.testnet.rarible.int'
+    path: /
+    ingressClassName: ingress-internal
+    backend:
+      service: tzkt
+      port: http
