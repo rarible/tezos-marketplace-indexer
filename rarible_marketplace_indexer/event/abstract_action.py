@@ -70,10 +70,11 @@ class AbstractOrderListEvent(EventInterface):
             if ft_result is not None:
                 ft = ft_result[0]
                 try:
-                    decimals = int(ft["metadata"]["decimals"])
+                    meta = ft["metadata"]
+                    decimals = int(meta["decimals"])
                     dto.take.value = dto.take.value / Decimal(math.pow(10, decimals))
                 except Exception:
-                    logger.info(f"Failed to get decimals for FT token {dto.take.contract}:{dto.take.token_id} with meta: {ft['metadata']}")
+                    logger.info(f"Failed to get decimals for FT token {dto.take.contract}:{dto.take.token_id} with meta: {meta}")
 
         if order is None:
             order = await OrderModel.create(
