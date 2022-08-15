@@ -16,15 +16,15 @@ tzkt:
   api:
     resources:
       limits:
-        memory: 1256Mi
+        memory: 1768Mi
       requests:
-        memory: 1024Mi
+        memory: 1384Mi
   indexer:
     resources:
       limits:
-        memory: 1256Mi
+        memory: 512Mi
       requests:
-        memory: 1024Mi
+        memory: 384Mi
   network: mainnet
   service:
     nodePort: 30140

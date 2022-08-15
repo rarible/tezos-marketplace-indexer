@@ -15,15 +15,9 @@ tzkt:
   api:
     resources:
       limits:
-        memory: 368Mi
+        memory: 768Mi
       requests:
-        memory: 256Mi
-  indexer:
-    resources:
-      limits:
-        memory: 368Mi
-      requests:
-        memory: 256Mi
+        memory: 512Mi
   network: ithacanet
   service:
     nodePort: 30440

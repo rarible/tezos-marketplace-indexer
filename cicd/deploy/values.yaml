@@ -64,10 +64,10 @@ tzkt:
     resources:
       limits:
         cpu: 300m
-        memory: 256Mi
+        memory: 384Mi
       requests:
         cpu: 100m
-        memory: 128Mi
+        memory: 256Mi
   indexer:
     image:
       repository: bakingbad/tzkt-sync
@@ -75,10 +75,10 @@ tzkt:
     resources:
       limits:
         cpu: 300m
-        memory: 256Mi
+        memory: 384Mi
       requests:
         cpu: 100m
-        memory: 128Mi
+        memory: 192Mi
   service:
     port: 5000
     # nodePort: 
