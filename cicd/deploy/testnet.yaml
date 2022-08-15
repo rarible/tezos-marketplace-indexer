@@ -12,6 +12,18 @@ tezos-marketplace-indexer:
 
 tzkt:
   enabled: true
+  api:
+    resources:
+      limits:
+        memory: 368Mi
+      requests:
+        memory: 256Mi
+  indexer:
+    resources:
+      limits:
+        memory: 368Mi
+      requests:
+        memory: 256Mi
   network: ithacanet
   service:
     nodePort: 30440

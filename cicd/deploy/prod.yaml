@@ -13,6 +13,18 @@ tezos-marketplace-indexer:
 
 tzkt:
   enabled: true
+  api:
+    resources:
+      limits:
+        memory: 1256Mi
+      requests:
+        memory: 1024Mi
+  indexer:
+    resources:
+      limits:
+        memory: 1256Mi
+      requests:
+        memory: 1024Mi
   network: mainnet
   service:
     nodePort: 30140

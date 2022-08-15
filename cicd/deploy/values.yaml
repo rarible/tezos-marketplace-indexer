@@ -61,10 +61,24 @@ tzkt:
     image:
       repository: bakingbad/tzkt-api
       tag: 1.9.4
+    resources:
+      limits:
+        cpu: 300m
+        memory: 256Mi
+      requests:
+        cpu: 100m
+        memory: 128Mi
   indexer:
     image:
       repository: bakingbad/tzkt-sync
       tag: 1.9.4
+    resources:
+      limits:
+        cpu: 300m
+        memory: 256Mi
+      requests:
+        cpu: 100m
+        memory: 128Mi
   service:
     port: 5000
     # nodePort: 

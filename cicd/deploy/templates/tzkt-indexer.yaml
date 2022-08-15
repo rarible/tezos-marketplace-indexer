@@ -71,10 +71,7 @@ spec:
               name: tzkt-app
               optional: true
           resources:
-            cpu:
-              requests: 0.1
-            memory:
-              requests: 100Mi
+            {{- toYaml .Values.tzkt.api.resources | nindent 12 }}
         - image: "{{ .Values.tzkt.indexer.image.repository }}:{{ .Values.tzkt.indexer.image.tag }}"
           name: indexer
           env:
@@ -107,10 +104,7 @@ spec:
               mountPath: /app/appsettings.json
               subPath: appsettings.json
           resources:
-            cpu:
-              requests: 0.1
-            memory:
-              requests: 100Mi
+            {{- toYaml .Values.tzkt.indexer.resources | nindent 12 }}
       volumes:
         - name: tzkt-config
           configMap:
