@@ -154,6 +154,8 @@ hooks:
     atomic: False
 
 advanced:
+  early_realtime: True
+  skip_version_check: False
   reindex:
     manual: wipe
     migration: exception
