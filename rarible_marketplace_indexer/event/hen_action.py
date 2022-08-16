@@ -16,6 +16,7 @@ from rarible_marketplace_indexer.types.hen_marketplace.parameter.swap import Swa
 from rarible_marketplace_indexer.types.hen_marketplace.storage import HenMarketplaceStorage
 from rarible_marketplace_indexer.types.rarible_api_objects.asset.enum import AssetClassEnum
 from rarible_marketplace_indexer.types.tezos_objects.asset_value.asset_value import AssetValue
+from rarible_marketplace_indexer.types.tezos_objects.asset_value.xtz_value import Xtz
 from rarible_marketplace_indexer.types.tezos_objects.tezos_object_hash import ImplicitAccountAddress
 from rarible_marketplace_indexer.types.tezos_objects.tezos_object_hash import OriginatedAccountAddress
 
@@ -30,7 +31,7 @@ class HENOrderListEvent(AbstractOrderListEvent):
         datasource: TzktDatasource,
     ) -> ListDto:
         make_value = AssetValue(transaction.parameter.objkt_amount)
-        take_value = AssetValue(transaction.parameter.xtz_per_objkt)
+        take_value = Xtz.from_u_tezos(transaction.parameter.xtz_per_objkt)
 
         return ListDto(
             internal_order_id=str(int(transaction.storage.counter) - 1),
@@ -71,4 +72,6 @@ class HENOrderMatchEvent(AbstractOrderMatchEvent):
             internal_order_id=transaction.parameter.__root__,
             match_amount=AssetValue(1),
             match_timestamp=transaction.data.timestamp,
+            taker=transaction.data.sender_address,
+            token_id=None
         )

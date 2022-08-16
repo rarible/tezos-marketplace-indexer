@@ -2,6 +2,7 @@ datasources:
   tzkt:
     kind: tzkt
     url: ${TZKT_URL:-https://api.tzkt.io}
+    buffer_size: 2
     http:
       batch_size: 5000
 
@@ -28,6 +29,19 @@ contracts:
 #    typename: objkt_marketplace_v2
 
 indexes:
+  token_transfers:
+    kind: token_transfer
+    datasource: tzkt
+    first_level: 2614021
+    handlers:
+      - callback: on_transfer
+
+  originations:
+    kind: head
+    datasource: tzkt
+    handlers:
+      - callback: on_head
+
   rarible_exchange_actions:
     kind: operation
     datasource: tzkt
@@ -129,18 +143,6 @@ indexes:
 #          - destination: objkt_v2_mainnet
 #            entrypoint: fulfill_ask
 
-  token_transfers:
-    kind: token_transfer
-    datasource: tzkt
-    handlers:
-      - callback: on_transfer
-
-  origination:
-    kind: head
-    datasource: tzkt
-    handlers:
-      - callback: on_head
-
 hooks:
   process_collection_events:
     callback: process_collection_events
@@ -158,6 +160,6 @@ advanced:
   reindex:
     manual: wipe
     migration: exception
-    rollback: exception
+    rollback: ignore
     config_modified: ignore
     schema_modified: ignore

@@ -1,0 +1,1 @@
+update dipdup_schema set reindex = null where name = 'public'
