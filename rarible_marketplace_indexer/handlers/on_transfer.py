@@ -1,4 +1,3 @@
-import logging
 from dipdup.context import HandlerContext
 from dipdup.enums import TokenStandard
 from dipdup.models import TokenTransferData
@@ -11,12 +10,7 @@ async def on_transfer(
     ctx: HandlerContext,
     token_transfer: TokenTransferData
 ) -> None:
-    logger = logging.getLogger('dipdup.on_transfer')
     if token_transfer.standard == TokenStandard.FA2:
-        first_level = int(ctx.config.indexes['token_transfers'].first_level)
-        if token_transfer.level > first_level:
-            token_transfer_activity = RaribleApiTokenActivityFactory.build(token_transfer, ctx.datasource)
-            assert token_transfer_activity
-            await producer_send(token_transfer_activity)
-        else:
-            logger.debug(f"Ignore token from level={token_transfer.level}")
+        token_transfer_activity = RaribleApiTokenActivityFactory.build(token_transfer, ctx.datasource)
+        assert token_transfer_activity
+        await producer_send(token_transfer_activity)
