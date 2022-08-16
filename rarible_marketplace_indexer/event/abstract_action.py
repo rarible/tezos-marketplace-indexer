@@ -366,21 +366,31 @@ class AbstractLegacyOrderMatchEvent(EventInterface):
             await OrderModel.filter(
                 network=datasource.network,
                 platform=cls.platform,
-                make_asset_class=dto.make.asset_class,
-                make_contract=dto.make.contract,
-                make_token_id=dto.make.token_id,
-                make_value=dto.make.value,
-                take_asset_class=dto.take.asset_class,
-                take_contract=dto.take.contract,
-                take_token_id=dto.take.token_id,
-                take_value=dto.take.value,
-                maker=dto.maker,
-                salt=dto.salt,
-                status=OrderStatusEnum.ACTIVE
+                internal_order_id=dto.internal_order_id,
             )
             .order_by('-id')
             .first()
         )
+
+        if order is None:
+            order = (
+                await OrderModel.filter(
+                    network=datasource.network,
+                    platform=cls.platform,
+                    make_asset_class=dto.make.asset_class,
+                    make_contract=dto.make.contract,
+                    make_token_id=dto.make.token_id,
+                    make_value=dto.make.value,
+                    take_asset_class=dto.take.asset_class,
+                    take_contract=dto.take.contract,
+                    take_token_id=dto.take.token_id,
+                    take_value=dto.take.value,
+                    maker=dto.maker,
+                    salt=dto.salt
+                )
+                .order_by('-id')
+                .first()
+            )
 
         if order is None:
             order = await OrderModel.create(
