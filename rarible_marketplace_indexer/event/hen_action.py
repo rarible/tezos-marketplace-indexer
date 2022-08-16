@@ -72,4 +72,6 @@ class HENOrderMatchEvent(AbstractOrderMatchEvent):
             internal_order_id=transaction.parameter.__root__,
             match_amount=AssetValue(1),
             match_timestamp=transaction.data.timestamp,
+            taker=transaction.data.sender_address,
+            token_id=None
         )
