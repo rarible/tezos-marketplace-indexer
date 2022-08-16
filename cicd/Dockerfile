@@ -20,5 +20,4 @@ WORKDIR /app
 COPY . /app
 
 EXPOSE 8080
-RUN dipdup -c dipdup.yml -c dipdup.prod.yml schema approve
 CMD ["python", "api.py"]

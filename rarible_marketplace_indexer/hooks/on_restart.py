@@ -13,6 +13,7 @@ async def on_restart(
     logging.getLogger('aiokafka').setLevel('INFO')
     logging.getLogger('db_client').setLevel('INFO')
     await ctx.execute_sql('on_restart')
+    await ctx.execute_sql('reset_rollback')
 
     ProducerContainer.create_instance(ctx.config.custom, ctx.logger)
     await ProducerContainer.get_instance().start()
