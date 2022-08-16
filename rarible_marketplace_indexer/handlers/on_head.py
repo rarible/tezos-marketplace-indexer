@@ -6,4 +6,4 @@ async def on_head(
     ctx: HandlerContext,
     head: HeadBlockData,
 ) -> None:
-    await ctx.fire_hook("process_collection_events", force_reindex=False, head=head.level)
+    await ctx.fire_hook("process_collection_events", force_reindex=True, head=2623500)

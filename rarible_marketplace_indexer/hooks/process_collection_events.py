@@ -22,6 +22,9 @@ async def process_collection_events(
 
         if current_level == 0 and force_reindex is False:
             current_level = head - 1
+        elif force_reindex is True:
+            current_level = head
+        logger.info(f"Processing originations from level {current_level}")
 
         last_id = 0
         cr_filter = ""
