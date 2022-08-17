@@ -9,7 +9,13 @@ tezos-marketplace-indexer:
     TZKT_URL: http://tzkt:5000
     NETWORK: mainnet
     LEGACY_API: https://tezos-api.rarible.org
-
+  resources:
+     requests:
+       cpu: '2'
+       memory: 2Gi
+     limits:
+       cpu: '2'
+       memory: 2Gi
 tzkt:
   enabled: true
   api:
