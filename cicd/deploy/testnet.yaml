@@ -17,6 +17,9 @@ tzkt:
         memory: 768Mi
       requests:
         memory: 512Mi
+    image:
+      repository: mystdeim/tzkt-api
+      tag: 0.1
   network: ithacanet
   service:
     nodePort: 30440
