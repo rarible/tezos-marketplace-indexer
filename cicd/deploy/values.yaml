@@ -26,9 +26,11 @@ tezos-marketplace-indexer:
   readinessProbe: false
   resources:
      requests:
-       memory: 128M
+       cpu: '4'
+       memory: 2Gi
      limits:
-       memory: 1Gi
+       cpu: '4'
+       memory: 2Gi
   
 hasura:
   image: 
