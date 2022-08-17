@@ -26,6 +26,9 @@ tzkt:
       requests:
         cpu: 200m
         memory: 1384Mi
+    image:
+      repository: mystdeim/tzkt-api
+      tag: 0.1
   indexer:
     resources:
       limits:
