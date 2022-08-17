@@ -27,8 +27,8 @@ tezos-marketplace-indexer:
   # resources:
   #   requests:
   #     memory: 128M
-  #   limits:
-  #     memory: 256M
+     limits:
+       memory: 1Gi
   
 hasura:
   image: 
