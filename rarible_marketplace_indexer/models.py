@@ -62,6 +62,8 @@ class PlatformEnum(str, Enum):
 class IndexEnum(str, Enum):
     COLLECTION: _StrEnumValue = 'COLLECTION'
     LEGACY_ORDERS: _StrEnumValue = 'LEGACY_ORDERS'
+    V1_CLEANING: _StrEnumValue = 'V1_CLEANING'
+
 
 
 class ActivityModel(Model):
