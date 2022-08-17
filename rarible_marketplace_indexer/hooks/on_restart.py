@@ -49,11 +49,6 @@ async def on_restart(
                 order.last_updated_at = datetime.datetime.now()
                 await order.save()
                 i = i + 1
-                response = requests.post(f"{os.getenv('UNION_API')}/v0.1/refresh/item/TEZOS:{order.make_contract}:{order.make_token_id}/reconcile?full=true")
-                if not response.ok:
-                    logger.info(f"{order.make_contract}:{order.make_token_id} need reconcile: Error {response.status_code} - {response.reason}")
-                else:
-                    logger.info(f"{order.make_contract}:{order.make_token_id} synced properly after legacy cancel")
         await IndexingStatus.create(index=IndexEnum.V1_CLEANING, last_level="DONE")
         logger.info(f"Cleaned {len(faulty_orders)} orders")
 
