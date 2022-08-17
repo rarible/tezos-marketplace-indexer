@@ -21,7 +21,7 @@ class TestStrEnum:
             [ActivityTypeEnum, ActivityTypeEnum.TOKEN_TRANSFER, 'TRANSFER'],
             [ActivityTypeEnum, ActivityTypeEnum.TOKEN_BURN, 'BURN'],
             [PlatformEnum, PlatformEnum.HEN, 'HEN'],
-            [PlatformEnum, PlatformEnum.OBJKT, 'OBJKT'],
+            [PlatformEnum, PlatformEnum.OBJKT_V1, 'OBJKT_V1'],
             [PlatformEnum, PlatformEnum.OBJKT_V2, 'OBJKT_V2'],
             [PlatformEnum, PlatformEnum.RARIBLE_V1, 'RARIBLE_V1'],
             [PlatformEnum, PlatformEnum.RARIBLE_V2, 'RARIBLE_V2'],

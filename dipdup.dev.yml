@@ -86,7 +86,7 @@ indexes:
           - destination: rarible_bids
             entrypoint: cancel_floor_bid
 
-  objkt_actions:
+  objkt_v1_actions:
     kind: operation
     datasource: tzkt
     contracts:

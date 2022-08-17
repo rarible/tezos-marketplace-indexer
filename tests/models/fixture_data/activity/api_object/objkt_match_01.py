@@ -20,7 +20,7 @@ activity_api_object = RaribleApiOrderMatchActivity(
     id=UUID('3212dbe4-5cbe-5fc1-a125-fb963a250f0d'),
     network='mainnet',
     type=ActivityTypeEnum.ORDER_MATCH,
-    source=PlatformEnum.OBJKT,
+    source=PlatformEnum.OBJKT_V1,
     order_id=UUID('1603ff55-2507-5cba-b50c-3ae50162c5ee'),
     hash=OperationHash('oo4GwwjGX6RimeYBp68ddo1PS4aBc7ZpWDFmrqwZRcocnGykChm'),
     date=datetime(2021, 7, 1, 21, 9, 38, tzinfo=UTC),
