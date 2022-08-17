@@ -6,7 +6,7 @@ tezos-marketplace-indexer:
   replicas: 1
   environments: 
     TZKT_URL: http://tzkt:5000
-    NETWORK: ithacanet
+    NETWORK: ghostnet
     LEGACY_API: https://test-tezos-api.rarible.org
 
 tzkt:
@@ -20,11 +20,11 @@ tzkt:
     image:
       repository: mystdeim/tzkt-api
       tag: 0.1
-  network: ithacanet
+  network: ghostnet
   service:
     nodePort: 30440
   environments:
-    TezosNode__Endpoint: https://rpc.tzkt.io/ithacanet
+    TezosNode__Endpoint: https://rpc.tzkt.io/ghostnet
     TokenMetadata__DipDup__Url: https://metadata.dipdup.net/v1/graphql
   ingress:
     hostname: 'tezos-tzkt.testnet.rarible.int'
