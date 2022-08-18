@@ -453,7 +453,7 @@ class AbstractLegacyOrderMatchEvent(EventInterface):
             match_activity.taker = transaction.data.sender_address
 
             match_activity.make_value = dto.match_amount
-            match_activity.take_value = AssetValue(order.take_value * dto.match_amount)
+            match_activity.take_value = AssetValue(order.make_price * dto.match_amount)
 
             last_match = (
                 await ActivityModel.filter(
@@ -481,7 +481,7 @@ class AbstractLegacyOrderMatchEvent(EventInterface):
                 take_asset_class=dto.take.asset_class,
                 take_contract=dto.take.contract,
                 take_token_id=dto.take.token_id,
-                take_value=dto.take.value * dto.match_amount,
+                take_value=order.make_price * dto.match_amount,
                 taker=transaction.data.sender_address,
                 operation_level=transaction.data.level,
                 operation_timestamp=transaction.data.timestamp,
