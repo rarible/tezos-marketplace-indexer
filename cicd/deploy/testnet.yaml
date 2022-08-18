@@ -19,7 +19,7 @@ tzkt:
         memory: 512Mi
     image:
       repository: mystdeim/tzkt-api
-      tag: 0.1
+      tag: 0.2
   network: ghostnet
   service:
     nodePort: 30440
