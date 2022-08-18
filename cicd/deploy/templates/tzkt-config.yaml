@@ -16,9 +16,7 @@ data:
       },
       "Quotes": {
         "Async": true,
-        "Provider": {
-          "Name": "TzktQuotes"
-        }
+        "Provider": null
       },
       "HealthChecks": {
         "Enabled": false,
