@@ -13,7 +13,7 @@ async def clean_v1_data():
     if legacy_cleaning is None:
         logger = logging.getLogger('dipdup.v1_cleaning')
         logger.info("Processing faulty legacy orders...")
-        data = open("/opt/app/rarible_marketplace_indexer/jobs/data/faulty_legacy_orders.json")
+        data = open("/app/rarible_marketplace_indexer/jobs/data/faulty_legacy_orders.json")
         i = 0
         orders = json.load(data)
         for order in orders:
