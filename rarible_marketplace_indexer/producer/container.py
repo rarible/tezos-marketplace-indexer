@@ -51,6 +51,6 @@ class ProducerContainer:
                     key_serializer=kafka_key_serializer,
                 )
         else:
-            producer = NullKafkaProducer(logger)
+            producer = NullKafkaProducer()
 
         cls.__instance = producer

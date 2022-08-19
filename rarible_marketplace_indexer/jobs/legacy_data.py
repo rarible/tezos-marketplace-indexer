@@ -11,15 +11,19 @@ from rarible_marketplace_indexer.models import IndexingStatus, IndexEnum, OrderM
 async def clean_v1_data():
     legacy_cleaning = await IndexingStatus.get_or_none(index=IndexEnum.V1_CLEANING)
     if legacy_cleaning is None:
-        logger = logging.getLogger('dipdup.v1_cleaning')
+        legacy_cleaning = await IndexingStatus.create(index=IndexEnum.V1_CLEANING, last_level="0")
+
+    logger = logging.getLogger('dipdup.v1_cleaning')
+
+    if legacy_cleaning.last_level != "DONE":
         logger.info("Processing faulty legacy orders...")
         data = open("/app/rarible_marketplace_indexer/jobs/data/faulty_legacy_orders.json")
-        i = 0
+        i = int(legacy_cleaning.last_level)
         orders = json.load(data)
-        for order in orders:
+        while i < len(orders):
             order_model = (
                 await OrderModel.filter(
-                    id=order["id"],
+                    id=orders[i]["id"],
                 )
                 .order_by('-id')
                 .first()
@@ -38,7 +42,10 @@ async def clean_v1_data():
                     f"{order_model.make_contract}:{order_model.make_token_id} need reconcile: Error {response.status_code} - {response.reason}")
             else:
                 logger.info(f"{order_model.make_contract}:{order_model.make_token_id} synced properly after legacy cancel")
+            legacy_cleaning.last_level = f"{i}"
+            await legacy_cleaning.save()
 
             i = i + 1
-        await IndexingStatus.create(index=IndexEnum.V1_CLEANING, last_level="DONE")
         logger.info(f"Cleaned {i} orders")
+        legacy_cleaning.last_level = "DONE"
+        await legacy_cleaning.save()

@@ -2,7 +2,6 @@ datasources:
   tzkt:
     kind: tzkt
     url: ${TZKT_URL:-https://api.tzkt.io}
-    buffer_size: 2
 
 contracts:
   rarible_exchange:
@@ -166,6 +165,7 @@ hooks:
       head: int
 
 advanced:
+  rollback_depth: 2
   reindex:
     manual: wipe
     migration: exception
