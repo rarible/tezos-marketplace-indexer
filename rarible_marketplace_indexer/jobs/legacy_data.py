@@ -4,7 +4,6 @@ from datetime import datetime
 
 from rarible_marketplace_indexer.models import IndexingStatus, IndexEnum, OrderModel, OrderStatusEnum, ActivityModel, \
     ActivityTypeEnum
-from rarible_marketplace_indexer.utils.rarible_utils import reconcile_item
 
 
 async def cancel_obsolete_v1_orders():
@@ -33,7 +32,6 @@ async def cancel_obsolete_v1_orders():
             order_model.ended_at = datetime.now()
             order_model.last_updated_at = datetime.now()
             await order_model.save()
-            reconcile_item(order_model.make_contract, order_model.make_token_id)
             legacy_cleaning.last_level = f"{i}"
             await legacy_cleaning.save()
 
@@ -69,7 +67,6 @@ async def fix_v1_fill_value():
                 total_sales = total_sales + sell_activity.make_value
             order_model.fill = total_sales
             await order_model.save()
-            reconcile_item(order_model.make_contract, order_model.make_token_id)
             logger.info(f"Processed order {order_model.id}")
         logger.info("Processed incorrect fill values")
         await IndexingStatus.create(index=IndexEnum.V1_FILL_FIX, last_level="DONE")
