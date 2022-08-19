@@ -7,6 +7,7 @@ from datetime import datetime
 from typing import Dict, Optional, List
 from uuid import uuid5
 
+import requests
 from base58 import b58encode_check
 from pytezos import MichelsonType, michelson_to_micheline
 
@@ -30,6 +31,17 @@ def get_json_parts(parts: List[Part]):
 
 def generate_random_unique_ophash(size=50, chars=(string.ascii_lowercase + string.ascii_uppercase + string.digits)):
     return ''.join(random.choice(chars) for _ in range(size))
+
+
+def reconcile_item(contract, token_id):
+    logger = logging.getLogger('dipdup.reconcile')
+    response = requests.post(
+        f"{os.getenv('UNION_API')}/v0.1/refresh/item/TEZOS:{contract}:{token_id}/reconcile?full=true")
+    if not response.ok:
+        logger.info(
+            f"{contract}:{token_id} need reconcile: Error {response.status_code} - {response.reason}")
+    else:
+        logger.info(f"{contract}:{token_id} synced properly after legacy cancel")
 
 
 async def import_legacy_order(order: dict):

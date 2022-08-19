@@ -254,12 +254,6 @@ class AbstractLegacyOrderCancelEvent(EventInterface):
                 order.cancelled = True
                 order.ended_at = transaction.data.timestamp
                 order.last_updated_at = transaction.data.timestamp
-                #TODO: need to uncomment if reconcile is still needed
-                # response = requests.post(f"{os.getenv('UNION_API')}/v0.1/refresh/item/TEZOS:{order.make_contract}:{order.make_token_id}/reconcile?full=true")
-                # if not response.ok:
-                #     logger.info(f"{order.make_contract}:{order.make_token_id} need reconcile: Error {response.status_code} - {response.reason}")
-                # else:
-                #     logger.info(f"{order.make_contract}:{order.make_token_id} synced properly after legacy cancel")
                 await order.save()
 
                 last_order_activity = (

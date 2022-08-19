@@ -61,6 +61,7 @@ class IndexEnum(str, Enum):
     COLLECTION: _StrEnumValue = 'COLLECTION'
     LEGACY_ORDERS: _StrEnumValue = 'LEGACY_ORDERS'
     V1_CLEANING: _StrEnumValue = 'V1_CLEANING'
+    V1_FILL_FIX: _StrEnumValue = 'V1_FILL_FIX'
 
 
 

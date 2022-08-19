@@ -1,14 +1,13 @@
 import json
 import logging
-import os
 from datetime import datetime
 
-import requests
+from rarible_marketplace_indexer.models import IndexingStatus, IndexEnum, OrderModel, OrderStatusEnum, ActivityModel, \
+    ActivityTypeEnum
+from rarible_marketplace_indexer.utils.rarible_utils import reconcile_item
 
-from rarible_marketplace_indexer.models import IndexingStatus, IndexEnum, OrderModel, OrderStatusEnum
 
-
-async def clean_v1_data():
+async def cancel_obsolete_v1_orders():
     legacy_cleaning = await IndexingStatus.get_or_none(index=IndexEnum.V1_CLEANING)
     if legacy_cleaning is None:
         legacy_cleaning = await IndexingStatus.create(index=IndexEnum.V1_CLEANING, last_level="0")
@@ -34,14 +33,7 @@ async def clean_v1_data():
             order_model.ended_at = datetime.now()
             order_model.last_updated_at = datetime.now()
             await order_model.save()
-
-            response = requests.post(
-                f"{os.getenv('UNION_API')}/v0.1/refresh/item/TEZOS:{order_model.make_contract}:{order_model.make_token_id}/reconcile?full=true")
-            if not response.ok:
-                logger.info(
-                    f"{order_model.make_contract}:{order_model.make_token_id} need reconcile: Error {response.status_code} - {response.reason}")
-            else:
-                logger.info(f"{order_model.make_contract}:{order_model.make_token_id} synced properly after legacy cancel")
+            reconcile_item(order_model.make_contract, order_model.make_token_id)
             legacy_cleaning.last_level = f"{i}"
             await legacy_cleaning.save()
 
@@ -49,3 +41,37 @@ async def clean_v1_data():
         logger.info(f"Cleaned {i} orders")
         legacy_cleaning.last_level = "DONE"
         await legacy_cleaning.save()
+
+
+async def fix_v1_fill_value():
+    logger = logging.getLogger('dipdup.v1_cleaning')
+    legacy_cleaning = await IndexingStatus.get_or_none(index=IndexEnum.V1_FILL_FIX)
+    if legacy_cleaning is None:
+        logger.info("Processing incorrect fill value for legacy orders...")
+        data = open("/app/rarible_marketplace_indexer/jobs/data/incorrect_fill_v1_orders.json")
+        orders = json.load(data)
+        for order in orders:
+            order_model: OrderModel = (
+                await OrderModel.filter(
+                    id=order["id"],
+                )
+                .order_by('-id')
+                .first()
+            )
+            sell_activities: list[ActivityModel] = (
+                await ActivityModel.filter(
+                    order_id=order_model.id,
+                    type=ActivityTypeEnum.ORDER_MATCH
+                )
+            )
+            total_sales = 0
+            for sell_activity in sell_activities:
+                total_sales = total_sales + sell_activity.make_value
+            order_model.fill = total_sales
+            await order_model.save()
+            reconcile_item(order_model.make_contract, order_model.make_token_id)
+            logger.info(f"Processed order {order_model.id}")
+        logger.info("Processed incorrect fill values")
+        await IndexingStatus.create(index=IndexEnum.V1_FILL_FIX, last_level="DONE")
+
+
