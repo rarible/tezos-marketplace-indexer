@@ -13,7 +13,7 @@ from rarible_marketplace_indexer.producer.serializer import kafka_value_serializ
 
 class NullKafkaProducer:
     def __init__(self):
-        self._logger: Logger = logging.getLogger('kafka')
+        self._logger: Logger = logging.getLogger('dipdup.kafka')
 
     async def start(self):
         pass
