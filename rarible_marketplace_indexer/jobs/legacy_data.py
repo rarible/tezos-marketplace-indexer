@@ -4,7 +4,6 @@ from datetime import datetime
 
 from rarible_marketplace_indexer.models import IndexingStatus, IndexEnum, OrderModel, OrderStatusEnum, ActivityModel, \
     ActivityTypeEnum
-from rarible_marketplace_indexer.utils.rarible_utils import reconcile_item
 
 
 async def cancel_obsolete_v1_orders():
