@@ -6,16 +6,14 @@ from typing import Optional
 from typing import TypeVar
 from uuid import uuid5
 
-from dipdup.models import Transaction
+from dipdup.models import Transaction, Model
 from tortoise import fields
 from tortoise.backends.base.client import BaseDBAsyncClient
-from tortoise.models import Model
 from tortoise.signals import post_save
 
 from rarible_marketplace_indexer.producer.helper import producer_send
 from rarible_marketplace_indexer.types.rarible_api_objects.asset.enum import AssetClassEnum
 from rarible_marketplace_indexer.types.tezos_objects.asset_value.asset_value import AssetValueField
-from rarible_marketplace_indexer.types.tezos_objects.asset_value.xtz_value import XtzField
 from rarible_marketplace_indexer.types.tezos_objects.tezos_object_hash import AccountAddressField
 from rarible_marketplace_indexer.types.tezos_objects.tezos_object_hash import OperationHashField
 
@@ -63,6 +61,7 @@ class IndexEnum(str, Enum):
     COLLECTION: _StrEnumValue = 'COLLECTION'
     LEGACY_ORDERS: _StrEnumValue = 'LEGACY_ORDERS'
     V1_CLEANING: _StrEnumValue = 'V1_CLEANING'
+    V1_FILL_FIX: _StrEnumValue = 'V1_FILL_FIX'
 
 
 

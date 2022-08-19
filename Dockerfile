@@ -1,89 +1,23 @@
 ARG PYTHON_VERSION=3.10
-ARG SOURCE_DIR=rarible_marketplace_indexer
-ARG POETRY_PATH=/opt/poetry
-ARG VENV_PATH=/opt/venv
-ARG APP_PATH=/opt/app
-ARG APP_USER=dipdup
-
 
 FROM python:${PYTHON_VERSION}-slim-buster as builder-base
 
-ARG VENV_PATH
-ARG POETRY_PATH
-ENV PIP_NO_CACHE_DIR=off \
-    PIP_DISABLE_PIP_VERSION_CHECK=on \
-    PIP_DEFAULT_TIMEOUT=100 \
-    POETRY_HOME="$POETRY_PATH" \
-    VIRTUAL_ENV=$VENV_PATH \
-    PATH="$POETRY_PATH/bin:$VENV_PATH/bin:$PATH"
+COPY requirements.txt /requirements.txt
 
-RUN apt-get update \
- && apt-get install --no-install-recommends -y \
-        # deps for installing poetry
-        curl \
-        # deps for building python deps
-        build-essential \
-        git \
-        libgmp3-dev \
-        libgmp-dev \
-        libsodium-dev \
-        libsecp256k1-dev \
-        libsecp256k1-0 \
-        pkg-config \
-    # install poetry
- && curl -sSL https://install.python-poetry.org | python - \
-    \
-    # configure poetry & make a virtualenv ahead of time since we only need one
- && python -m venv $VENV_PATH \
- && poetry config virtualenvs.create false \
-    \
-    # cleanup
- && rm -rf /tmp \
- && rm -rf /root/.cache \
- && rm -rf `find /usr/local/lib $POETRY_PATH/venv/lib $VENV_PATH/lib -name __pycache__` \
- && rm -rf /var/lib/apt/lists/*
+# dipdup dep requires this
+# https://github.com/baking-bad/pytezos#ubuntu-debian-and-other-apt-based-distributions
+# https://pypi.org/project/fastecdsa/#installing
+RUN apt-get update -y \
+    && apt-get install -y libsodium-dev libsecp256k1-dev libgmp-dev pkg-config build-essential \
+    && pip install --no-cache-dir -r /requirements.txt && rm -f /requirements.txt \
+    && rm -rf /tmp/* \
+    && rm -rf /root/.cache/* \
+    && rm -rf /var/lib/apt/lists/*
 
+USER nobody:nogroup
+ENV HOME /tmp
 
-FROM builder-base as builder-production
+WORKDIR /app
+COPY . /app
 
-COPY ["poetry.lock", "pyproject.toml", "./"]
-
-RUN poetry install --remove-untracked --no-interaction --no-ansi -vvv \
- && rm -rf /tmp \
- && rm -rf /root/.cache \
- && rm -rf $VIRTUAL_ENV/src \
- && rm -rf `find $VIRTUAL_ENV/lib -name __pycache__`
-
-
-FROM python:${PYTHON_VERSION}-slim-buster as runtime-base
-
-ARG VENV_PATH
-ENV PATH="$VENV_PATH/bin:$PATH"
-
-ARG APP_PATH
-WORKDIR $APP_PATH
-
-ARG APP_USER
-RUN useradd -ms /bin/bash $APP_USER
-
-RUN apt-get update \
- && apt-get install --no-install-recommends -y \
-        libgmp-dev \
-        libsodium-dev \
-        libsecp256k1-dev \
-        libsecp256k1-0
-FROM runtime-base as runtime
-
-
-ARG VENV_PATH
-COPY --from=builder-production ["$VENV_PATH", "$VENV_PATH"]
-
-ARG APP_USER
-USER $APP_USER
-
-ARG SOURCE_DIR
-COPY --chown=$APP_USER $SOURCE_DIR ./$SOURCE_DIR
-COPY --chown=$APP_USER dipdup*.yml ./
-
-ENTRYPOINT ["dipdup"]
-CMD ["run"]
+EXPOSE 8080

@@ -2,7 +2,6 @@ datasources:
   tzkt:
     kind: tzkt
     url: ${TZKT_URL:-https://api.tzkt.io}
-    buffer_size: 2
     http:
       batch_size: 5000
 
@@ -151,6 +150,7 @@ hooks:
     atomic: False
 
 advanced:
+  rollback_depth: 2
   early_realtime: True
   skip_version_check: False
   reindex:

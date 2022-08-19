@@ -61,11 +61,11 @@ class AbstractOrderListEvent(EventInterface):
             ft_result = None
             if dto.take.token_id is not None:
                 ft_result = await datasource.request(
-                    method='get', url=f"v1/tokens?contract={dto.take.contract}&tokenId={dto.take.token_id}", cache=False
+                    method='get', url=f"v1/tokens?contract={dto.take.contract}&tokenId={dto.take.token_id}"
                 )
             else:
                 ft_result = await datasource.request(
-                    method='get', url=f"v1/tokens?contract={dto.take.contract}", cache=False
+                    method='get', url=f"v1/tokens?contract={dto.take.contract}"
                 )
             # TODO: We need to double-check code below
             if ft_result is not None and "metadata" in ft_result[0]:
@@ -254,12 +254,6 @@ class AbstractLegacyOrderCancelEvent(EventInterface):
                 order.cancelled = True
                 order.ended_at = transaction.data.timestamp
                 order.last_updated_at = transaction.data.timestamp
-                #TODO: need to uncomment if reconcile is still needed
-                # response = requests.post(f"{os.getenv('UNION_API')}/v0.1/refresh/item/TEZOS:{order.make_contract}:{order.make_token_id}/reconcile?full=true")
-                # if not response.ok:
-                #     logger.info(f"{order.make_contract}:{order.make_token_id} need reconcile: Error {response.status_code} - {response.reason}")
-                # else:
-                #     logger.info(f"{order.make_contract}:{order.make_token_id} synced properly after legacy cancel")
                 await order.save()
 
                 last_order_activity = (

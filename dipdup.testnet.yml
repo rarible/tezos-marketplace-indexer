@@ -2,7 +2,6 @@ datasources:
   tzkt:
     kind: tzkt
     url: ${TZKT_URL:-https://api.ithacanet.tzkt.io}
-    buffer_size: 2
     http:
       cache: false
       connection_timeout: 60
@@ -172,6 +171,7 @@ hooks:
     atomic: False
 
 advanced:
+  rollback_depth: 2
   reindex:
     manual: wipe
     migration: exception
