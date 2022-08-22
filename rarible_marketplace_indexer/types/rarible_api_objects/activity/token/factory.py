@@ -45,7 +45,7 @@ class RaribleApiTokenActivityFactory:
         )
 
     @classmethod
-    def _build_mint_activity(cls, transfer_data: TokenTransferData, datasource: TzktDatasource) -> RaribleApiTokenMintActivity:
+    def build_mint_activity(cls, transfer_data: TokenTransferData, datasource: TzktDatasource) -> RaribleApiTokenMintActivity:
         base = cls._build_base_activity(transfer_data, datasource)
         return RaribleApiTokenMintActivity(
             type=ActivityTypeEnum.TOKEN_MINT,
@@ -54,7 +54,7 @@ class RaribleApiTokenActivityFactory:
         )
 
     @classmethod
-    def _build_transfer_activity(cls, transfer_data: TokenTransferData, datasource: TzktDatasource) -> RaribleApiTokenTransferActivity:
+    def build_transfer_activity(cls, transfer_data: TokenTransferData, datasource: TzktDatasource) -> RaribleApiTokenTransferActivity:
         base = cls._build_base_activity(transfer_data, datasource)
         return RaribleApiTokenTransferActivity(
             type=ActivityTypeEnum.TOKEN_TRANSFER,
@@ -64,7 +64,7 @@ class RaribleApiTokenActivityFactory:
         )
 
     @classmethod
-    def _build_burn_activity(cls, transfer_data: TokenTransferData, datasource: TzktDatasource) -> RaribleApiTokenBurnActivity:
+    def build_burn_activity(cls, transfer_data: TokenTransferData, datasource: TzktDatasource) -> RaribleApiTokenBurnActivity:
         base = cls._build_base_activity(transfer_data, datasource)
         return RaribleApiTokenBurnActivity(
             type=ActivityTypeEnum.TOKEN_BURN,
@@ -75,9 +75,9 @@ class RaribleApiTokenActivityFactory:
     @classmethod
     def _get_factory_method(cls, transfer_data: TokenTransferData) -> callable:
         method_map: Dict[Tuple[bool, bool], Callable[[TokenTransferData, TzktDatasource], callable]] = {
-            (False, True): cls._build_mint_activity,
-            (True, True): cls._build_transfer_activity,
-            (True, False): cls._build_burn_activity,
+            (False, True): cls.build_mint_activity,
+            (True, True): cls.build_transfer_activity,
+            (True, False): cls.build_burn_activity,
         }
 
         return method_map.get(
@@ -85,11 +85,5 @@ class RaribleApiTokenActivityFactory:
                 transfer_data.from_address is not None,
                 transfer_data.to_address is not None,
             ),
-            cls._build_transfer_activity,
+            cls.build_transfer_activity,
         )
-
-    @classmethod
-    def build(cls, transfer_data: TokenTransferData, datasource: TzktDatasource) -> RaribleApiTokenActivity:
-        factory_method = cls._get_factory_method(transfer_data)
-
-        return factory_method(transfer_data, datasource)

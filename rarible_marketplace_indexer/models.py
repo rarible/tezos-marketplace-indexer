@@ -227,6 +227,7 @@ class TokenTransfer(Model):
 
     id = fields.IntField(pk=True, generated=False, required=True)
     tzkt_token_id = fields.IntField(null=False)
+    tzkt_transaction_id = fields.IntField(null=False)
     contract = AccountAddressField(null=False)
     token_id = fields.TextField(null=False)
     from_address = AccountAddressField(null=True)
