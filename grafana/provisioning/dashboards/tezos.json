@@ -433,7 +433,103 @@
         }
       ],
       "title": "Tezos order activities",
+      "transformations": [
+        {
+          "id": "filterFieldsByName",
+          "options": {
+            "include": {}
+          }
+        }
+      ],
       "type": "timeseries"
+    },
+    {
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "axisSoftMin": 0,
+            "fillOpacity": 80,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineWidth": 1,
+            "scaleDistribution": {
+              "type": "linear"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 11,
+        "w": 24,
+        "x": 0,
+        "y": 18
+      },
+      "id": 20,
+      "options": {
+        "barRadius": 0,
+        "barWidth": 0.97,
+        "groupWidth": 0.7,
+        "legend": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "displayMode": "table",
+          "placement": "right",
+          "sortBy": "Last *",
+          "sortDesc": true
+        },
+        "orientation": "auto",
+        "showValue": "auto",
+        "stacking": "none",
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        },
+        "xTickLabelRotation": 0,
+        "xTickLabelSpacing": 0
+      },
+      "pluginVersion": "8.4.6",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "exemplar": false,
+          "expr": "dipdup_rarible_order_activity_sum",
+          "instant": true,
+          "interval": "",
+          "legendFormat": "{{index}} {{index_type}}",
+          "refId": "A"
+        }
+      ],
+      "title": "Rarible totals",
+      "transformations": [],
+      "type": "barchart"
     },
     {
       "collapsed": false,
@@ -441,7 +537,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 18
+        "y": 29
       },
       "id": 13,
       "panels": [],
@@ -503,7 +599,7 @@
         "h": 12,
         "w": 12,
         "x": 0,
-        "y": 19
+        "y": 30
       },
       "id": 11,
       "options": {
@@ -581,9 +677,9 @@
         "h": 12,
         "w": 12,
         "x": 12,
-        "y": 19
+        "y": 30
       },
-      "id": 20,
+      "id": 23,
       "options": {
         "displayMode": "lcd",
         "orientation": "horizontal",
@@ -617,14 +713,7 @@
           "id": "filterFieldsByName",
           "options": {
             "include": {
-              "names": [
-                "Time",
-                "PlatformEnum.RARIBLE_V1 ActivityTypeEnum.ORDER_CANCEL",
-                "PlatformEnum.RARIBLE_V1 ActivityTypeEnum.ORDER_MATCH",
-                "PlatformEnum.RARIBLE_V2 ActivityTypeEnum.ORDER_CANCEL",
-                "PlatformEnum.RARIBLE_V2 ActivityTypeEnum.ORDER_LIST",
-                "PlatformEnum.RARIBLE_V2 ActivityTypeEnum.ORDER_MATCH"
-              ]
+              "pattern": "/(RARIBLE)/"
             }
           }
         }
@@ -637,7 +726,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 31
+        "y": 42
       },
       "id": 19,
       "panels": [],
@@ -699,7 +788,7 @@
         "h": 12,
         "w": 12,
         "x": 0,
-        "y": 32
+        "y": 43
       },
       "id": 14,
       "options": {
@@ -777,7 +866,7 @@
         "h": 12,
         "w": 12,
         "x": 12,
-        "y": 32
+        "y": 43
       },
       "id": 21,
       "options": {
@@ -813,14 +902,7 @@
           "id": "filterFieldsByName",
           "options": {
             "include": {
-              "names": [
-                "Time",
-                "PlatformEnum.OBJKT_V1 ActivityTypeEnum.ORDER_MATCH",
-                "PlatformEnum.OBJKT_V2 ActivityTypeEnum.ORDER_CANCEL",
-                "PlatformEnum.OBJKT_V2 ActivityTypeEnum.ORDER_LIST",
-                "PlatformEnum.OBJKT_V1 ActivityTypeEnum.ORDER_CANCEL",
-                "PlatformEnum.OBJKT_V2 ActivityTypeEnum.ORDER_MATCH"
-              ]
+              "pattern": "/(OBJKT)/"
             }
           }
         }
@@ -833,7 +915,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 44
+        "y": 55
       },
       "id": 17,
       "panels": [],
@@ -895,7 +977,7 @@
         "h": 12,
         "w": 12,
         "x": 0,
-        "y": 45
+        "y": 56
       },
       "id": 15,
       "options": {
@@ -971,7 +1053,7 @@
         "h": 12,
         "w": 12,
         "x": 12,
-        "y": 45
+        "y": 56
       },
       "id": 22,
       "options": {
@@ -1007,12 +1089,7 @@
           "id": "filterFieldsByName",
           "options": {
             "include": {
-              "names": [
-                "Time",
-                "PlatformEnum.HEN ActivityTypeEnum.ORDER_CANCEL",
-                "PlatformEnum.HEN ActivityTypeEnum.ORDER_LIST",
-                "PlatformEnum.HEN ActivityTypeEnum.ORDER_MATCH"
-              ]
+              "pattern": "/(HEN)/"
             }
           }
         }
