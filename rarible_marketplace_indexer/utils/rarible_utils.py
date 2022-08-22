@@ -14,6 +14,7 @@ from pytezos import MichelsonType, michelson_to_micheline
 from rarible_marketplace_indexer.event.dto import TakeDto, MakeDto
 from rarible_marketplace_indexer.models import PlatformEnum, TransactionTypeEnum, OrderModel, OrderStatusEnum, \
     LegacyOrderModel, ActivityModel, ActivityTypeEnum
+from rarible_marketplace_indexer.prometheus.rarible_metrics import RaribleMetrics
 from rarible_marketplace_indexer.types.rarible_api_objects.asset.enum import AssetClassEnum
 from rarible_marketplace_indexer.types.rarible_exchange.parameter.sell import Part
 from rarible_marketplace_indexer.types.tezos_objects.asset_value.asset_value import AssetValue
@@ -198,6 +199,10 @@ async def import_legacy_order(order: dict):
     legacy_order = await LegacyOrderModel.get_or_none(hash=order["hash"])
     if legacy_order is None:
         await LegacyOrderModel.create(hash=order["hash"], id=order_model.id, data=order)
+
+    if RaribleMetrics.enabled is True:
+        RaribleMetrics.set_order_activity(PlatformEnum.RARIBLE_V1, ActivityTypeEnum.ORDER_LIST, 1)
+
 
 class RaribleUtils:
     unpack_map_take: Dict[int, str] = {

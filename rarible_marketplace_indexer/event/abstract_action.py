@@ -18,6 +18,7 @@ from rarible_marketplace_indexer.models import ActivityTypeEnum
 from rarible_marketplace_indexer.models import LegacyOrderModel
 from rarible_marketplace_indexer.models import OrderModel
 from rarible_marketplace_indexer.models import OrderStatusEnum
+from rarible_marketplace_indexer.prometheus.rarible_metrics import RaribleMetrics
 from rarible_marketplace_indexer.types.rarible_api_objects.asset.enum import AssetClassEnum
 from rarible_marketplace_indexer.types.tezos_objects.asset_value.asset_value import AssetValue
 from rarible_marketplace_indexer.utils.rarible_utils import get_json_parts
@@ -146,6 +147,9 @@ class AbstractOrderListEvent(EventInterface):
                 operation_nonce=transaction.data.nonce,
             )
 
+        if RaribleMetrics.enabled is True:
+            RaribleMetrics.set_order_activity(cls.platform, ActivityTypeEnum.ORDER_LIST, 1)
+
 
 class AbstractOrderCancelEvent(EventInterface):
     @staticmethod
@@ -197,6 +201,9 @@ class AbstractOrderCancelEvent(EventInterface):
             order.last_updated_at = transaction.data.timestamp
 
             await order.save()
+
+        if RaribleMetrics.enabled is True:
+            RaribleMetrics.set_order_activity(cls.platform, ActivityTypeEnum.ORDER_CANCEL, 1)
 
 
 class AbstractLegacyOrderCancelEvent(EventInterface):
@@ -272,6 +279,9 @@ class AbstractLegacyOrderCancelEvent(EventInterface):
                     cancel_activity.type = ActivityTypeEnum.ORDER_CANCEL
                     await cancel_activity.save()
 
+        if RaribleMetrics.enabled is True:
+            RaribleMetrics.set_order_activity(cls.platform, ActivityTypeEnum.ORDER_CANCEL, 1)
+
 
 class AbstractOrderMatchEvent(EventInterface):
     @staticmethod
@@ -337,6 +347,9 @@ class AbstractOrderMatchEvent(EventInterface):
             match_activity.take_value = AssetValue(order.make_price * dto.match_amount)
 
             await match_activity.save()
+
+        if RaribleMetrics.enabled is True:
+            RaribleMetrics.set_order_activity(cls.platform, ActivityTypeEnum.ORDER_MATCH, 1)
 
 
 class AbstractLegacyOrderMatchEvent(EventInterface):
@@ -483,6 +496,9 @@ class AbstractLegacyOrderMatchEvent(EventInterface):
                 operation_counter=transaction.data.counter,
                 operation_nonce=transaction.data.nonce,
             )
+
+        if RaribleMetrics.enabled is True:
+            RaribleMetrics.set_order_activity(cls.platform, ActivityTypeEnum.ORDER_MATCH, 1)
 
 
 class AbstractPutBidEvent(EventInterface):

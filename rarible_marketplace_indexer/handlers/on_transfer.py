@@ -16,7 +16,7 @@ async def on_transfer(
         first_level = int(ctx.config.indexes['token_transfers'].first_level)
         if token_transfer.level > first_level:
             token_transfer_activity = RaribleApiTokenActivityFactory.build(token_transfer, ctx.datasource)
-            assert token_transfer_activity
-            await producer_send(token_transfer_activity)
+            if token_transfer_activity is not None:
+                await producer_send(token_transfer_activity)
         else:
             logger.debug(f"Ignore token from level={token_transfer.level}")
