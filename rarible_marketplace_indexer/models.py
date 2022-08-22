@@ -217,3 +217,31 @@ async def signal_activity_post_save(
     from rarible_marketplace_indexer.types.rarible_api_objects.activity.order.factory import RaribleApiOrderActivityFactory
 
     await producer_send(RaribleApiOrderActivityFactory.build(instance))
+
+class TokenTransfer(Model):
+    class Meta:
+        table = 'token_transfer'
+
+    _custom_generated_pk = True
+
+    id = fields.IntField(pk=True, generated=False, required=True)
+    tzkt_token_id = fields.IntField(null=False)
+    contract = AccountAddressField(null=False)
+    token_id = fields.TextField(null=False)
+    from_address = AccountAddressField(null=True)
+    to_address = AccountAddressField(null=True)
+    amount = AssetValueField()
+    date = fields.DatetimeField(null=False)
+
+
+class Token(Model):
+    class Meta:
+        table = 'token'
+
+    tzkt_token_id = fields.IntField(null=False)
+    contract = AccountAddressField(null=False)
+    token_id = fields.TextField(null=False)
+    minted_at = fields.DatetimeField(null=False)
+    minted = AssetValueField()
+    supply = AssetValueField()
+    deleted = fields.BooleanField(default=False)

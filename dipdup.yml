@@ -25,3 +25,6 @@ custom:
     mechanism: ${KAFKA_SASL_MECHANISM:-PLAIN}
     username: ${KAFKA_USERNAME}
     password: ${KAFKA_PASSWORD}
+  null_addresses:
+    - "tz1burnburnburnburnburnburnburjAYjjX"
+    - "tz1Ke2h7sDdakHJQh8WX4Z372du1KChsksyU"
