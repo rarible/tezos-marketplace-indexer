@@ -65,9 +65,7 @@ class AbstractOrderListEvent(EventInterface):
                     method='get', url=f"v1/tokens?contract={dto.take.contract}&tokenId={dto.take.token_id}"
                 )
             else:
-                ft_result = await datasource.request(
-                    method='get', url=f"v1/tokens?contract={dto.take.contract}"
-                )
+                ft_result = await datasource.request(method='get', url=f"v1/tokens?contract={dto.take.contract}")
             # TODO: We need to double-check code below
             if ft_result is not None and "metadata" in ft_result[0]:
                 ft = ft_result[0]
@@ -118,7 +116,7 @@ class AbstractOrderListEvent(EventInterface):
                 operation_hash=transaction.data.hash,
                 operation_level=transaction.data.level,
                 operation_counter=transaction.data.counter,
-                type=ActivityTypeEnum.ORDER_LIST
+                type=ActivityTypeEnum.ORDER_LIST,
             )
             .order_by('-operation_level')
             .first()
@@ -265,10 +263,7 @@ class AbstractLegacyOrderCancelEvent(EventInterface):
 
                 last_order_activity = (
                     await ActivityModel.filter(
-                        network=datasource.network,
-                        platform=cls.platform,
-                        order_id=order.id,
-                        type=ActivityTypeEnum.ORDER_CANCEL
+                        network=datasource.network, platform=cls.platform, order_id=order.id, type=ActivityTypeEnum.ORDER_CANCEL
                     )
                     .order_by('-operation_timestamp')
                     .first()
@@ -393,7 +388,7 @@ class AbstractLegacyOrderMatchEvent(EventInterface):
                     take_token_id=dto.take.token_id,
                     take_value=dto.take.value,
                     maker=dto.maker,
-                    salt=dto.salt
+                    salt=dto.salt,
                 )
                 .order_by('-id')
                 .first()
@@ -447,7 +442,7 @@ class AbstractLegacyOrderMatchEvent(EventInterface):
                 order_id=order.id,
                 operation_hash=transaction.data.hash,
                 operation_counter=transaction.data.counter,
-                operation_nonce=transaction.data.nonce
+                operation_nonce=transaction.data.nonce,
             )
             .order_by('-operation_timestamp')
             .first()

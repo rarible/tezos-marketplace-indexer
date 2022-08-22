@@ -22,4 +22,3 @@ async def on_restart(
 
     if os.getenv('APPLICATION_ENVIRONMENT') != 'dev':
         await ctx.fire_hook("import_legacy_orders")
-

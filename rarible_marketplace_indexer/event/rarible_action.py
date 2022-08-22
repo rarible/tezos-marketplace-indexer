@@ -33,8 +33,8 @@ from rarible_marketplace_indexer.types.rarible_exchange.parameter.buy import Buy
 from rarible_marketplace_indexer.types.rarible_exchange.parameter.cancel_sale import CancelSaleParameter
 from rarible_marketplace_indexer.types.rarible_exchange.parameter.sell import SellParameter
 from rarible_marketplace_indexer.types.rarible_exchange.storage import RaribleExchangeStorage
-from rarible_marketplace_indexer.types.rarible_exchange_legacy.parameter.match_orders import FA12AssetClass
 from rarible_marketplace_indexer.types.rarible_exchange_legacy.parameter.match_orders import FA2AssetClass
+from rarible_marketplace_indexer.types.rarible_exchange_legacy.parameter.match_orders import FA12AssetClass
 from rarible_marketplace_indexer.types.rarible_exchange_legacy.parameter.match_orders import MatchOrdersParameter
 from rarible_marketplace_indexer.types.rarible_exchange_legacy.parameter.match_orders import XTZAssetClass
 from rarible_marketplace_indexer.types.rarible_exchange_legacy.storage import RaribleExchangeLegacyStorage
@@ -202,7 +202,7 @@ class RaribleLegacyOrderMatchEvent(AbstractLegacyOrderMatchEvent):
             token_id=int(make.token_id),
             origin_fees=fees[1],
             payouts=fees[0],
-            salt=transaction.parameter.order_left.salt
+            salt=transaction.parameter.order_left.salt,
         )
 
 

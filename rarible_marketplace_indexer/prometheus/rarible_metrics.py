@@ -18,8 +18,6 @@ _token_activity = Histogram(
 )
 
 
-
-
 class RaribleMetrics:
     enabled = False
 
