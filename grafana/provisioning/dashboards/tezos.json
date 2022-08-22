@@ -447,7 +447,7 @@
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "thresholds"
+            "mode": "palette-classic"
           },
           "custom": {
             "axisLabel": "",
@@ -503,11 +503,12 @@
           "sortDesc": true
         },
         "orientation": "auto",
-        "showValue": "auto",
+        "showValue": "always",
         "stacking": "none",
+        "text": {},
         "tooltip": {
-          "mode": "single",
-          "sort": "none"
+          "mode": "multi",
+          "sort": "desc"
         },
         "xTickLabelRotation": 0,
         "xTickLabelSpacing": 0
@@ -663,10 +664,6 @@
               {
                 "color": "green",
                 "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
               }
             ]
           }
@@ -852,10 +849,6 @@
               {
                 "color": "green",
                 "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
               }
             ]
           }
@@ -1039,10 +1032,6 @@
               {
                 "color": "green",
                 "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
               }
             ]
           }
@@ -1105,7 +1094,7 @@
     "list": []
   },
   "time": {
-    "from": "2022-08-22T09:26:49.000Z",
+    "from": "now-1h",
     "to": "now"
   },
   "timepicker": {},
