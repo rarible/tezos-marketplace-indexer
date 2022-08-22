@@ -218,6 +218,7 @@ async def signal_activity_post_save(
 
     await producer_send(RaribleApiOrderActivityFactory.build(instance))
 
+
 class TokenTransfer(Model):
     class Meta:
         table = 'token_transfer'
@@ -231,7 +232,17 @@ class TokenTransfer(Model):
     from_address = AccountAddressField(null=True)
     to_address = AccountAddressField(null=True)
     amount = AssetValueField()
+    hash = OperationHashField(null=True)
     date = fields.DatetimeField(null=False)
+
+
+class Ownership(Model):
+    id = fields.IntField(pk=True)
+    contract = AccountAddressField(null=False)
+    token_id = fields.TextField(null=False)
+    owner = AccountAddressField(null=False)
+    balance = AssetValueField()
+    updated = fields.DatetimeField(null=False)
 
 
 class Token(Model):
