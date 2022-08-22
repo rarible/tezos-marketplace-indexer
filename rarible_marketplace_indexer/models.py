@@ -238,10 +238,13 @@ class Token(Model):
     class Meta:
         table = 'token'
 
-    tzkt_token_id = fields.IntField(null=False)
+    _custom_generated_pk = True
+
+    id = fields.IntField(pk=True, generated=False, required=True)
     contract = AccountAddressField(null=False)
     token_id = fields.TextField(null=False)
     minted_at = fields.DatetimeField(null=False)
     minted = AssetValueField()
     supply = AssetValueField()
     deleted = fields.BooleanField(default=False)
+    updated = fields.DatetimeField(null=False)
