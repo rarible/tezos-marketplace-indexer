@@ -27,15 +27,11 @@ async def process_collection_events(
     last_id = 0
     cr_filter = ""
     while last_id is not None:
-        originations = await tzkt.request(
-            method='get', url=f"v1/operations/originations?limit=100&level.gt={current_level}{cr_filter}"
-        )
+        originations = await tzkt.request(method='get', url=f"v1/operations/originations?limit=100&level.gt={current_level}{cr_filter}")
         for origination in originations:
             if origination.get("originatedContract") is not None:
                 if origination["originatedContract"].get("address") is not None:
-                    contract = await tzkt.request(
-                        method='get', url=f"v1/contracts/{origination['originatedContract']['address']}"
-                    )
+                    contract = await tzkt.request(method='get', url=f"v1/contracts/{origination['originatedContract']['address']}")
                     current_level = origination['level']
                     last_id = origination['id']
                     cr_filter = f"&id.cr={last_id}"

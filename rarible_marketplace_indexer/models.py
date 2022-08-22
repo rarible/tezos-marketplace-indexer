@@ -6,7 +6,8 @@ from typing import Optional
 from typing import TypeVar
 from uuid import uuid5
 
-from dipdup.models import Transaction, Model
+from dipdup.models import Model
+from dipdup.models import Transaction
 from tortoise import fields
 from tortoise.backends.base.client import BaseDBAsyncClient
 from tortoise.signals import post_save
@@ -62,7 +63,6 @@ class IndexEnum(str, Enum):
     LEGACY_ORDERS: _StrEnumValue = 'LEGACY_ORDERS'
     V1_CLEANING: _StrEnumValue = 'V1_CLEANING'
     V1_FILL_FIX: _StrEnumValue = 'V1_FILL_FIX'
-
 
 
 class ActivityModel(Model):
