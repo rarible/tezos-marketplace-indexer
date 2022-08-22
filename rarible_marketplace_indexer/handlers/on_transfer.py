@@ -41,7 +41,7 @@ async def on_transfer(
                 ).save(using_db=connection)
 
                 if is_mint and minted is None:
-                    minted = await Token(
+                    minted = Token(
                         id=token_transfer.tzkt_token_id,
                         contract=token_transfer.contract_address,
                         token_id=token_transfer.token_id,
@@ -49,7 +49,8 @@ async def on_transfer(
                         minted=token_transfer.amount,
                         supply=token_transfer.amount,
                         updated=token_transfer.timestamp
-                    ).save(using_db=connection)
+                    )
+                    await minted.save(using_db=connection)
 
                 if is_burn:
                     # burn from null address transfer is possible in the testnet
@@ -61,6 +62,6 @@ async def on_transfer(
                     await burned.save(using_db=connection)
 
             # kafka
-            token_transfer_activity = RaribleApiTokenActivityFactory.build(token_transfer, ctx.datasource)
-            assert token_transfer_activity
-            await producer_send(token_transfer_activity)
+            # token_transfer_activity = RaribleApiTokenActivityFactory.build(token_transfer, ctx.datasource)
+            # assert token_transfer_activity
+            # await producer_send(token_transfer_activity)
