@@ -497,17 +497,18 @@
           "calcs": [
             "lastNotNull"
           ],
-          "displayMode": "table",
+          "displayMode": "hidden",
           "placement": "right",
           "sortBy": "Last *",
-          "sortDesc": true
+          "sortDesc": false
         },
         "orientation": "auto",
-        "showValue": "auto",
+        "showValue": "always",
         "stacking": "none",
+        "text": {},
         "tooltip": {
-          "mode": "single",
-          "sort": "none"
+          "mode": "multi",
+          "sort": "desc"
         },
         "xTickLabelRotation": 0,
         "xTickLabelSpacing": 0
@@ -527,7 +528,7 @@
           "refId": "A"
         }
       ],
-      "title": "Rarible totals",
+      "title": "Totals",
       "transformations": [],
       "type": "barchart"
     },
@@ -596,7 +597,7 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 12,
+        "h": 13,
         "w": 12,
         "x": 0,
         "y": 30
@@ -637,13 +638,9 @@
           "options": {
             "include": {
               "names": [
-                "Time",
-                "PlatformEnum.RARIBLE_V1 ActivityTypeEnum.ORDER_CANCEL",
-                "PlatformEnum.RARIBLE_V1 ActivityTypeEnum.ORDER_MATCH",
-                "PlatformEnum.RARIBLE_V2 ActivityTypeEnum.ORDER_CANCEL",
-                "PlatformEnum.RARIBLE_V2 ActivityTypeEnum.ORDER_LIST",
-                "PlatformEnum.RARIBLE_V2 ActivityTypeEnum.ORDER_MATCH"
-              ]
+                "Time"
+              ],
+              "pattern": "/(RARIBLE)/"
             }
           }
         }
@@ -663,10 +660,6 @@
               {
                 "color": "green",
                 "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
               }
             ]
           }
@@ -674,7 +667,7 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 12,
+        "h": 13,
         "w": 12,
         "x": 12,
         "y": 30
@@ -726,7 +719,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 42
+        "y": 43
       },
       "id": 19,
       "panels": [],
@@ -788,7 +781,7 @@
         "h": 12,
         "w": 12,
         "x": 0,
-        "y": 43
+        "y": 44
       },
       "id": 14,
       "options": {
@@ -852,10 +845,6 @@
               {
                 "color": "green",
                 "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
               }
             ]
           }
@@ -866,7 +855,7 @@
         "h": 12,
         "w": 12,
         "x": 12,
-        "y": 43
+        "y": 44
       },
       "id": 21,
       "options": {
@@ -915,7 +904,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 55
+        "y": 56
       },
       "id": 17,
       "panels": [],
@@ -977,7 +966,7 @@
         "h": 12,
         "w": 12,
         "x": 0,
-        "y": 56
+        "y": 57
       },
       "id": 15,
       "options": {
@@ -1039,10 +1028,6 @@
               {
                 "color": "green",
                 "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
               }
             ]
           }
@@ -1053,7 +1038,7 @@
         "h": 12,
         "w": 12,
         "x": 12,
-        "y": 56
+        "y": 57
       },
       "id": 22,
       "options": {
@@ -1105,7 +1090,7 @@
     "list": []
   },
   "time": {
-    "from": "2022-08-22T09:26:49.000Z",
+    "from": "now-1h",
     "to": "now"
   },
   "timepicker": {},

@@ -1,3 +1,4 @@
+import json
 import logging
 import os
 import random
@@ -189,6 +190,7 @@ class RaribleUtils:
 
 
 async def import_legacy_order(order: dict):
+    order = json.loads(order["data"])
     logger = logging.getLogger('dipdup.legacy')
     logger.info(f"Importing order: {order}")
 
