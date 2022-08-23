@@ -3,6 +3,8 @@ version: "3.8"
 services:
   indexer:
     image: rarible_indexer:dev
+    ports:
+      - "28080:8080"
     depends_on:
       - db
       - kafka
