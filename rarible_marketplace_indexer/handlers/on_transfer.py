@@ -103,15 +103,18 @@ async def on_transfer(
                     ],
                 )
             ).pop()
-            await TokenTransfer(
-                id=token_transfer.id,
-                type=activity_type,
-                date=token_transfer.timestamp,
-                tzkt_token_id=token_transfer.tzkt_token_id,
-                tzkt_transaction_id=transaction_id,
-                contract=token_transfer.contract_address,
-                token_id=token_transfer.token_id,
-                from_address=token_transfer.from_address,
-                to_address=token_transfer.to_address,
-                amount=token_transfer.amount
-            ).save()
+            if is_mint and is_burn:
+                logger.warning(f"Token {token_transfer.contract_address}:{token_transfer.token_id} was minted to burn")
+            else:
+                await TokenTransfer(
+                    id=token_transfer.id,
+                    type=activity_type,
+                    date=token_transfer.timestamp,
+                    tzkt_token_id=token_transfer.tzkt_token_id,
+                    tzkt_transaction_id=transaction_id,
+                    contract=token_transfer.contract_address,
+                    token_id=token_transfer.token_id,
+                    from_address=token_transfer.from_address,
+                    to_address=token_transfer.to_address,
+                    amount=token_transfer.amount
+                ).save()
