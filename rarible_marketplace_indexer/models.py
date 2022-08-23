@@ -52,6 +52,7 @@ class ActivityTypeEnum(str, Enum):
 
 class PlatformEnum(str, Enum):
     HEN: _StrEnumValue = 'HEN'
+    TEIA: _StrEnumValue = 'TEIA'
     OBJKT_V1: _StrEnumValue = 'OBJKT_V1'
     OBJKT_V2: _StrEnumValue = 'OBJKT_V2'
     RARIBLE_V1: _StrEnumValue = 'RARIBLE_V1'
