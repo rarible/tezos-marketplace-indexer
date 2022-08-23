@@ -1,4 +1,4 @@
-ARG BASE_IMAGE_VERSION=3.9.7-slim-buster
+ARG BASE_IMAGE_VERSION=3.10-slim-buster
 FROM rarible/python:${BASE_IMAGE_VERSION}
 
 COPY requirements.txt /requirements.txt
