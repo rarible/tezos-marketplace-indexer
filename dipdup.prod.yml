@@ -15,6 +15,9 @@ contracts:
   rarible_exchange:
     address: KT1N4Rrm6BU6229drs6scrH3vard1pPngMyA
     typename: rarible_exchange
+#  versum_v1:
+#    address: KT1GyRAJNdizF1nojQz62uGYkx8WFRUJm9X5
+#    typename: versum_v1
 #  teia_v1:
 #    address: KT1PHubm9HtyQEJ4BBpMTVomq6mhbfNZ9z5w
 #    typename: teia_v1
@@ -160,6 +163,29 @@ indexes:
 #           - destination: teia_v1
 #             entrypoint: collect
 #
+#  versum:
+#    kind: operation
+#    datasource: tzkt
+#    contracts:
+#      - versum_v1
+#    handlers:
+#      # Listing
+#      - callback: versum_v1_order_list
+#        pattern:
+#          - type: transaction
+#            destination: versum_v1
+#            entrypoint: create_swap
+#      - callback: versum_v1_order_cancel
+#        pattern:
+#          - type: transaction
+#            destination: versum_v1
+#            entrypoint: cancel_swap
+#      - callback: versum_v1_order_match
+#        pattern:
+#          - type: transaction
+#            destination: versum_v1
+#            entrypoint: collect_swap
+
 hooks:
   process_collection_events:
     callback: process_collection_events
