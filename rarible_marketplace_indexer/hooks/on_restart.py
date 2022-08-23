@@ -20,5 +20,5 @@ async def on_restart(
     if ctx.config.prometheus is not None:
         RaribleMetrics.enabled = True
 
-    if os.getenv('APPLICATION_ENVIRONMENT') != 'dev':
+    if os.getenv('APPLICATION_ENVIRONMENT') == 'prod':
         await ctx.fire_hook("import_legacy_orders")
