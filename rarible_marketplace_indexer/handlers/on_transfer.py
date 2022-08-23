@@ -3,9 +3,7 @@ from dipdup.context import HandlerContext
 from dipdup.enums import TokenStandard
 from dipdup.models import TokenTransferData
 
-from rarible_marketplace_indexer.models import TokenTransfer, Token, Ownership
-from rarible_marketplace_indexer.producer.helper import producer_send
-from rarible_marketplace_indexer.types.rarible_api_objects.activity.token.factory import RaribleApiTokenActivityFactory
+from rarible_marketplace_indexer.models import TokenTransfer, Token, Ownership, ActivityTypeEnum
 
 
 async def on_transfer(
@@ -21,40 +19,99 @@ async def on_transfer(
         if transfer is None:
 
             is_mint = token_transfer.from_address is None
-            is_burn = token_transfer.to_address is None
-            is_nonformal_burn = token_transfer.to_address in null_addresses
+            if is_mint:
+                minted = await Token.get_or_none(id=token_transfer.tzkt_token_id)
+            is_burn = token_transfer.to_address is None or token_transfer.to_address in null_addresses
+            if is_burn:
+                burned = await Token.get_or_none(id=token_transfer.tzkt_token_id)
             is_transfer_to = token_transfer.to_address is not None and token_transfer.to_address not in null_addresses and token_transfer.amount > 0
+            if is_transfer_to:
+                ownership_to = await Ownership.get_or_none(
+                    contract=token_transfer.contract_address,
+                    token_id=token_transfer.token_id,
+                    owner=token_transfer.to_address
+                )
             is_transfer_from = token_transfer.from_address is not None and token_transfer.amount > 0
+            if is_transfer_from:
+                ownership_from = await Ownership.get_or_none(
+                    contract=token_transfer.contract_address,
+                    token_id=token_transfer.token_id,
+                    owner=token_transfer.from_address
+                )
 
             # persist
-            await TokenTransfer.create(
-                id=token_transfer.id,
-                date=token_transfer.timestamp,
-                tzkt_token_id=token_transfer.tzkt_token_id,
-                tzkt_transaction_id=token_transfer.tzkt_transaction_id,
-                contract=token_transfer.contract_address,
-                token_id=token_transfer.token_id,
-                from_address=token_transfer.from_address,
-                to_address=token_transfer.to_address,
-                amount=token_transfer.amount
-            )
+            if is_mint:
+                if minted is None:
+                    minted = Token(
+                        id=token_transfer.tzkt_token_id,
+                        contract=token_transfer.contract_address,
+                        token_id=token_transfer.token_id,
+                        minted_at=token_transfer.timestamp,
+                        minted=token_transfer.amount,
+                        supply=token_transfer.amount,
+                        updated=token_transfer.timestamp
+                    )
+                else:
+                    minted.minted += token_transfer.amount
+                    minted.supply += token_transfer.amount
+                    minted.updated = token_transfer.timestamp
+                await minted.save()
 
-            if is_nonformal_burn:
-                burned = await Token.get(id=token_transfer.tzkt_token_id)
+            if is_burn:
+
+                # We need do it in case mint to burn (it's possible in testnet)
+                burned = burned or minted
                 burned.supply -= token_transfer.amount
                 burned.deleted = burned.supply <= 0
                 burned.updated = token_transfer.timestamp
                 await burned.save()
 
-            # kafka
-            token_transfer_activity = None
-            if is_mint:
-                token_transfer_activity = RaribleApiTokenActivityFactory.build_mint_activity(token_transfer, ctx.datasource)
-            if is_burn or is_nonformal_burn:
-                token_transfer_activity = RaribleApiTokenActivityFactory.build_burn_activity(token_transfer, ctx.datasource)
-            if is_transfer_to and is_transfer_from:
-                token_transfer_activity = RaribleApiTokenActivityFactory.build_transfer_activity(token_transfer, ctx.datasource)
+            if is_transfer_to:
+                if ownership_to is None:
+                    ownership_to = Ownership(
+                        contract=token_transfer.contract_address,
+                        token_id=token_transfer.token_id,
+                        owner=token_transfer.to_address,
+                        balance=token_transfer.amount,
+                        updated=token_transfer.timestamp
+                    )
+                else:
+                    ownership_to.balance += token_transfer.amount
+                    ownership_to.updated = token_transfer.timestamp
+                await ownership_to.save()
 
-            # Could be none if amount == 0
-            if token_transfer_activity is not None:
-                await producer_send(token_transfer_activity)
+            if is_transfer_from and ownership_from is not None:
+                ownership_from.balance -= token_transfer.amount
+                ownership_from.updated = token_transfer.timestamp
+                if ownership_from.balance > 0:
+                    await ownership_from.save()
+                else:
+                    await ownership_from.delete()
+
+            activity_type = ActivityTypeEnum.TOKEN_TRANSFER
+            if is_mint:
+                activity_type = ActivityTypeEnum.TOKEN_MINT
+            if is_burn:
+                activity_type = ActivityTypeEnum.TOKEN_BURN
+            transaction_id = list(
+                filter(
+                    bool,
+                    [
+                        token_transfer.tzkt_transaction_id,
+                        token_transfer.tzkt_origination_id,
+                        token_transfer.tzkt_migration_id,
+                    ],
+                )
+            ).pop()
+            await TokenTransfer(
+                id=token_transfer.id,
+                type=activity_type,
+                date=token_transfer.timestamp,
+                tzkt_token_id=token_transfer.tzkt_token_id,
+                tzkt_transaction_id=transaction_id,
+                contract=token_transfer.contract_address,
+                token_id=token_transfer.token_id,
+                from_address=token_transfer.from_address,
+                to_address=token_transfer.to_address,
+                amount=token_transfer.amount
+            ).save()

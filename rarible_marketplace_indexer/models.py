@@ -226,8 +226,9 @@ class TokenTransfer(Model):
     _custom_generated_pk = True
 
     id = fields.IntField(pk=True, generated=False, required=True)
+    type = fields.CharEnumField(ActivityTypeEnum)
     tzkt_token_id = fields.IntField(null=False)
-    tzkt_transaction_id = fields.IntField(null=False)
+    tzkt_transaction_id = fields.IntField(null=True)
     contract = AccountAddressField(null=False)
     token_id = fields.TextField(null=False)
     from_address = AccountAddressField(null=True)
@@ -237,6 +238,24 @@ class TokenTransfer(Model):
     date = fields.DatetimeField(null=False)
 
 
+@post_save(TokenTransfer)
+async def signal_token_transfer_post_save(
+        sender: TokenTransfer,
+        instance: TokenTransfer,
+        created: bool,
+        using_db: "Optional[BaseDBAsyncClient]",
+        update_fields: List[str],
+) -> None:
+    from rarible_marketplace_indexer.types.rarible_api_objects.activity.token.factory import RaribleApiTokenActivityFactory
+    if instance.type == ActivityTypeEnum.TOKEN_MINT:
+        token_transfer_activity = RaribleApiTokenActivityFactory.build_mint_activity(instance)
+    if instance.type == ActivityTypeEnum.TOKEN_BURN:
+        token_transfer_activity = RaribleApiTokenActivityFactory.build_burn_activity(instance)
+    if instance.type == ActivityTypeEnum.TOKEN_TRANSFER:
+        token_transfer_activity = RaribleApiTokenActivityFactory.build_transfer_activity(instance)
+    await producer_send(token_transfer_activity)
+
+
 class Ownership(Model):
     id = fields.IntField(pk=True)
     contract = AccountAddressField(null=False)
@@ -244,6 +263,22 @@ class Ownership(Model):
     owner = AccountAddressField(null=False)
     balance = AssetValueField()
     updated = fields.DatetimeField(null=False)
+
+    def full_id(self):
+        return f"{self.contract}:{self.token_id}.{self.owner}"
+
+
+@post_save(Ownership)
+async def signal_ownership_post_save(
+        sender: Ownership,
+        instance: Ownership,
+        created: bool,
+        using_db: "Optional[BaseDBAsyncClient]",
+        update_fields: List[str],
+) -> None:
+    from rarible_marketplace_indexer.types.rarible_api_objects.ownership.factory import RaribleApiOwnershipFactory
+    event = RaribleApiOwnershipFactory.build(instance, "UPDATE")
+    await producer_send(event)
 
 
 class Token(Model):

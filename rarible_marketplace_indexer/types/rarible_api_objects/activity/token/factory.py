@@ -5,7 +5,7 @@ from typing import Tuple
 from dipdup.datasources.tzkt.datasource import TzktDatasource
 from dipdup.models import TokenTransferData
 
-from rarible_marketplace_indexer.models import ActivityTypeEnum
+from rarible_marketplace_indexer.models import ActivityTypeEnum, TokenTransfer
 from rarible_marketplace_indexer.types.rarible_api_objects.activity.token.activity import BaseRaribleApiTokenActivity
 from rarible_marketplace_indexer.types.rarible_api_objects.activity.token.activity import RaribleApiTokenActivity
 from rarible_marketplace_indexer.types.rarible_api_objects.activity.token.activity import RaribleApiTokenBurnActivity
@@ -17,73 +17,45 @@ from rarible_marketplace_indexer.types.tezos_objects.tezos_object_hash import Or
 
 class RaribleApiTokenActivityFactory:
     @classmethod
-    def _build_base_activity(cls, transfer_data: TokenTransferData, datasource: TzktDatasource) -> BaseRaribleApiTokenActivity:
+    def _build_base_activity(cls, transfer: TokenTransfer) -> BaseRaribleApiTokenActivity:
         try:
-            value = AssetValue(transfer_data.amount)
+            value = AssetValue(transfer.amount)
         except TypeError:
             value = AssetValue(0)
 
-        transaction_id = list(
-            filter(
-                bool,
-                [
-                    transfer_data.tzkt_transaction_id,
-                    transfer_data.tzkt_origination_id,
-                    transfer_data.tzkt_migration_id,
-                ],
-            )
-        ).pop()
-
         return BaseRaribleApiTokenActivity(
-            network=datasource.network,
-            transfer_id=transfer_data.id,
-            contract=OriginatedAccountAddress(transfer_data.contract_address),
-            token_id=transfer_data.token_id,
+            transfer_id=transfer.id,
+            contract=OriginatedAccountAddress(transfer.contract),
+            token_id=transfer.token_id,
             value=value,
-            transaction_id=transaction_id,
-            date=transfer_data.timestamp,
+            transaction_id=transfer.tzkt_transaction_id,
+            date=transfer.date,
         )
 
     @classmethod
-    def build_mint_activity(cls, transfer_data: TokenTransferData, datasource: TzktDatasource) -> RaribleApiTokenMintActivity:
-        base = cls._build_base_activity(transfer_data, datasource)
+    def build_mint_activity(cls, transfer: TokenTransfer) -> RaribleApiTokenMintActivity:
+        base = cls._build_base_activity(transfer)
         return RaribleApiTokenMintActivity(
             type=ActivityTypeEnum.TOKEN_MINT,
-            owner=transfer_data.to_address,
+            owner=transfer.to_address,
             **base.dict(),
         )
 
     @classmethod
-    def build_transfer_activity(cls, transfer_data: TokenTransferData, datasource: TzktDatasource) -> RaribleApiTokenTransferActivity:
-        base = cls._build_base_activity(transfer_data, datasource)
+    def build_transfer_activity(cls, transfer: TokenTransfer) -> RaribleApiTokenTransferActivity:
+        base = cls._build_base_activity(transfer)
         return RaribleApiTokenTransferActivity(
             type=ActivityTypeEnum.TOKEN_TRANSFER,
-            transfer_from=transfer_data.from_address,
-            owner=transfer_data.to_address,
+            transfer_from=transfer.from_address,
+            owner=transfer.to_address,
             **base.dict(),
         )
 
     @classmethod
-    def build_burn_activity(cls, transfer_data: TokenTransferData, datasource: TzktDatasource) -> RaribleApiTokenBurnActivity:
-        base = cls._build_base_activity(transfer_data, datasource)
+    def build_burn_activity(cls, transfer: TokenTransfer) -> RaribleApiTokenBurnActivity:
+        base = cls._build_base_activity(transfer)
         return RaribleApiTokenBurnActivity(
             type=ActivityTypeEnum.TOKEN_BURN,
-            owner=transfer_data.from_address,
+            owner=transfer.from_address,
             **base.dict(),
-        )
-
-    @classmethod
-    def _get_factory_method(cls, transfer_data: TokenTransferData) -> callable:
-        method_map: Dict[Tuple[bool, bool], Callable[[TokenTransferData, TzktDatasource], callable]] = {
-            (False, True): cls.build_mint_activity,
-            (True, True): cls.build_transfer_activity,
-            (True, False): cls.build_burn_activity,
-        }
-
-        return method_map.get(
-            (
-                transfer_data.from_address is not None,
-                transfer_data.to_address is not None,
-            ),
-            cls.build_transfer_activity,
         )
