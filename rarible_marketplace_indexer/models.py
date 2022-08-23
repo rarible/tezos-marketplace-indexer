@@ -9,7 +9,7 @@ from uuid import uuid5
 from dipdup.models import Transaction, Model
 from tortoise import fields
 from tortoise.backends.base.client import BaseDBAsyncClient
-from tortoise.signals import post_save
+from tortoise.signals import post_save, post_delete
 
 from rarible_marketplace_indexer.producer.helper import producer_send
 from rarible_marketplace_indexer.types.rarible_api_objects.asset.enum import AssetClassEnum
@@ -265,7 +265,7 @@ class Ownership(Model):
     updated = fields.DatetimeField(null=False)
 
     def full_id(self):
-        return f"{self.contract}:{self.token_id}.{self.owner}"
+        return f"{self.contract}:{self.token_id}:{self.owner}"
 
 
 @post_save(Ownership)
@@ -277,9 +277,17 @@ async def signal_ownership_post_save(
         update_fields: List[str],
 ) -> None:
     from rarible_marketplace_indexer.types.rarible_api_objects.ownership.factory import RaribleApiOwnershipFactory
-    event = RaribleApiOwnershipFactory.build(instance, "UPDATE")
+    event = RaribleApiOwnershipFactory.build_update(instance)
     await producer_send(event)
 
+
+@post_delete(Ownership)
+async def signal_ownership_post_delete(
+        sender: "Type[Signal]", instance: Ownership, using_db: "Optional[BaseDBAsyncClient]"
+) -> None:
+    from rarible_marketplace_indexer.types.rarible_api_objects.ownership.factory import RaribleApiOwnershipFactory
+    event = RaribleApiOwnershipFactory.build_delete(instance)
+    await producer_send(event)
 
 class Token(Model):
     class Meta:

@@ -32,5 +32,5 @@ class RaribleApiOwnership(AbstractRaribleApiObject):
 
     event_id: uuid.UUID
     ownership_id: str
-    ownership: OwnershipBody
+    ownership: Optional[OwnershipBody]
     type: str
