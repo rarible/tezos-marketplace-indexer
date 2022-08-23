@@ -23,7 +23,6 @@ async def import_legacy_orders(
 
         with open("/app/rarible_marketplace_indexer/jobs/data/legacy_orders.json") as source_file:
             orders = json.load(source_file)
-            # chunk the work into batches of 4 lines at a time
             for order in orders:
                 await import_legacy_order(order)
             await IndexingStatus.create(index=IndexEnum.LEGACY_ORDERS, last_level="SYNCED")
