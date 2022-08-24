@@ -21,6 +21,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
+  "id": 80,
   "links": [],
   "liveNow": false,
   "panels": [
@@ -116,11 +117,11 @@
           "exemplar": true,
           "expr": "sum(rate(dipdup_callback_duration_seconds_count{}[1m]) * 60)",
           "interval": "",
-          "legendFormat": "{{callback}}",
+          "legendFormat": "Transactions processed",
           "refId": "A"
         }
       ],
-      "title": "Transaction processing speed (tx/sec)",
+      "title": "NFT activities",
       "type": "timeseries"
     },
     {
@@ -274,7 +275,7 @@
           "placement": "bottom"
         },
         "tooltip": {
-          "mode": "single",
+          "mode": "multi",
           "sort": "none"
         }
       },
@@ -387,7 +388,7 @@
           "placement": "bottom"
         },
         "tooltip": {
-          "mode": "single",
+          "mode": "multi",
           "sort": "none"
         }
       },
@@ -529,7 +530,7 @@
       "type": "barchart"
     },
     {
-      "collapsed": true,
+      "collapsed": false,
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -537,183 +538,369 @@
         "y": 33
       },
       "id": 13,
-      "panels": [
-        {
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "axisLabel": "",
-                "axisPlacement": "auto",
-                "barAlignment": 0,
-                "drawStyle": "line",
-                "fillOpacity": 0,
-                "gradientMode": "none",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "lineInterpolation": "linear",
-                "lineWidth": 1,
-                "pointSize": 5,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "showPoints": "auto",
-                "spanNulls": false,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "off"
-                }
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              }
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 14,
-            "w": 12,
-            "x": 0,
-            "y": 30
-          },
-          "id": 11,
-          "options": {
-            "legend": {
-              "calcs": [
-                "mean",
-                "min",
-                "max"
-              ],
-              "displayMode": "table",
-              "placement": "bottom"
-            },
-            "tooltip": {
-              "mode": "multi",
-              "sort": "desc"
-            }
-          },
-          "targets": [
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "MM2Dgw4nk"
-              },
-              "exemplar": true,
-              "expr": "rate(dipdup_rarible_order_activity_count{}[1m]) * 60",
-              "interval": "",
-              "legendFormat": "{{index}} {{index_type}}",
-              "refId": "A"
-            }
-          ],
-          "title": "Rarible activities",
-          "transformations": [
-            {
-              "id": "filterFieldsByName",
-              "options": {
-                "include": {
-                  "names": [
-                    "PlatformEnum.RARIBLE_V1 ActivityTypeEnum.ORDER_CANCEL",
-                    "PlatformEnum.RARIBLE_V1 ActivityTypeEnum.ORDER_MATCH",
-                    "PlatformEnum.RARIBLE_V2 ActivityTypeEnum.ORDER_CANCEL",
-                    "PlatformEnum.RARIBLE_V2 ActivityTypeEnum.ORDER_LIST",
-                    "PlatformEnum.RARIBLE_V2 ActivityTypeEnum.ORDER_MATCH",
-                    "Time"
-                  ],
-                  "pattern": "/RARIBLE/"
-                }
-              }
-            }
-          ],
-          "type": "timeseries"
-        },
-        {
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "thresholds"
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  }
-                ]
-              }
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 14,
-            "w": 12,
-            "x": 12,
-            "y": 30
-          },
-          "id": 23,
-          "options": {
-            "displayMode": "lcd",
-            "orientation": "horizontal",
-            "reduceOptions": {
-              "calcs": [
-                "lastNotNull"
-              ],
-              "fields": "",
-              "values": false
-            },
-            "showUnfilled": true
-          },
-          "pluginVersion": "8.4.6",
-          "targets": [
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "MM2Dgw4nk"
-              },
-              "exemplar": false,
-              "expr": "dipdup_rarible_order_activity_sum",
-              "instant": true,
-              "interval": "",
-              "legendFormat": "{{index}} {{index_type}}",
-              "refId": "A"
-            }
-          ],
-          "title": "Rarible totals",
-          "transformations": [
-            {
-              "id": "filterFieldsByName",
-              "options": {
-                "include": {
-                  "pattern": "/(RARIBLE)/"
-                }
-              }
-            }
-          ],
-          "type": "bargauge"
-        }
-      ],
+      "panels": [],
       "title": "Rarible",
       "type": "row"
+    },
+    {
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 14,
+        "w": 12,
+        "x": 0,
+        "y": 34
+      },
+      "id": 11,
+      "options": {
+        "legend": {
+          "calcs": [
+            "mean",
+            "min",
+            "max"
+          ],
+          "displayMode": "table",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "MM2Dgw4nk"
+          },
+          "exemplar": true,
+          "expr": "rate(dipdup_rarible_order_activity_count{}[1m]) * 60",
+          "interval": "",
+          "legendFormat": "{{index}} {{index_type}}",
+          "refId": "A"
+        }
+      ],
+      "title": "Rarible activities",
+      "transformations": [
+        {
+          "id": "filterFieldsByName",
+          "options": {
+            "include": {
+              "names": [
+                "PlatformEnum.RARIBLE_V1 ActivityTypeEnum.ORDER_CANCEL",
+                "PlatformEnum.RARIBLE_V1 ActivityTypeEnum.ORDER_MATCH",
+                "PlatformEnum.RARIBLE_V2 ActivityTypeEnum.ORDER_CANCEL",
+                "PlatformEnum.RARIBLE_V2 ActivityTypeEnum.ORDER_LIST",
+                "PlatformEnum.RARIBLE_V2 ActivityTypeEnum.ORDER_MATCH",
+                "Time"
+              ],
+              "pattern": "/RARIBLE/"
+            }
+          }
+        }
+      ],
+      "type": "timeseries"
+    },
+    {
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 14,
+        "w": 12,
+        "x": 12,
+        "y": 34
+      },
+      "id": 23,
+      "options": {
+        "displayMode": "lcd",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showUnfilled": true
+      },
+      "pluginVersion": "8.4.6",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "MM2Dgw4nk"
+          },
+          "exemplar": false,
+          "expr": "dipdup_rarible_order_activity_sum",
+          "instant": true,
+          "interval": "",
+          "legendFormat": "{{index}} {{index_type}}",
+          "refId": "A"
+        }
+      ],
+      "title": "Rarible totals",
+      "transformations": [
+        {
+          "id": "filterFieldsByName",
+          "options": {
+            "include": {
+              "pattern": "/(RARIBLE)/"
+            }
+          }
+        }
+      ],
+      "type": "bargauge"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 48
+      },
+      "id": 19,
+      "panels": [],
+      "title": "OBJKT",
+      "type": "row"
+    },
+    {
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 14,
+        "w": 12,
+        "x": 0,
+        "y": 49
+      },
+      "id": 14,
+      "options": {
+        "legend": {
+          "calcs": [
+            "mean",
+            "min",
+            "max"
+          ],
+          "displayMode": "table",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "MM2Dgw4nk"
+          },
+          "exemplar": true,
+          "expr": "rate(dipdup_rarible_order_activity_count[1m]) * 60",
+          "interval": "",
+          "legendFormat": "{{index}} {{index_type}}",
+          "refId": "A"
+        }
+      ],
+      "title": "OBJKT activities",
+      "transformations": [
+        {
+          "id": "filterFieldsByName",
+          "options": {
+            "include": {
+              "names": [
+                "PlatformEnum.OBJKT_V1 ActivityTypeEnum.ORDER_CANCEL",
+                "PlatformEnum.OBJKT_V1 ActivityTypeEnum.ORDER_LIST",
+                "PlatformEnum.OBJKT_V1 ActivityTypeEnum.ORDER_MATCH",
+                "PlatformEnum.OBJKT_V2 ActivityTypeEnum.ORDER_CANCEL",
+                "PlatformEnum.OBJKT_V2 ActivityTypeEnum.ORDER_LIST",
+                "PlatformEnum.OBJKT_V2 ActivityTypeEnum.ORDER_MATCH",
+                "Time"
+              ],
+              "pattern": "/OBJKT/"
+            }
+          }
+        }
+      ],
+      "type": "timeseries"
+    },
+    {
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 14,
+        "w": 12,
+        "x": 12,
+        "y": 49
+      },
+      "id": 21,
+      "options": {
+        "displayMode": "lcd",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showUnfilled": true
+      },
+      "pluginVersion": "8.4.6",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "MM2Dgw4nk"
+          },
+          "exemplar": false,
+          "expr": "dipdup_rarible_order_activity_count",
+          "instant": true,
+          "interval": "",
+          "legendFormat": "{{index}} {{index_type}}",
+          "refId": "A"
+        }
+      ],
+      "title": "OBJKT totals",
+      "transformations": [
+        {
+          "id": "filterFieldsByName",
+          "options": {
+            "include": {
+              "pattern": "/(OBJKT)/"
+            }
+          }
+        }
+      ],
+      "type": "bargauge"
     },
     {
       "collapsed": true,
@@ -721,9 +908,9 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 34
+        "y": 63
       },
-      "id": 19,
+      "id": 17,
       "panels": [
         {
           "fieldConfig": {
@@ -764,8 +951,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -777,12 +963,12 @@
             "overrides": []
           },
           "gridPos": {
-            "h": 14,
+            "h": 12,
             "w": 12,
             "x": 0,
-            "y": 45
+            "y": 50
           },
-          "id": 14,
+          "id": 15,
           "options": {
             "legend": {
               "calcs": [
@@ -811,22 +997,19 @@
               "refId": "A"
             }
           ],
-          "title": "OBJKT activities",
+          "title": "HEN activities",
           "transformations": [
             {
               "id": "filterFieldsByName",
               "options": {
                 "include": {
                   "names": [
-                    "PlatformEnum.OBJKT_V1 ActivityTypeEnum.ORDER_CANCEL",
-                    "PlatformEnum.OBJKT_V1 ActivityTypeEnum.ORDER_LIST",
-                    "PlatformEnum.OBJKT_V1 ActivityTypeEnum.ORDER_MATCH",
-                    "PlatformEnum.OBJKT_V2 ActivityTypeEnum.ORDER_CANCEL",
-                    "PlatformEnum.OBJKT_V2 ActivityTypeEnum.ORDER_LIST",
-                    "PlatformEnum.OBJKT_V2 ActivityTypeEnum.ORDER_MATCH",
+                    "PlatformEnum.HEN ActivityTypeEnum.ORDER_CANCEL",
+                    "PlatformEnum.HEN ActivityTypeEnum.ORDER_LIST",
+                    "PlatformEnum.HEN ActivityTypeEnum.ORDER_MATCH",
                     "Time"
                   ],
-                  "pattern": "/OBJKT/"
+                  "pattern": "/HEN/"
                 }
               }
             }
@@ -844,8 +1027,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               }
@@ -853,12 +1035,12 @@
             "overrides": []
           },
           "gridPos": {
-            "h": 14,
+            "h": 12,
             "w": 12,
             "x": 12,
-            "y": 45
+            "y": 50
           },
-          "id": 21,
+          "id": 22,
           "options": {
             "displayMode": "lcd",
             "orientation": "horizontal",
@@ -879,20 +1061,20 @@
                 "uid": "MM2Dgw4nk"
               },
               "exemplar": false,
-              "expr": "dipdup_rarible_order_activity_count",
+              "expr": "dipdup_rarible_order_activity_sum",
               "instant": true,
               "interval": "",
               "legendFormat": "{{index}} {{index_type}}",
               "refId": "A"
             }
           ],
-          "title": "OBJKT totals",
+          "title": "HEN totals",
           "transformations": [
             {
               "id": "filterFieldsByName",
               "options": {
                 "include": {
-                  "pattern": "/(OBJKT)/"
+                  "pattern": "/(HEN)/"
                 }
               }
             }
@@ -900,560 +1082,374 @@
           "type": "bargauge"
         }
       ],
-      "title": "OBJKT",
-      "type": "row"
-    },
-    {
-      "collapsed": false,
-      "gridPos": {
-        "h": 1,
-        "w": 24,
-        "x": 0,
-        "y": 35
-      },
-      "id": 17,
-      "panels": [],
       "title": "HEN",
       "type": "row"
     },
     {
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 0,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "auto",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 12,
-        "w": 12,
-        "x": 0,
-        "y": 36
-      },
-      "id": 15,
-      "options": {
-        "legend": {
-          "calcs": [
-            "mean",
-            "min",
-            "max"
-          ],
-          "displayMode": "table",
-          "placement": "bottom"
-        },
-        "tooltip": {
-          "mode": "multi",
-          "sort": "desc"
-        }
-      },
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "MM2Dgw4nk"
-          },
-          "exemplar": true,
-          "expr": "rate(dipdup_rarible_order_activity_count[1m]) * 60",
-          "interval": "",
-          "legendFormat": "{{index}} {{index_type}}",
-          "refId": "A"
-        }
-      ],
-      "title": "HEN activities",
-      "transformations": [
-        {
-          "id": "filterFieldsByName",
-          "options": {
-            "include": {
-              "names": [
-                "PlatformEnum.HEN ActivityTypeEnum.ORDER_CANCEL",
-                "PlatformEnum.HEN ActivityTypeEnum.ORDER_LIST",
-                "PlatformEnum.HEN ActivityTypeEnum.ORDER_MATCH",
-                "Time"
-              ],
-              "pattern": "/HEN/"
-            }
-          }
-        }
-      ],
-      "type": "timeseries"
-    },
-    {
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 12,
-        "w": 12,
-        "x": 12,
-        "y": 36
-      },
-      "id": 22,
-      "options": {
-        "displayMode": "lcd",
-        "orientation": "horizontal",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "showUnfilled": true
-      },
-      "pluginVersion": "8.4.6",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "MM2Dgw4nk"
-          },
-          "exemplar": false,
-          "expr": "dipdup_rarible_order_activity_sum",
-          "instant": true,
-          "interval": "",
-          "legendFormat": "{{index}} {{index_type}}",
-          "refId": "A"
-        }
-      ],
-      "title": "HEN totals",
-      "transformations": [
-        {
-          "id": "filterFieldsByName",
-          "options": {
-            "include": {
-              "pattern": "/(HEN)/"
-            }
-          }
-        }
-      ],
-      "type": "bargauge"
-    },
-    {
-      "collapsed": false,
+      "collapsed": true,
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 48
+        "y": 64
       },
       "id": 27,
-      "panels": [],
+      "panels": [
+        {
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 12,
+            "w": 12,
+            "x": 0,
+            "y": 51
+          },
+          "id": 24,
+          "options": {
+            "legend": {
+              "calcs": [
+                "mean",
+                "min",
+                "max"
+              ],
+              "displayMode": "table",
+              "placement": "bottom"
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "desc"
+            }
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "MM2Dgw4nk"
+              },
+              "exemplar": true,
+              "expr": "rate(dipdup_rarible_order_activity_count[1m]) * 60",
+              "interval": "",
+              "legendFormat": "{{index}} {{index_type}}",
+              "refId": "A"
+            }
+          ],
+          "title": "TEIA activities",
+          "transformations": [
+            {
+              "id": "filterFieldsByName",
+              "options": {
+                "include": {
+                  "names": [
+                    "Time"
+                  ],
+                  "pattern": "/TEIA/"
+                }
+              }
+            }
+          ],
+          "type": "timeseries"
+        },
+        {
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 12,
+            "w": 12,
+            "x": 12,
+            "y": 51
+          },
+          "id": 25,
+          "options": {
+            "displayMode": "lcd",
+            "orientation": "horizontal",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "showUnfilled": true
+          },
+          "pluginVersion": "8.4.6",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "MM2Dgw4nk"
+              },
+              "exemplar": false,
+              "expr": "dipdup_rarible_order_activity_sum",
+              "instant": true,
+              "interval": "",
+              "legendFormat": "{{index}} {{index_type}}",
+              "refId": "A"
+            }
+          ],
+          "title": "TEIA totals",
+          "transformations": [
+            {
+              "id": "filterFieldsByName",
+              "options": {
+                "include": {
+                  "names": [
+                    "Time"
+                  ],
+                  "pattern": "/(TEIA)/"
+                }
+              }
+            }
+          ],
+          "type": "bargauge"
+        }
+      ],
       "title": "TEIA",
       "type": "row"
     },
     {
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 0,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "auto",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 12,
-        "w": 12,
-        "x": 0,
-        "y": 49
-      },
-      "id": 24,
-      "options": {
-        "legend": {
-          "calcs": [
-            "mean",
-            "min",
-            "max"
-          ],
-          "displayMode": "table",
-          "placement": "bottom"
-        },
-        "tooltip": {
-          "mode": "multi",
-          "sort": "desc"
-        }
-      },
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "MM2Dgw4nk"
-          },
-          "exemplar": true,
-          "expr": "rate(dipdup_rarible_order_activity_count[1m]) * 60",
-          "interval": "",
-          "legendFormat": "{{index}} {{index_type}}",
-          "refId": "A"
-        }
-      ],
-      "title": "TEIA activities",
-      "transformations": [
-        {
-          "id": "filterFieldsByName",
-          "options": {
-            "include": {
-              "names": [
-                "Time"
-              ],
-              "pattern": "/TEIA/"
-            }
-          }
-        }
-      ],
-      "type": "timeseries"
-    },
-    {
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 12,
-        "w": 12,
-        "x": 12,
-        "y": 49
-      },
-      "id": 25,
-      "options": {
-        "displayMode": "lcd",
-        "orientation": "horizontal",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "showUnfilled": true
-      },
-      "pluginVersion": "8.4.6",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "MM2Dgw4nk"
-          },
-          "exemplar": false,
-          "expr": "dipdup_rarible_order_activity_sum",
-          "instant": true,
-          "interval": "",
-          "legendFormat": "{{index}} {{index_type}}",
-          "refId": "A"
-        }
-      ],
-      "title": "TEIA totals",
-      "transformations": [
-        {
-          "id": "filterFieldsByName",
-          "options": {
-            "include": {
-              "names": [
-                "Time"
-              ],
-              "pattern": "/(TEIA)/"
-            }
-          }
-        }
-      ],
-      "type": "bargauge"
-    },
-    {
-      "collapsed": false,
+      "collapsed": true,
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 61
+        "y": 65
       },
       "id": 29,
-      "panels": [],
+      "panels": [
+        {
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 12,
+            "w": 12,
+            "x": 0,
+            "y": 52
+          },
+          "id": 30,
+          "options": {
+            "legend": {
+              "calcs": [
+                "mean",
+                "min",
+                "max"
+              ],
+              "displayMode": "table",
+              "placement": "bottom"
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "desc"
+            }
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "MM2Dgw4nk"
+              },
+              "exemplar": true,
+              "expr": "rate(dipdup_rarible_order_activity_count[1m]) * 60",
+              "interval": "",
+              "legendFormat": "{{index}} {{index_type}}",
+              "refId": "A"
+            }
+          ],
+          "title": "VERSUM activities",
+          "transformations": [
+            {
+              "id": "filterFieldsByName",
+              "options": {
+                "include": {
+                  "names": [
+                    "Time"
+                  ],
+                  "pattern": "/VERSUM/"
+                }
+              }
+            }
+          ],
+          "type": "timeseries"
+        },
+        {
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 12,
+            "w": 12,
+            "x": 12,
+            "y": 52
+          },
+          "id": 31,
+          "options": {
+            "displayMode": "lcd",
+            "orientation": "horizontal",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "showUnfilled": true
+          },
+          "pluginVersion": "8.4.6",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "MM2Dgw4nk"
+              },
+              "exemplar": false,
+              "expr": "dipdup_rarible_order_activity_sum",
+              "instant": true,
+              "interval": "",
+              "legendFormat": "{{index}} {{index_type}}",
+              "refId": "A"
+            }
+          ],
+          "title": "VERSUM totals",
+          "transformations": [
+            {
+              "id": "filterFieldsByName",
+              "options": {
+                "include": {
+                  "names": [
+                    "Time"
+                  ],
+                  "pattern": "/(VERSUM)/"
+                }
+              }
+            }
+          ],
+          "type": "bargauge"
+        }
+      ],
       "title": "VERSUM",
       "type": "row"
-    },
-    {
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 0,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "auto",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 12,
-        "w": 12,
-        "x": 0,
-        "y": 62
-      },
-      "id": 30,
-      "options": {
-        "legend": {
-          "calcs": [
-            "mean",
-            "min",
-            "max"
-          ],
-          "displayMode": "table",
-          "placement": "bottom"
-        },
-        "tooltip": {
-          "mode": "multi",
-          "sort": "desc"
-        }
-      },
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "MM2Dgw4nk"
-          },
-          "exemplar": true,
-          "expr": "rate(dipdup_rarible_order_activity_count[1m]) * 60",
-          "interval": "",
-          "legendFormat": "{{index}} {{index_type}}",
-          "refId": "A"
-        }
-      ],
-      "title": "VERSUM activities",
-      "transformations": [
-        {
-          "id": "filterFieldsByName",
-          "options": {
-            "include": {
-              "names": [
-                "Time"
-              ],
-              "pattern": "/VERSUM/"
-            }
-          }
-        }
-      ],
-      "type": "timeseries"
-    },
-    {
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 12,
-        "w": 12,
-        "x": 12,
-        "y": 62
-      },
-      "id": 31,
-      "options": {
-        "displayMode": "lcd",
-        "orientation": "horizontal",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "showUnfilled": true
-      },
-      "pluginVersion": "8.4.6",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "MM2Dgw4nk"
-          },
-          "exemplar": false,
-          "expr": "dipdup_rarible_order_activity_sum",
-          "instant": true,
-          "interval": "",
-          "legendFormat": "{{index}} {{index_type}}",
-          "refId": "A"
-        }
-      ],
-      "title": "VERSUM totals",
-      "transformations": [
-        {
-          "id": "filterFieldsByName",
-          "options": {
-            "include": {
-              "names": [
-                "Time"
-              ],
-              "pattern": "/(VERSUM)/"
-            }
-          }
-        }
-      ],
-      "type": "bargauge"
     }
   ],
   "refresh": "5s",
@@ -1464,13 +1460,13 @@
     "list": []
   },
   "time": {
-    "from": "now-5m",
+    "from": "now-1h",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "",
   "title": "Tezos.Indexer",
   "uid": "WR2Rz7WVz",
-  "version": 1,
+  "version": 7,
   "weekStart": ""
 }
