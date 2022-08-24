@@ -33,8 +33,8 @@ async def cancel_obsolete_v1_orders():
             logger.info(f"{i} - Cancelling order {order_model.id}")
             order_model.status = OrderStatusEnum.CANCELLED
             order_model.cancelled = True
-            order_model.ended_at = datetime.now()
-            order_model.last_updated_at = datetime.now()
+            order_model.ended_at = datetime.now().replace(microsecond=0)
+            order_model.last_updated_at = datetime.now().replace(microsecond=0)
             await order_model.save()
             legacy_cleaning.last_level = f"{i}"
             await legacy_cleaning.save()
