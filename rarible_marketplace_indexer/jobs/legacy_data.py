@@ -17,7 +17,7 @@ async def cancel_obsolete_v1_orders():
 
     logger = logging.getLogger('dipdup.v1_cleaning')
 
-    if legacy_cleaning.last_level != "DONE":
+    if legacy_cleaning.last_level != "SYNCED":
         logger.info("Processing faulty legacy orders...")
         data = open("/app/rarible_marketplace_indexer/jobs/data/faulty_legacy_orders.json")
         i = int(legacy_cleaning.last_level)
@@ -33,15 +33,15 @@ async def cancel_obsolete_v1_orders():
             logger.info(f"{i} - Cancelling order {order_model.id}")
             order_model.status = OrderStatusEnum.CANCELLED
             order_model.cancelled = True
-            order_model.ended_at = datetime.now()
-            order_model.last_updated_at = datetime.now()
+            order_model.ended_at = datetime.now().replace(microsecond=0)
+            order_model.last_updated_at = datetime.now().replace(microsecond=0)
             await order_model.save()
             legacy_cleaning.last_level = f"{i}"
             await legacy_cleaning.save()
 
             i = i + 1
         logger.info(f"Cleaned {i} orders")
-        legacy_cleaning.last_level = "DONE"
+        legacy_cleaning.last_level = "SYNCED"
         await legacy_cleaning.save()
 
 
