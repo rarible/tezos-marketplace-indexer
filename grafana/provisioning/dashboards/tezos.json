@@ -432,12 +432,138 @@
           "refId": "C"
         }
       ],
-      "title": "Tezos order activities",
+      "title": "Tezos order activities (merged)",
       "transformations": [
         {
           "id": "filterFieldsByName",
           "options": {
             "include": {}
+          }
+        }
+      ],
+      "type": "timeseries"
+    },
+    {
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Field"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Index"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Last *"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Transaction count"
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 15,
+        "w": 24,
+        "x": 0,
+        "y": 18
+      },
+      "id": 20,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "table",
+          "placement": "right",
+          "sortBy": "Total",
+          "sortDesc": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "8.4.6",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "MM2Dgw4nk"
+          },
+          "exemplar": true,
+          "expr": "rate(dipdup_rarible_order_activity_count[1m]) * 60",
+          "instant": false,
+          "interval": "",
+          "legendFormat": "{{index}} {{index_type}}",
+          "refId": "A"
+        }
+      ],
+      "title": "Tezos total order activities",
+      "transformations": [
+        {
+          "id": "renameByRegex",
+          "options": {
+            "regex": "PlatformEnum.",
+            "renamePattern": ""
+          }
+        },
+        {
+          "id": "renameByRegex",
+          "options": {
+            "regex": "ActivityTypeEnum.",
+            "renamePattern": ""
           }
         }
       ],
@@ -468,7 +594,31 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "Last *"
+              "options": "index"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 257
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "index_type"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 306
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Value"
             },
             "properties": [
               {
@@ -476,40 +626,16 @@
                 "value": "lcd-gauge"
               }
             ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Field"
-            },
-            "properties": [
-              {
-                "id": "displayName",
-                "value": "Index"
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Last *"
-            },
-            "properties": [
-              {
-                "id": "displayName",
-                "value": "Transaction count"
-              }
-            ]
           }
         ]
       },
       "gridPos": {
-        "h": 21,
+        "h": 22,
         "w": 24,
         "x": 0,
-        "y": 18
+        "y": 33
       },
-      "id": 20,
+      "id": 39,
       "options": {
         "footer": {
           "fields": "",
@@ -522,7 +648,7 @@
         "sortBy": [
           {
             "desc": true,
-            "displayName": "Transaction count"
+            "displayName": "Value"
           }
         ]
       },
@@ -533,15 +659,16 @@
             "type": "prometheus",
             "uid": "MM2Dgw4nk"
           },
-          "exemplar": true,
-          "expr": "sort_desc(dipdup_rarible_order_activity_sum)",
-          "instant": false,
+          "exemplar": false,
+          "expr": "dipdup_rarible_order_activity_count",
+          "format": "table",
+          "instant": true,
           "interval": "",
           "legendFormat": "{{index}} {{index_type}}",
           "refId": "A"
         }
       ],
-      "title": "Totals",
+      "title": "Tezos total order activities",
       "transformations": [
         {
           "id": "renameByRegex",
@@ -558,14 +685,16 @@
           }
         },
         {
-          "id": "reduce",
+          "id": "organize",
           "options": {
-            "includeTimeField": false,
-            "labelsToFields": false,
-            "mode": "seriesToRows",
-            "reducers": [
-              "lastNotNull"
-            ]
+            "excludeByName": {
+              "Time": true,
+              "__name__": true,
+              "instance": true,
+              "job": true
+            },
+            "indexByName": {},
+            "renameByName": {}
           }
         }
       ],
@@ -577,7 +706,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 39
+        "y": 55
       },
       "id": 13,
       "panels": [],
@@ -636,21 +765,19 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 7,
+        "h": 8,
         "w": 12,
         "x": 0,
-        "y": 40
+        "y": 56
       },
       "id": 11,
       "options": {
         "legend": {
-          "calcs": [
-            "mean",
-            "min",
-            "max"
-          ],
-          "displayMode": "table",
-          "placement": "right"
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "sortBy": "Total",
+          "sortDesc": true
         },
         "tooltip": {
           "mode": "multi",
@@ -678,6 +805,7 @@
             "include": {
               "names": [
                 "PlatformEnum.RARIBLE_V1 ActivityTypeEnum.ORDER_CANCEL",
+                "PlatformEnum.RARIBLE_V1 ActivityTypeEnum.ORDER_LIST",
                 "PlatformEnum.RARIBLE_V1 ActivityTypeEnum.ORDER_MATCH",
                 "PlatformEnum.RARIBLE_V2 ActivityTypeEnum.ORDER_CANCEL",
                 "PlatformEnum.RARIBLE_V2 ActivityTypeEnum.ORDER_LIST",
@@ -730,40 +858,48 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "Last *"
+              "options": "index"
             },
             "properties": [
               {
-                "id": "custom.displayMode",
-                "value": "lcd-gauge"
-              },
-              {
-                "id": "displayName",
-                "value": "Transaction count"
+                "id": "custom.width",
+                "value": 257
               }
             ]
           },
           {
             "matcher": {
               "id": "byName",
-              "options": "Field"
+              "options": "index_type"
             },
             "properties": [
               {
-                "id": "displayName",
-                "value": "Index"
+                "id": "custom.width",
+                "value": 306
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Value"
+            },
+            "properties": [
+              {
+                "id": "custom.displayMode",
+                "value": "lcd-gauge"
               }
             ]
           }
         ]
       },
       "gridPos": {
-        "h": 7,
+        "h": 8,
         "w": 12,
         "x": 12,
-        "y": 40
+        "y": 56
       },
-      "id": 23,
+      "id": 40,
       "options": {
         "footer": {
           "fields": "",
@@ -772,11 +908,12 @@
           ],
           "show": false
         },
+        "frameIndex": 3,
         "showHeader": true,
         "sortBy": [
           {
             "desc": true,
-            "displayName": "Transaction count"
+            "displayName": "Value"
           }
         ]
       },
@@ -787,24 +924,17 @@
             "type": "prometheus",
             "uid": "MM2Dgw4nk"
           },
-          "exemplar": true,
+          "exemplar": false,
           "expr": "dipdup_rarible_order_activity_sum",
-          "instant": false,
+          "format": "table",
+          "instant": true,
           "interval": "",
           "legendFormat": "{{index}} {{index_type}}",
           "refId": "A"
         }
       ],
-      "title": "Rarible totals",
+      "title": "Rarible total order activities",
       "transformations": [
-        {
-          "id": "filterFieldsByName",
-          "options": {
-            "include": {
-              "pattern": "/RARIBLE/"
-            }
-          }
-        },
         {
           "id": "renameByRegex",
           "options": {
@@ -820,12 +950,34 @@
           }
         },
         {
-          "id": "reduce",
+          "id": "organize",
           "options": {
-            "labelsToFields": false,
-            "reducers": [
-              "lastNotNull"
-            ]
+            "excludeByName": {
+              "Time": true,
+              "__name__": true,
+              "instance": true,
+              "job": true
+            },
+            "indexByName": {},
+            "renameByName": {}
+          }
+        },
+        {
+          "id": "filterByValue",
+          "options": {
+            "filters": [
+              {
+                "config": {
+                  "id": "regex",
+                  "options": {
+                    "value": "RARIBLE"
+                  }
+                },
+                "fieldName": "index"
+              }
+            ],
+            "match": "all",
+            "type": "include"
           }
         }
       ],
@@ -837,7 +989,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 47
+        "y": 64
       },
       "id": 19,
       "panels": [],
@@ -899,18 +1051,16 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 48
+        "y": 65
       },
-      "id": 14,
+      "id": 41,
       "options": {
         "legend": {
-          "calcs": [
-            "mean",
-            "min",
-            "max"
-          ],
-          "displayMode": "table",
-          "placement": "right"
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "sortBy": "Total",
+          "sortDesc": true
         },
         "tooltip": {
           "mode": "multi",
@@ -924,7 +1074,7 @@
             "uid": "MM2Dgw4nk"
           },
           "exemplar": true,
-          "expr": "rate(dipdup_rarible_order_activity_count[1m]) * 60",
+          "expr": "rate(dipdup_rarible_order_activity_count{}[1m]) * 60",
           "interval": "",
           "legendFormat": "{{index}} {{index_type}}",
           "refId": "A"
@@ -952,14 +1102,14 @@
         {
           "id": "renameByRegex",
           "options": {
-            "regex": "ActivityTypeEnum.",
+            "regex": "PlatformEnum.",
             "renamePattern": ""
           }
         },
         {
           "id": "renameByRegex",
           "options": {
-            "regex": "PlatformTypeEnum",
+            "regex": "ActivityTypeEnum.",
             "renamePattern": ""
           }
         }
@@ -991,25 +1141,33 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "Field"
+              "options": "index"
             },
             "properties": [
               {
-                "id": "displayName",
-                "value": "Index"
+                "id": "custom.width",
+                "value": 257
               }
             ]
           },
           {
             "matcher": {
               "id": "byName",
-              "options": "Last *"
+              "options": "index_type"
             },
             "properties": [
               {
-                "id": "displayName",
-                "value": "Transaction count"
-              },
+                "id": "custom.width",
+                "value": 306
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Value"
+            },
+            "properties": [
               {
                 "id": "custom.displayMode",
                 "value": "lcd-gauge"
@@ -1022,9 +1180,9 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 48
+        "y": 65
       },
-      "id": 21,
+      "id": 42,
       "options": {
         "footer": {
           "fields": "",
@@ -1033,11 +1191,12 @@
           ],
           "show": false
         },
+        "frameIndex": 3,
         "showHeader": true,
         "sortBy": [
           {
             "desc": true,
-            "displayName": "Transaction count"
+            "displayName": "Value"
           }
         ]
       },
@@ -1048,24 +1207,17 @@
             "type": "prometheus",
             "uid": "MM2Dgw4nk"
           },
-          "exemplar": true,
-          "expr": "dipdup_rarible_order_activity_count",
-          "instant": false,
+          "exemplar": false,
+          "expr": "dipdup_rarible_order_activity_sum",
+          "format": "table",
+          "instant": true,
           "interval": "",
           "legendFormat": "{{index}} {{index_type}}",
           "refId": "A"
         }
       ],
-      "title": "OBJKT totals",
+      "title": "OBJKT total order activities",
       "transformations": [
-        {
-          "id": "filterFieldsByName",
-          "options": {
-            "include": {
-              "pattern": "/(OBJKT)/"
-            }
-          }
-        },
         {
           "id": "renameByRegex",
           "options": {
@@ -1081,11 +1233,34 @@
           }
         },
         {
-          "id": "reduce",
+          "id": "organize",
           "options": {
-            "reducers": [
-              "lastNotNull"
-            ]
+            "excludeByName": {
+              "Time": true,
+              "__name__": true,
+              "instance": true,
+              "job": true
+            },
+            "indexByName": {},
+            "renameByName": {}
+          }
+        },
+        {
+          "id": "filterByValue",
+          "options": {
+            "filters": [
+              {
+                "config": {
+                  "id": "regex",
+                  "options": {
+                    "value": "OBJKT"
+                  }
+                },
+                "fieldName": "index"
+              }
+            ],
+            "match": "all",
+            "type": "include"
           }
         }
       ],
@@ -1097,7 +1272,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 56
+        "y": 73
       },
       "id": 17,
       "panels": [],
@@ -1156,21 +1331,19 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 5,
+        "h": 8,
         "w": 12,
         "x": 0,
-        "y": 57
+        "y": 74
       },
-      "id": 15,
+      "id": 43,
       "options": {
         "legend": {
-          "calcs": [
-            "mean",
-            "min",
-            "max"
-          ],
-          "displayMode": "table",
-          "placement": "right"
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "sortBy": "Total",
+          "sortDesc": true
         },
         "tooltip": {
           "mode": "multi",
@@ -1184,7 +1357,7 @@
             "uid": "MM2Dgw4nk"
           },
           "exemplar": true,
-          "expr": "rate(dipdup_rarible_order_activity_count[1m]) * 60",
+          "expr": "rate(dipdup_rarible_order_activity_count{}[1m]) * 60",
           "interval": "",
           "legendFormat": "{{index}} {{index_type}}",
           "refId": "A"
@@ -1209,14 +1382,14 @@
         {
           "id": "renameByRegex",
           "options": {
-            "regex": "ActivityTypeEnum.",
+            "regex": "PlatformEnum.",
             "renamePattern": ""
           }
         },
         {
           "id": "renameByRegex",
           "options": {
-            "regex": "PlatformEnum.",
+            "regex": "ActivityTypeEnum.",
             "renamePattern": ""
           }
         }
@@ -1248,25 +1421,33 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "Field"
+              "options": "index"
             },
             "properties": [
               {
-                "id": "displayName",
-                "value": "Index"
+                "id": "custom.width",
+                "value": 257
               }
             ]
           },
           {
             "matcher": {
               "id": "byName",
-              "options": "Last *"
+              "options": "index_type"
             },
             "properties": [
               {
-                "id": "displayName",
-                "value": "Transaction count"
-              },
+                "id": "custom.width",
+                "value": 306
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Value"
+            },
+            "properties": [
               {
                 "id": "custom.displayMode",
                 "value": "lcd-gauge"
@@ -1276,12 +1457,12 @@
         ]
       },
       "gridPos": {
-        "h": 5,
+        "h": 8,
         "w": 12,
         "x": 12,
-        "y": 57
+        "y": 74
       },
-      "id": 32,
+      "id": 44,
       "options": {
         "footer": {
           "fields": "",
@@ -1290,11 +1471,12 @@
           ],
           "show": false
         },
+        "frameIndex": 3,
         "showHeader": true,
         "sortBy": [
           {
             "desc": true,
-            "displayName": "Transaction count"
+            "displayName": "Value"
           }
         ]
       },
@@ -1305,24 +1487,17 @@
             "type": "prometheus",
             "uid": "MM2Dgw4nk"
           },
-          "exemplar": true,
-          "expr": "dipdup_rarible_order_activity_count",
-          "instant": false,
+          "exemplar": false,
+          "expr": "dipdup_rarible_order_activity_sum",
+          "format": "table",
+          "instant": true,
           "interval": "",
           "legendFormat": "{{index}} {{index_type}}",
           "refId": "A"
         }
       ],
-      "title": "HEN totals",
+      "title": "HEN total order activities",
       "transformations": [
-        {
-          "id": "filterFieldsByName",
-          "options": {
-            "include": {
-              "pattern": "/(HEN)/"
-            }
-          }
-        },
         {
           "id": "renameByRegex",
           "options": {
@@ -1338,11 +1513,34 @@
           }
         },
         {
-          "id": "reduce",
+          "id": "organize",
           "options": {
-            "reducers": [
-              "lastNotNull"
-            ]
+            "excludeByName": {
+              "Time": true,
+              "__name__": true,
+              "instance": true,
+              "job": true
+            },
+            "indexByName": {},
+            "renameByName": {}
+          }
+        },
+        {
+          "id": "filterByValue",
+          "options": {
+            "filters": [
+              {
+                "config": {
+                  "id": "regex",
+                  "options": {
+                    "value": "HEN"
+                  }
+                },
+                "fieldName": "index"
+              }
+            ],
+            "match": "all",
+            "type": "include"
           }
         }
       ],
@@ -1354,7 +1552,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 62
+        "y": 82
       },
       "id": 27,
       "panels": [],
@@ -1413,21 +1611,19 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 5,
+        "h": 8,
         "w": 12,
         "x": 0,
-        "y": 63
+        "y": 83
       },
-      "id": 24,
+      "id": 45,
       "options": {
         "legend": {
-          "calcs": [
-            "mean",
-            "min",
-            "max"
-          ],
-          "displayMode": "table",
-          "placement": "right"
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "sortBy": "Total",
+          "sortDesc": true
         },
         "tooltip": {
           "mode": "multi",
@@ -1441,7 +1637,7 @@
             "uid": "MM2Dgw4nk"
           },
           "exemplar": true,
-          "expr": "rate(dipdup_rarible_order_activity_count[1m]) * 60",
+          "expr": "rate(dipdup_rarible_order_activity_count{}[1m]) * 60",
           "interval": "",
           "legendFormat": "{{index}} {{index_type}}",
           "refId": "A"
@@ -1454,7 +1650,10 @@
           "options": {
             "include": {
               "names": [
-                "Time"
+                "Time",
+                "PlatformEnum.TEIA_V1 ActivityTypeEnum.ORDER_CANCEL",
+                "PlatformEnum.TEIA_V1 ActivityTypeEnum.ORDER_LIST",
+                "PlatformEnum.TEIA_V1 ActivityTypeEnum.ORDER_MATCH"
               ],
               "pattern": "/TEIA/"
             }
@@ -1463,14 +1662,14 @@
         {
           "id": "renameByRegex",
           "options": {
-            "regex": "ActivityTypeEnum.",
+            "regex": "PlatformEnum.",
             "renamePattern": ""
           }
         },
         {
           "id": "renameByRegex",
           "options": {
-            "regex": "PlatformEnum.",
+            "regex": "ActivityTypeEnum.",
             "renamePattern": ""
           }
         }
@@ -1502,25 +1701,33 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "Field"
+              "options": "index"
             },
             "properties": [
               {
-                "id": "displayName",
-                "value": "Index"
+                "id": "custom.width",
+                "value": 257
               }
             ]
           },
           {
             "matcher": {
               "id": "byName",
-              "options": "Last *"
+              "options": "index_type"
             },
             "properties": [
               {
-                "id": "displayName",
-                "value": "Transaction count"
-              },
+                "id": "custom.width",
+                "value": 306
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Value"
+            },
+            "properties": [
               {
                 "id": "custom.displayMode",
                 "value": "lcd-gauge"
@@ -1530,12 +1737,12 @@
         ]
       },
       "gridPos": {
-        "h": 5,
+        "h": 8,
         "w": 12,
         "x": 12,
-        "y": 63
+        "y": 83
       },
-      "id": 33,
+      "id": 46,
       "options": {
         "footer": {
           "fields": "",
@@ -1544,11 +1751,12 @@
           ],
           "show": false
         },
+        "frameIndex": 3,
         "showHeader": true,
         "sortBy": [
           {
             "desc": true,
-            "displayName": "Transaction count"
+            "displayName": "Value"
           }
         ]
       },
@@ -1559,24 +1767,17 @@
             "type": "prometheus",
             "uid": "MM2Dgw4nk"
           },
-          "exemplar": true,
-          "expr": "dipdup_rarible_order_activity_count",
-          "instant": false,
+          "exemplar": false,
+          "expr": "dipdup_rarible_order_activity_sum",
+          "format": "table",
+          "instant": true,
           "interval": "",
           "legendFormat": "{{index}} {{index_type}}",
           "refId": "A"
         }
       ],
-      "title": "TEIA totals",
+      "title": "TEIA total order activities",
       "transformations": [
-        {
-          "id": "filterFieldsByName",
-          "options": {
-            "include": {
-              "pattern": "/(TEIA)/"
-            }
-          }
-        },
         {
           "id": "renameByRegex",
           "options": {
@@ -1592,11 +1793,34 @@
           }
         },
         {
-          "id": "reduce",
+          "id": "organize",
           "options": {
-            "reducers": [
-              "lastNotNull"
-            ]
+            "excludeByName": {
+              "Time": true,
+              "__name__": true,
+              "instance": true,
+              "job": true
+            },
+            "indexByName": {},
+            "renameByName": {}
+          }
+        },
+        {
+          "id": "filterByValue",
+          "options": {
+            "filters": [
+              {
+                "config": {
+                  "id": "regex",
+                  "options": {
+                    "value": "TEIA"
+                  }
+                },
+                "fieldName": "index"
+              }
+            ],
+            "match": "all",
+            "type": "include"
           }
         }
       ],
@@ -1608,7 +1832,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 68
+        "y": 91
       },
       "id": 29,
       "panels": [],
@@ -1667,21 +1891,19 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 5,
+        "h": 8,
         "w": 12,
         "x": 0,
-        "y": 69
+        "y": 92
       },
-      "id": 30,
+      "id": 48,
       "options": {
         "legend": {
-          "calcs": [
-            "mean",
-            "min",
-            "max"
-          ],
-          "displayMode": "table",
-          "placement": "right"
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "sortBy": "Total",
+          "sortDesc": true
         },
         "tooltip": {
           "mode": "multi",
@@ -1695,7 +1917,7 @@
             "uid": "MM2Dgw4nk"
           },
           "exemplar": true,
-          "expr": "rate(dipdup_rarible_order_activity_count[1m]) * 60",
+          "expr": "rate(dipdup_rarible_order_activity_count{}[1m]) * 60",
           "interval": "",
           "legendFormat": "{{index}} {{index_type}}",
           "refId": "A"
@@ -1708,7 +1930,10 @@
           "options": {
             "include": {
               "names": [
-                "Time"
+                "Time",
+                "PlatformEnum.VERSUM_V1 ActivityTypeEnum.ORDER_CANCEL",
+                "PlatformEnum.VERSUM_V1 ActivityTypeEnum.ORDER_LIST",
+                "PlatformEnum.VERSUM_V1 ActivityTypeEnum.ORDER_MATCH"
               ],
               "pattern": "/VERSUM/"
             }
@@ -1717,14 +1942,14 @@
         {
           "id": "renameByRegex",
           "options": {
-            "regex": "ActivityTypeEnum.",
+            "regex": "PlatformEnum.",
             "renamePattern": ""
           }
         },
         {
           "id": "renameByRegex",
           "options": {
-            "regex": "PlatformEnum.",
+            "regex": "ActivityTypeEnum.",
             "renamePattern": ""
           }
         }
@@ -1756,25 +1981,33 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "Field"
+              "options": "index"
             },
             "properties": [
               {
-                "id": "displayName",
-                "value": "Index"
+                "id": "custom.width",
+                "value": 257
               }
             ]
           },
           {
             "matcher": {
               "id": "byName",
-              "options": "Last *"
+              "options": "index_type"
             },
             "properties": [
               {
-                "id": "displayName",
-                "value": "Transaction count"
-              },
+                "id": "custom.width",
+                "value": 306
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Value"
+            },
+            "properties": [
               {
                 "id": "custom.displayMode",
                 "value": "lcd-gauge"
@@ -1784,12 +2017,12 @@
         ]
       },
       "gridPos": {
-        "h": 5,
+        "h": 8,
         "w": 12,
         "x": 12,
-        "y": 69
+        "y": 92
       },
-      "id": 34,
+      "id": 47,
       "options": {
         "footer": {
           "fields": "",
@@ -1798,11 +2031,12 @@
           ],
           "show": false
         },
+        "frameIndex": 3,
         "showHeader": true,
         "sortBy": [
           {
             "desc": true,
-            "displayName": "Transaction count"
+            "displayName": "Value"
           }
         ]
       },
@@ -1813,24 +2047,17 @@
             "type": "prometheus",
             "uid": "MM2Dgw4nk"
           },
-          "exemplar": true,
-          "expr": "dipdup_rarible_order_activity_count",
-          "instant": false,
+          "exemplar": false,
+          "expr": "dipdup_rarible_order_activity_sum",
+          "format": "table",
+          "instant": true,
           "interval": "",
           "legendFormat": "{{index}} {{index_type}}",
           "refId": "A"
         }
       ],
-      "title": "VERSUM totals",
+      "title": "VERSUM total order activities",
       "transformations": [
-        {
-          "id": "filterFieldsByName",
-          "options": {
-            "include": {
-              "pattern": "/(VERSUM)/"
-            }
-          }
-        },
         {
           "id": "renameByRegex",
           "options": {
@@ -1846,11 +2073,34 @@
           }
         },
         {
-          "id": "reduce",
+          "id": "organize",
           "options": {
-            "reducers": [
-              "lastNotNull"
-            ]
+            "excludeByName": {
+              "Time": true,
+              "__name__": true,
+              "instance": true,
+              "job": true
+            },
+            "indexByName": {},
+            "renameByName": {}
+          }
+        },
+        {
+          "id": "filterByValue",
+          "options": {
+            "filters": [
+              {
+                "config": {
+                  "id": "regex",
+                  "options": {
+                    "value": "VERSUM"
+                  }
+                },
+                "fieldName": "index"
+              }
+            ],
+            "match": "all",
+            "type": "include"
           }
         }
       ],
@@ -1865,13 +2115,13 @@
     "list": []
   },
   "time": {
-    "from": "now-3h",
+    "from": "now-1h",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "",
   "title": "Tezos.Indexer",
   "uid": "WR2Rz7WVz",
-  "version": 1,
+  "version": 4,
   "weekStart": ""
 }
