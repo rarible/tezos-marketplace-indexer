@@ -21,6 +21,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
+  "id": 80,
   "links": [],
   "liveNow": false,
   "panels": [
@@ -690,8 +691,14 @@
             "excludeByName": {
               "Time": true,
               "__name__": true,
+              "app": true,
+              "env": true,
               "instance": true,
-              "job": true
+              "job": true,
+              "namespace": true,
+              "pod_name": true,
+              "stack": true,
+              "tenant": true
             },
             "indexByName": {},
             "renameByName": {}
@@ -955,8 +962,14 @@
             "excludeByName": {
               "Time": true,
               "__name__": true,
+              "app": true,
+              "env": true,
               "instance": true,
-              "job": true
+              "job": true,
+              "namespace": true,
+              "pod_name": true,
+              "stack": true,
+              "tenant": true
             },
             "indexByName": {},
             "renameByName": {}
@@ -1238,8 +1251,14 @@
             "excludeByName": {
               "Time": true,
               "__name__": true,
+              "app": true,
+              "env": true,
               "instance": true,
-              "job": true
+              "job": true,
+              "namespace": true,
+              "pod_name": true,
+              "stack": true,
+              "tenant": true
             },
             "indexByName": {},
             "renameByName": {}
@@ -1518,8 +1537,14 @@
             "excludeByName": {
               "Time": true,
               "__name__": true,
+              "app": true,
+              "env": true,
               "instance": true,
-              "job": true
+              "job": true,
+              "namespace": true,
+              "pod_name": true,
+              "stack": true,
+              "tenant": true
             },
             "indexByName": {},
             "renameByName": {}
@@ -1798,8 +1823,14 @@
             "excludeByName": {
               "Time": true,
               "__name__": true,
+              "app": true,
+              "env": true,
               "instance": true,
-              "job": true
+              "job": true,
+              "namespace": true,
+              "pod_name": true,
+              "stack": true,
+              "tenant": true
             },
             "indexByName": {},
             "renameByName": {}
@@ -2078,8 +2109,14 @@
             "excludeByName": {
               "Time": true,
               "__name__": true,
+              "app": true,
+              "env": true,
               "instance": true,
-              "job": true
+              "job": true,
+              "namespace": true,
+              "pod_name": true,
+              "stack": true,
+              "tenant": true
             },
             "indexByName": {},
             "renameByName": {}
@@ -2122,6 +2159,6 @@
   "timezone": "",
   "title": "Tezos.Indexer",
   "uid": "WR2Rz7WVz",
-  "version": 4,
+  "version": 17,
   "weekStart": ""
 }
