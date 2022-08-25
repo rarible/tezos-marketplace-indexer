@@ -22,6 +22,9 @@ contracts:
   hen:
     address: KT1MoWbKvxhsuckLUnQUPjrnGRugiret3pSQ
     typename: hen_marketplace
+  teia_v1:
+    address: KT1SMn9NzXNvdMvtaK8gE5GHgYj8ZxCuSyWN
+    typename: teia_v1
 
 indexes:
   rarible_exchange_actions:
@@ -143,7 +146,26 @@ indexes:
         pattern:
           - destination: hen
             entrypoint: collect
-  
+
+  teia_v1_actions:
+    kind: operation
+    datasource: tzkt
+    contracts:
+      - teia_v1
+    handlers:
+      - callback: teia_v1_list_order
+        pattern:
+          - destination: teia_v1
+            entrypoint: swap
+      - callback: teia_v1_cancel_order
+        pattern:
+          - destination: teia_v1
+            entrypoint: cancel_swap
+      - callback: teia_v1_match_order
+        pattern:
+          - destination: teia_v1
+            entrypoint: collect
+
   token_transfers:
     kind: token_transfer
     datasource: tzkt
