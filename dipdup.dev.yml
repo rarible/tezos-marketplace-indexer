@@ -175,7 +175,6 @@ indexes:
     contracts:
       - versum_v1
     handlers:
-      # Listing
       - callback: versum_v1_order_list
         pattern:
           - type: transaction
