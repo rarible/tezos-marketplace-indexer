@@ -1,15 +1,38 @@
 version: "3.8"
 
 services:
-  indexer:
+  indexer-rarible:
     image: rarible_indexer:dev
     ports:
       - "28080:8080"
     depends_on:
       - db
       - kafka
-    command: [ "dipdup", "-c", "dipdup.yml", "-c", "dipdup.prod.yml", "run" ]
-    restart: "no"
+    command: [ "dipdup", "-c", "dipdup.yml", "-c", "dipdup.prod.rarible.yml", "run" ]
+    restart: always
+    environment:
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-changeme}
+      - ADMIN_SECRET=${ADMIN_SECRET:-changeme}
+      - KAFKA_ADDRESS=kafka:9092
+      - KAFKA_ENABLED=false
+      - KAFKA_SECURITY_PROTOCOL=PLAINTEXT
+      - KAFKA_SASL_MECHANISM=PLAIN
+      - KAFKA_USERNAME=rarible
+      - KAFKA_PASSWORD=changeme
+      - NETWORK=mainnet
+      - LEGACY_API=https://tezos-api.rarible.org
+      - UNION_API=https://api.rarible.org
+      - APPLICATION_ENVIRONMENT=prod
+
+  indexer-tezos:
+    image: rarible_indexer:dev
+    ports:
+      - "28081:8080"
+    depends_on:
+      - db
+      - kafka
+    command: [ "dipdup", "-c", "dipdup.yml", "-c", "dipdup.prod.tezos.yml", "run" ]
+    restart: always
     environment:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-changeme}
       - ADMIN_SECRET=${ADMIN_SECRET:-changeme}

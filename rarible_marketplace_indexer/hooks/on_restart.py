@@ -30,5 +30,5 @@ async def on_restart(
         factory = Site(root)
         reactor.listenTCP(8080, factory)
         Thread(target=reactor.run, args=(False,)).start()
-    if os.getenv('APPLICATION_ENVIRONMENT') == 'prod':
+    if os.getenv('APPLICATION_ENVIRONMENT') == 'prod' and ctx.config.hooks.get("import_legacy_orders") is not None:
         await ctx.fire_hook("import_legacy_orders")
