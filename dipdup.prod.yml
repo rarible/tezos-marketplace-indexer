@@ -15,12 +15,12 @@ contracts:
   rarible_exchange:
     address: KT1N4Rrm6BU6229drs6scrH3vard1pPngMyA
     typename: rarible_exchange
-  versum_v1:
-    address: KT1GyRAJNdizF1nojQz62uGYkx8WFRUJm9X5
-    typename: versum_v1
-  teia_v1:
-    address: KT1PHubm9HtyQEJ4BBpMTVomq6mhbfNZ9z5w
-    typename: teia_v1
+#  versum_v1:
+#    address: KT1GyRAJNdizF1nojQz62uGYkx8WFRUJm9X5
+#    typename: versum_v1
+#  teia_v1:
+#    address: KT1PHubm9HtyQEJ4BBpMTVomq6mhbfNZ9z5w
+#    typename: teia_v1
   hen:
     address: KT1HbQepzV1nVGg8QVznG7z4RcHseD5kwqBn
     typename: hen_marketplace
@@ -145,46 +145,46 @@ indexes:
           - destination: objkt_v2
             entrypoint: fulfill_ask
 
-  teia_v1_actions:
-     kind: operation
-     datasource: tzkt
-     contracts:
-       - teia_v1
-     handlers:
-       - callback: teia_v1_list_order
-         pattern:
-           - destination: teia_v1
-             entrypoint: swap
-       - callback: teia_v1_cancel_order
-         pattern:
-           - destination: teia_v1
-             entrypoint: cancel_swap
-       - callback: teia_v1_match_order
-         pattern:
-           - destination: teia_v1
-             entrypoint: collect
-
-  versum:
-    kind: operation
-    datasource: tzkt
-    contracts:
-      - versum_v1
-    handlers:
-      - callback: versum_v1_order_list
-        pattern:
-          - type: transaction
-            destination: versum_v1
-            entrypoint: create_swap
-      - callback: versum_v1_order_cancel
-        pattern:
-          - type: transaction
-            destination: versum_v1
-            entrypoint: cancel_swap
-      - callback: versum_v1_order_match
-        pattern:
-          - type: transaction
-            destination: versum_v1
-            entrypoint: collect_swap
+#  teia_v1_actions:
+#     kind: operation
+#     datasource: tzkt
+#     contracts:
+#       - teia_v1
+#     handlers:
+#       - callback: teia_v1_list_order
+#         pattern:
+#           - destination: teia_v1
+#             entrypoint: swap
+#       - callback: teia_v1_cancel_order
+#         pattern:
+#           - destination: teia_v1
+#             entrypoint: cancel_swap
+#       - callback: teia_v1_match_order
+#         pattern:
+#           - destination: teia_v1
+#             entrypoint: collect
+#
+#  versum:
+#    kind: operation
+#    datasource: tzkt
+#    contracts:
+#      - versum_v1
+#    handlers:
+#      - callback: versum_v1_order_list
+#        pattern:
+#          - type: transaction
+#            destination: versum_v1
+#            entrypoint: create_swap
+#      - callback: versum_v1_order_cancel
+#        pattern:
+#          - type: transaction
+#            destination: versum_v1
+#            entrypoint: cancel_swap
+#      - callback: versum_v1_order_match
+#        pattern:
+#          - type: transaction
+#            destination: versum_v1
+#            entrypoint: collect_swap
 
 hooks:
   process_collection_events:
