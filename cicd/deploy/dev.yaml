@@ -17,7 +17,7 @@ tzkt:
     nodePort: 30340
   environments:
     TezosNode__Endpoint: https://rpc.tzkt.io/ghostnet
-    TokenMetadata__DipDup__Url: http://hasura:8080/v1/graphql
+    TokenMetadata__DipDup__Url: https://metadata.dipdup.net/v1/graphql
   ingress:
     hostname: 'tezos-tzkt.dev.rarible.int'
     path: /
