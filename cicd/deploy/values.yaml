@@ -1,70 +1,71 @@
-tezos-marketplace-indexer:
-  rarible:
-    image:
-      repository: tezos-marketplace-indexer
-    command: [
-      "dipdup", "-c", "dipdup.yml",
-      "-c", 'dipdup.{{ include "app.env" $ }}.rarible.yml',
-      "run"
-      ]
-    environments:
-      APPLICATION_ENVIRONMENT: '{{ include "app.env" $ }}'
-      KAFKA_ENABLED: "true"
-      KAFKA_SECURITY_PROTOCOL: "PLAINTEXT"
-      UNION_API: 'http://protocol-union-api.{{ include "app.env" $ }}-protocol:8080'
-      # provided via secrets
-      # POSTGRES_HOST:
-      # POSTGRES_DB:
-      # POSTGRES_USER:
-      # POSTGRES_PASS:
-      # KAFKA_ADDRESS:
-      # KAFKA_SASL_MECHANISM:
-      # KAFKA_USERNAME:
-      # KAFKA_PASSWORD:
-      # HASURA_GRAPHQL_ADMIN_SECRET:
+tezos-marketplace-indexer-rarible:
+  image:
+    repository: tezos-marketplace-indexer
+  command: [
+    "dipdup", "-c", "dipdup.yml",
+    "-c", 'dipdup.{{ include "app.env" $ }}.rarible.yml',
+    "run"
+    ]
+  environments:
+    APPLICATION_ENVIRONMENT: '{{ include "app.env" $ }}'
+    KAFKA_ENABLED: "true"
+    KAFKA_SECURITY_PROTOCOL: "PLAINTEXT"
+    UNION_API: 'http://protocol-union-api.{{ include "app.env" $ }}-protocol:8080'
+    # provided via secrets
+    # POSTGRES_HOST:
+    # POSTGRES_DB:
+    # POSTGRES_USER:
+    # POSTGRES_PASS:
+    # KAFKA_ADDRESS:
+    # KAFKA_SASL_MECHANISM:
+    # KAFKA_USERNAME:
+    # KAFKA_PASSWORD:
+    # HASURA_GRAPHQL_ADMIN_SECRET:
 
-    livenessProbe: false
-    readinessProbe: false
-  #  resources:
-  #     requests:
-  #       cpu: '4'
-  #       memory: 2Gi
-  #     limits:
-  #       cpu: '4'
-  #       memory: 2Gi
-  tezos:
-    image:
-      repository: tezos-marketplace-indexer
-    command: [
-      "dipdup", "-c", "dipdup.yml",
-      "-c", 'dipdup.{{ include "app.env" $ }}.tezos.yml',
-      "run"
-      ]
-    environments:
-      APPLICATION_ENVIRONMENT: '{{ include "app.env" $ }}'
-      KAFKA_ENABLED: "true"
-      KAFKA_SECURITY_PROTOCOL: "PLAINTEXT"
-      UNION_API: 'http://protocol-union-api.{{ include "app.env" $ }}-protocol:8080'
-      # provided via secrets
-      # POSTGRES_HOST:
-      # POSTGRES_DB:
-      # POSTGRES_USER:
-      # POSTGRES_PASS:
-      # KAFKA_ADDRESS:
-      # KAFKA_SASL_MECHANISM:
-      # KAFKA_USERNAME:
-      # KAFKA_PASSWORD:
-      # HASURA_GRAPHQL_ADMIN_SECRET:
+  livenessProbe: false
+  readinessProbe: false
+#  resources:
+#     requests:
+#       cpu: '4'
+#       memory: 2Gi
+#     limits:
+#       cpu: '4'
+#       memory: 2Gi
 
-    livenessProbe: false
-    readinessProbe: false
-  #  resources:
-  #     requests:
-  #       cpu: '4'
-  #       memory: 2Gi
-  #     limits:
-  #       cpu: '4'
-  #       memory: 2Gi
+
+tezos-marketplace-indexer-tezos:
+  image:
+    repository: tezos-marketplace-indexer
+  command: [
+    "dipdup", "-c", "dipdup.yml",
+    "-c", 'dipdup.{{ include "app.env" $ }}.tezos.yml',
+    "run"
+    ]
+  environments:
+    APPLICATION_ENVIRONMENT: '{{ include "app.env" $ }}'
+    KAFKA_ENABLED: "true"
+    KAFKA_SECURITY_PROTOCOL: "PLAINTEXT"
+    UNION_API: 'http://protocol-union-api.{{ include "app.env" $ }}-protocol:8080'
+    # provided via secrets
+    # POSTGRES_HOST:
+    # POSTGRES_DB:
+    # POSTGRES_USER:
+    # POSTGRES_PASS:
+    # KAFKA_ADDRESS:
+    # KAFKA_SASL_MECHANISM:
+    # KAFKA_USERNAME:
+    # KAFKA_PASSWORD:
+    # HASURA_GRAPHQL_ADMIN_SECRET:
+
+  livenessProbe: false
+  readinessProbe: false
+#  resources:
+#     requests:
+#       cpu: '4'
+#       memory: 2Gi
+#     limits:
+#       cpu: '4'
+#       memory: 2Gi
   
 hasura:
   image: 
