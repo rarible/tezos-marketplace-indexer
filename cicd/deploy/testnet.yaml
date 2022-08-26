@@ -2,14 +2,7 @@ hasura:
   service:
     nodePort: 30439
 
-tezos-marketplace-indexer-rarible:
-  replicas: 1
-  environments:
-    TZKT_URL: http://tzkt:5000
-    NETWORK: ghostnet
-    LEGACY_API: https://test-tezos-api.rarible.org
-
-tezos-marketplace-indexer-tezos:
+tezos-marketplace-indexer:
   replicas: 1
   environments:
     TZKT_URL: http://tzkt:5000
