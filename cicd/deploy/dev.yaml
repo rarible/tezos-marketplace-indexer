@@ -3,11 +3,15 @@ hasura:
     nodePort: 30339
 
 tezos-marketplace-indexer:
-  environments: 
+  environments:
     TZKT_URL: http://tzkt:5000
 
 tzkt:
   enabled: true
+  api:
+    image:
+      repository: mystdeim/tzkt-api
+      tag: 0.3-dev
   network: privatenet
   service:
     nodePort: 30340
