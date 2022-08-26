@@ -1,32 +1,37 @@
 datasources:
   tzkt:
     kind: tzkt
-    url: ${TZKT_URL:-http://tezos-tzkt.dev.rarible.int}
+    url: ${TZKT_URL:-https://api.ghostnet.tzkt.io}
+    http:
+      connection_timeout: 60
 
 contracts:
   rarible_exchange:
-    address: KT198cr9bKZDGVtgj7P4DazAjq38r74hFSVu
+    address: KT1NcKyhPnomH9PKGeDfvMiGH2PDgKCd5YuM
     typename: rarible_exchange
   rarible_exchange_legacy:
-    address: KT18isH58SBp7UaRWB652UwLMPxCe1bsjMMe
+    address: KT1S6H2FWxrpaD7aPRSW1cTTE1xPucXBSTL5
     typename: rarible_exchange_legacy
+  rarible_exchange_legacy_data:
+    address: KT1JtTi6qP5jxks3S12Uq28etuhgJCQ4tXtP
+    typename: rarible_exchange_legacy_data
   rarible_bids:
-    address: KT1DJxerfM2nPYYsVNBxaevppwhkCGwZzsGT
+    address: KT1MwKGYWWbXtfYdnQfwspwz5ZGfqGwiJuQF
     typename: rarible_bids
   objkt_v1:
-    address: KT1Qa7sQdZrsuPMA7NFg5hMF9iadtoYSF8m9
+    address: KT1Ax5fm2UNxjXGmrMDytREfqvYoCXoBB4Jo
     typename: objkt_marketplace
   objkt_v2:
-    address: KT1LXKe92pjd8RJecjFS14ZRdmHPVec3twAD
+    address: KT1GiZuR6TdkgxZGQGZSdbC3Jox9JTSbqTB6
     typename: objkt_marketplace_v2
   hen:
-    address: KT1MoWbKvxhsuckLUnQUPjrnGRugiret3pSQ
+    address: KT1XYgjgFQutFfgEiD7RuppSKZsawZbkpKxL
     typename: hen_marketplace
   teia_v1:
-    address: KT1SMn9NzXNvdMvtaK8gE5GHgYj8ZxCuSyWN
+    address: KT1Anx515N2PK8A2ZX5uGNn7Gckh4WytLJmK
     typename: teia_v1
   versum_v1:
-    address: KT1FQQttioJYMHYzJo97A2cxfdAqnUHoVjiG
+    address: KT1B1Wz7jPH23EqKUpDwFDkw3A1yLxGZ4uJy
     typename: versum_v1
 
 indexes:
@@ -59,6 +64,17 @@ indexes:
         pattern:
           - destination: rarible_exchange_legacy
             entrypoint: match_orders
+
+  rarible_exchange_legacy_data_actions:
+    kind: operation
+    datasource: tzkt
+    contracts:
+      - rarible_exchange_legacy_data
+    handlers:
+      - callback: rarible_cancel_order_legacy
+        pattern:
+          - destination: rarible_exchange_legacy_data
+            entrypoint: remove
 
   rarible_bids_actions:
     kind: operation
@@ -151,23 +167,23 @@ indexes:
             entrypoint: collect
 
   teia_v1_actions:
-    kind: operation
-    datasource: tzkt
-    contracts:
-      - teia_v1
-    handlers:
-      - callback: teia_v1_list_order
-        pattern:
-          - destination: teia_v1
-            entrypoint: swap
-      - callback: teia_v1_cancel_order
-        pattern:
-          - destination: teia_v1
-            entrypoint: cancel_swap
-      - callback: teia_v1_match_order
-        pattern:
-          - destination: teia_v1
-            entrypoint: collect
+     kind: operation
+     datasource: tzkt
+     contracts:
+       - teia_v1
+     handlers:
+       - callback: teia_v1_list_order
+         pattern:
+           - destination: teia_v1
+             entrypoint: swap
+       - callback: teia_v1_cancel_order
+         pattern:
+           - destination: teia_v1
+             entrypoint: cancel_swap
+       - callback: teia_v1_match_order
+         pattern:
+           - destination: teia_v1
+             entrypoint: collect
 
   versum:
     kind: operation
@@ -197,7 +213,7 @@ indexes:
     handlers:
       - callback: on_transfer
 
-  origination:
+  originations:
     kind: head
     datasource: tzkt
     handlers:
@@ -210,6 +226,9 @@ hooks:
     args:
       force_reindex: bool
       head: int
+  import_legacy_orders:
+    callback: import_legacy_orders
+    atomic: False
 
 advanced:
   rollback_depth: 2

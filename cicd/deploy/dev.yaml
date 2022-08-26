@@ -12,11 +12,11 @@ tzkt:
     image:
       repository: mystdeim/tzkt-api
       tag: 0.3-dev
-  network: privatenet
+  network: ghostnet
   service:
     nodePort: 30340
   environments:
-    TezosNode__Endpoint: http://dev-node.tezos-node:8732/
+    TezosNode__Endpoint: https://rpc.tzkt.io/ghostnet
     TokenMetadata__DipDup__Url: http://hasura:8080/v1/graphql
   ingress:
     hostname: 'tezos-tzkt.dev.rarible.int'
