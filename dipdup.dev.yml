@@ -1,7 +1,7 @@
 datasources:
   tzkt:
     kind: tzkt
-    url: ${TZKT_URL:-https://api.tzkt.io}
+    url: ${TZKT_URL:-http://tezos-tzkt.dev.rarible.int}
 
 contracts:
   rarible_exchange:
@@ -25,6 +25,9 @@ contracts:
   teia_v1:
     address: KT1SMn9NzXNvdMvtaK8gE5GHgYj8ZxCuSyWN
     typename: teia_v1
+  versum_v1:
+    address: KT1FQQttioJYMHYzJo97A2cxfdAqnUHoVjiG
+    typename: versum_v1
 
 indexes:
   rarible_exchange_actions:
@@ -165,6 +168,29 @@ indexes:
         pattern:
           - destination: teia_v1
             entrypoint: collect
+
+  versum:
+    kind: operation
+    datasource: tzkt
+    contracts:
+      - versum_v1
+    handlers:
+      # Listing
+      - callback: versum_v1_order_list
+        pattern:
+          - type: transaction
+            destination: versum_v1
+            entrypoint: create_swap
+      - callback: versum_v1_order_cancel
+        pattern:
+          - type: transaction
+            destination: versum_v1
+            entrypoint: cancel_swap
+      - callback: versum_v1_order_match
+        pattern:
+          - type: transaction
+            destination: versum_v1
+            entrypoint: collect_swap
 
   token_transfers:
     kind: token_transfer
