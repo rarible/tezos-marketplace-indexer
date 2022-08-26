@@ -1,9 +1,8 @@
 datasources:
   tzkt:
     kind: tzkt
-    url: ${TZKT_URL:-https://api.ithacanet.tzkt.io}
+    url: ${TZKT_URL:-https://api.ghostnet.tzkt.io}
     http:
-      cache: false
       connection_timeout: 60
 
 contracts:
@@ -13,6 +12,9 @@ contracts:
   rarible_exchange_legacy:
     address: KT1S6H2FWxrpaD7aPRSW1cTTE1xPucXBSTL5
     typename: rarible_exchange_legacy
+  rarible_exchange_legacy_data:
+    address: KT1JtTi6qP5jxks3S12Uq28etuhgJCQ4tXtP
+    typename: rarible_exchange_legacy_data
   rarible_bids:
     address: KT1MwKGYWWbXtfYdnQfwspwz5ZGfqGwiJuQF
     typename: rarible_bids
@@ -25,6 +27,12 @@ contracts:
   hen:
     address: KT1XYgjgFQutFfgEiD7RuppSKZsawZbkpKxL
     typename: hen_marketplace
+  teia_v1:
+    address: KT1Anx515N2PK8A2ZX5uGNn7Gckh4WytLJmK
+    typename: teia_v1
+  versum_v1:
+    address: KT1B1Wz7jPH23EqKUpDwFDkw3A1yLxGZ4uJy
+    typename: versum_v1
 
 indexes:
   rarible_exchange_actions:
@@ -56,6 +64,17 @@ indexes:
         pattern:
           - destination: rarible_exchange_legacy
             entrypoint: match_orders
+
+  rarible_exchange_legacy_data_actions:
+    kind: operation
+    datasource: tzkt
+    contracts:
+      - rarible_exchange_legacy_data
+    handlers:
+      - callback: rarible_cancel_order_legacy
+        pattern:
+          - destination: rarible_exchange_legacy_data
+            entrypoint: remove
 
   rarible_bids_actions:
     kind: operation
@@ -147,13 +166,54 @@ indexes:
           - destination: hen
             entrypoint: collect
 
+  teia_v1_actions:
+     kind: operation
+     datasource: tzkt
+     contracts:
+       - teia_v1
+     handlers:
+       - callback: teia_v1_list_order
+         pattern:
+           - destination: teia_v1
+             entrypoint: swap
+       - callback: teia_v1_cancel_order
+         pattern:
+           - destination: teia_v1
+             entrypoint: cancel_swap
+       - callback: teia_v1_match_order
+         pattern:
+           - destination: teia_v1
+             entrypoint: collect
+
+  versum:
+    kind: operation
+    datasource: tzkt
+    contracts:
+      - versum_v1
+    handlers:
+      - callback: versum_v1_order_list
+        pattern:
+          - type: transaction
+            destination: versum_v1
+            entrypoint: create_swap
+      - callback: versum_v1_order_cancel
+        pattern:
+          - type: transaction
+            destination: versum_v1
+            entrypoint: cancel_swap
+      - callback: versum_v1_order_match
+        pattern:
+          - type: transaction
+            destination: versum_v1
+            entrypoint: collect_swap
+
   token_transfers:
     kind: token_transfer
     datasource: tzkt
     handlers:
       - callback: on_transfer
 
-  origination:
+  originations:
     kind: head
     datasource: tzkt
     handlers:
