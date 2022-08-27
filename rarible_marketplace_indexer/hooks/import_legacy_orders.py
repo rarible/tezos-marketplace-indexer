@@ -1,8 +1,5 @@
-import asyncio
 import json
 import logging
-import os
-from multiprocessing import Pool
 
 from dipdup.context import HookContext
 
@@ -26,4 +23,3 @@ async def import_legacy_orders(
             for order in orders:
                 await import_legacy_order(order)
             await IndexingStatus.create(index=IndexEnum.LEGACY_ORDERS, last_level="SYNCED")
-
