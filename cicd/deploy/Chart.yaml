@@ -4,13 +4,17 @@ name: tezos-markeplace-indexer
 version: 0.1.0
 dependencies:
 - name: rarible-helm-chart
-  alias: tezos-marketplace-indexer-rarible
+  alias: tezos-marketplace-indexer
   repository: file://../resources/helm/rarible
   version: 0.1.0
-- name: rarible-helm-chart
-  alias: tezos-marketplace-indexer-tezos
-  repository: file://../resources/helm/rarible
-  version: 0.1.0
+#- name: rarible-helm-chart
+#  alias: tezos-marketplace-indexer-rarible
+#  repository: file://../resources/helm/rarible
+#  version: 0.1.0
+#- name: rarible-helm-chart
+#  alias: tezos-marketplace-indexer-tezos
+#  repository: file://../resources/helm/rarible
+#  version: 0.1.0
 - name: rarible-helm-chart
   alias: hasura
   repository: file://../resources/helm/rarible
