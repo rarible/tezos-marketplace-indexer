@@ -68,6 +68,8 @@ class RaribleOrderListEvent(AbstractOrderListEvent):
             value=int(transaction.parameter.s_sale.sale_amount),
             asset_bytes=bytes.fromhex(transaction.parameter.s_sale_asset),
         )
+        if transaction.parameter.s_sale_type == "1":
+            take.token_id = None
 
         return ListDto(
             internal_order_id=internal_order_id,
