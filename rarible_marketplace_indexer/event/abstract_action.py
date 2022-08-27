@@ -233,19 +233,6 @@ class AbstractLegacyOrderCancelEvent(EventInterface):
         )
 
         if legacy_order is not None:
-            # logger.warning(f"Warning: legacy order {dto.internal_order_id} is missing. Importing it...")
-            # raw_legacy_order = requests.get(
-            #     f"{os.getenv('LEGACY_API')}/v0.1/orders/{dto.internal_order_id}").json()
-            # await import_legacy_order(raw_legacy_order)
-            #
-            # legacy_order = (
-            #     await LegacyOrderModel.filter(
-            #         hash=dto.internal_order_id,
-            #     )
-            #     .order_by('-id')
-            #     .first()
-            # )
-
             order = (
                 await OrderModel.filter(
                     id=legacy_order.id,
