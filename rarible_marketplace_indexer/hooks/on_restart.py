@@ -3,13 +3,14 @@ import os
 from threading import Thread
 
 from dipdup.context import HookContext
+from prometheus_client.twisted import MetricsResource
+from twisted.internet import reactor
+from twisted.web.resource import Resource
+from twisted.web.server import Site
 
 from rarible_marketplace_indexer.producer.container import ProducerContainer
 from rarible_marketplace_indexer.prometheus.rarible_metrics import RaribleMetrics
-from prometheus_client.twisted import MetricsResource
-from twisted.web.server import Site
-from twisted.web.resource import Resource
-from twisted.internet import reactor
+
 
 async def on_restart(
     ctx: HookContext,

@@ -1,8 +1,10 @@
+from dipdup.context import HandlerContext
+from dipdup.models import Transaction
+
 from rarible_marketplace_indexer.event.versum_v1_action import VersumV1OrderCancelEvent
 from rarible_marketplace_indexer.types.versum_v1.parameter.cancel_swap import CancelSwapParameter
 from rarible_marketplace_indexer.types.versum_v1.storage import VersumV1Storage
-from dipdup.context import HandlerContext
-from dipdup.models import Transaction
+
 
 async def versum_v1_order_cancel(
     ctx: HandlerContext,
