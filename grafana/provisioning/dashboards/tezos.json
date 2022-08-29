@@ -189,7 +189,7 @@
           "placement": "bottom"
         },
         "tooltip": {
-          "mode": "single",
+          "mode": "multi",
           "sort": "none"
         }
       },
@@ -206,7 +206,7 @@
           "refId": "A"
         }
       ],
-      "title": "Index delays",
+      "title": "Indexing queue",
       "transformations": [],
       "type": "timeseries"
     },
@@ -532,7 +532,7 @@
           "sortDesc": true
         },
         "tooltip": {
-          "mode": "single",
+          "mode": "multi",
           "sort": "none"
         }
       },
@@ -692,9 +692,11 @@
               "Time": true,
               "__name__": true,
               "app": true,
+              "controller_uid": true,
               "env": true,
               "instance": true,
               "job": true,
+              "job_name": true,
               "namespace": true,
               "pod_name": true,
               "stack": true,
@@ -963,9 +965,11 @@
               "Time": true,
               "__name__": true,
               "app": true,
+              "controller_uid": true,
               "env": true,
               "instance": true,
               "job": true,
+              "job_name": true,
               "namespace": true,
               "pod_name": true,
               "stack": true,
@@ -1252,9 +1256,11 @@
               "Time": true,
               "__name__": true,
               "app": true,
+              "controller_uid": true,
               "env": true,
               "instance": true,
               "job": true,
+              "job_name": true,
               "namespace": true,
               "pod_name": true,
               "stack": true,
@@ -1675,10 +1681,10 @@
           "options": {
             "include": {
               "names": [
-                "Time",
                 "PlatformEnum.TEIA_V1 ActivityTypeEnum.ORDER_CANCEL",
                 "PlatformEnum.TEIA_V1 ActivityTypeEnum.ORDER_LIST",
-                "PlatformEnum.TEIA_V1 ActivityTypeEnum.ORDER_MATCH"
+                "PlatformEnum.TEIA_V1 ActivityTypeEnum.ORDER_MATCH",
+                "Time"
               ],
               "pattern": "/TEIA/"
             }
@@ -2159,6 +2165,6 @@
   "timezone": "",
   "title": "Tezos.Indexer",
   "uid": "WR2Rz7WVz",
-  "version": 17,
+  "version": 22,
   "weekStart": ""
 }
