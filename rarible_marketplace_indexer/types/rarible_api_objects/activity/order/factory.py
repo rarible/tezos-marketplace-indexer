@@ -8,7 +8,6 @@ from rarible_marketplace_indexer.types.rarible_api_objects.activity.order.activi
 from rarible_marketplace_indexer.types.rarible_api_objects.activity.order.activity import RaribleApiOrderListActivity
 from rarible_marketplace_indexer.types.rarible_api_objects.activity.order.activity import RaribleApiOrderMatchActivity
 from rarible_marketplace_indexer.types.rarible_api_objects.asset.asset import Asset
-from rarible_marketplace_indexer.types.rarible_api_objects.utils.utils import process_asset
 from rarible_marketplace_indexer.types.tezos_objects.tezos_object_hash import ImplicitAccountAddress
 
 
@@ -23,7 +22,7 @@ class RaribleApiOrderActivityFactory:
             hash=activity.operation_hash,
             maker=ImplicitAccountAddress(activity.maker),
             make=Asset.make_from_model(activity),
-            take=process_asset(Asset.take_from_model(activity)),
+            take=Asset.take_from_model(activity),
             source=activity.platform,
             date=activity.operation_timestamp,
         )
@@ -53,7 +52,7 @@ class RaribleApiOrderActivityFactory:
             network=activity.network,
             maker=ImplicitAccountAddress(activity.maker),
             make=Asset.make_from_model(activity),
-            take=process_asset(Asset.take_from_model(activity)),
+            take=Asset.take_from_model(activity),
             source=activity.platform,
             hash=activity.operation_hash,
             date=activity.operation_timestamp,

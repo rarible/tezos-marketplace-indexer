@@ -5,7 +5,6 @@ from tortoise.fields import JSONField
 from rarible_marketplace_indexer.models import OrderModel
 from rarible_marketplace_indexer.types.rarible_api_objects.asset.asset import Asset
 from rarible_marketplace_indexer.types.rarible_api_objects.order.order import RaribleApiOrder
-from rarible_marketplace_indexer.types.rarible_api_objects.utils.utils import process_asset
 from rarible_marketplace_indexer.types.rarible_exchange.parameter.sell import Part
 
 
@@ -34,7 +33,7 @@ class RaribleApiOrderFactory:
             maker=order.maker,
             taker=order.taker,
             make=Asset.make_from_model(order),
-            take=process_asset(Asset.take_from_model(order)),
+            take=Asset.take_from_model(order),
             origin_fees=RaribleApiOrderFactory.get_parts(order.origin_fees),
             payouts=RaribleApiOrderFactory.get_parts(order.payouts),
             salt=order.salt,
