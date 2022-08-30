@@ -305,3 +305,4 @@ class Token(Model):
     supply = AssetValueField()
     deleted = fields.BooleanField(default=False)
     updated = fields.DatetimeField(null=False)
+    metadata = fields.JSONField(null=True)

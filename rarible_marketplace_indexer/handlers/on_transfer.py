@@ -1,3 +1,4 @@
+import json
 import logging
 from dipdup.context import HandlerContext
 from dipdup.enums import TokenStandard
@@ -14,11 +15,16 @@ async def on_transfer(
 
     if token_transfer.standard == TokenStandard.FA2:
         null_addresses = [None, "tz1burnburnburnburnburnburnburjAYjjX", "tz1Ke2h7sDdakHJQh8WX4Z372du1KChsksyU"]
-
+        metadata = await ctx.get_metadata_datasource("metadata").get_token_metadata(token_transfer.contract_address, token_transfer.token_id)
+        if metadata is not None:
+            metadata = json.dumps(metadata)
+        else:
+            metadata = json.dumps({})
         transfer = await TokenTransfer.get_or_none(id=token_transfer.id)
         if transfer is None:
-
             is_mint = token_transfer.from_address is None
+            minted = None
+            burned = None
             if is_mint:
                 minted = await Token.get_or_none(id=token_transfer.tzkt_token_id)
             is_burn = token_transfer.to_address is None or token_transfer.to_address in null_addresses
@@ -49,22 +55,25 @@ async def on_transfer(
                         minted_at=token_transfer.timestamp,
                         minted=token_transfer.amount,
                         supply=token_transfer.amount,
-                        updated=token_transfer.timestamp
+                        updated=token_transfer.timestamp,
+                        metadata=metadata
                     )
                 else:
                     minted.minted += token_transfer.amount
                     minted.supply += token_transfer.amount
                     minted.updated = token_transfer.timestamp
+                    minted.metadata = metadata
                 await minted.save()
 
             if is_burn:
 
                 # We need do it in case mint to burn (it's possible in testnet)
-                burned = burned or minted
-                burned.supply -= token_transfer.amount
-                burned.deleted = burned.supply <= 0
-                burned.updated = token_transfer.timestamp
-                await burned.save()
+                if burned is not None or minted is not None:
+                    burned = burned or minted
+                    burned.supply -= token_transfer.amount
+                    burned.deleted = burned.supply <= 0
+                    burned.updated = token_transfer.timestamp
+                    await burned.save()
 
             if is_transfer_to:
                 if ownership_to is None:
@@ -118,3 +127,11 @@ async def on_transfer(
                     to_address=token_transfer.to_address,
                     amount=token_transfer.amount
                 ).save()
+
+            if metadata is not None:
+                token = await Token.get_or_none(id=token_transfer.tzkt_token_id)
+                if token is not None:
+                    token.metadata = json.dumps(metadata)
+                    await token.save()
+
+

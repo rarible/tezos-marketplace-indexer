@@ -25,3 +25,6 @@ custom:
     mechanism: ${KAFKA_SASL_MECHANISM:-PLAIN}
     username: ${KAFKA_USERNAME:-rarible}
     password: ${KAFKA_PASSWORD:-changeme}
+  collection_indexing:
+    enabled: true
+    level: 1212042

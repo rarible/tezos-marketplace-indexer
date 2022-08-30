@@ -1,4 +1,5 @@
 import logging
+import os
 
 from dipdup.context import HookContext
 
@@ -10,24 +11,20 @@ from rarible_marketplace_indexer.types.rarible_api_objects.collection.factory im
 
 async def process_collection_events(
     ctx: HookContext,
-    force_reindex: bool,
-    head: int,
+    level: int,
 ) -> None:
     logger = logging.getLogger('dipdup.collection')
     tzkt = ctx.get_tzkt_datasource('tzkt')
     index = await IndexingStatus.get_or_none(index=IndexEnum.COLLECTION)
-    current_level = int(index.last_level) if index is not None else 0
+    current_level = int(index.last_level) if index is not None else level
 
-    if current_level == 0 and force_reindex is False:
-        current_level = head - 1
-    elif force_reindex is True:
-        current_level = head
-    logger.info(f"Processing originations from level {current_level}")
+    logger.info(f"Processing collections from level {current_level}")
 
     last_id = 0
     cr_filter = ""
     while last_id is not None:
         originations = await tzkt.request(method='get', url=f"v1/operations/originations?limit=100&level.gt={current_level}{cr_filter}")
+        print(originations)
         for origination in originations:
             if origination.get("originatedContract") is not None:
                 if origination["originatedContract"].get("address") is not None:
@@ -40,14 +37,18 @@ async def process_collection_events(
                             origination['alias'] = contract['alias']
                         else:
                             origination['alias'] = ""
-                        logger.info(f"New FA2 originated: {origination['originatedContract']['address']}")
+                        address = origination['originatedContract']['address']
+                        logger.info(f"Proccessed collection {address}")
                         collection_event = RaribleApiCollectionFactory.build(origination, tzkt)
+                        contract_metadata = await ctx.get_metadata_datasource('metadata').get_contract_metadata(address)
+                        if contract_metadata is not None:
+                            await ctx.update_contract_metadata(os.getenv('NETWORK'), address, contract_metadata)
                         assert collection_event
                         await producer_send(collection_event)
         if len(originations) < 100:
             last_id = None
     if index is None:
-        await IndexingStatus.create(index=IndexEnum.COLLECTION, last_level=head)
+        await IndexingStatus.create(index=IndexEnum.COLLECTION, last_level=level)
     else:
-        index.last_level = head
+        index.last_level = level
         await index.save()
