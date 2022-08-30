@@ -1,23 +1,48 @@
 version: "3.8"
 
 services:
-  indexer:
+  indexer-rarible:
     image: rarible_indexer:dev
+    ports:
+      - "28080:8080"
     depends_on:
       - db
       - kafka
-    command: [ "dipdup", "-c", "dipdup.yml", "-c", "dipdup.prod.yml", "run" ]
-    restart: "no"
+    command: [ "dipdup", "-c", "dipdup.yml", "-c", "dipdup.prod.rarible.yml", "run" ]
+    restart: always
     environment:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-changeme}
       - ADMIN_SECRET=${ADMIN_SECRET:-changeme}
       - KAFKA_ADDRESS=kafka:9092
-      - KAFKA_ENABLED=true
+      - KAFKA_ENABLED=false
       - KAFKA_SECURITY_PROTOCOL=PLAINTEXT
       - KAFKA_SASL_MECHANISM=PLAIN
       - KAFKA_USERNAME=rarible
       - KAFKA_PASSWORD=changeme
-      - NETWORK=ithacanet
+      - NETWORK=mainnet
+      - LEGACY_API=https://tezos-api.rarible.org
+      - UNION_API=https://api.rarible.org
+      - APPLICATION_ENVIRONMENT=prod
+
+  indexer-tezos:
+    image: rarible_indexer:dev
+    ports:
+      - "28081:8080"
+    depends_on:
+      - db
+      - kafka
+    command: [ "dipdup", "-c", "dipdup.yml", "-c", "dipdup.prod.tezos.yml", "run" ]
+    restart: always
+    environment:
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-changeme}
+      - ADMIN_SECRET=${ADMIN_SECRET:-changeme}
+      - KAFKA_ADDRESS=kafka:9092
+      - KAFKA_ENABLED=false
+      - KAFKA_SECURITY_PROTOCOL=PLAINTEXT
+      - KAFKA_SASL_MECHANISM=PLAIN
+      - KAFKA_USERNAME=rarible
+      - KAFKA_PASSWORD=changeme
+      - NETWORK=mainnet
       - LEGACY_API=https://tezos-api.rarible.org
       - UNION_API=https://api.rarible.org
       - APPLICATION_ENVIRONMENT=prod
@@ -85,3 +110,39 @@ services:
     ports:
       - "127.0.0.1:9000:9000"
 
+  prometheus:
+    image: prom/prometheus
+    restart: always
+    volumes:
+      - ./prometheus:/etc/prometheus/
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+    ports:
+      - 9090:9090
+
+  grafana:
+    image: grafana/grafana:8.4.6
+    user: '472'
+    restart: always
+    environment:
+      GF_INSTALL_PLUGINS: 'grafana-clock-panel,grafana-simple-json-datasource'
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana/provisioning/:/etc/grafana/provisioning/
+    env_file:
+      - ./grafana/config.monitoring
+    ports:
+      - 3000:3000
+    depends_on:
+      - prometheus
+
+volumes:
+  zookeeper-data:
+  zookeeper-log:
+  kafka-data:
+  prometheus_data:
+  grafana_data:

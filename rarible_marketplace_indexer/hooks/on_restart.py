@@ -1,9 +1,15 @@
 import logging
 import os
+from threading import Thread
 
 from dipdup.context import HookContext
+from prometheus_client.twisted import MetricsResource
+from twisted.internet import reactor
+from twisted.web.resource import Resource
+from twisted.web.server import Site
 
 from rarible_marketplace_indexer.producer.container import ProducerContainer
+from rarible_marketplace_indexer.prometheus.rarible_metrics import RaribleMetrics
 
 
 async def on_restart(
@@ -15,6 +21,15 @@ async def on_restart(
     await ctx.execute_sql('on_restart')
     ProducerContainer.create_instance(ctx.config.custom, ctx.logger)
     await ProducerContainer.get_instance().start()
-    if os.getenv('APPLICATION_ENVIRONMENT') != 'dev':
-        await ctx.fire_hook("import_legacy_orders")
 
+    if ctx.config.prometheus is not None:
+        RaribleMetrics.enabled = True
+        root = Resource()
+        status = Resource()
+        root.putChild(b'_status', status)
+        status.putChild(b'prometheus', MetricsResource())
+        factory = Site(root)
+        reactor.listenTCP(8080, factory)
+        Thread(target=reactor.run, args=(False,)).start()
+    if os.getenv('APPLICATION_ENVIRONMENT') == 'prod' and ctx.config.hooks.get("import_legacy_orders") is not None:
+        await ctx.fire_hook("import_legacy_orders")

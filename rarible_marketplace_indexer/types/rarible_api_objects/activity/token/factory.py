@@ -5,6 +5,7 @@ from typing import Tuple
 from dipdup.datasources.tzkt.datasource import TzktDatasource
 from dipdup.models import TokenTransferData
 
+from rarible_marketplace_indexer.prometheus.rarible_metrics import RaribleMetrics
 from rarible_marketplace_indexer.models import ActivityTypeEnum, TokenTransfer
 from rarible_marketplace_indexer.types.rarible_api_objects.activity.token.activity import BaseRaribleApiTokenActivity
 from rarible_marketplace_indexer.types.rarible_api_objects.activity.token.activity import RaribleApiTokenActivity
@@ -35,6 +36,8 @@ class RaribleApiTokenActivityFactory:
     @classmethod
     def build_mint_activity(cls, transfer: TokenTransfer) -> RaribleApiTokenMintActivity:
         base = cls._build_base_activity(transfer)
+        if RaribleMetrics.enabled is True:
+            RaribleMetrics.set_token_activity(ActivityTypeEnum.TOKEN_MINT, transfer.contract_address, 1)
         return RaribleApiTokenMintActivity(
             type=ActivityTypeEnum.TOKEN_MINT,
             owner=transfer.to_address,
@@ -44,6 +47,8 @@ class RaribleApiTokenActivityFactory:
     @classmethod
     def build_transfer_activity(cls, transfer: TokenTransfer) -> RaribleApiTokenTransferActivity:
         base = cls._build_base_activity(transfer)
+        if RaribleMetrics.enabled is True:
+            RaribleMetrics.set_token_activity(ActivityTypeEnum.TOKEN_TRANSFER, transfer.contract_address, 1)
         return RaribleApiTokenTransferActivity(
             type=ActivityTypeEnum.TOKEN_TRANSFER,
             transfer_from=transfer.from_address,
@@ -54,6 +59,8 @@ class RaribleApiTokenActivityFactory:
     @classmethod
     def build_burn_activity(cls, transfer: TokenTransfer) -> RaribleApiTokenBurnActivity:
         base = cls._build_base_activity(transfer)
+        if RaribleMetrics.enabled is True:
+            RaribleMetrics.set_token_activity(ActivityTypeEnum.TOKEN_BURN, transfer.contract_address, 1)
         return RaribleApiTokenBurnActivity(
             type=ActivityTypeEnum.TOKEN_BURN,
             owner=transfer.from_address,

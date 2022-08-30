@@ -13,7 +13,7 @@ async def on_transfer(
     logger = logging.getLogger('dipdup.on_transfer')
 
     if token_transfer.standard == TokenStandard.FA2:
-        null_addresses = ctx.config.custom['null_addresses']
+        null_addresses = [None, "tz1burnburnburnburnburnburnburjAYjjX", "tz1Ke2h7sDdakHJQh8WX4Z372du1KChsksyU"]
 
         transfer = await TokenTransfer.get_or_none(id=token_transfer.id)
         if transfer is None:

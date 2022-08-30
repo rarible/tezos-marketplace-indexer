@@ -2,18 +2,30 @@ hasura:
   service:
     nodePort: 30339
 
-tezos-marketplace-indexer:
-  environments: 
+tezos-marketplace-indexer-rarible:
+  environments:
     TZKT_URL: http://tzkt:5000
+    NETWORK: ghostnet
+    LEGACY_API: https://test-tezos-api.rarible.org
+
+tezos-marketplace-indexer-tezos:
+  environments:
+    TZKT_URL: http://tzkt:5000
+    NETWORK: ghostnet
+    LEGACY_API: https://test-tezos-api.rarible.org
 
 tzkt:
   enabled: true
-  network: privatenet
+  api:
+    image:
+      repository: mystdeim/tzkt-api
+      tag: 0.3-dev
+  network: ghostnet
   service:
     nodePort: 30340
   environments:
-    TezosNode__Endpoint: http://dev-node.tezos-node:8732/
-    TokenMetadata__DipDup__Url: http://hasura:8080/v1/graphql
+    TezosNode__Endpoint: https://rpc.tzkt.io/ghostnet
+    TokenMetadata__DipDup__Url: https://metadata.dipdup.net/v1/graphql
   ingress:
     hostname: 'tezos-tzkt.dev.rarible.int'
     path: /

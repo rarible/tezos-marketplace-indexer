@@ -1,0 +1,125 @@
+datasources:
+  tzkt:
+    kind: tzkt
+    url: ${TZKT_URL:-https://api.ghostnet.tzkt.io}
+    http:
+      connection_timeout: 60
+
+contracts:
+  rarible_exchange:
+    address: KT1NcKyhPnomH9PKGeDfvMiGH2PDgKCd5YuM
+    typename: rarible_exchange
+  rarible_exchange_legacy:
+    address: KT1S6H2FWxrpaD7aPRSW1cTTE1xPucXBSTL5
+    typename: rarible_exchange_legacy
+  rarible_exchange_legacy_data:
+    address: KT1JtTi6qP5jxks3S12Uq28etuhgJCQ4tXtP
+    typename: rarible_exchange_legacy_data
+  rarible_bids:
+    address: KT1MwKGYWWbXtfYdnQfwspwz5ZGfqGwiJuQF
+    typename: rarible_bids
+
+indexes:
+  rarible_exchange_actions:
+    kind: operation
+    datasource: tzkt
+    contracts:
+      - rarible_exchange
+    handlers:
+      - callback: rarible_order_list
+        pattern:
+          - destination: rarible_exchange
+            entrypoint: sell
+      - callback: rarible_order_cancel_list
+        pattern:
+          - destination: rarible_exchange
+            entrypoint: cancel_sale
+      - callback: rarible_order_match
+        pattern:
+          - destination: rarible_exchange
+            entrypoint: buy
+
+  rarible_exchange_legacy_actions:
+    kind: operation
+    datasource: tzkt
+    contracts:
+      - rarible_exchange_legacy
+    handlers:
+      - callback: rarible_match_orders_legacy
+        pattern:
+          - destination: rarible_exchange_legacy
+            entrypoint: match_orders
+
+  rarible_exchange_legacy_data_actions:
+    kind: operation
+    datasource: tzkt
+    contracts:
+      - rarible_exchange_legacy_data
+    handlers:
+      - callback: rarible_cancel_order_legacy
+        pattern:
+          - destination: rarible_exchange_legacy_data
+            entrypoint: remove
+
+  rarible_bids_actions:
+    kind: operation
+    datasource: tzkt
+    contracts:
+      - rarible_bids
+    handlers:
+      - callback: rarible_put_bid
+        pattern:
+          - destination: rarible_bids
+            entrypoint: put_bid
+      - callback: rarible_put_floor_bid
+        pattern:
+          - destination: rarible_bids
+            entrypoint: put_floor_bid
+      - callback: rarible_accept_bid
+        pattern:
+          - destination: rarible_bids
+            entrypoint: accept_bid
+      - callback: rarible_accept_floor_bid
+        pattern:
+          - destination: rarible_bids
+            entrypoint: accept_floor_bid
+      - callback: rarible_cancel_bid
+        pattern:
+          - destination: rarible_bids
+            entrypoint: cancel_bid
+      - callback: rarible_cancel_floor_bid
+        pattern:
+          - destination: rarible_bids
+            entrypoint: cancel_floor_bid
+
+  token_transfers:
+    kind: token_transfer
+    datasource: tzkt
+    handlers:
+      - callback: on_transfer
+
+  originations:
+    kind: head
+    datasource: tzkt
+    handlers:
+      - callback: on_head
+
+hooks:
+  process_collection_events:
+    callback: process_collection_events
+    atomic: False
+    args:
+      force_reindex: bool
+      head: int
+  import_legacy_orders:
+    callback: import_legacy_orders
+    atomic: False
+
+advanced:
+  rollback_depth: 2
+  reindex:
+    manual: wipe
+    migration: exception
+    rollback: exception
+    config_modified: ignore
+    schema_modified: ignore

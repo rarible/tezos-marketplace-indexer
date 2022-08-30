@@ -6,7 +6,8 @@ from typing import Optional
 from typing import TypeVar
 from uuid import uuid5
 
-from dipdup.models import Transaction, Model
+from dipdup.models import Model
+from dipdup.models import Transaction
 from tortoise import fields
 from tortoise.backends.base.client import BaseDBAsyncClient
 from tortoise.signals import post_save, post_delete
@@ -51,6 +52,8 @@ class ActivityTypeEnum(str, Enum):
 
 class PlatformEnum(str, Enum):
     HEN: _StrEnumValue = 'HEN'
+    TEIA_V1: _StrEnumValue = 'TEIA_V1'
+    VERSUM_V1: _StrEnumValue = 'VERSUM_V1'
     OBJKT_V1: _StrEnumValue = 'OBJKT_V1'
     OBJKT_V2: _StrEnumValue = 'OBJKT_V2'
     RARIBLE_V1: _StrEnumValue = 'RARIBLE_V1'
@@ -62,7 +65,6 @@ class IndexEnum(str, Enum):
     LEGACY_ORDERS: _StrEnumValue = 'LEGACY_ORDERS'
     V1_CLEANING: _StrEnumValue = 'V1_CLEANING'
     V1_FILL_FIX: _StrEnumValue = 'V1_FILL_FIX'
-
 
 
 class ActivityModel(Model):
