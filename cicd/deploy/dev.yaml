@@ -20,6 +20,11 @@ tzkt:
     image:
       repository: fpto/rarible-tzkt-api
       tag: v0.3.0
+    resources:
+      limits:
+        memory: 768Mi
+      requests:
+        memory: 512Mi
   indexer:
     image:
       repository: fpto/rarible-tzkt-indexer
