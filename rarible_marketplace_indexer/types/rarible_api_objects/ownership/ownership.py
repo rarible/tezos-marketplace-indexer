@@ -21,6 +21,7 @@ class OwnershipBody:
     value: AssetValue
     date: datetime
 
+
 class RaribleApiOwnership(AbstractRaribleApiObject):
     class Config:
         alias_generator = camelize

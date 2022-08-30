@@ -3,14 +3,17 @@ from enum import Enum
 from typing import Any
 from typing import List
 from typing import Optional
+from typing import Type
 from typing import TypeVar
 from uuid import uuid5
 
+from aiosignal import Signal
 from dipdup.models import Model
 from dipdup.models import Transaction
 from tortoise import fields
 from tortoise.backends.base.client import BaseDBAsyncClient
-from tortoise.signals import post_save, post_delete
+from tortoise.signals import post_delete
+from tortoise.signals import post_save
 
 from rarible_marketplace_indexer.producer.helper import producer_send
 from rarible_marketplace_indexer.types.rarible_api_objects.asset.enum import AssetClassEnum
@@ -242,13 +245,14 @@ class TokenTransfer(Model):
 
 @post_save(TokenTransfer)
 async def signal_token_transfer_post_save(
-        sender: TokenTransfer,
-        instance: TokenTransfer,
-        created: bool,
-        using_db: "Optional[BaseDBAsyncClient]",
-        update_fields: List[str],
+    sender: TokenTransfer,
+    instance: TokenTransfer,
+    created: bool,
+    using_db: "Optional[BaseDBAsyncClient]",
+    update_fields: List[str],
 ) -> None:
     from rarible_marketplace_indexer.types.rarible_api_objects.activity.token.factory import RaribleApiTokenActivityFactory
+
     if instance.type == ActivityTypeEnum.TOKEN_MINT:
         token_transfer_activity = RaribleApiTokenActivityFactory.build_mint_activity(instance)
     if instance.type == ActivityTypeEnum.TOKEN_BURN:
@@ -272,24 +276,25 @@ class Ownership(Model):
 
 @post_save(Ownership)
 async def signal_ownership_post_save(
-        sender: Ownership,
-        instance: Ownership,
-        created: bool,
-        using_db: "Optional[BaseDBAsyncClient]",
-        update_fields: List[str],
+    sender: Ownership,
+    instance: Ownership,
+    created: bool,
+    using_db: "Optional[BaseDBAsyncClient]",
+    update_fields: List[str],
 ) -> None:
     from rarible_marketplace_indexer.types.rarible_api_objects.ownership.factory import RaribleApiOwnershipFactory
+
     event = RaribleApiOwnershipFactory.build_update(instance)
     await producer_send(event)
 
 
 @post_delete(Ownership)
-async def signal_ownership_post_delete(
-        sender: "Type[Signal]", instance: Ownership, using_db: "Optional[BaseDBAsyncClient]"
-) -> None:
+async def signal_ownership_post_delete(sender: "Type[Signal]", instance: Ownership, using_db: "Optional[BaseDBAsyncClient]") -> None:
     from rarible_marketplace_indexer.types.rarible_api_objects.ownership.factory import RaribleApiOwnershipFactory
+
     event = RaribleApiOwnershipFactory.build_delete(instance)
     await producer_send(event)
+
 
 class Token(Model):
     class Meta:

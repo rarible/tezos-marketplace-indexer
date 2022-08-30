@@ -1,14 +1,7 @@
-from typing import Callable
-from typing import Dict
-from typing import Tuple
-
-from dipdup.datasources.tzkt.datasource import TzktDatasource
-from dipdup.models import TokenTransferData
-
+from rarible_marketplace_indexer.models import ActivityTypeEnum
+from rarible_marketplace_indexer.models import TokenTransfer
 from rarible_marketplace_indexer.prometheus.rarible_metrics import RaribleMetrics
-from rarible_marketplace_indexer.models import ActivityTypeEnum, TokenTransfer
 from rarible_marketplace_indexer.types.rarible_api_objects.activity.token.activity import BaseRaribleApiTokenActivity
-from rarible_marketplace_indexer.types.rarible_api_objects.activity.token.activity import RaribleApiTokenActivity
 from rarible_marketplace_indexer.types.rarible_api_objects.activity.token.activity import RaribleApiTokenBurnActivity
 from rarible_marketplace_indexer.types.rarible_api_objects.activity.token.activity import RaribleApiTokenMintActivity
 from rarible_marketplace_indexer.types.rarible_api_objects.activity.token.activity import RaribleApiTokenTransferActivity

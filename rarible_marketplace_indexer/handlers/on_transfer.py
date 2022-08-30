@@ -1,21 +1,23 @@
-import json
 import logging
+
 from dipdup.context import HandlerContext
 from dipdup.enums import TokenStandard
 from dipdup.models import TokenTransferData
 
-from rarible_marketplace_indexer.models import TokenTransfer, Token, Ownership, ActivityTypeEnum
+from rarible_marketplace_indexer.models import ActivityTypeEnum
+from rarible_marketplace_indexer.models import Ownership
+from rarible_marketplace_indexer.models import Token
+from rarible_marketplace_indexer.models import TokenTransfer
 
 
-async def on_transfer(
-        ctx: HandlerContext,
-        token_transfer: TokenTransferData
-) -> None:
+async def on_transfer(ctx: HandlerContext, token_transfer: TokenTransferData) -> None:
     logger = logging.getLogger('dipdup.on_transfer')
 
     if token_transfer.standard == TokenStandard.FA2:
         null_addresses = [None, "tz1burnburnburnburnburnburnburjAYjjX", "tz1Ke2h7sDdakHJQh8WX4Z372du1KChsksyU"]
-        metadata = await ctx.get_metadata_datasource("metadata").get_token_metadata(token_transfer.contract_address, token_transfer.token_id)
+        metadata = await ctx.get_metadata_datasource("metadata").get_token_metadata(
+            token_transfer.contract_address, token_transfer.token_id
+        )
         if metadata is None:
             metadata = {}
         transfer = await TokenTransfer.get_or_none(id=token_transfer.id)
@@ -28,19 +30,17 @@ async def on_transfer(
             is_burn = token_transfer.to_address is None or token_transfer.to_address in null_addresses
             if is_burn:
                 burned = await Token.get_or_none(id=token_transfer.tzkt_token_id)
-            is_transfer_to = token_transfer.to_address is not None and token_transfer.to_address not in null_addresses and token_transfer.amount > 0
+            is_transfer_to = (
+                token_transfer.to_address is not None and token_transfer.to_address not in null_addresses and token_transfer.amount > 0
+            )
             if is_transfer_to:
                 ownership_to = await Ownership.get_or_none(
-                    contract=token_transfer.contract_address,
-                    token_id=token_transfer.token_id,
-                    owner=token_transfer.to_address
+                    contract=token_transfer.contract_address, token_id=token_transfer.token_id, owner=token_transfer.to_address
                 )
             is_transfer_from = token_transfer.from_address is not None and token_transfer.amount > 0
             if is_transfer_from:
                 ownership_from = await Ownership.get_or_none(
-                    contract=token_transfer.contract_address,
-                    token_id=token_transfer.token_id,
-                    owner=token_transfer.from_address
+                    contract=token_transfer.contract_address, token_id=token_transfer.token_id, owner=token_transfer.from_address
                 )
 
             # persist
@@ -54,7 +54,7 @@ async def on_transfer(
                         minted=token_transfer.amount,
                         supply=token_transfer.amount,
                         updated=token_transfer.timestamp,
-                        metadata=metadata
+                        metadata=metadata,
                     )
                 else:
                     minted.minted += token_transfer.amount
@@ -80,7 +80,7 @@ async def on_transfer(
                         token_id=token_transfer.token_id,
                         owner=token_transfer.to_address,
                         balance=token_transfer.amount,
-                        updated=token_transfer.timestamp
+                        updated=token_transfer.timestamp,
                     )
                 else:
                     ownership_to.balance += token_transfer.amount
@@ -123,7 +123,7 @@ async def on_transfer(
                     token_id=token_transfer.token_id,
                     from_address=token_transfer.from_address,
                     to_address=token_transfer.to_address,
-                    amount=token_transfer.amount
+                    amount=token_transfer.amount,
                 ).save()
 
             if metadata is not None:
@@ -131,5 +131,3 @@ async def on_transfer(
                 if token is not None:
                     token.metadata = metadata
                     await token.save()
-
-
