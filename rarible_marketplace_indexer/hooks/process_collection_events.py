@@ -24,7 +24,6 @@ async def process_collection_events(
     cr_filter = ""
     while last_id is not None:
         originations = await tzkt.request(method='get', url=f"v1/operations/originations?limit=100&level.gt={current_level}{cr_filter}")
-        print(originations)
         for origination in originations:
             if origination.get("originatedContract") is not None:
                 if origination["originatedContract"].get("address") is not None:
