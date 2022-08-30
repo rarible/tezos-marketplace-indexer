@@ -75,6 +75,9 @@ hooks:
     atomic: False
     args:
       level: int
+  import_legacy_orders:
+    callback: import_legacy_orders
+    atomic: False
 
 advanced:
   rollback_depth: 2
