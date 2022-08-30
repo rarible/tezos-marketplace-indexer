@@ -16,10 +16,8 @@ async def on_transfer(
     if token_transfer.standard == TokenStandard.FA2:
         null_addresses = [None, "tz1burnburnburnburnburnburnburjAYjjX", "tz1Ke2h7sDdakHJQh8WX4Z372du1KChsksyU"]
         metadata = await ctx.get_metadata_datasource("metadata").get_token_metadata(token_transfer.contract_address, token_transfer.token_id)
-        if metadata is not None:
-            metadata = json.dumps(metadata)
-        else:
-            metadata = json.dumps({})
+        if metadata is None:
+            metadata = {}
         transfer = await TokenTransfer.get_or_none(id=token_transfer.id)
         if transfer is None:
             is_mint = token_transfer.from_address is None
@@ -131,7 +129,7 @@ async def on_transfer(
             if metadata is not None:
                 token = await Token.get_or_none(id=token_transfer.tzkt_token_id)
                 if token is not None:
-                    token.metadata = json.dumps(metadata)
+                    token.metadata = metadata
                     await token.save()
 
 
