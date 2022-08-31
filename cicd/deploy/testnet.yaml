@@ -25,8 +25,12 @@ tzkt:
       requests:
         memory: 512Mi
     image:
-      repository: mystdeim/tzkt-api
-      tag: 0.2
+      repository: fpto/rarible-tzkt-api
+      tag: v0.3.0
+  indexer:
+    image:
+      repository: fpto/rarible-tzkt-indexer
+      tag: v0.3.0
   network: ghostnet
   service:
     nodePort: 30440
