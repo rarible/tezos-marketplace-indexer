@@ -27,14 +27,17 @@ indexes:
       - callback: rarible_order_list
         pattern:
           - destination: rarible_exchange
+            type: transaction
             entrypoint: sell
       - callback: rarible_order_cancel_list
         pattern:
           - destination: rarible_exchange
+            type: transaction
             entrypoint: cancel_sale
       - callback: rarible_order_match
         pattern:
           - destination: rarible_exchange
+            type: transaction
             entrypoint: buy
 
   rarible_bids_actions:
@@ -48,26 +51,32 @@ indexes:
       - callback: rarible_put_bid
         pattern:
           - destination: rarible_bids
+            type: transaction
             entrypoint: put_bid
       - callback: rarible_put_floor_bid
         pattern:
           - destination: rarible_bids
+            type: transaction
             entrypoint: put_floor_bid
       - callback: rarible_accept_bid
         pattern:
           - destination: rarible_bids
+            type: transaction
             entrypoint: accept_bid
       - callback: rarible_accept_floor_bid
         pattern:
           - destination: rarible_bids
+            type: transaction
             entrypoint: accept_floor_bid
       - callback: rarible_cancel_bid
         pattern:
           - destination: rarible_bids
+            type: transaction
             entrypoint: cancel_bid
       - callback: rarible_cancel_floor_bid
         pattern:
           - destination: rarible_bids
+            type: transaction
             entrypoint: cancel_floor_bid
 
   token_transfers:
