@@ -34,16 +34,17 @@ indexes:
       - callback: hen_order_list
         pattern:
           - destination: hen
+            type: transaction
             entrypoint: swap
-
       - callback: hen_order_cancel_list
         pattern:
           - destination: hen
+            type: transaction
             entrypoint: cancel_swap
-
       - callback: hen_order_match
         pattern:
           - destination: hen
+            type: transaction
             entrypoint: collect
 
   objkt_v1_actions:
@@ -57,14 +58,17 @@ indexes:
       - callback: objkt_order_list
         pattern:
           - destination: objkt_v1
+            type: transaction
             entrypoint: ask
       - callback: objkt_order_cancel_list
         pattern:
           - destination: objkt_v1
+            type: transaction
             entrypoint: retract_ask
       - callback: objkt_order_match
         pattern:
           - destination: objkt_v1
+            type: transaction
             entrypoint: fulfill_ask
 
   objkt_v2_actions:
@@ -78,14 +82,17 @@ indexes:
       - callback: objkt_v2_order_list
         pattern:
           - destination: objkt_v2
+            type: transaction
             entrypoint: ask
       - callback: objkt_v2_order_cancel_list
         pattern:
           - destination: objkt_v2
+            type: transaction
             entrypoint: retract_ask
       - callback: objkt_v2_order_match
         pattern:
           - destination: objkt_v2
+            type: transaction
             entrypoint: fulfill_ask
 
   teia_v1_actions:
@@ -99,14 +106,17 @@ indexes:
        - callback: teia_v1_list_order
          pattern:
            - destination: teia_v1
+             type: transaction
              entrypoint: swap
        - callback: teia_v1_cancel_order
          pattern:
            - destination: teia_v1
+             type: transaction
              entrypoint: cancel_swap
        - callback: teia_v1_match_order
          pattern:
            - destination: teia_v1
+             type: transaction
              entrypoint: collect
 
   versum:
