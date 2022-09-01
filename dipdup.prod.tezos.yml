@@ -28,6 +28,8 @@ indexes:
     datasource: tzkt
     contracts:
       - hen
+    types:
+      - transaction
     handlers:
       - callback: hen_order_list
         pattern:
@@ -49,6 +51,8 @@ indexes:
     datasource: tzkt
     contracts:
       - objkt_v1
+    types:
+      - transaction
     handlers:
       - callback: objkt_order_list
         pattern:
@@ -68,6 +72,8 @@ indexes:
     datasource: tzkt
     contracts:
       - objkt_v2
+    types:
+      - transaction
     handlers:
       - callback: objkt_v2_order_list
         pattern:
@@ -87,6 +93,8 @@ indexes:
      datasource: tzkt
      contracts:
        - teia_v1
+     types:
+       - transaction
      handlers:
        - callback: teia_v1_list_order
          pattern:
@@ -106,6 +114,8 @@ indexes:
     datasource: tzkt
     contracts:
       - versum_v1
+    types:
+      - transaction
     handlers:
       - callback: versum_v1_order_list
         pattern:

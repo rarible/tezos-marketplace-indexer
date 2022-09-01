@@ -24,24 +24,28 @@ indexes:
     handlers:
       - callback: on_transfer
 
-
   rarible_exchange_actions:
     kind: operation
     datasource: tzkt
     contracts:
         - rarible_exchange
+    types:
+      - transaction
     handlers:
         - callback: rarible_order_list
           pattern:
             - destination: rarible_exchange
+              type: transaction
               entrypoint: sell
         - callback: rarible_order_cancel_list
           pattern:
             - destination: rarible_exchange
+              type: transaction
               entrypoint: cancel_sale
         - callback: rarible_order_match
           pattern:
             - destination: rarible_exchange
+              type: transaction
               entrypoint: buy
 
   rarible_exchange_legacy_actions:
@@ -49,10 +53,13 @@ indexes:
     datasource: tzkt
     contracts:
       - rarible_exchange_legacy
+    types:
+      - transaction
     handlers:
       - callback: rarible_match_orders_legacy
         pattern:
           - destination: rarible_exchange_legacy
+            type: transaction
             entrypoint: match_orders
 
   rarible_exchange_legacy_data_actions:
@@ -60,10 +67,13 @@ indexes:
     datasource: tzkt
     contracts:
       - rarible_exchange_legacy_data
+    types:
+      - transaction
     handlers:
       - callback: rarible_cancel_order_legacy
         pattern:
           - destination: rarible_exchange_legacy_data
+            type: transaction
             entrypoint: remove
 
 hooks:
