@@ -98,28 +98,28 @@ indexes:
             entrypoint: collect
 
   teia_v1_actions:
-     kind: operation
-     datasource: tzkt
-     contracts:
-       - teia_v1
+    kind: operation
+    datasource: tzkt
+    contracts:
+      - teia_v1
     types:
       - transaction
-     handlers:
-       - callback: teia_v1_list_order
-         pattern:
-           - destination: teia_v1
-             type: transaction
-             entrypoint: swap
-       - callback: teia_v1_cancel_order
-         pattern:
-           - destination: teia_v1
-             type: transaction
-             entrypoint: cancel_swap
-       - callback: teia_v1_match_order
-         pattern:
-           - destination: teia_v1
-             type: transaction
-             entrypoint: collect
+    handlers:
+      - callback: teia_v1_list_order
+        pattern:
+          - destination: teia_v1
+            type: transaction
+            entrypoint: swap
+      - callback: teia_v1_cancel_order
+        pattern:
+          - destination: teia_v1
+            type: transaction
+            entrypoint: cancel_swap
+      - callback: teia_v1_match_order
+        pattern:
+          - destination: teia_v1
+            type: transaction
+            entrypoint: collect
 
   versum:
     kind: operation
