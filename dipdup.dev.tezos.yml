@@ -30,18 +30,23 @@ indexes:
     datasource: tzkt
     contracts:
       - objkt_v1
+    types:
+      - transaction
     handlers:
       - callback: objkt_order_list
         pattern:
           - destination: objkt_v1
+            type: transaction
             entrypoint: ask
       - callback: objkt_order_cancel_list
         pattern:
           - destination: objkt_v1
+            type: transaction
             entrypoint: retract_ask
       - callback: objkt_order_match
         pattern:
           - destination: objkt_v1
+            type: transaction
             entrypoint: fulfill_ask
 
   objkt_v2_actions:
@@ -49,20 +54,25 @@ indexes:
     datasource: tzkt
     contracts:
       - objkt_v2
+    types:
+      - transaction
     handlers:
       - callback: objkt_v2_order_list
         pattern:
           - destination: objkt_v2
+            type: transaction
             entrypoint: ask
 
       - callback: objkt_v2_order_cancel_list
         pattern:
           - destination: objkt_v2
+            type: transaction
             entrypoint: retract_ask
 
       - callback: objkt_v2_order_match
         pattern:
           - destination: objkt_v2
+            type: transaction
             entrypoint: fulfill_ask
 
   hen_actions:
@@ -70,18 +80,23 @@ indexes:
     datasource: tzkt
     contracts:
       - hen
+    types:
+      - transaction
     handlers:
       - callback: hen_order_list
         pattern:
           - destination: hen
+            type: transaction
             entrypoint: swap
       - callback: hen_order_cancel_list
         pattern:
           - destination: hen
+            type: transaction
             entrypoint: cancel_swap
       - callback: hen_order_match
         pattern:
           - destination: hen
+            type: transaction
             entrypoint: collect
 
   teia_v1_actions:
@@ -89,18 +104,23 @@ indexes:
      datasource: tzkt
      contracts:
        - teia_v1
+    types:
+      - transaction
      handlers:
        - callback: teia_v1_list_order
          pattern:
            - destination: teia_v1
+             type: transaction
              entrypoint: swap
        - callback: teia_v1_cancel_order
          pattern:
            - destination: teia_v1
+             type: transaction
              entrypoint: cancel_swap
        - callback: teia_v1_match_order
          pattern:
            - destination: teia_v1
+             type: transaction
              entrypoint: collect
 
   versum:
@@ -108,6 +128,8 @@ indexes:
     datasource: tzkt
     contracts:
       - versum_v1
+    types:
+      - transaction
     handlers:
       - callback: versum_v1_order_list
         pattern:
