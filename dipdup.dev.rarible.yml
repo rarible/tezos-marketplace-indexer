@@ -70,11 +70,6 @@ indexes:
     handlers:
       - callback: on_transfer
 
-  originations:
-    kind: head
-    datasource: tzkt
-    handlers:
-      - callback: on_head
 
 hooks:
   process_collection_events:
