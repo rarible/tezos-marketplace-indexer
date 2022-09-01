@@ -576,6 +576,100 @@
           "color": {
             "mode": "thresholds"
           },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 24,
+        "x": 0,
+        "y": 33
+      },
+      "id": 49,
+      "options": {
+        "displayMode": "lcd",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showUnfilled": true
+      },
+      "pluginVersion": "8.4.6",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "MM2Dgw4nk"
+          },
+          "exemplar": false,
+          "expr": "sum(dipdup_rarible_order_activity_count{index_type=\"ActivityTypeEnum.ORDER_MATCH\"})",
+          "format": "time_series",
+          "instant": true,
+          "interval": "",
+          "intervalFactor": 1,
+          "legendFormat": "Order match (all marketplaces)",
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "MM2Dgw4nk"
+          },
+          "exemplar": false,
+          "expr": "sum(dipdup_rarible_order_activity_count{index_type=\"ActivityTypeEnum.ORDER_LIST\"})",
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "intervalFactor": 1,
+          "legendFormat": "Order list (all marketplaces)",
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "MM2Dgw4nk"
+          },
+          "exemplar": false,
+          "expr": "sum(dipdup_rarible_order_activity_count{index_type=\"ActivityTypeEnum.ORDER_CANCEL\"})",
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "intervalFactor": 1,
+          "legendFormat": "Order cancel (all marketplaces)",
+          "refId": "C"
+        }
+      ],
+      "title": "Tezos order activities (merged)",
+      "transformations": [
+        {
+          "id": "filterFieldsByName",
+          "options": {
+            "include": {}
+          }
+        }
+      ],
+      "type": "bargauge"
+    },
+    {
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
           "custom": {
             "align": "auto",
             "displayMode": "auto"
@@ -634,7 +728,7 @@
         "h": 22,
         "w": 24,
         "x": 0,
-        "y": 33
+        "y": 42
       },
       "id": 39,
       "options": {
@@ -715,7 +809,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 55
+        "y": 64
       },
       "id": 13,
       "panels": [],
@@ -777,7 +871,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 56
+        "y": 65
       },
       "id": 11,
       "options": {
@@ -906,7 +1000,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 56
+        "y": 65
       },
       "id": 40,
       "options": {
@@ -1006,7 +1100,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 64
+        "y": 73
       },
       "id": 19,
       "panels": [],
@@ -1068,7 +1162,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 65
+        "y": 74
       },
       "id": 41,
       "options": {
@@ -1197,7 +1291,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 65
+        "y": 74
       },
       "id": 42,
       "options": {
@@ -1297,7 +1391,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 73
+        "y": 82
       },
       "id": 17,
       "panels": [],
@@ -1359,7 +1453,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 74
+        "y": 83
       },
       "id": 43,
       "options": {
@@ -1485,7 +1579,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 74
+        "y": 83
       },
       "id": 44,
       "options": {
@@ -1583,7 +1677,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 82
+        "y": 91
       },
       "id": 27,
       "panels": [],
@@ -1645,7 +1739,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 83
+        "y": 92
       },
       "id": 45,
       "options": {
@@ -1771,7 +1865,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 83
+        "y": 92
       },
       "id": 46,
       "options": {
@@ -1869,7 +1963,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 91
+        "y": 100
       },
       "id": 29,
       "panels": [],
@@ -1931,7 +2025,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 92
+        "y": 101
       },
       "id": 48,
       "options": {
@@ -1967,10 +2061,10 @@
           "options": {
             "include": {
               "names": [
-                "Time",
                 "PlatformEnum.VERSUM_V1 ActivityTypeEnum.ORDER_CANCEL",
                 "PlatformEnum.VERSUM_V1 ActivityTypeEnum.ORDER_LIST",
-                "PlatformEnum.VERSUM_V1 ActivityTypeEnum.ORDER_MATCH"
+                "PlatformEnum.VERSUM_V1 ActivityTypeEnum.ORDER_MATCH",
+                "Time"
               ],
               "pattern": "/VERSUM/"
             }
@@ -2057,7 +2151,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 92
+        "y": 101
       },
       "id": 47,
       "options": {
@@ -2165,6 +2259,6 @@
   "timezone": "",
   "title": "Tezos.Indexer",
   "uid": "WR2Rz7WVz",
-  "version": 22,
+  "version": 24,
   "weekStart": ""
 }
