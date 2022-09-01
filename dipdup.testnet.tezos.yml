@@ -1,3 +1,5 @@
+spec_version: 1.2
+
 datasources:
   tzkt:
     kind: tzkt
