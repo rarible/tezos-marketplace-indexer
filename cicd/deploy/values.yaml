@@ -76,7 +76,7 @@ hasura:
     enabled: true
   podAnnotations:
     prometheus.io/scrape: 'false'
-    fluentbit.io/exclude: 'true'
+    #fluentbit.io/exclude: 'true'
   livenessProbe: 
     httpGet:
       path: /healthz
