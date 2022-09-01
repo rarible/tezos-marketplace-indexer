@@ -21,6 +21,8 @@ indexes:
     datasource: tzkt
     contracts:
       - rarible_exchange
+    types:
+      - transaction
     handlers:
       - callback: rarible_order_list
         pattern:
@@ -40,6 +42,8 @@ indexes:
     datasource: tzkt
     contracts:
       - rarible_bids
+    types:
+      - transaction
     handlers:
       - callback: rarible_put_bid
         pattern:
