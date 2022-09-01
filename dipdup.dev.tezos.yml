@@ -62,13 +62,11 @@ indexes:
           - destination: objkt_v2
             type: transaction
             entrypoint: ask
-
       - callback: objkt_v2_order_cancel_list
         pattern:
           - destination: objkt_v2
             type: transaction
             entrypoint: retract_ask
-
       - callback: objkt_v2_order_match
         pattern:
           - destination: objkt_v2
