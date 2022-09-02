@@ -32,7 +32,7 @@ class FxhashV1OrderListEvent(AbstractOrderListEvent):
     ) -> ListDto:
         make_value = AssetValue(1)
         take_value = Xtz.from_u_tezos(transaction.parameter.price)
-  
+
         return ListDto(
             internal_order_id=str(int(transaction.storage.counter) - 1),
             maker=ImplicitAccountAddress(transaction.data.sender_address),
@@ -47,7 +47,7 @@ class FxhashV1OrderListEvent(AbstractOrderListEvent):
                 contract=None,
                 token_id=None,
                 value=take_value,
-            )
+            ),
         )
 
 
@@ -56,9 +56,7 @@ class FxhashV1OrderCancelEvent(AbstractOrderCancelEvent):
     FxhashCancelTransaction = Transaction[CancelOfferParameter, FxhashV1Storage]
 
     @staticmethod
-    def _get_cancel_dto(
-        transaction: FxhashCancelTransaction, datasource: TzktDatasource
-    ) -> CancelDto:
+    def _get_cancel_dto(transaction: FxhashCancelTransaction, datasource: TzktDatasource) -> CancelDto:
         return CancelDto(internal_order_id=transaction.parameter.__root__)
 
 
@@ -67,9 +65,7 @@ class FxhashV1OrderMatchEvent(AbstractOrderMatchEvent):
     FxhashMatchTransaction = Transaction[CollectParameter, FxhashV1Storage]
 
     @staticmethod
-    def _get_match_dto(
-        transaction: FxhashMatchTransaction, datasource: TzktDatasource
-    ) -> MatchDto:
+    def _get_match_dto(transaction: FxhashMatchTransaction, datasource: TzktDatasource) -> MatchDto:
         return MatchDto(
             internal_order_id=transaction.parameter.__root__,
             taker=ImplicitAccountAddress(transaction.data.sender_address),
