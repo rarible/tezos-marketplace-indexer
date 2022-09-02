@@ -207,3 +207,15 @@ advanced:
     rollback: exception
     config_modified: ignore
     schema_modified: ignore
+
+custom:
+  enabled: ${KAFKA_ENABLED:-false}
+  kafka_address: ${KAFKA_ADDRESS:-kafka:9092}
+  client_id: dipdup-rarible-${APPLICATION_ENVIRONMENT:-mainnet}-producer
+  kafka_security_protocol: ${KAFKA_SECURITY_PROTOCOL:-SASL_PLAINTEXT}
+  sasl:
+    mechanism: ${KAFKA_SASL_MECHANISM:-PLAIN}
+    username: ${KAFKA_USERNAME:-rarible}
+    password: ${KAFKA_PASSWORD:-changeme}
+  fxhash_nft_v1: KT1BEc3m6yxN856Y4zfArpDqQ1uZZ1HkDTRh
+  fxhash_nft_v2: KT1WSwXCWPPAxAy4ibPmFyCm4NhmSJT9UuxQ

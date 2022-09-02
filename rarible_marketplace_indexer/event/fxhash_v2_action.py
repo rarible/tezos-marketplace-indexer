@@ -20,15 +20,11 @@ from rarible_marketplace_indexer.types.tezos_objects.asset_value.xtz_value impor
 from rarible_marketplace_indexer.types.tezos_objects.tezos_object_hash import ImplicitAccountAddress
 from rarible_marketplace_indexer.types.tezos_objects.tezos_object_hash import OriginatedAccountAddress
 
-gentk_contracts = {
-    "0": "KT1KEa8z6vWXDJrVqtMrAeDVzsvxat3kHaCE",
-    "1": "KT1U6EHmNxJTkvaWJ4ThczG4FSDaHC21ssvi",
-}
-
 
 class FxhashV2ListingOrderListEvent(AbstractOrderListEvent):
     platform = PlatformEnum.FXHASH_V2
     FxhashListTransaction = Transaction[ListingParameter, FxhashV2Storage]
+    fxhash_nft_addresses = {}
 
     @staticmethod
     def _get_list_dto(
@@ -37,14 +33,12 @@ class FxhashV2ListingOrderListEvent(AbstractOrderListEvent):
     ) -> ListDto:
         make_value = AssetValue(1)
         take_value = Xtz.from_u_tezos(transaction.parameter.price)
-        make_contract = gentk_contracts.get(transaction.parameter.gentk.version)
-
         return ListDto(
             internal_order_id=str(int(transaction.storage.listings_count) - 1),
             maker=ImplicitAccountAddress(transaction.data.sender_address),
             make=MakeDto(
                 asset_class=AssetClassEnum.MULTI_TOKEN,
-                contract=OriginatedAccountAddress(make_contract),
+                contract=OriginatedAccountAddress(FxhashV2ListingOrderListEvent.fxhash_nft_addresses.get(transaction.parameter.gentk.version)),
                 token_id=int(transaction.parameter.gentk.id),
                 value=make_value,
             ),
