@@ -156,19 +156,23 @@ indexes:
 #    datasource: tzkt
 #    contracts:
 #      - fxhash_v1
-#    first_level: 1832146
+#    types:
+#      - transaction
 #    handlers:
 #      - callback: fxhash_v1_order_list
 #        pattern:
 #          - destination: fxhash_v1
+#            type: transaction
 #            entrypoint: offer
 #      - callback: fxhash_v1_order_cancel
 #        pattern:
 #          - destination: fxhash_v1
+#            type: transaction
 #            entrypoint: cancel_offer
 #      - callback: fxhash_v1_order_match
 #        pattern:
 #          - destination: fxhash_v1
+#            type: transaction
 #            entrypoint: collect
 #
 #  fxhash_v2_actions:
@@ -176,19 +180,23 @@ indexes:
 #     datasource: tzkt
 #     contracts:
 #       - fxhash_v2
-#     first_level: 2280663
+#     types:
+#       - transaction
 #     handlers:
 #       - callback: fxhash_v2_listing_order_list
 #         pattern:
 #           - destination: fxhash_v2
+#             type: transaction
 #             entrypoint: listing
 #       - callback: fxhash_v2_listing_order_cancel
 #         pattern:
 #           - destination: fxhash_v2
+#             type: transaction
 #             entrypoint: listing_cancel
 #       - callback: fxhash_v2_listing_order_match
 #         pattern:
 #           - destination: fxhash_v2
+#             type: transaction
 #             entrypoint: listing_accept
 
 advanced:
