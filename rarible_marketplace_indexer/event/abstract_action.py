@@ -1,12 +1,11 @@
 import logging
-import os
+import math
 from abc import ABC
 from abc import abstractmethod
 from datetime import timedelta
-from typing import List
+from decimal import Decimal
 from typing import final
 
-import requests
 from dipdup.datasources.tzkt.datasource import TzktDatasource
 from dipdup.models import Transaction
 
@@ -19,8 +18,10 @@ from rarible_marketplace_indexer.models import ActivityTypeEnum
 from rarible_marketplace_indexer.models import LegacyOrderModel
 from rarible_marketplace_indexer.models import OrderModel
 from rarible_marketplace_indexer.models import OrderStatusEnum
-from rarible_marketplace_indexer.types.rarible_exchange.parameter.sell import Part
+from rarible_marketplace_indexer.prometheus.rarible_metrics import RaribleMetrics
+from rarible_marketplace_indexer.types.rarible_api_objects.asset.enum import AssetClassEnum
 from rarible_marketplace_indexer.types.tezos_objects.asset_value.asset_value import AssetValue
+from rarible_marketplace_indexer.utils.rarible_utils import get_json_parts
 
 
 class EventInterface(ABC):
@@ -30,13 +31,6 @@ class EventInterface(ABC):
     @abstractmethod
     async def handle(cls, transaction: Transaction, datasource: TzktDatasource):
         raise NotImplementedError
-
-    @classmethod
-    def get_json_parts(cls, parts: List[Part]):
-        json_parts: List[Part] = []
-        for part in parts:
-            json_parts.append({'part_account': part.part_account, 'part_value': part.part_value})
-        return json_parts
 
 
 class AbstractOrderListEvent(EventInterface):
@@ -55,6 +49,7 @@ class AbstractOrderListEvent(EventInterface):
         transaction: Transaction,
         datasource: TzktDatasource,
     ):
+        logger = logging.getLogger('dipdup.order_list_event')
         dto = cls._get_list_dto(transaction, datasource)
         if not dto.start_at:
             dto.start_at = transaction.data.timestamp
@@ -62,6 +57,24 @@ class AbstractOrderListEvent(EventInterface):
         order = await OrderModel.get_or_none(
             internal_order_id=dto.internal_order_id, network=datasource.network, platform=cls.platform, status=OrderStatusEnum.ACTIVE
         )
+
+        if dto.take.asset_class == AssetClassEnum.FUNGIBLE_TOKEN:
+            ft_result = None
+            if dto.take.token_id is not None:
+                ft_result = await datasource.request(
+                    method='get', url=f"v1/tokens?contract={dto.take.contract}&tokenId={dto.take.token_id}"
+                )
+            else:
+                ft_result = await datasource.request(method='get', url=f"v1/tokens?contract={dto.take.contract}")
+            # TODO: We need to double-check code below
+            if ft_result is not None and "metadata" in ft_result[0]:
+                ft = ft_result[0]
+                meta = ft["metadata"]
+                try:
+                    decimals = int(meta["decimals"])
+                    dto.take.value = dto.take.value / Decimal(math.pow(10, decimals))
+                except Exception:
+                    logger.info(f"Failed to get decimals for FT token {dto.take.contract}:{dto.take.token_id} with meta: {meta}")
 
         if order is None:
             order = await OrderModel.create(
@@ -79,42 +92,61 @@ class AbstractOrderListEvent(EventInterface):
                 make_contract=dto.make.contract,
                 make_token_id=dto.make.token_id,
                 make_value=dto.make.value,
+                make_price=dto.take.value,
                 take_asset_class=dto.take.asset_class,
                 take_contract=dto.take.contract,
                 take_token_id=dto.take.token_id,
                 take_value=dto.take.value * dto.make.value,
-                origin_fees=cls.get_json_parts(dto.origin_fees),
-                payouts=cls.get_json_parts(dto.payouts),
+                origin_fees=get_json_parts(dto.origin_fees),
+                payouts=get_json_parts(dto.payouts),
             )
         else:
             order.last_updated_at = transaction.data.timestamp
             order.make_value = dto.make.value
             order.take_value = dto.take.value
-            order.origin_fees = cls.get_json_parts(dto.origin_fees)
-            order.payouts = cls.get_json_parts(dto.payouts)
+            order.origin_fees = get_json_parts(dto.origin_fees)
+            order.payouts = get_json_parts(dto.payouts)
             await order.save()
 
-        await ActivityModel.create(
-            type=ActivityTypeEnum.ORDER_LIST,
-            network=datasource.network,
-            platform=cls.platform,
-            order_id=order.id,
-            internal_order_id=dto.internal_order_id,
-            maker=dto.maker,
-            make_asset_class=dto.make.asset_class,
-            make_contract=dto.make.contract,
-            make_token_id=dto.make.token_id,
-            make_value=dto.make.value,
-            take_asset_class=dto.take.asset_class,
-            take_contract=dto.take.contract,
-            take_token_id=dto.take.token_id,
-            take_value=dto.take.value,
-            operation_level=transaction.data.level,
-            operation_timestamp=transaction.data.timestamp,
-            operation_hash=transaction.data.hash,
-            operation_counter=transaction.data.counter,
-            operation_nonce=transaction.data.nonce,
+        list_activity = (
+            await ActivityModel.filter(
+                network=datasource.network,
+                platform=cls.platform,
+                internal_order_id=dto.internal_order_id,
+                operation_hash=transaction.data.hash,
+                operation_level=transaction.data.level,
+                operation_counter=transaction.data.counter,
+                type=ActivityTypeEnum.ORDER_LIST,
+            )
+            .order_by('-operation_level')
+            .first()
         )
+
+        if list_activity is None:
+            await ActivityModel.create(
+                type=ActivityTypeEnum.ORDER_LIST,
+                network=datasource.network,
+                platform=cls.platform,
+                order_id=order.id,
+                internal_order_id=dto.internal_order_id,
+                maker=dto.maker,
+                make_asset_class=dto.make.asset_class,
+                make_contract=dto.make.contract,
+                make_token_id=dto.make.token_id,
+                make_value=dto.make.value,
+                take_asset_class=dto.take.asset_class,
+                take_contract=dto.take.contract,
+                take_token_id=dto.take.token_id,
+                take_value=dto.take.value * dto.make.value,
+                operation_level=transaction.data.level,
+                operation_timestamp=transaction.data.timestamp,
+                operation_hash=transaction.data.hash,
+                operation_counter=transaction.data.counter,
+                operation_nonce=transaction.data.nonce,
+            )
+
+        if RaribleMetrics.enabled is True:
+            RaribleMetrics.set_order_activity(cls.platform, ActivityTypeEnum.ORDER_LIST, 1)
 
 
 class AbstractOrderCancelEvent(EventInterface):
@@ -143,10 +175,12 @@ class AbstractOrderCancelEvent(EventInterface):
             .order_by('-operation_level')
             .first()
         )
-        cancel_activity = last_order_activity.apply(transaction)
+        if last_order_activity is not None:
+            if last_order_activity.type is not ActivityTypeEnum.ORDER_CANCEL:
+                cancel_activity = last_order_activity.apply(transaction)
 
-        cancel_activity.type = ActivityTypeEnum.ORDER_CANCEL
-        await cancel_activity.save()
+                cancel_activity.type = ActivityTypeEnum.ORDER_CANCEL
+                await cancel_activity.save()
 
         order = (
             await OrderModel.filter(
@@ -159,12 +193,16 @@ class AbstractOrderCancelEvent(EventInterface):
             .first()
         )
 
-        order.status = OrderStatusEnum.CANCELLED
-        order.cancelled = True
-        order.ended_at = transaction.data.timestamp
-        order.last_updated_at = transaction.data.timestamp
+        if order is not None:
+            order.status = OrderStatusEnum.CANCELLED
+            order.cancelled = True
+            order.ended_at = transaction.data.timestamp
+            order.last_updated_at = transaction.data.timestamp
 
-        await order.save()
+            await order.save()
+
+        if RaribleMetrics.enabled is True:
+            RaribleMetrics.set_order_activity(cls.platform, ActivityTypeEnum.ORDER_CANCEL, 1)
 
 
 class AbstractLegacyOrderCancelEvent(EventInterface):
@@ -195,64 +233,37 @@ class AbstractLegacyOrderCancelEvent(EventInterface):
             .first()
         )
 
-        order = (
-            await OrderModel.filter(
-                id=legacy_order.id,
+        if legacy_order is not None:
+            order = (
+                await OrderModel.filter(
+                    id=legacy_order.id,
+                )
+                .order_by('-id')
+                .first()
             )
-            .order_by('-id')
-            .first()
-        )
 
-        last_order_activity = (
-            await ActivityModel.filter(
-                network=datasource.network,
-                platform=cls.platform,
-                order_id=order.id,
-            )
-            .order_by('-operation_timestamp')
-            .first()
-        )
+            if order is not None:
+                order.status = OrderStatusEnum.CANCELLED
+                order.cancelled = True
+                order.ended_at = transaction.data.timestamp
+                order.last_updated_at = transaction.data.timestamp
+                await order.save()
 
-        if order is not None:
-            order.status = OrderStatusEnum.CANCELLED
-            order.cancelled = True
-            order.ended_at = transaction.data.timestamp
-            order.last_updated_at = transaction.data.timestamp
-            response = requests.post(f"{os.getenv('UNION_API')}/v0.1/refresh/item/TEZOS:{order.make_contract}:{order.make_token_id}/reconcile?full=true")
-            if not response.ok:
-                logger.info(f"{order.make_contract}:{order.make_token_id} need reconcile: Error {response.status_code} - {response.reason}")
-            else:
-                logger.info(f"{order.make_contract}:{order.make_token_id} synced properly after legacy cancel")
-            await order.save()
+                last_order_activity = (
+                    await ActivityModel.filter(
+                        network=datasource.network, platform=cls.platform, order_id=order.id, type=ActivityTypeEnum.ORDER_CANCEL
+                    )
+                    .order_by('-operation_timestamp')
+                    .first()
+                )
+                if last_order_activity is not None:
+                    cancel_activity = last_order_activity.apply(transaction)
 
-        if last_order_activity is not None:
-            cancel_activity = last_order_activity.apply(transaction)
+                    cancel_activity.type = ActivityTypeEnum.ORDER_CANCEL
+                    await cancel_activity.save()
 
-            cancel_activity.type = ActivityTypeEnum.ORDER_CANCEL
-            await cancel_activity.save()
-        else:
-            await ActivityModel.create(
-                type=ActivityTypeEnum.ORDER_CANCEL,
-                network=datasource.network,
-                platform=cls.platform,
-                order_id=order.id,
-                internal_order_id=order.internal_order_id,
-                maker=order.maker,
-                make_asset_class=order.make_asset_class,
-                make_contract=order.make_contract,
-                make_token_id=order.make_token_id,
-                make_value=order.make_value,
-                take_asset_class=order.take_asset_class,
-                take_contract=order.take_contract,
-                take_token_id=order.take_token_id,
-                take_value=order.take_value,
-                taker=order.taker,
-                operation_level=transaction.data.level,
-                operation_timestamp=transaction.data.timestamp,
-                operation_hash=transaction.data.hash,
-                operation_counter=transaction.data.counter,
-                operation_nonce=transaction.data.nonce,
-            )
+        if RaribleMetrics.enabled is True:
+            RaribleMetrics.set_order_activity(cls.platform, ActivityTypeEnum.ORDER_CANCEL, 1)
 
 
 class AbstractOrderMatchEvent(EventInterface):
@@ -293,27 +304,35 @@ class AbstractOrderMatchEvent(EventInterface):
             .first()
         )
 
-        order = await OrderModel.get(
-            network=datasource.network,
-            platform=cls.platform,
-            internal_order_id=dto.internal_order_id,
-            status=OrderStatusEnum.ACTIVE,
+        order = (
+            await OrderModel.filter(
+                network=datasource.network,
+                platform=cls.platform,
+                internal_order_id=dto.internal_order_id,
+                status=OrderStatusEnum.ACTIVE,
+            )
+            .order_by('-id')
+            .first()
         )
 
-        match_activity = last_list_activity.apply(transaction)
+        if order is not None:
+            order.last_updated_at = transaction.data.timestamp
+            order = cls._process_order_match(order, dto)
+            await order.save()
 
-        match_activity.type = ActivityTypeEnum.ORDER_MATCH
-        match_activity.taker = transaction.data.sender_address
+        if last_list_activity is not None:
+            match_activity = last_list_activity.apply(transaction)
 
-        match_activity.make_value = dto.match_amount
-        match_activity.take_value = AssetValue(order.take_value * dto.match_amount)
+            match_activity.type = ActivityTypeEnum.ORDER_MATCH
+            match_activity.taker = transaction.data.sender_address
 
-        await match_activity.save()
+            match_activity.make_value = dto.match_amount
+            match_activity.take_value = AssetValue(order.make_price * dto.match_amount)
 
-        order.last_updated_at = transaction.data.timestamp
-        order = cls._process_order_match(order, dto)
+            await match_activity.save()
 
-        await order.save()
+        if RaribleMetrics.enabled is True:
+            RaribleMetrics.set_order_activity(cls.platform, ActivityTypeEnum.ORDER_MATCH, 1)
 
 
 class AbstractLegacyOrderMatchEvent(EventInterface):
@@ -338,21 +357,30 @@ class AbstractLegacyOrderMatchEvent(EventInterface):
                 network=datasource.network,
                 platform=cls.platform,
                 internal_order_id=dto.internal_order_id,
-                status=OrderStatusEnum.ACTIVE,
             )
             .order_by('-id')
             .first()
         )
 
-        last_list_activity = (
-            await ActivityModel.filter(
-                network=datasource.network,
-                platform=cls.platform,
-                internal_order_id=dto.internal_order_id,
+        if order is None:
+            order = (
+                await OrderModel.filter(
+                    network=datasource.network,
+                    platform=cls.platform,
+                    make_asset_class=dto.make.asset_class,
+                    make_contract=dto.make.contract,
+                    make_token_id=dto.make.token_id,
+                    make_value=dto.make.value,
+                    take_asset_class=dto.take.asset_class,
+                    take_contract=dto.take.contract,
+                    take_token_id=dto.take.token_id,
+                    take_value=dto.take.value,
+                    maker=dto.maker,
+                    salt=dto.salt,
+                )
+                .order_by('-id')
+                .first()
             )
-            .order_by('-operation_timestamp')
-            .first()
-        )
 
         if order is None:
             order = await OrderModel.create(
@@ -362,7 +390,7 @@ class AbstractLegacyOrderMatchEvent(EventInterface):
                 status=OrderStatusEnum.ACTIVE,
                 start_at=dto.start,
                 end_at=dto.end_at,
-                salt=transaction.data.counter,
+                salt=dto.salt,
                 created_at=transaction.data.timestamp,
                 last_updated_at=transaction.data.timestamp,
                 maker=dto.maker,
@@ -370,18 +398,20 @@ class AbstractLegacyOrderMatchEvent(EventInterface):
                 make_contract=dto.make.contract,
                 make_token_id=dto.make.token_id,
                 make_value=dto.make.value,
+                make_price=dto.take.value / dto.make.value,
                 take_asset_class=dto.take.asset_class,
                 take_contract=dto.take.contract,
                 take_token_id=dto.take.token_id,
                 take_value=dto.take.value,
-                origin_fees=cls.get_json_parts(dto.origin_fees),
-                payouts=cls.get_json_parts(dto.payouts),
+                origin_fees=get_json_parts(dto.origin_fees),
+                payouts=get_json_parts(dto.payouts),
             )
         else:
             order.make_value = dto.make.value
             order.take_value = dto.take.value
-            order.origin_fees = cls.get_json_parts(dto.origin_fees)
-            order.payouts = cls.get_json_parts(dto.payouts)
+            order.make_price = dto.take.value / dto.make.value
+            order.origin_fees = get_json_parts(dto.origin_fees)
+            order.payouts = get_json_parts(dto.payouts)
 
         order.last_updated_at = transaction.data.timestamp
 
@@ -393,23 +423,46 @@ class AbstractLegacyOrderMatchEvent(EventInterface):
 
         await order.save()
 
-        if last_list_activity is not None:
-            match_activity = last_list_activity.apply(transaction)
+        last_activity = (
+            await ActivityModel.filter(
+                network=datasource.network,
+                platform=cls.platform,
+                order_id=order.id,
+                operation_hash=transaction.data.hash,
+                operation_counter=transaction.data.counter,
+                operation_nonce=transaction.data.nonce,
+            )
+            .order_by('-operation_timestamp')
+            .first()
+        )
+
+        if last_activity is not None:
+            match_activity = last_activity.apply(transaction)
 
             match_activity.type = ActivityTypeEnum.ORDER_MATCH
             match_activity.taker = transaction.data.sender_address
 
             match_activity.make_value = dto.match_amount
-            match_activity.take_value = AssetValue(order.take_value * dto.match_amount)
+            match_activity.take_value = AssetValue(order.make_price * dto.match_amount)
 
-            await match_activity.save()
+            last_match = (
+                await ActivityModel.filter(
+                    network=datasource.network,
+                    platform=cls.platform,
+                    id=match_activity.id,
+                )
+                .order_by('-operation_timestamp')
+                .first()
+            )
+            if last_match is None:
+                await match_activity.save()
         else:
             await ActivityModel.create(
                 type=ActivityTypeEnum.ORDER_MATCH,
                 network=datasource.network,
                 platform=cls.platform,
                 order_id=order.id,
-                internal_order_id=dto.internal_order_id,
+                internal_order_id=order.internal_order_id,
                 maker=dto.maker,
                 make_asset_class=dto.make.asset_class,
                 make_contract=dto.make.contract,
@@ -418,7 +471,7 @@ class AbstractLegacyOrderMatchEvent(EventInterface):
                 take_asset_class=dto.take.asset_class,
                 take_contract=dto.take.contract,
                 take_token_id=dto.take.token_id,
-                take_value=AssetValue(order.take_value * dto.match_amount),
+                take_value=order.make_price * dto.match_amount,
                 taker=transaction.data.sender_address,
                 operation_level=transaction.data.level,
                 operation_timestamp=transaction.data.timestamp,
@@ -426,6 +479,9 @@ class AbstractLegacyOrderMatchEvent(EventInterface):
                 operation_counter=transaction.data.counter,
                 operation_nonce=transaction.data.nonce,
             )
+
+        if RaribleMetrics.enabled is True:
+            RaribleMetrics.set_order_activity(cls.platform, ActivityTypeEnum.ORDER_MATCH, 1)
 
 
 class AbstractPutBidEvent(EventInterface):
@@ -468,20 +524,21 @@ class AbstractPutBidEvent(EventInterface):
                 make_asset_class=dto.make.asset_class,
                 make_contract=dto.make.contract,
                 make_token_id=dto.make.token_id,
-                make_value=dto.make.value,
+                make_value=dto.make.value * dto.take.value,
                 take_asset_class=dto.take.asset_class,
                 take_contract=dto.take.contract,
                 take_token_id=dto.take.token_id,
                 take_value=dto.take.value,
-                origin_fees=cls.get_json_parts(dto.origin_fees),
-                payouts=cls.get_json_parts(dto.payouts),
+                take_price=dto.make.value,
+                origin_fees=get_json_parts(dto.origin_fees),
+                payouts=get_json_parts(dto.payouts),
             )
         else:
             order.last_updated_at = transaction.data.timestamp
             order.make_value = dto.make.value
             order.take_value = dto.take.value
-            order.origin_fees = cls.get_json_parts(order.origin_fees) + cls.get_json_parts(dto.origin_fees)
-            order.payouts = cls.get_json_parts(order.payouts) + cls.get_json_parts(dto.payouts)
+            order.origin_fees = get_json_parts(order.origin_fees) + get_json_parts(dto.origin_fees)
+            order.payouts = get_json_parts(order.payouts) + get_json_parts(dto.payouts)
             await order.save()
 
         await ActivityModel.create(
@@ -494,7 +551,7 @@ class AbstractPutBidEvent(EventInterface):
             make_asset_class=dto.make.asset_class,
             make_contract=dto.make.contract,
             make_token_id=dto.make.token_id,
-            make_value=dto.make.value,
+            make_value=dto.make.value * dto.take.value,
             take_asset_class=dto.take.asset_class,
             take_contract=dto.take.contract,
             take_token_id=dto.take.token_id,
@@ -547,20 +604,21 @@ class AbstractPutFloorBidEvent(EventInterface):
                 make_asset_class=dto.make.asset_class,
                 make_contract=dto.make.contract,
                 make_token_id=dto.make.token_id,
-                make_value=dto.make.value,
+                make_value=dto.make.value * dto.take.value,
                 take_asset_class=dto.take.asset_class,
                 take_contract=dto.take.contract,
                 take_token_id=dto.take.token_id,
                 take_value=dto.take.value,
-                origin_fees=cls.get_json_parts(dto.origin_fees),
-                payouts=cls.get_json_parts(dto.payouts),
+                take_price=dto.make.value,
+                origin_fees=get_json_parts(dto.origin_fees),
+                payouts=get_json_parts(dto.payouts),
             )
         else:
             order.last_updated_at = transaction.data.timestamp
             order.make_value = dto.make.value
             order.take_value = dto.take.value
-            order.origin_fees = cls.get_json_parts(order.origin_fees) + cls.get_json_parts(dto.origin_fees)
-            order.payouts = cls.get_json_parts(order.payouts) + cls.get_json_parts(dto.payouts)
+            order.origin_fees = get_json_parts(order.origin_fees) + get_json_parts(dto.origin_fees)
+            order.payouts = get_json_parts(order.payouts) + get_json_parts(dto.payouts)
             await order.save()
 
         await ActivityModel.create(
@@ -577,7 +635,7 @@ class AbstractPutFloorBidEvent(EventInterface):
             take_asset_class=dto.take.asset_class,
             take_contract=dto.take.contract,
             take_token_id=dto.take.token_id,
-            take_value=dto.take.value,
+            take_value=dto.take.value * dto.make.value,
             operation_level=transaction.data.level,
             operation_timestamp=transaction.data.timestamp,
             operation_hash=transaction.data.hash,
@@ -634,8 +692,8 @@ class AbstractAcceptBidEvent(EventInterface):
         )
         order.last_updated_at = transaction.data.timestamp
         order.taker = transaction.data.sender_address
-        order.origin_fees = cls.get_json_parts(order.origin_fees) + cls.get_json_parts(dto.origin_fees)
-        order.payouts = cls.get_json_parts(order.payouts) + cls.get_json_parts(dto.payouts)
+        order.origin_fees = get_json_parts(order.origin_fees) + get_json_parts(dto.origin_fees)
+        order.payouts = get_json_parts(order.payouts) + get_json_parts(dto.payouts)
         order = cls._process_bid_match(order, dto)
         await order.save()
 
@@ -689,8 +747,8 @@ class AbstractAcceptFloorBidEvent(EventInterface):
         )
         order.last_updated_at = transaction.data.timestamp
         order.taker = transaction.data.sender_address
-        order.origin_fees = cls.get_json_parts(order.origin_fees) + cls.get_json_parts(dto.origin_fees)
-        order.payouts = cls.get_json_parts(order.payouts) + cls.get_json_parts(dto.payouts)
+        order.origin_fees = get_json_parts(order.origin_fees) + get_json_parts(dto.origin_fees)
+        order.payouts = get_json_parts(order.payouts) + get_json_parts(dto.payouts)
         order = cls._process_floor_bid_match(order, dto)
 
         await order.save()

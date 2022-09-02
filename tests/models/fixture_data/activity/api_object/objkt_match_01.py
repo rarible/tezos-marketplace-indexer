@@ -17,10 +17,10 @@ from rarible_marketplace_indexer.types.tezos_objects.tezos_object_hash import Op
 from rarible_marketplace_indexer.types.tezos_objects.tezos_object_hash import OriginatedAccountAddress
 
 activity_api_object = RaribleApiOrderMatchActivity(
-    id=UUID('45b51339-c32e-56ab-a44f-66463b7d4fad'),
+    id=UUID('3212dbe4-5cbe-5fc1-a125-fb963a250f0d'),
     network='mainnet',
     type=ActivityTypeEnum.ORDER_MATCH,
-    source=PlatformEnum.OBJKT,
+    source=PlatformEnum.OBJKT_V1,
     order_id=UUID('1603ff55-2507-5cba-b50c-3ae50162c5ee'),
     hash=OperationHash('oo4GwwjGX6RimeYBp68ddo1PS4aBc7ZpWDFmrqwZRcocnGykChm'),
     date=datetime(2021, 7, 1, 21, 9, 38, tzinfo=UTC),

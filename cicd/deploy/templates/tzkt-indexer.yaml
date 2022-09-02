@@ -15,7 +15,7 @@ spec:
   {{- end }}
   ports:
     - port: {{ .Values.tzkt.service.port }}
-      name: tzkt-http
+      name: http
       targetPort: {{ .Values.tzkt.service.port }}
       protocol: TCP
       {{- if .Values.tzkt.service.nodePort }}
@@ -42,12 +42,14 @@ spec:
       labels:
         app: tzkt
     spec:
+      nodeSelector: 
+        env: {{ include "app.env" . | quote }}
       containers:
         - image: "{{ .Values.tzkt.api.image.repository }}:{{ .Values.tzkt.api.image.tag }}"
           name: api
           ports:
             - containerPort: {{ .Values.tzkt.service.port }}
-              name: tzkt
+              name: http
               protocol: TCP
           env:
           - name: Kestrel__Endpoints__Http__Url
@@ -68,6 +70,8 @@ spec:
           - secretRef:
               name: tzkt-app
               optional: true
+          resources:
+            {{- toYaml .Values.tzkt.api.resources | nindent 12 }}
         - image: "{{ .Values.tzkt.indexer.image.repository }}:{{ .Values.tzkt.indexer.image.tag }}"
           name: indexer
           env:
@@ -99,6 +103,8 @@ spec:
             - name: tzkt-config
               mountPath: /app/appsettings.json
               subPath: appsettings.json
+          resources:
+            {{- toYaml .Values.tzkt.indexer.resources | nindent 12 }}
       volumes:
         - name: tzkt-config
           configMap:

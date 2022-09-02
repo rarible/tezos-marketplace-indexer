@@ -1,19 +1,44 @@
 version: "3.8"
 
 services:
-  indexer:
+  indexer-rarible:
     image: rarible_indexer:dev
+    ports:
+      - "28080:8080"
     depends_on:
       - db
-      - kafka0
-    command: [ "-c", "dipdup.yml", "-c", "dipdup.prod.yml", "run" ]
-    restart: "no"
+      - kafka
+    command: [ "dipdup", "-c", "dipdup.yml", "-c", "dipdup.prod.rarible.yml", "run" ]
+    restart: always
     environment:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-changeme}
       - ADMIN_SECRET=${ADMIN_SECRET:-changeme}
-      - KAFKA_URL=kafka0:9094
-      - KAFKA_ENABLED=true
-      - KAFKA_SECURITY_PROTOCOL=SASL_PLAINTEXT
+      - KAFKA_ADDRESS=kafka:9092
+      - KAFKA_ENABLED=false
+      - KAFKA_SECURITY_PROTOCOL=PLAINTEXT
+      - KAFKA_SASL_MECHANISM=PLAIN
+      - KAFKA_USERNAME=rarible
+      - KAFKA_PASSWORD=changeme
+      - NETWORK=mainnet
+      - LEGACY_API=https://tezos-api.rarible.org
+      - UNION_API=https://api.rarible.org
+      - APPLICATION_ENVIRONMENT=prod
+
+  indexer-tezos:
+    image: rarible_indexer:dev
+    ports:
+      - "28081:8080"
+    depends_on:
+      - db
+      - kafka
+    command: [ "dipdup", "-c", "dipdup.yml", "-c", "dipdup.prod.tezos.yml", "run" ]
+    restart: always
+    environment:
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-changeme}
+      - ADMIN_SECRET=${ADMIN_SECRET:-changeme}
+      - KAFKA_ADDRESS=kafka:9092
+      - KAFKA_ENABLED=false
+      - KAFKA_SECURITY_PROTOCOL=PLAINTEXT
       - KAFKA_SASL_MECHANISM=PLAIN
       - KAFKA_USERNAME=rarible
       - KAFKA_PASSWORD=changeme
@@ -53,62 +78,71 @@ services:
       - HASURA_GRAPHQL_UNAUTHORIZED_ROLE=user
       - HASURA_GRAPHQL_STRINGIFY_NUMERIC_TYPES=true
 
-  zookeeper0:
+  zookeeper:
     image: confluentinc/cp-zookeeper:7.0.1
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
-      ZOOKEEPER_SERVER_ID: 1
-      ZOOKEEPER_SERVERS: zookeeper0:2888:3888
-    volumes:
-      - zookeeper-data:/var/lib/zookeeper/data
-      - zookeeper-log:/var/lib/zookeeper/log
+      ZOOKEEPER_TICK_TIME: 2000
     ports:
-      - "127.0.0.1:2181:2181"
-      - "127.0.0.1:2188:2188"
+      - 2181:2181
 
-  kafka0:
-    depends_on:
-      - zookeeper0
+  kafka:
     image: confluentinc/cp-kafka:7.0.1
-    environment:
-      KAFKA_LISTENERS: INTERNAL://0.0.0.0:9092,EXTERNAL://0.0.0.0:9094
-      KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka0:9092,EXTERNAL://kafka0:9094
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,EXTERNAL:SASL_PLAINTEXT
-      KAFKA_LISTENER_NAME_EXTERNAL_SASL_ENABLED_MECHANISMS: PLAIN
-      KAFKA_LISTENER_NAME_EXTERNAL_PLAIN_SASL_JAAS_CONFIG: |
-        org.apache.kafka.common.security.plain.PlainLoginModule required \
-        username="rarible" \
-        password="changeme" \
-        user_rarible="changeme"; \
-      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper0:2181
-      KAFKA_ZOOKEEPER_SESSION_TIMEOUT: "6000"
-      ZOOKEEPER_SASL_ENABLED: "false"
-      KAFKA_BROKER_ID: 1
-      KAFKA_LOG4J_ROOT_LOGLEVEL: "DEBUG"
-      KAFKA_LOG4J_LOGGERS: "kafka.controller=DEBUG,kafka.producer.async.DefaultEventHandler=DEBUG,state.change.logger=DEBUG"
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
-      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
-      KAFKA_AUTHORIZER_CLASS_NAME: kafka.security.authorizer.AclAuthorizer
-      KAFKA_ALLOW_EVERYONE_IF_NO_ACL_FOUND: "true"
-    volumes:
-      - kafka-data:/var/lib/kafka/data
+    depends_on:
+      - zookeeper
     ports:
-      - "127.0.0.1:9092:9092"
-      - "127.0.0.1:9094:9094"
+      - 29092:9092
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
 
   kafdrop:
     depends_on:
-      - kafka0
+      - kafka
     image: obsidiandynamics/kafdrop
     environment:
-      KAFKA_BROKERCONNECT: "kafka0:9092"
+      KAFKA_BROKERCONNECT: "kafka:9092"
       JVM_OPTS: "-Xms16M -Xmx48M -Xss180K -XX:-TieredCompilation -XX:+UseStringDeduplication -noverify"
     ports:
       - "127.0.0.1:9000:9000"
+
+  prometheus:
+    image: prom/prometheus
+    restart: always
+    volumes:
+      - ./prometheus:/etc/prometheus/
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+    ports:
+      - 9090:9090
+
+  grafana:
+    image: grafana/grafana:8.4.6
+    user: '472'
+    restart: always
+    environment:
+      GF_INSTALL_PLUGINS: 'grafana-clock-panel,grafana-simple-json-datasource'
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana/provisioning/:/etc/grafana/provisioning/
+    env_file:
+      - ./grafana/config.monitoring
+    ports:
+      - 3000:3000
+    depends_on:
+      - prometheus
 
 volumes:
   zookeeper-data:
   zookeeper-log:
   kafka-data:
+  prometheus_data:
+  grafana_data:

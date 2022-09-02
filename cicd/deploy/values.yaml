@@ -1,13 +1,16 @@
-tezos-marketplace-indexer:
+tezos-marketplace-indexer-rarible:
   image:
     repository: tezos-marketplace-indexer
-  command: [ 
+  command: [
     "dipdup", "-c", "dipdup.yml",
-    "-c", 'dipdup.{{ include "service.env" $ }}.yml',
+    "-c", 'dipdup.{{ include "app.env" $ }}.rarible.yml',
     "run"
     ]
   environments:
-    APPLICATION_ENVIRONMENT: '{{ include "service.env" $ }}'
+    APPLICATION_ENVIRONMENT: '{{ include "app.env" $ }}'
+    KAFKA_ENABLED: "true"
+    KAFKA_SECURITY_PROTOCOL: "PLAINTEXT"
+    UNION_API: 'http://protocol-union-api.{{ include "app.env" $ }}-protocol:8080'
     # provided via secrets
     # POSTGRES_HOST:
     # POSTGRES_DB:
@@ -21,11 +24,48 @@ tezos-marketplace-indexer:
 
   livenessProbe: false
   readinessProbe: false
-  # resources:
-  #   requests:
-  #     memory: 128M
-  #   limits:
-  #     memory: 256M
+#  resources:
+#     requests:
+#       cpu: '4'
+#       memory: 2Gi
+#     limits:
+#       cpu: '4'
+#       memory: 2Gi
+
+
+tezos-marketplace-indexer-tezos:
+  image:
+    repository: tezos-marketplace-indexer
+  command: [
+    "dipdup", "-c", "dipdup.yml",
+    "-c", 'dipdup.{{ include "app.env" $ }}.tezos.yml',
+    "run"
+    ]
+  environments:
+    APPLICATION_ENVIRONMENT: '{{ include "app.env" $ }}'
+    KAFKA_ENABLED: "true"
+    KAFKA_SECURITY_PROTOCOL: "PLAINTEXT"
+    UNION_API: 'http://protocol-union-api.{{ include "app.env" $ }}-protocol:8080'
+    # provided via secrets
+    # POSTGRES_HOST:
+    # POSTGRES_DB:
+    # POSTGRES_USER:
+    # POSTGRES_PASS:
+    # KAFKA_ADDRESS:
+    # KAFKA_SASL_MECHANISM:
+    # KAFKA_USERNAME:
+    # KAFKA_PASSWORD:
+    # HASURA_GRAPHQL_ADMIN_SECRET:
+
+  livenessProbe: false
+  readinessProbe: false
+#  resources:
+#     requests:
+#       cpu: '4'
+#       memory: 2Gi
+#     limits:
+#       cpu: '4'
+#       memory: 2Gi
   
 hasura:
   image: 
@@ -36,7 +76,7 @@ hasura:
     enabled: true
   podAnnotations:
     prometheus.io/scrape: 'false'
-  livenessProbe: 
+  livenessProbe:
     httpGet:
       path: /healthz
   readinessProbe: 
@@ -54,14 +94,29 @@ hasura:
  
 tzkt: 
   enabled: false
+  network: mainnet
   api:
     image:
       repository: bakingbad/tzkt-api
-      tag: 1.8.4
+      tag: 1.9.4
+    resources:
+      limits:
+        cpu: 300m
+        memory: 384Mi
+      requests:
+        cpu: 100m
+        memory: 256Mi
   indexer:
     image:
       repository: bakingbad/tzkt-sync
-      tag: 1.8.4
+      tag: 1.9.4
+    resources:
+      limits:
+        cpu: 300m
+        memory: 384Mi
+      requests:
+        cpu: 100m
+        memory: 192Mi
   service:
     port: 5000
     # nodePort: 

@@ -16,6 +16,7 @@ from rarible_marketplace_indexer.types.objkt_marketplace_v2.parameter.retract_as
 from rarible_marketplace_indexer.types.objkt_marketplace_v2.storage import ObjktMarketplaceV2Storage
 from rarible_marketplace_indexer.types.rarible_api_objects.asset.enum import AssetClassEnum
 from rarible_marketplace_indexer.types.tezos_objects.asset_value.asset_value import AssetValue
+from rarible_marketplace_indexer.types.tezos_objects.asset_value.xtz_value import Xtz
 from rarible_marketplace_indexer.types.tezos_objects.tezos_object_hash import ImplicitAccountAddress
 from rarible_marketplace_indexer.types.tezos_objects.tezos_object_hash import OriginatedAccountAddress
 
@@ -30,7 +31,7 @@ class ObjktV2OrderListEvent(AbstractOrderListEvent):
         datasource: TzktDatasource,
     ) -> ListDto:
         make_value = AssetValue(transaction.parameter.editions)
-        take_value = AssetValue(transaction.parameter.amount)
+        take_value = Xtz.from_u_tezos(transaction.parameter.amount)
 
         return ListDto(
             internal_order_id=str(int(transaction.storage.next_ask_id) - 1),

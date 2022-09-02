@@ -16,12 +16,13 @@ from rarible_marketplace_indexer.types.objkt_marketplace.parameter.retract_ask i
 from rarible_marketplace_indexer.types.objkt_marketplace.storage import ObjktMarketplaceStorage
 from rarible_marketplace_indexer.types.rarible_api_objects.asset.enum import AssetClassEnum
 from rarible_marketplace_indexer.types.tezos_objects.asset_value.asset_value import AssetValue
+from rarible_marketplace_indexer.types.tezos_objects.asset_value.xtz_value import Xtz
 from rarible_marketplace_indexer.types.tezos_objects.tezos_object_hash import ImplicitAccountAddress
 from rarible_marketplace_indexer.types.tezos_objects.tezos_object_hash import OriginatedAccountAddress
 
 
 class ObjktOrderListEvent(AbstractOrderListEvent):
-    platform = PlatformEnum.OBJKT
+    platform = PlatformEnum.OBJKT_V1
     ObjktListTransaction = Transaction[AskParameter, ObjktMarketplaceStorage]
 
     @staticmethod
@@ -30,7 +31,7 @@ class ObjktOrderListEvent(AbstractOrderListEvent):
         datasource: TzktDatasource,
     ) -> ListDto:
         make_value = AssetValue(transaction.parameter.amount)
-        take_value = AssetValue(transaction.parameter.price)
+        take_value = Xtz.from_u_tezos(transaction.parameter.price)
 
         return ListDto(
             internal_order_id=str(int(transaction.storage.ask_id) - 1),
@@ -51,7 +52,7 @@ class ObjktOrderListEvent(AbstractOrderListEvent):
 
 
 class ObjktOrderCancelEvent(AbstractOrderCancelEvent):
-    platform = PlatformEnum.OBJKT
+    platform = PlatformEnum.OBJKT_V1
     ObjktCancelTransaction = Transaction[RetractAskParameter, ObjktMarketplaceStorage]
 
     @staticmethod
@@ -60,7 +61,7 @@ class ObjktOrderCancelEvent(AbstractOrderCancelEvent):
 
 
 class ObjktOrderMatchEvent(AbstractOrderMatchEvent):
-    platform = PlatformEnum.OBJKT
+    platform = PlatformEnum.OBJKT_V1
     ObjktMatchTransaction = Transaction[FulfillAskParameter, ObjktMarketplaceStorage]
 
     @staticmethod
@@ -69,4 +70,6 @@ class ObjktOrderMatchEvent(AbstractOrderMatchEvent):
             internal_order_id=transaction.parameter.__root__,
             match_amount=AssetValue(1),
             match_timestamp=transaction.data.timestamp,
+            taker=transaction.data.sender_address,
+            token_id=None,
         )

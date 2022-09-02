@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 from logging import Logger
 from typing import Optional
 from typing import Union
@@ -11,8 +12,8 @@ from rarible_marketplace_indexer.producer.serializer import kafka_value_serializ
 
 
 class NullKafkaProducer:
-    def __init__(self, logger: Logger):
-        self._logger: Logger = logger
+    def __init__(self):
+        self._logger: Logger = logging.getLogger('dipdup.kafka')
 
     async def start(self):
         pass

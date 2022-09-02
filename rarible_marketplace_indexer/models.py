@@ -6,16 +6,15 @@ from typing import Optional
 from typing import TypeVar
 from uuid import uuid5
 
+from dipdup.models import Model
 from dipdup.models import Transaction
 from tortoise import fields
 from tortoise.backends.base.client import BaseDBAsyncClient
-from tortoise.models import Model
 from tortoise.signals import post_save
 
 from rarible_marketplace_indexer.producer.helper import producer_send
 from rarible_marketplace_indexer.types.rarible_api_objects.asset.enum import AssetClassEnum
 from rarible_marketplace_indexer.types.tezos_objects.asset_value.asset_value import AssetValueField
-from rarible_marketplace_indexer.types.tezos_objects.asset_value.xtz_value import XtzField
 from rarible_marketplace_indexer.types.tezos_objects.tezos_object_hash import AccountAddressField
 from rarible_marketplace_indexer.types.tezos_objects.tezos_object_hash import OperationHashField
 
@@ -53,7 +52,9 @@ class ActivityTypeEnum(str, Enum):
 
 class PlatformEnum(str, Enum):
     HEN: _StrEnumValue = 'HEN'
-    OBJKT: _StrEnumValue = 'OBJKT'
+    TEIA_V1: _StrEnumValue = 'TEIA_V1'
+    VERSUM_V1: _StrEnumValue = 'VERSUM_V1'
+    OBJKT_V1: _StrEnumValue = 'OBJKT_V1'
     OBJKT_V2: _StrEnumValue = 'OBJKT_V2'
     RARIBLE_V1: _StrEnumValue = 'RARIBLE_V1'
     RARIBLE_V2: _StrEnumValue = 'RARIBLE_V2'
@@ -63,6 +64,8 @@ class PlatformEnum(str, Enum):
 class IndexEnum(str, Enum):
     COLLECTION: _StrEnumValue = 'COLLECTION'
     LEGACY_ORDERS: _StrEnumValue = 'LEGACY_ORDERS'
+    V1_CLEANING: _StrEnumValue = 'V1_CLEANING'
+    V1_FILL_FIX: _StrEnumValue = 'V1_FILL_FIX'
 
 
 class ActivityModel(Model):
@@ -102,15 +105,16 @@ class ActivityModel(Model):
         super().__init__(**kwargs)
 
     @staticmethod
-    def get_id(operation_hash, operation_counter, operation_nonce, *args, **kwargs):
+    def get_id(operation_hash, operation_counter, operation_nonce, order_id, *args, **kwargs):
         assert operation_hash
         assert operation_counter
+        assert order_id
 
-        oid = '.'.join(map(str, filter(bool, [operation_hash, operation_counter, operation_nonce])))
+        oid = '.'.join(map(str, filter(bool, [operation_hash, operation_counter, operation_nonce, order_id])))
         return uuid5(namespace=uuid.NAMESPACE_OID, name=oid)
 
     def apply(self, transaction: Transaction):
-        new_id = self.get_id(transaction.data.hash, transaction.data.counter, transaction.data.nonce)
+        new_id = self.get_id(transaction.data.hash, transaction.data.counter, transaction.data.nonce, self.order_id)
         activity = self.clone(pk=new_id)
 
         activity.operation_level = transaction.data.level
@@ -130,7 +134,7 @@ class OrderModel(Model):
 
     id = fields.UUIDField(pk=True, generated=False, required=True)
     network = fields.CharField(max_length=16, index=True)
-    fill = XtzField(default=0)
+    fill = AssetValueField(default=0)
     platform = fields.CharEnumField(PlatformEnum, index=True)
     internal_order_id = fields.CharField(max_length=32, index=True)
     status = fields.CharEnumField(OrderStatusEnum, index=True)
@@ -147,10 +151,12 @@ class OrderModel(Model):
     make_contract = AccountAddressField(null=True)
     make_token_id = fields.TextField(null=True)
     make_value = AssetValueField()
+    make_price = AssetValueField(null=True)
     take_asset_class = fields.CharEnumField(AssetClassEnum, null=True)
     take_contract = AccountAddressField(null=True)
     take_token_id = fields.TextField(null=True)
     take_value = AssetValueField(null=True)
+    take_price = AssetValueField(null=True)
     origin_fees = fields.JSONField()
     payouts = fields.JSONField()
 

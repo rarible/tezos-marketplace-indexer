@@ -1,0 +1,155 @@
+spec_version: 1.2
+
+datasources:
+  tzkt:
+    kind: tzkt
+    url: ${TZKT_URL:-https://api.ghostnet.tzkt.io}
+    http:
+      connection_timeout: 60
+
+contracts:
+  objkt_v1:
+    address: KT1Ax5fm2UNxjXGmrMDytREfqvYoCXoBB4Jo
+    typename: objkt_marketplace
+  objkt_v2:
+    address: KT1GiZuR6TdkgxZGQGZSdbC3Jox9JTSbqTB6
+    typename: objkt_marketplace_v2
+  hen:
+    address: KT1XYgjgFQutFfgEiD7RuppSKZsawZbkpKxL
+    typename: hen_marketplace
+  teia_v1:
+    address: KT1Anx515N2PK8A2ZX5uGNn7Gckh4WytLJmK
+    typename: teia_v1
+  versum_v1:
+    address: KT1B1Wz7jPH23EqKUpDwFDkw3A1yLxGZ4uJy
+    typename: versum_v1
+
+indexes:
+  objkt_v1_actions:
+    kind: operation
+    datasource: tzkt
+    contracts:
+      - objkt_v1
+    types:
+      - transaction
+    handlers:
+      - callback: objkt_order_list
+        pattern:
+          - destination: objkt_v1
+            type: transaction
+            entrypoint: ask
+      - callback: objkt_order_cancel_list
+        pattern:
+          - destination: objkt_v1
+            type: transaction
+            entrypoint: retract_ask
+      - callback: objkt_order_match
+        pattern:
+          - destination: objkt_v1
+            type: transaction
+            entrypoint: fulfill_ask
+
+  objkt_v2_actions:
+    kind: operation
+    datasource: tzkt
+    contracts:
+      - objkt_v2
+    types:
+      - transaction
+    handlers:
+      - callback: objkt_v2_order_list
+        pattern:
+          - destination: objkt_v2
+            entrypoint: ask
+            type: transaction
+      - callback: objkt_v2_order_cancel_list
+        pattern:
+          - destination: objkt_v2
+            entrypoint: retract_ask
+            type: transaction
+      - callback: objkt_v2_order_match
+        pattern:
+          - destination: objkt_v2
+            entrypoint: fulfill_ask
+            type: transaction
+
+  hen_actions:
+    kind: operation
+    datasource: tzkt
+    contracts:
+      - hen
+    types:
+      - transaction
+    handlers:
+      - callback: hen_order_list
+        pattern:
+          - destination: hen
+            type: transaction
+            entrypoint: swap
+      - callback: hen_order_cancel_list
+        pattern:
+          - destination: hen
+            type: transaction
+            entrypoint: cancel_swap
+      - callback: hen_order_match
+        pattern:
+          - destination: hen
+            type: transaction
+            entrypoint: collect
+
+  teia_v1_actions:
+     kind: operation
+     datasource: tzkt
+     contracts:
+       - teia_v1
+     types:
+       - transaction
+     handlers:
+       - callback: teia_v1_list_order
+         pattern:
+           - destination: teia_v1
+             type: transaction
+             entrypoint: swap
+       - callback: teia_v1_cancel_order
+         pattern:
+           - destination: teia_v1
+             type: transaction
+             entrypoint: cancel_swap
+       - callback: teia_v1_match_order
+         pattern:
+           - destination: teia_v1
+             type: transaction
+             entrypoint: collect
+
+  versum:
+    kind: operation
+    datasource: tzkt
+    contracts:
+      - versum_v1
+    types:
+      - transaction
+    handlers:
+      - callback: versum_v1_order_list
+        pattern:
+          - type: transaction
+            destination: versum_v1
+            entrypoint: create_swap
+      - callback: versum_v1_order_cancel
+        pattern:
+          - type: transaction
+            destination: versum_v1
+            entrypoint: cancel_swap
+      - callback: versum_v1_order_match
+        pattern:
+          - type: transaction
+            destination: versum_v1
+            entrypoint: collect_swap
+
+advanced:
+  rollback_depth: 2
+  reindex:
+    manual: wipe
+    migration: exception
+    rollback: exception
+    config_modified: ignore
+    schema_modified: ignore
