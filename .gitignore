@@ -6,3 +6,4 @@ __pycache__
 cicd/resources
 cicd/**/charts
 cicd/deploy/Chart.lock
+env/

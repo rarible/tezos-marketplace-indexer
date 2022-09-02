@@ -1,12 +1,15 @@
 .ONESHELL:
 .DEFAULT_GOAL: all
 
-py := poetry run
+py := python3 -m
 source_dir := rarible_marketplace_indexer
 unit_tests_dir := tests
 
 install:
-	poetry install `if [ "${DEV}" = "0" ]; then echo "--no-dev"; fi`
+	$(py) pip install --upgrade --force-reinstall -r requirements.txt
+
+install_tests:
+	$(py) pip install --upgrade --force-reinstall -r requirements.tests.txt
 
 isort:
 	$(py) isort $(source_dir) $(unit_tests_dir)
