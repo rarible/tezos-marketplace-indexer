@@ -32,7 +32,7 @@ prepare_services:
 	docker-compose up -d --remove-orphans db hasura kafdrop kafka zookeeper prometheus grafana
 
 up: prepare_services
-	docker-compose up --build --remove-orphans --force-recreate --no-deps --abort-on-container-exit indexer-rarible indexer-tezos
+	docker-compose up --build --remove-orphans --force-recreate --no-deps --abort-on-container-exit indexer-tezos
 
 down:
 	docker-compose down --volumes

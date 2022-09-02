@@ -10,22 +10,20 @@ from rarible_marketplace_indexer.event.dto import MakeDto
 from rarible_marketplace_indexer.event.dto import MatchDto
 from rarible_marketplace_indexer.event.dto import TakeDto
 from rarible_marketplace_indexer.models import PlatformEnum
+from rarible_marketplace_indexer.types.fxhash_v1.parameter.cancel_offer import CancelOfferParameter
+from rarible_marketplace_indexer.types.fxhash_v1.parameter.collect import CollectParameter
+from rarible_marketplace_indexer.types.fxhash_v1.parameter.offer import OfferParameter
+from rarible_marketplace_indexer.types.fxhash_v1.storage import FxhashV1Storage
 from rarible_marketplace_indexer.types.rarible_api_objects.asset.enum import AssetClassEnum
 from rarible_marketplace_indexer.types.tezos_objects.asset_value.asset_value import AssetValue
+from rarible_marketplace_indexer.types.tezos_objects.asset_value.xtz_value import Xtz
 from rarible_marketplace_indexer.types.tezos_objects.tezos_object_hash import ImplicitAccountAddress
 from rarible_marketplace_indexer.types.tezos_objects.tezos_object_hash import OriginatedAccountAddress
-from rarible_marketplace_indexer.types.fxhash_market_v1.parameter.offer import OfferParameter
-from rarible_marketplace_indexer.types.fxhash_market_v1.parameter.cancel_offer import CancelOfferParameter
-from rarible_marketplace_indexer.types.fxhash_market_v1.parameter.collect import CollectParameter
-from rarible_marketplace_indexer.types.fxhash_market_v1.storage import FxhashMarketV1Storage
-
-
-# V1
 
 
 class FxhashV1OrderListEvent(AbstractOrderListEvent):
     platform = PlatformEnum.FXHASH_V1
-    FxhashListTransaction = Transaction[OfferParameter, FxhashMarketV1Storage]
+    FxhashListTransaction = Transaction[OfferParameter, FxhashV1Storage]
 
     @staticmethod
     def _get_list_dto(
@@ -33,7 +31,7 @@ class FxhashV1OrderListEvent(AbstractOrderListEvent):
         datasource: TzktDatasource,
     ) -> ListDto:
         make_value = AssetValue(1)
-        take_value = AssetValue(transaction.parameter.price)
+        take_value = Xtz.from_u_tezos(transaction.parameter.price)
   
         return ListDto(
             internal_order_id=str(int(transaction.storage.counter) - 1),
@@ -55,7 +53,7 @@ class FxhashV1OrderListEvent(AbstractOrderListEvent):
 
 class FxhashV1OrderCancelEvent(AbstractOrderCancelEvent):
     platform = PlatformEnum.FXHASH_V1
-    FxhashCancelTransaction = Transaction[CancelOfferParameter, FxhashMarketV1Storage]
+    FxhashCancelTransaction = Transaction[CancelOfferParameter, FxhashV1Storage]
 
     @staticmethod
     def _get_cancel_dto(
@@ -66,7 +64,7 @@ class FxhashV1OrderCancelEvent(AbstractOrderCancelEvent):
 
 class FxhashV1OrderMatchEvent(AbstractOrderMatchEvent):
     platform = PlatformEnum.FXHASH_V1
-    FxhashMatchTransaction = Transaction[CollectParameter, FxhashMarketV1Storage]
+    FxhashMatchTransaction = Transaction[CollectParameter, FxhashV1Storage]
 
     @staticmethod
     def _get_match_dto(
