@@ -23,6 +23,9 @@ flake:
 mypy:
 	$(py) mypy $(source_dir) $(unit_tests_dir)
 
+test:
+	$(py) pytest $(source_dir) $(unit_tests_dir)
+
 lint: isort ssort black flake
 
 prepare_services:

@@ -1,0 +1,26 @@
+{
+   "id": "0412dbe9-ae58-543c-9a02-04974ccec9af",
+   "network": "mainnet",
+   "type": "SELL",
+   "source": "FXHASH_V1",
+   "orderId": "702b483c-8b5f-5731-b1ad-ce4c10b24743",
+   "hash": "onqH9Z8T54frxN3j9HfoZRdkJKFGeKaJ6yz8ZkCGRSgH7u185Tt",
+   "date": "2021-12-07T21:23:10+00:00",
+   "reverted": false,
+   "nft": {
+      "assetType": {
+         "assetClass": "TEZOS_MT",
+         "contract": "KT1KEa8z6vWXDJrVqtMrAeDVzsvxat3kHaCE",
+         "tokenId": "128493"
+      },
+      "assetValue": "1"
+   },
+   "payment": {
+      "assetType": {
+         "assetClass": "XTZ"
+      },
+      "assetValue": "9"
+   },
+   "buyer": "tz1QjzQd8AuAbLKLa9Jp7bYp3gPrrTsHxDSe",
+   "seller": "tz1Ms3JA2ZUSBNKqVABoGpeg3gv2e685XWvf"
+}
