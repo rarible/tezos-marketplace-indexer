@@ -1,3 +1,5 @@
+spec_version: 1.2
+
 datasources:
   tzkt:
     kind: tzkt
@@ -33,18 +35,23 @@ indexes:
     datasource: tzkt
     contracts:
         - rarible_exchange
+    types:
+      - transaction
     handlers:
         - callback: rarible_order_list
           pattern:
             - destination: rarible_exchange
+              type: transaction
               entrypoint: sell
         - callback: rarible_order_cancel_list
           pattern:
             - destination: rarible_exchange
+              type: transaction
               entrypoint: cancel_sale
         - callback: rarible_order_match
           pattern:
             - destination: rarible_exchange
+              type: transaction
               entrypoint: buy
 
   rarible_exchange_legacy_actions:
@@ -52,10 +59,13 @@ indexes:
     datasource: tzkt
     contracts:
       - rarible_exchange_legacy
+    types:
+      - transaction
     handlers:
       - callback: rarible_match_orders_legacy
         pattern:
           - destination: rarible_exchange_legacy
+            type: transaction
             entrypoint: match_orders
 
   rarible_exchange_legacy_data_actions:
@@ -63,10 +73,13 @@ indexes:
     datasource: tzkt
     contracts:
       - rarible_exchange_legacy_data
+    types:
+      - transaction
     handlers:
       - callback: rarible_cancel_order_legacy
         pattern:
           - destination: rarible_exchange_legacy_data
+            type: transaction
             entrypoint: remove
 
 hooks:
@@ -95,3 +108,16 @@ prometheus:
   host: 0.0.0.0
   port: 9191
   update_interval: 5
+
+custom:
+  enabled: ${KAFKA_ENABLED:-false}
+  kafka_address: ${KAFKA_ADDRESS:-kafka:9092}
+  client_id: dipdup-rarible-${APPLICATION_ENVIRONMENT:-mainnet}-producer
+  kafka_security_protocol: ${KAFKA_SECURITY_PROTOCOL:-SASL_PLAINTEXT}
+  sasl:
+    mechanism: ${KAFKA_SASL_MECHANISM:-PLAIN}
+    username: ${KAFKA_USERNAME:-rarible}
+    password: ${KAFKA_PASSWORD:-changeme}
+  collection_indexing:
+    enabled: true
+    level: 1212042

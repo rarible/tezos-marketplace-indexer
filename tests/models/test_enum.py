@@ -25,6 +25,8 @@ class TestStrEnum:
             [PlatformEnum, PlatformEnum.OBJKT_V2, 'OBJKT_V2'],
             [PlatformEnum, PlatformEnum.RARIBLE_V1, 'RARIBLE_V1'],
             [PlatformEnum, PlatformEnum.RARIBLE_V2, 'RARIBLE_V2'],
+            [PlatformEnum, PlatformEnum.FXHASH_V1, 'FXHASH_V1'],
+            [PlatformEnum, PlatformEnum.FXHASH_V2, 'FXHASH_V2'],
         ),
     )
     def test_enum(self, enum_class, enum_field, enum_value):

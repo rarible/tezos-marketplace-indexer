@@ -1,4 +1,5 @@
 import asyncio
+import asyncio
 import logging
 import os
 from threading import Thread
@@ -9,8 +10,9 @@ from twisted.internet import reactor
 from twisted.web.resource import Resource
 from twisted.web.server import Site
 
-from rarible_marketplace_indexer.hooks.process_collection_events import process_collection_events
 from rarible_marketplace_indexer.producer.container import ProducerContainer
+from rarible_marketplace_indexer.event.fxhash_v2_action import FxhashV2ListingOrderListEvent
+from rarible_marketplace_indexer.hooks.process_collection_events import process_collection_events
 from rarible_marketplace_indexer.prometheus.rarible_metrics import RaribleMetrics
 
 
@@ -33,6 +35,13 @@ async def on_restart(
         factory = Site(root)
         reactor.listenTCP(8080, factory)
         Thread(target=reactor.run, args=(False,)).start()
+
+    if ctx.config.indexes.get("fxhash_v2_actions") is not None:
+        FxhashV2ListingOrderListEvent.fxhash_nft_addresses = {
+            "0": ctx.config.custom.get("fxhash_nft_v1"),
+            "1": ctx.config.custom.get("fxhash_nft_v2")
+        }
+
     if os.getenv('APPLICATION_ENVIRONMENT') == 'prod' and ctx.config.hooks.get("import_legacy_orders") is not None:
         await ctx.fire_hook("import_legacy_orders")
     if ctx.config.custom.get("collection_indexing") is not None:

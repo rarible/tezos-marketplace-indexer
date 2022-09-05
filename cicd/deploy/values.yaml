@@ -76,7 +76,7 @@ hasura:
     enabled: true
   podAnnotations:
     prometheus.io/scrape: 'false'
-  livenessProbe: 
+  livenessProbe:
     httpGet:
       path: /healthz
   readinessProbe: 

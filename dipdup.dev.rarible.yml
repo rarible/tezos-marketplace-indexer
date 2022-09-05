@@ -1,3 +1,5 @@
+spec_version: 1.2
+
 datasources:
   tzkt:
     kind: tzkt
@@ -19,18 +21,23 @@ indexes:
     datasource: tzkt
     contracts:
       - rarible_exchange
+    types:
+      - transaction
     handlers:
       - callback: rarible_order_list
         pattern:
           - destination: rarible_exchange
+            type: transaction
             entrypoint: sell
       - callback: rarible_order_cancel_list
         pattern:
           - destination: rarible_exchange
+            type: transaction
             entrypoint: cancel_sale
       - callback: rarible_order_match
         pattern:
           - destination: rarible_exchange
+            type: transaction
             entrypoint: buy
 
   rarible_bids_actions:
@@ -38,30 +45,38 @@ indexes:
     datasource: tzkt
     contracts:
       - rarible_bids
+    types:
+      - transaction
     handlers:
       - callback: rarible_put_bid
         pattern:
           - destination: rarible_bids
+            type: transaction
             entrypoint: put_bid
       - callback: rarible_put_floor_bid
         pattern:
           - destination: rarible_bids
+            type: transaction
             entrypoint: put_floor_bid
       - callback: rarible_accept_bid
         pattern:
           - destination: rarible_bids
+            type: transaction
             entrypoint: accept_bid
       - callback: rarible_accept_floor_bid
         pattern:
           - destination: rarible_bids
+            type: transaction
             entrypoint: accept_floor_bid
       - callback: rarible_cancel_bid
         pattern:
           - destination: rarible_bids
+            type: transaction
             entrypoint: cancel_bid
       - callback: rarible_cancel_floor_bid
         pattern:
           - destination: rarible_bids
+            type: transaction
             entrypoint: cancel_floor_bid
 
   token_transfers:
@@ -75,7 +90,6 @@ indexes:
     datasource: tzkt
     handlers:
       - callback: on_head
-
 hooks:
   process_collection_events:
     callback: process_collection_events
@@ -93,3 +107,16 @@ advanced:
     rollback: exception
     config_modified: ignore
     schema_modified: ignore
+
+custom:
+  enabled: ${KAFKA_ENABLED:-false}
+  kafka_address: ${KAFKA_ADDRESS:-kafka:9092}
+  client_id: dipdup-rarible-${APPLICATION_ENVIRONMENT:-mainnet}-producer
+  kafka_security_protocol: ${KAFKA_SECURITY_PROTOCOL:-SASL_PLAINTEXT}
+  sasl:
+    mechanism: ${KAFKA_SASL_MECHANISM:-PLAIN}
+    username: ${KAFKA_USERNAME:-rarible}
+    password: ${KAFKA_PASSWORD:-changeme}
+  collection_indexing:
+    enabled: true
+    level: 1212042

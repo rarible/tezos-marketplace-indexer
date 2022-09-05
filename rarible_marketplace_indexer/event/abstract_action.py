@@ -176,10 +176,11 @@ class AbstractOrderCancelEvent(EventInterface):
             .first()
         )
         if last_order_activity is not None:
-            cancel_activity = last_order_activity.apply(transaction)
+            if last_order_activity.type is not ActivityTypeEnum.ORDER_CANCEL:
+                cancel_activity = last_order_activity.apply(transaction)
 
-            cancel_activity.type = ActivityTypeEnum.ORDER_CANCEL
-            await cancel_activity.save()
+                cancel_activity.type = ActivityTypeEnum.ORDER_CANCEL
+                await cancel_activity.save()
 
         order = (
             await OrderModel.filter(
