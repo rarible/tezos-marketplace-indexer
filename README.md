@@ -5,18 +5,14 @@
 
 [Rarible](https://rarible.com/) order indexer for assets listed on supported marketplaces.
 
+## Setup
+```
+make install
+make install_tests
+```
 ## How to run
 
-### Without Docker
-
 ```commandline
-poetry install
-poetry shell
-dipdup run
-```
-
-### In Docker
-
-```commandline
-docker-compose up -d
+make reset
+make build_and_run
 ```

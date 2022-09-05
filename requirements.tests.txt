@@ -1,2 +1,8 @@
 pytest
 allure-pytest
+black
+isort
+ssort
+mypy
+attrs==21.4.0
+click==8.0.4

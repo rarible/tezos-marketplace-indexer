@@ -23,6 +23,12 @@ contracts:
   versum_v1:
     address: KT1B1Wz7jPH23EqKUpDwFDkw3A1yLxGZ4uJy
     typename: versum_v1
+#  fxhash_v1:
+#    address: KT1BEc3m6yxN856Y4zfArpDqQ1uZZ1HkDTRh
+#    typename: fxhash_v1
+#  fxhash_v2:
+#    address: KT1GCLoBSwUaNjaGXq5RtiP8CXTL3cEeMNDs
+#    typename: fxhash_v2
 
 indexes:
   objkt_v1_actions:
@@ -145,6 +151,54 @@ indexes:
             destination: versum_v1
             entrypoint: collect_swap
 
+#  fxhash_v1_actions:
+#    kind: operation
+#    datasource: tzkt
+#    contracts:
+#      - fxhash_v1
+#    types:
+#      - transaction
+#    handlers:
+#      - callback: fxhash_v1_order_list
+#        pattern:
+#          - destination: fxhash_v1
+#            type: transaction
+#            entrypoint: offer
+#      - callback: fxhash_v1_order_cancel
+#        pattern:
+#          - destination: fxhash_v1
+#            type: transaction
+#            entrypoint: cancel_offer
+#      - callback: fxhash_v1_order_match
+#        pattern:
+#          - destination: fxhash_v1
+#            type: transaction
+#            entrypoint: collect
+#
+#  fxhash_v2_actions:
+#     kind: operation
+#     datasource: tzkt
+#     contracts:
+#       - fxhash_v2
+#     types:
+#       - transaction
+#     handlers:
+#       - callback: fxhash_v2_listing_order_list
+#         pattern:
+#           - destination: fxhash_v2
+#             type: transaction
+#             entrypoint: listing
+#       - callback: fxhash_v2_listing_order_cancel
+#         pattern:
+#           - destination: fxhash_v2
+#             type: transaction
+#             entrypoint: listing_cancel
+#       - callback: fxhash_v2_listing_order_match
+#         pattern:
+#           - destination: fxhash_v2
+#             type: transaction
+#             entrypoint: listing_accept
+
 advanced:
   rollback_depth: 2
   early_realtime: True
@@ -154,3 +208,15 @@ advanced:
     rollback: exception
     config_modified: ignore
     schema_modified: ignore
+
+custom:
+  enabled: ${KAFKA_ENABLED:-false}
+  kafka_address: ${KAFKA_ADDRESS:-kafka:9092}
+  client_id: dipdup-rarible-${APPLICATION_ENVIRONMENT:-mainnet}-producer
+  kafka_security_protocol: ${KAFKA_SECURITY_PROTOCOL:-SASL_PLAINTEXT}
+  sasl:
+    mechanism: ${KAFKA_SASL_MECHANISM:-PLAIN}
+    username: ${KAFKA_USERNAME:-rarible}
+    password: ${KAFKA_PASSWORD:-changeme}
+  fxhash_nft_v1: KT1BEc3m6yxN856Y4zfArpDqQ1uZZ1HkDTRh
+  fxhash_nft_v2: KT1WSwXCWPPAxAy4ibPmFyCm4NhmSJT9UuxQ
