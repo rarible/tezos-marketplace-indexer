@@ -31,18 +31,40 @@ test:
 
 lint: isort ssort black flake
 
-prepare_services:
-	docker-compose up -d --remove-orphans db hasura kafdrop kafka zookeeper prometheus grafana
+prepare_services_dev:
+	docker-compose -f docker-compose.dev.yml up -d --remove-orphans db hasura kafdrop kafka zookeeper prometheus grafana
 
-up: prepare_services
-	docker-compose up --build --remove-orphans --force-recreate --no-deps --abort-on-container-exit indexer-rarible indexer-tezos
+prepare_services_testnet:
+	docker-compose -f docker-compose.testnet.yml up -d --remove-orphans db hasura kafdrop kafka zookeeper prometheus grafana
 
-down:
-	docker-compose down --volumes
+prepare_services_prod:
+	docker-compose -f docker-compose.prod.yml up -d --remove-orphans db hasura kafdrop kafka zookeeper prometheus grafana
+
+up_dev: prepare_services_dev
+	docker-compose -f docker-compose.dev.yml up --build --remove-orphans --force-recreate --no-deps --abort-on-container-exit indexer-rarible indexer-tezos
+
+up_test: prepare_services_testnet
+	docker-compose -f docker-compose.testnet.yml up --build --remove-orphans --force-recreate --no-deps --abort-on-container-exit indexer-rarible indexer-tezos
+
+up_prod: prepare_services_prod
+	docker-compose -f docker-compose.prod.yml up --build --remove-orphans --force-recreate --no-deps --abort-on-container-exit indexer-rarible indexer-tezos
+
+down_dev:
+	docker-compose -f docker-compose.dev.yml down --volumes
+
+down_test:
+	docker-compose -f docker-compose.testnet.yml down --volumes
+
+down_prod:
+	docker-compose -f docker-compose.prod.yml down --volumes
 
 build:
 	docker build . -t rarible_indexer:dev --platform linux/amd64
 
-build_and_run: build up
+run_dev: prepare_services_dev build up_dev
 
-reset: down prepare_services
+run_testnet: prepare_services_testnet build up_test
+
+run_prod: prepare_services_prod build up_prod
+
+reset: down_dev down_test down_prod
