@@ -145,3 +145,5 @@ custom:
   collection_indexing:
     enabled: true
     level: 1212042
+  token_indexing:
+    enabled: true

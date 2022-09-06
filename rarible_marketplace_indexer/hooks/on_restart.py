@@ -48,3 +48,10 @@ async def on_restart(
                 asyncio.ensure_future(process_collection_events(ctx, level=collection_config["level"]))
             else:
                 asyncio.ensure_future(process_collection_events(ctx, level=0))
+
+    if ctx.config.custom.get("token_indexing") is not None:
+        token_config = ctx.config.custom.get("token_indexing")
+        if token_config["enabled"] == "true":
+            if collection_config.get("level") is not None:
+                await ctx.execute_sql('reset_token_transfers')
+
