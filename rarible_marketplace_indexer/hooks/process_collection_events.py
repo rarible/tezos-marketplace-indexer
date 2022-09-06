@@ -1,12 +1,14 @@
 import logging
-import os
 
 from dipdup.context import HookContext
 
-from rarible_marketplace_indexer.models import IndexEnum
+from rarible_marketplace_indexer.models import IndexEnum, Collection
 from rarible_marketplace_indexer.models import IndexingStatus
 from rarible_marketplace_indexer.producer.helper import producer_send
 from rarible_marketplace_indexer.types.rarible_api_objects.collection.factory import RaribleApiCollectionFactory
+from rarible_marketplace_indexer.types.tezos_objects.tezos_object_hash import OriginatedAccountAddress, \
+    ImplicitAccountAddress
+from rarible_marketplace_indexer.utils.rarible_utils import process_metadata
 
 
 async def process_collection_events(
@@ -37,13 +39,17 @@ async def process_collection_events(
                         else:
                             origination['alias'] = ""
                         address = origination['originatedContract']['address']
-                        logger.info(f"Proccessed collection {address}")
+                        metadata = await process_metadata(ctx, IndexEnum.COLLECTION, address)
+                        await Collection.update_or_create(
+                            contract=OriginatedAccountAddress(address),
+                            owner=ImplicitAccountAddress(origination['sender']['address']),
+                            metadata=metadata,
+                            metadata_retries=0
+                        )
                         collection_event = RaribleApiCollectionFactory.build(origination, tzkt)
-                        contract_metadata = await ctx.get_metadata_datasource('metadata').get_contract_metadata(address)
-                        if contract_metadata is not None:
-                            await ctx.update_contract_metadata(os.getenv('NETWORK'), address, contract_metadata)
                         assert collection_event
                         await producer_send(collection_event)
+                        logger.info(f"Proccessed collection {address}")
         if len(originations) < 100:
             last_id = None
     if index is None:

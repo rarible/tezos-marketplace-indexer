@@ -4,10 +4,11 @@ from dipdup.context import HandlerContext
 from dipdup.enums import TokenStandard
 from dipdup.models import TokenTransferData
 
-from rarible_marketplace_indexer.models import ActivityTypeEnum
+from rarible_marketplace_indexer.models import ActivityTypeEnum, IndexEnum
 from rarible_marketplace_indexer.models import Ownership
 from rarible_marketplace_indexer.models import Token
 from rarible_marketplace_indexer.models import TokenTransfer
+from rarible_marketplace_indexer.utils.rarible_utils import process_metadata
 
 
 async def on_transfer(ctx: HandlerContext, token_transfer: TokenTransferData) -> None:
@@ -15,11 +16,6 @@ async def on_transfer(ctx: HandlerContext, token_transfer: TokenTransferData) ->
 
     if token_transfer.standard == TokenStandard.FA2:
         null_addresses = [None, "tz1burnburnburnburnburnburnburjAYjjX", "tz1Ke2h7sDdakHJQh8WX4Z372du1KChsksyU"]
-        metadata = await ctx.get_metadata_datasource("metadata").get_token_metadata(
-            token_transfer.contract_address, token_transfer.token_id
-        )
-        if metadata is None:
-            metadata = {}
         transfer = await TokenTransfer.get_or_none(id=token_transfer.id)
         if transfer is None:
             is_mint = token_transfer.from_address is None
@@ -45,6 +41,7 @@ async def on_transfer(ctx: HandlerContext, token_transfer: TokenTransferData) ->
 
             # persist
             if is_mint:
+                metadata = await process_metadata(ctx, IndexEnum.NFT, f"{token_transfer.contract_address}:{token_transfer.token_id}")
                 if minted is None:
                     minted = Token(
                         id=token_transfer.tzkt_token_id,
@@ -55,6 +52,7 @@ async def on_transfer(ctx: HandlerContext, token_transfer: TokenTransferData) ->
                         supply=token_transfer.amount,
                         updated=token_transfer.timestamp,
                         metadata=metadata,
+                        metadata_retries=0
                     )
                 else:
                     minted.minted += token_transfer.amount
@@ -125,9 +123,3 @@ async def on_transfer(ctx: HandlerContext, token_transfer: TokenTransferData) ->
                     to_address=token_transfer.to_address,
                     amount=token_transfer.amount,
                 ).save()
-
-            if metadata is not None:
-                token = await Token.get_or_none(id=token_transfer.tzkt_token_id)
-                if token is not None:
-                    token.metadata = metadata
-                    await token.save()

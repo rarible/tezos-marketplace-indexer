@@ -10,6 +10,9 @@ datasources:
     kind: metadata
     url: https://metadata.dipdup.net
     network: ithacanet
+  ipfs:
+    kind: ipfs
+    url: https://ipfs.io/ipfs
 
 contracts:
   rarible_exchange:
@@ -100,6 +103,20 @@ hooks:
     atomic: False
     args:
       level: int
+#  process_missing_metadata_for_token:
+#    callback: process_missing_metadata_for_token
+#    atomic: False
+#  process_missing_metadata_for_collection:
+#    callback: process_missing_metadata_for_collection
+#    atomic: False
+
+jobs:
+#  process_missing_metadata_for_token:
+#    hook: process_missing_metadata_for_token
+#    crontab: "* * * * *"
+#  process_missing_metadata_for_collection:
+#    hook: process_missing_metadata_for_collection
+#    crontab: "* * * * *"
 
 advanced:
   rollback_depth: 2

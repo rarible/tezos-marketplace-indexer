@@ -67,6 +67,7 @@ class PlatformEnum(str, Enum):
 
 class IndexEnum(str, Enum):
     COLLECTION: _StrEnumValue = 'COLLECTION'
+    NFT: _StrEnumValue = 'NFT'
     LEGACY_ORDERS: _StrEnumValue = 'LEGACY_ORDERS'
     V1_CLEANING: _StrEnumValue = 'V1_CLEANING'
     V1_FILL_FIX: _StrEnumValue = 'V1_FILL_FIX'
@@ -313,3 +314,16 @@ class Token(Model):
     deleted = fields.BooleanField(default=False)
     updated = fields.DatetimeField(null=False)
     metadata = fields.JSONField(null=True)
+    metadata_retries = fields.IntField()
+
+
+class Collection(Model):
+    class Meta:
+        table = 'collection'
+
+    _custom_generated_pk = True
+
+    contract = AccountAddressField(pk=True, required=True)
+    owner = AccountAddressField(required=True)
+    metadata = fields.JSONField(null=True)
+    metadata_retries = fields.IntField()

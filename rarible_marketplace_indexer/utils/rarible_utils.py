@@ -10,14 +10,16 @@ from typing import List
 from typing import Optional
 from uuid import uuid5
 
+import aiohttp
 import requests
 from base58 import b58encode_check
+from dipdup.context import HookContext
 from pytezos import MichelsonType
 from pytezos import michelson_to_micheline
 
 from rarible_marketplace_indexer.event.dto import MakeDto
 from rarible_marketplace_indexer.event.dto import TakeDto
-from rarible_marketplace_indexer.models import ActivityModel
+from rarible_marketplace_indexer.models import ActivityModel, IndexEnum
 from rarible_marketplace_indexer.models import ActivityTypeEnum
 from rarible_marketplace_indexer.models import LegacyOrderModel
 from rarible_marketplace_indexer.models import OrderModel
@@ -344,3 +346,67 @@ async def import_legacy_order(order: dict):
 
     if RaribleMetrics.enabled is True:
         RaribleMetrics.set_order_activity(PlatformEnum.RARIBLE_V1, ActivityTypeEnum.ORDER_LIST, 1)
+
+
+async def process_metadata(ctx: HookContext, asset_type: str, asset_id: str):
+    if asset_type is IndexEnum.COLLECTION:
+        contract_metadata = await ctx.get_metadata_datasource('metadata').get_contract_metadata(asset_id)
+        if contract_metadata is None:
+            tzkt = ctx.get_tzkt_datasource("tzkt")
+            metadata_url_raw = await tzkt.request(
+                method='get',
+                url=f'v1/contracts/{asset_id}/bigmaps/metadata/keys/""',
+            )
+            contract_metadata = await fetch_metadata(ctx, metadata_url_raw)
+        return contract_metadata
+    elif asset_type is IndexEnum.NFT:
+        parsed_id = asset_id.split(":")
+        if len(parsed_id) != 2:
+            raise Exception(f"Invalid Token ID: {asset_id}")
+        contract = parsed_id[0]
+        token_id = parsed_id[1]
+        token_metadata = await ctx.get_metadata_datasource('metadata').get_token_metadata(contract, token_id)
+        if token_metadata is None:
+            tzkt = ctx.get_tzkt_datasource("tzkt")
+            metadata_url_raw = await tzkt.request(
+                method='get',
+                url=f'v1/contracts/{contract}/bigmaps/token_metadata/keys/{token_id}',
+            )
+            token_metadata = await fetch_metadata(ctx, metadata_url_raw)
+        return token_metadata
+
+
+async def fetch_metadata(ctx: HookContext, metadata_url: str):
+    logger = logging.getLogger('metadata')
+    if metadata_url is not None and metadata_url != b'':
+        value = metadata_url["value"]
+        if type(value) is dict:
+            return value
+        url = bytes.fromhex(value).decode("utf-8")
+        if url.startswith("http"):
+            response = requests.get(url)
+            if response.ok:
+                try:
+                    return response.json()
+                except requests.exceptions.JSONDecodeError:
+                    logger.warning(f"Could not parse metadata, received invalid content")
+                    return None
+            else:
+                logger.warning(f"Could not parse metadata: {response.status_code} {response.reason}")
+                return None
+        elif url.startswith("ipfs://ipfs/"):
+            ipfs_hash = url.split("ipfs://ipfs/")[1]
+            try:
+                metadata = await ctx.get_ipfs_datasource("ipfs").get(ipfs_hash)
+                return metadata
+            except aiohttp.client_exceptions.ClientResponseError as error:
+                logger.warning(f"Could not parse metadata: {error}")
+                return None
+        elif url.startswith("ipfs://"):
+            ipfs_hash = url.split("ipfs://")[1]
+            try:
+                metadata = await ctx.get_ipfs_datasource("ipfs").get(ipfs_hash)
+                return metadata
+            except aiohttp.client_exceptions.ClientResponseError as error:
+                logger.warning(f"Could not parse metadata: {error}")
+                return None
