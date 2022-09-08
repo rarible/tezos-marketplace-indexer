@@ -266,7 +266,9 @@ async def signal_token_transfer_post_save(
 
 
 class Ownership(Model):
-    id = fields.IntField(pk=True)
+    _custom_generated_pk = True
+    id = fields.TextField(pk=True, generated=False, required=True, null=False)
+
     contract = AccountAddressField(null=False)
     token_id = fields.TextField(null=False)
     owner = AccountAddressField(null=False)
@@ -305,7 +307,8 @@ class Token(Model):
 
     _custom_generated_pk = True
 
-    id = fields.IntField(pk=True, generated=False, required=True)
+    id = fields.TextField(pk=True, generated=False, required=True, null=False)
+    tzkt_id = fields.IntField()
     contract = AccountAddressField(null=False)
     token_id = fields.TextField(null=False)
     minted_at = fields.DatetimeField(null=False)

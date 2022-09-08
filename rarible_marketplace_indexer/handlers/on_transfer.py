@@ -10,39 +10,41 @@ from rarible_marketplace_indexer.models import Token
 from rarible_marketplace_indexer.models import TokenTransfer
 
 
+def ownership_id(token_transfer: TokenTransferData, owner):
+    return f"{token_transfer.contract_address}:{token_transfer.token_id}:{owner}"
+
+
 async def on_transfer(ctx: HandlerContext, token_transfer: TokenTransferData) -> None:
     logger = logging.getLogger('dipdup.on_transfer')
 
     if token_transfer.standard == TokenStandard.FA2:
         null_addresses = [None, "tz1burnburnburnburnburnburnburjAYjjX", "tz1Ke2h7sDdakHJQh8WX4Z372du1KChsksyU"]
         transfer = await TokenTransfer.get_or_none(id=token_transfer.id)
+        token_id = f"{token_transfer.contract_address}:{token_transfer.token_id}"
         if transfer is None:
             is_mint = token_transfer.from_address is None
             minted = None
             burned = None
             if is_mint:
-                minted = await Token.get_or_none(id=token_transfer.tzkt_token_id)
+                minted = await Token.get_or_none(id=token_id)
             is_burn = token_transfer.to_address is None or token_transfer.to_address in null_addresses
             if is_burn:
-                burned = await Token.get_or_none(id=token_transfer.tzkt_token_id)
+                burned = await Token.get_or_none(id=token_id)
             is_transfer_to = (
                 token_transfer.to_address is not None and token_transfer.to_address not in null_addresses and token_transfer.amount > 0
             )
             if is_transfer_to:
-                ownership_to = await Ownership.get_or_none(
-                    contract=token_transfer.contract_address, token_id=token_transfer.token_id, owner=token_transfer.to_address
-                )
+                ownership_to = await Ownership.get_or_none(id=ownership_id(token_transfer, token_transfer.to_address))
             is_transfer_from = token_transfer.from_address is not None and token_transfer.amount > 0
             if is_transfer_from:
-                ownership_from = await Ownership.get_or_none(
-                    contract=token_transfer.contract_address, token_id=token_transfer.token_id, owner=token_transfer.from_address
-                )
+                ownership_from = await Ownership.get_or_none(id=ownership_id(token_transfer, token_transfer.from_address))
 
             # persist
             if is_mint:
                 if minted is None:
                     minted = Token(
-                        id=token_transfer.tzkt_token_id,
+                        id=token_id,
+                        tzkt_id=token_transfer.tzkt_token_id,
                         contract=token_transfer.contract_address,
                         token_id=token_transfer.token_id,
                         minted_at=token_transfer.timestamp,
@@ -71,6 +73,7 @@ async def on_transfer(ctx: HandlerContext, token_transfer: TokenTransferData) ->
             if is_transfer_to:
                 if ownership_to is None:
                     ownership_to = Ownership(
+                        id=ownership_id(token_transfer, token_transfer.to_address),
                         contract=token_transfer.contract_address,
                         token_id=token_transfer.token_id,
                         owner=token_transfer.to_address,
