@@ -318,6 +318,7 @@ class Token(Model):
     updated = fields.DatetimeField(null=False)
     metadata_synced = fields.BooleanField(required=True)
     metadata_retries = fields.IntField(required=True)
+    db_updated_at = fields.DatetimeField(auto_now=True)
 
     def full_id(self):
         return f"{self.contract}:{self.token_id}"
@@ -333,6 +334,7 @@ class Collection(Model):
     owner = AccountAddressField(required=True)
     metadata_synced = fields.BooleanField(required=True)
     metadata_retries = fields.IntField(required=True)
+    db_updated_at = fields.DatetimeField(auto_now=True)
 
     def full_id(self):
         return f"{self.contract}"
