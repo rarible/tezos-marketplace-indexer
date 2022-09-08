@@ -20,7 +20,6 @@ services:
       - KAFKA_USERNAME=rarible
       - KAFKA_PASSWORD=changeme
       - NETWORK=ghostnet
-      - LEGACY_API=https://testnet-tezos-api.rarible.org
       - UNION_API=https://testnet-api.rarible.org
       - APPLICATION_ENVIRONMENT=testnet
 
@@ -43,7 +42,6 @@ services:
       - KAFKA_USERNAME=rarible
       - KAFKA_PASSWORD=changeme
       - NETWORK=ghostnet
-      - LEGACY_API=https://testnet-tezos-api.rarible.org
       - UNION_API=https://testnet-api.rarible.org
       - APPLICATION_ENVIRONMENT=testnet
 
@@ -66,7 +64,6 @@ services:
       - KAFKA_USERNAME=rarible
       - KAFKA_PASSWORD=changeme
       - NETWORK=ghostnet
-      - LEGACY_API=https://testnet-tezos-api.rarible.org
       - UNION_API=https://testnet-api.rarible.org
       - APPLICATION_ENVIRONMENT=testnet
 

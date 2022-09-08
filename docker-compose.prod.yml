@@ -20,7 +20,6 @@ services:
       - KAFKA_USERNAME=rarible
       - KAFKA_PASSWORD=changeme
       - NETWORK=mainnet
-      - LEGACY_API=https://tezos-api.rarible.org
       - UNION_API=https://api.rarible.org
       - APPLICATION_ENVIRONMENT=prod
 
@@ -43,7 +42,6 @@ services:
       - KAFKA_USERNAME=rarible
       - KAFKA_PASSWORD=changeme
       - NETWORK=mainnet
-      - LEGACY_API=https://tezos-api.rarible.org
       - UNION_API=https://api.rarible.org
       - APPLICATION_ENVIRONMENT=prod
 
@@ -66,7 +64,6 @@ services:
       - KAFKA_USERNAME=rarible
       - KAFKA_PASSWORD=changeme
       - NETWORK=mainnet
-      - LEGACY_API=https://tezos-api.rarible.org
       - UNION_API=https://api.rarible.org
       - APPLICATION_ENVIRONMENT=prod
 

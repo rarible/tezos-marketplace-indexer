@@ -6,13 +6,16 @@ tezos-marketplace-indexer-rarible:
   environments:
     TZKT_URL: http://tzkt:5000
     NETWORK: ghostnet
-    LEGACY_API: https://test-tezos-api.rarible.org
 
 tezos-marketplace-indexer-tezos:
   environments:
     TZKT_URL: http://tzkt:5000
     NETWORK: ghostnet
-    LEGACY_API: https://test-tezos-api.rarible.org
+
+tezos-marketplace-indexer-metadata:
+  environments:
+    TZKT_URL: http://tzkt:5000
+    NETWORK: ghostnet
 
 tzkt:
   enabled: true
