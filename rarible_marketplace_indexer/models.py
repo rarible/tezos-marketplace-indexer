@@ -327,3 +327,22 @@ class Collection(Model):
     owner = AccountAddressField(required=True)
     metadata = fields.JSONField(null=True)
     metadata_retries = fields.IntField()
+
+    def full_id(self):
+        return f"{self.contract}:{self.token_id}"
+
+
+@post_save(Token)
+async def signal_token_post_save(
+        sender: Token,
+        instance: Token,
+        created: bool,
+        using_db: "Optional[BaseDBAsyncClient]",
+        update_fields: List[str],
+) -> None:
+    from rarible_marketplace_indexer.types.rarible_api_objects.token.factory import RaribleApiTokenFactory
+    if instance.deleted:
+        event = RaribleApiTokenFactory.build_delete(instance)
+    else:
+        event = RaribleApiTokenFactory.build_update(instance)
+    await producer_send(event)
