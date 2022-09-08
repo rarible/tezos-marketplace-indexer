@@ -17,7 +17,6 @@ services:
       - KAFKA_ENABLED=false
       - KAFKA_SECURITY_PROTOCOL=PLAINTEXT
       - NETWORK=mainnet
-      - LEGACY_API=https://tezos-api.rarible.org
       - UNION_API=https://api.rarible.org
       - APPLICATION_ENVIRONMENT=prod
 
@@ -37,7 +36,6 @@ services:
       - KAFKA_ENABLED=false
       - KAFKA_SECURITY_PROTOCOL=PLAINTEXT
       - NETWORK=mainnet
-      - LEGACY_API=https://tezos-api.rarible.org
       - UNION_API=https://api.rarible.org
       - APPLICATION_ENVIRONMENT=prod
 
@@ -57,7 +55,6 @@ services:
       - KAFKA_ENABLED=false
       - KAFKA_SECURITY_PROTOCOL=PLAINTEXT
       - NETWORK=mainnet
-      - LEGACY_API=https://tezos-api.rarible.org
       - UNION_API=https://api.rarible.org
       - APPLICATION_ENVIRONMENT=prod
 
