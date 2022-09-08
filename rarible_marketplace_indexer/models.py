@@ -313,8 +313,11 @@ class Token(Model):
     supply = AssetValueField()
     deleted = fields.BooleanField(default=False)
     updated = fields.DatetimeField(null=False)
-    metadata = fields.JSONField(null=True)
-    metadata_retries = fields.IntField()
+    metadata_synced = fields.BooleanField(required=True)
+    metadata_retries = fields.IntField(required=True)
+
+    def full_id(self):
+        return f"{self.contract}:{self.token_id}"
 
 
 class Collection(Model):
@@ -325,11 +328,11 @@ class Collection(Model):
 
     contract = AccountAddressField(pk=True, required=True)
     owner = AccountAddressField(required=True)
-    metadata = fields.JSONField(null=True)
-    metadata_retries = fields.IntField()
+    metadata_synced = fields.BooleanField(required=True)
+    metadata_retries = fields.IntField(required=True)
 
     def full_id(self):
-        return f"{self.contract}:{self.token_id}"
+        return f"{self.contract}"
 
 
 @post_save(Token)

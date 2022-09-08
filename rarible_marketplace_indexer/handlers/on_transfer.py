@@ -4,11 +4,10 @@ from dipdup.context import HandlerContext
 from dipdup.enums import TokenStandard
 from dipdup.models import TokenTransferData
 
-from rarible_marketplace_indexer.models import ActivityTypeEnum, IndexEnum
+from rarible_marketplace_indexer.models import ActivityTypeEnum
 from rarible_marketplace_indexer.models import Ownership
 from rarible_marketplace_indexer.models import Token
 from rarible_marketplace_indexer.models import TokenTransfer
-from rarible_marketplace_indexer.utils.rarible_utils import process_metadata
 
 
 async def on_transfer(ctx: HandlerContext, token_transfer: TokenTransferData) -> None:
@@ -41,7 +40,6 @@ async def on_transfer(ctx: HandlerContext, token_transfer: TokenTransferData) ->
 
             # persist
             if is_mint:
-                metadata = await process_metadata(ctx, IndexEnum.NFT, f"{token_transfer.contract_address}:{token_transfer.token_id}")
                 if minted is None:
                     minted = Token(
                         id=token_transfer.tzkt_token_id,
@@ -51,14 +49,13 @@ async def on_transfer(ctx: HandlerContext, token_transfer: TokenTransferData) ->
                         minted=token_transfer.amount,
                         supply=token_transfer.amount,
                         updated=token_transfer.timestamp,
-                        metadata=metadata,
+                        metadata_synced=False,
                         metadata_retries=0
                     )
                 else:
                     minted.minted += token_transfer.amount
                     minted.supply += token_transfer.amount
                     minted.updated = token_transfer.timestamp
-                    minted.metadata = metadata
                 await minted.save()
 
             if is_burn:

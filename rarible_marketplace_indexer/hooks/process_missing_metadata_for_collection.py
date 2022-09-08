@@ -1,4 +1,5 @@
 import logging
+import os
 from typing import List
 
 from dipdup.context import HookContext
@@ -10,16 +11,20 @@ from rarible_marketplace_indexer.utils.rarible_utils import process_metadata
 async def process_missing_metadata_for_collection(
     ctx: HookContext,
 ) -> None:
-    logger = logging.getLogger("metadata_daemon")
-    logger.info("starting metadata daemon")
-    print("test")
+    logging.getLogger("dipdup.kafka").disabled = True
+    logger = logging.getLogger("collection_metadata")
+    logger.info("Starting collection metadata job")
     missing_meta_collections: List[Collection] = await Collection.filter(
-        metadata=None,
+        metadata_synced=False,
         metadata_retries__lt=5,
-    ).limit(100)
+    ).limit(1000)
     for collection in missing_meta_collections:
-        collection.metadata = await process_metadata(ctx, IndexEnum.COLLECTION, collection.contract)
-        if collection.metadata is None:
+        metadata = await process_metadata(ctx, IndexEnum.COLLECTION, collection.contract)
+        if metadata is None:
             collection.metadata_retries = collection.metadata_retries + 1
+            logger.warning(f"Metadata not found for {collection.contract} (retries {collection.metadata_retries})")
+        else:
+            await ctx.update_contract_metadata(os.getenv('NETWORK'), collection.contract, metadata)
+            collection.metadata_synced = True
+            logger.info(f"Successfully saved metadata for {collection.contract} (retries {collection.metadata_retries})")
         await collection.save()
-        print(f"saved collection {collection.contract} with retries {collection.metadata_retries}")

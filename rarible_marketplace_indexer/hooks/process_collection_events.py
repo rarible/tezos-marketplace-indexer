@@ -8,7 +8,6 @@ from rarible_marketplace_indexer.producer.helper import producer_send
 from rarible_marketplace_indexer.types.rarible_api_objects.collection.factory import RaribleApiCollectionFactory
 from rarible_marketplace_indexer.types.tezos_objects.tezos_object_hash import OriginatedAccountAddress, \
     ImplicitAccountAddress
-from rarible_marketplace_indexer.utils.rarible_utils import process_metadata
 
 
 async def process_collection_events(
@@ -39,11 +38,10 @@ async def process_collection_events(
                         else:
                             origination['alias'] = ""
                         address = origination['originatedContract']['address']
-                        metadata = await process_metadata(ctx, IndexEnum.COLLECTION, address)
                         await Collection.update_or_create(
                             contract=OriginatedAccountAddress(address),
                             owner=ImplicitAccountAddress(origination['sender']['address']),
-                            metadata=metadata,
+                            metadata_synced=False,
                             metadata_retries=0
                         )
                         collection_event = RaribleApiCollectionFactory.build(origination, tzkt)
