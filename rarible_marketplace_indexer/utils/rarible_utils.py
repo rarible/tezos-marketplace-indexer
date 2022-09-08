@@ -298,6 +298,7 @@ async def import_legacy_order(order: dict):
     else:
         order_model.last_updated_at = datetime.strptime(order["lastUpdateAt"], date_pattern)
         order_model.make_value = make.value
+        order_model.make_price = take.value / make.value
         order_model.take_value = take.value
         order_model.origin_fees = get_json_parts(origin_fees)
         order_model.payouts = get_json_parts(payouts)
