@@ -103,6 +103,7 @@ class AbstractOrderListEvent(EventInterface):
         else:
             order.last_updated_at = transaction.data.timestamp
             order.make_value = dto.make.value
+            order.make_price = dto.take.value
             order.take_value = dto.take.value * dto.make.value
             order.origin_fees = get_json_parts(dto.origin_fees)
             order.payouts = get_json_parts(dto.payouts)
