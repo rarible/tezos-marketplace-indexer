@@ -18,6 +18,7 @@ from rarible_marketplace_indexer.types.tezos_objects.tezos_object_hash import Or
 
 activity_api_object = RaribleApiOrderMatchActivity(
     id=UUID('3212dbe4-5cbe-5fc1-a125-fb963a250f0d'),
+    network='mainnet',
     type=ActivityTypeEnum.ORDER_MATCH,
     source=PlatformEnum.OBJKT_V1,
     order_id=UUID('1603ff55-2507-5cba-b50c-3ae50162c5ee'),

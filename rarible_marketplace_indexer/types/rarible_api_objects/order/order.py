@@ -22,6 +22,7 @@ class RaribleApiOrder(AbstractRaribleApiObject):
 
     _kafka_topic = KafkaTopic.ORDER_TOPIC
     fill: Xtz
+    network: str
     platform: PlatformEnum
     status: OrderStatusEnum
     start_at: datetime

@@ -18,6 +18,7 @@ class AbstractRaribleApiOrderActivity(AbstractRaribleApiObject):
     type: str
     order_id: uuid.UUID
     source: PlatformEnum
+    network: str
     hash: OperationHash
     date: datetime
     reverted: bool = False

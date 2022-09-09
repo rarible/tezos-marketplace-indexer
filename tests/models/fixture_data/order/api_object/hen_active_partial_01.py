@@ -20,6 +20,7 @@ order_api_object = RaribleApiOrder(
     id=UUID('212f2aee-fff9-5037-a800-fc69807bbd3c'),
     fill=Xtz(9),
     platform=PlatformEnum.HEN,
+    network='mainnet',
     status=OrderStatusEnum.ACTIVE,
     start_at=datetime(2021, 8, 9, 13, 7, 30, tzinfo=UTC),
     end_at=None,

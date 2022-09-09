@@ -10,7 +10,6 @@ from rarible_marketplace_indexer.types.rarible_api_objects.asset.asset import Xt
 from rarible_marketplace_indexer.types.rarible_api_objects.asset.asset_type import MultiTokenAssetType
 from rarible_marketplace_indexer.types.rarible_api_objects.asset.asset_type import XtzAssetType
 from rarible_marketplace_indexer.types.rarible_api_objects.order.order import RaribleApiOrder
-from rarible_marketplace_indexer.types.rarible_exchange.parameter.sell import Part
 from rarible_marketplace_indexer.types.tezos_objects.asset_value.asset_value import AssetValue
 from rarible_marketplace_indexer.types.tezos_objects.asset_value.xtz_value import Xtz
 from rarible_marketplace_indexer.types.tezos_objects.tezos_object_hash import ImplicitAccountAddress
@@ -20,6 +19,7 @@ order_api_object = RaribleApiOrder(
     id=UUID('a2beb69a-a505-5a6c-a75a-83e66ac477af'),
     fill=0,
     platform=PlatformEnum.FXHASH_V1,
+    network='mainnet',
     status=OrderStatusEnum.ACTIVE,
     start_at=datetime(2021, 12, 6, 9, 39, 20, tzinfo=UTC),
     end_at=None,
