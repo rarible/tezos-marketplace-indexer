@@ -349,31 +349,35 @@ async def import_legacy_order(order: dict):
 
 
 async def process_metadata(ctx: HookContext, asset_type: str, asset_id: str):
-    if asset_type is IndexEnum.COLLECTION:
-        contract_metadata = await ctx.get_metadata_datasource('metadata').get_contract_metadata(asset_id)
-        if contract_metadata is None:
-            tzkt = ctx.get_tzkt_datasource("tzkt")
-            metadata_url_raw = await tzkt.request(
-                method='get',
-                url=f'v1/contracts/{asset_id}/bigmaps/metadata/keys/""',
-            )
-            contract_metadata = await fetch_metadata(ctx, metadata_url_raw)
-        return contract_metadata
-    elif asset_type is IndexEnum.NFT:
-        parsed_id = asset_id.split(":")
-        if len(parsed_id) != 2:
-            raise Exception(f"Invalid Token ID: {asset_id}")
-        contract = parsed_id[0]
-        token_id = parsed_id[1]
-        token_metadata = await ctx.get_metadata_datasource('metadata').get_token_metadata(contract, token_id)
-        if token_metadata is None:
-            tzkt = ctx.get_tzkt_datasource("tzkt")
-            metadata_url_raw = await tzkt.request(
-                method='get',
-                url=f'v1/contracts/{contract}/bigmaps/token_metadata/keys/{token_id}',
-            )
-            token_metadata = await fetch_metadata(ctx, metadata_url_raw)
-        return token_metadata
+    try:
+        if asset_type is IndexEnum.COLLECTION:
+            contract_metadata = await ctx.get_metadata_datasource('metadata').get_contract_metadata(asset_id)
+            if contract_metadata is None:
+                tzkt = ctx.get_tzkt_datasource("tzkt")
+                metadata_url_raw = await tzkt.request(
+                    method='get',
+                    url=f'v1/contracts/{asset_id}/bigmaps/metadata/keys/""',
+                )
+                contract_metadata = await fetch_metadata(ctx, metadata_url_raw)
+            return contract_metadata
+        elif asset_type is IndexEnum.NFT:
+            parsed_id = asset_id.split(":")
+            if len(parsed_id) != 2:
+                raise Exception(f"Invalid Token ID: {asset_id}")
+            contract = parsed_id[0]
+            token_id = parsed_id[1]
+            token_metadata = await ctx.get_metadata_datasource('metadata').get_token_metadata(contract, token_id)
+            if token_metadata is None:
+                tzkt = ctx.get_tzkt_datasource("tzkt")
+                metadata_url_raw = await tzkt.request(
+                    method='get',
+                    url=f'v1/contracts/{contract}/bigmaps/token_metadata/keys/{token_id}',
+                )
+                token_metadata = await fetch_metadata(ctx, metadata_url_raw)
+            return token_metadata
+    except Exception as ex:
+        logging.getLogger("collection_metadata").warning(f"Couldn't process metadata for asset {asset_id}: {ex}")
+        return None
 
 
 async def fetch_metadata(ctx: HookContext, metadata_url: str):
