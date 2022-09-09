@@ -49,6 +49,6 @@ async def on_restart(
 
     if ctx.config.hooks.get("process_collection_events") is not None:
         index = await IndexingStatus.get_or_none(index=IndexEnum.COLLECTION)
-        current_level = int(index.last_level) if index is not None else 0
-        await ctx.fire_hook("process_collection_events", level=current_level)
+        if index is None:
+            await ctx.fire_hook("process_collection_events", level=0)
 
