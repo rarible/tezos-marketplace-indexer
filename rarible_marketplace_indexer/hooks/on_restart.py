@@ -1,4 +1,3 @@
-import asyncio
 import logging
 import os
 import socketserver
@@ -8,7 +7,7 @@ from dipdup.context import HookContext
 from prometheus_client import MetricsHandler
 
 from rarible_marketplace_indexer.event.fxhash_v2_action import FxhashV2ListingOrderListEvent
-from rarible_marketplace_indexer.hooks.process_collection_events import process_collection_events
+from rarible_marketplace_indexer.models import IndexingStatus, IndexEnum
 from rarible_marketplace_indexer.producer.container import ProducerContainer
 from rarible_marketplace_indexer.prometheus.rarible_metrics import RaribleMetrics
 
@@ -41,17 +40,15 @@ async def on_restart(
 
     if os.getenv('APPLICATION_ENVIRONMENT') == 'prod' and ctx.config.hooks.get("import_legacy_orders") is not None:
         await ctx.fire_hook("import_legacy_orders")
-    if ctx.config.custom.get("collection_indexing") is not None:
-        collection_config = ctx.config.custom.get("collection_indexing")
-        if collection_config["enabled"] == "true":
-            if collection_config.get("level") is not None:
-                asyncio.ensure_future(process_collection_events(ctx, level=collection_config["level"]))
-            else:
-                asyncio.ensure_future(process_collection_events(ctx, level=0))
 
     if ctx.config.custom.get("token_indexing") is not None:
         token_config = ctx.config.custom.get("token_indexing")
         if token_config["enabled"] == "true":
-            if collection_config.get("level") is not None:
+            if token_config.get("level") is not None:
                 await ctx.execute_sql('reset_token_transfers')
+
+    if ctx.config.hooks.get("process_collection_events") is not None:
+        index = await IndexingStatus.get_or_none(index=IndexEnum.COLLECTION)
+        current_level = int(index.last_level) if index is not None else 0
+        await ctx.fire_hook("process_collection_events", level=current_level)
 

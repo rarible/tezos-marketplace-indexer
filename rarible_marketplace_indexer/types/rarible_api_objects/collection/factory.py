@@ -1,3 +1,4 @@
+import os
 import uuid
 from uuid import uuid5
 
@@ -12,7 +13,7 @@ class RaribleApiCollectionFactory:
     def build(event: dict, datasource: TzktDatasource) -> RaribleApiCollection:
         return RaribleApiCollection(
             id=uuid5(namespace=uuid.NAMESPACE_OID, name=f"{event['id']}"),
-            network=datasource.network,
+            network=os.getenv("NETWORK"),
             event_id=event['id'],
             collection=Collection(
                 id=event['originatedContract']['address'],

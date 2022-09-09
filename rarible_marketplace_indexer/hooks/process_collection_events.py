@@ -1,4 +1,5 @@
 import logging
+import os
 
 from dipdup.context import HookContext
 
@@ -17,7 +18,7 @@ async def process_collection_events(
     logger = logging.getLogger('dipdup.collection')
     tzkt = ctx.get_tzkt_datasource('tzkt')
     index = await IndexingStatus.get_or_none(index=IndexEnum.COLLECTION)
-    current_level = int(index.last_level) if index is not None else level
+    current_level = int(index.last_level) if index is not None else 0
 
     logger.info(f"Processing collections from level {current_level}")
 
