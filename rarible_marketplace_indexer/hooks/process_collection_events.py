@@ -39,16 +39,20 @@ async def process_collection_events(
                         else:
                             origination['alias'] = ""
                         address = origination['originatedContract']['address']
-                        await Collection.update_or_create(
-                            contract=OriginatedAccountAddress(address),
-                            owner=ImplicitAccountAddress(origination['sender']['address']),
-                            metadata_synced=False,
-                            metadata_retries=0
+                        collection = await Collection.get_or_none(
+                            contract=OriginatedAccountAddress(address)
                         )
-                        collection_event = RaribleApiCollectionFactory.build(origination, tzkt)
-                        assert collection_event
-                        await producer_send(collection_event)
-                        logger.info(f"Proccessed collection {address}")
+                        if collection is None:
+                            await Collection.create(
+                                contract=OriginatedAccountAddress(address),
+                                owner=ImplicitAccountAddress(origination['sender']['address']),
+                                metadata_synced=False,
+                                metadata_retries=0
+                            )
+                            collection_event = RaribleApiCollectionFactory.build(origination, tzkt)
+                            assert collection_event
+                            await producer_send(collection_event)
+                            logger.info(f"Proccessed collection {address}")
         if len(originations) < 100:
             last_id = None
     if index is None:
