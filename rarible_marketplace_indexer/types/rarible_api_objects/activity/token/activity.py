@@ -20,7 +20,7 @@ class BaseRaribleApiTokenActivity(AbstractRaribleApiObject):
     _kafka_topic = KafkaTopic.ACTIVITY_TOPIC
     id: Optional[uuid.UUID]
     transfer_id: int
-    network: str
+    network: Optional[str]
     contract: OriginatedAccountAddress
     token_id: int
     value: AssetValue

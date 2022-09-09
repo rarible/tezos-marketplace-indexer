@@ -13,14 +13,14 @@ from rarible_marketplace_indexer.types.tezos_objects.tezos_object_hash import Or
 
 class RaribleApiTokenActivityFactory:
     @classmethod
-    def _build_base_activity(cls, transfer: TokenTransfer, datasource: TzktDatasource) -> BaseRaribleApiTokenActivity:
+    def _build_base_activity(cls, transfer: TokenTransfer) -> BaseRaribleApiTokenActivity:
         try:
             value = AssetValue(transfer.amount)
         except TypeError:
             value = AssetValue(0)
 
         return BaseRaribleApiTokenActivity(
-            network=datasource.network,
+            network=None,
             transfer_id=transfer.id,
             contract=OriginatedAccountAddress(transfer.contract),
             token_id=transfer.token_id,
@@ -30,8 +30,8 @@ class RaribleApiTokenActivityFactory:
         )
 
     @classmethod
-    def build_mint_activity(cls, transfer: TokenTransfer, datasource: TzktDatasource) -> RaribleApiTokenMintActivity:
-        base = cls._build_base_activity(transfer, datasource)
+    def build_mint_activity(cls, transfer: TokenTransfer) -> RaribleApiTokenMintActivity:
+        base = cls._build_base_activity(transfer)
         if RaribleMetrics.enabled is True:
             RaribleMetrics.set_token_activity(ActivityTypeEnum.TOKEN_MINT, transfer.contract, 1)
         return RaribleApiTokenMintActivity(
@@ -41,8 +41,8 @@ class RaribleApiTokenActivityFactory:
         )
 
     @classmethod
-    def build_transfer_activity(cls, transfer: TokenTransfer, datasource: TzktDatasource) -> RaribleApiTokenTransferActivity:
-        base = cls._build_base_activity(transfer, datasource)
+    def build_transfer_activity(cls, transfer: TokenTransfer) -> RaribleApiTokenTransferActivity:
+        base = cls._build_base_activity(transfer)
         if RaribleMetrics.enabled is True:
             RaribleMetrics.set_token_activity(ActivityTypeEnum.TOKEN_TRANSFER, transfer.contract, 1)
         return RaribleApiTokenTransferActivity(
@@ -53,8 +53,8 @@ class RaribleApiTokenActivityFactory:
         )
 
     @classmethod
-    def build_burn_activity(cls, transfer: TokenTransfer, datasource: TzktDatasource) -> RaribleApiTokenBurnActivity:
-        base = cls._build_base_activity(transfer, datasource)
+    def build_burn_activity(cls, transfer: TokenTransfer) -> RaribleApiTokenBurnActivity:
+        base = cls._build_base_activity(transfer)
         if RaribleMetrics.enabled is True:
             RaribleMetrics.set_token_activity(ActivityTypeEnum.TOKEN_BURN, transfer.contract, 1)
         return RaribleApiTokenBurnActivity(
