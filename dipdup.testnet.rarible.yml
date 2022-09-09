@@ -6,6 +6,10 @@ datasources:
     url: ${TZKT_URL:-https://api.ghostnet.tzkt.io}
     http:
       connection_timeout: 60
+  metadata:
+    kind: metadata
+    url: https://metadata.dipdup.net
+    network: ithacanet
 
 contracts:
   rarible_exchange:
@@ -96,8 +100,7 @@ hooks:
     callback: process_collection_events
     atomic: False
     args:
-      force_reindex: bool
-      head: int
+      level: int
 
 advanced:
   rollback_depth: 2
@@ -117,3 +120,6 @@ custom:
     mechanism: ${KAFKA_SASL_MECHANISM:-PLAIN}
     username: ${KAFKA_USERNAME:-rarible}
     password: ${KAFKA_PASSWORD:-changeme}
+  collection_indexing:
+    enabled: true
+    level: 1212042

@@ -3,13 +3,16 @@ from enum import Enum
 from typing import Any
 from typing import List
 from typing import Optional
+from typing import Type
 from typing import TypeVar
 from uuid import uuid5
 
+from aiosignal import Signal
 from dipdup.models import Model
 from dipdup.models import Transaction
 from tortoise import fields
 from tortoise.backends.base.client import BaseDBAsyncClient
+from tortoise.signals import post_delete
 from tortoise.signals import post_save
 
 from rarible_marketplace_indexer.producer.helper import producer_send
@@ -64,6 +67,7 @@ class PlatformEnum(str, Enum):
 
 class IndexEnum(str, Enum):
     COLLECTION: _StrEnumValue = 'COLLECTION'
+    NFT: _StrEnumValue = 'NFT'
     LEGACY_ORDERS: _StrEnumValue = 'LEGACY_ORDERS'
     V1_CLEANING: _StrEnumValue = 'V1_CLEANING'
     V1_FILL_FIX: _StrEnumValue = 'V1_FILL_FIX'
@@ -221,3 +225,132 @@ async def signal_activity_post_save(
     from rarible_marketplace_indexer.types.rarible_api_objects.activity.order.factory import RaribleApiOrderActivityFactory
 
     await producer_send(RaribleApiOrderActivityFactory.build(instance))
+
+
+class TokenTransfer(Model):
+    class Meta:
+        table = 'token_transfer'
+
+    _custom_generated_pk = True
+
+    id = fields.IntField(pk=True, generated=False, required=True)
+    type = fields.CharEnumField(ActivityTypeEnum)
+    tzkt_token_id = fields.IntField(null=False)
+    tzkt_transaction_id = fields.IntField(null=True)
+    contract = AccountAddressField(null=False)
+    token_id = fields.TextField(null=False)
+    from_address = AccountAddressField(null=True)
+    to_address = AccountAddressField(null=True)
+    amount = AssetValueField()
+    hash = OperationHashField(null=True)
+    date = fields.DatetimeField(null=False)
+
+
+@post_save(TokenTransfer)
+async def signal_token_transfer_post_save(
+    sender: TokenTransfer,
+    instance: TokenTransfer,
+    created: bool,
+    using_db: "Optional[BaseDBAsyncClient]",
+    update_fields: List[str],
+) -> None:
+    from rarible_marketplace_indexer.types.rarible_api_objects.activity.token.factory import RaribleApiTokenActivityFactory
+
+    if instance.type == ActivityTypeEnum.TOKEN_MINT:
+        token_transfer_activity = RaribleApiTokenActivityFactory.build_mint_activity(instance)
+    if instance.type == ActivityTypeEnum.TOKEN_BURN:
+        token_transfer_activity = RaribleApiTokenActivityFactory.build_burn_activity(instance)
+    if instance.type == ActivityTypeEnum.TOKEN_TRANSFER:
+        token_transfer_activity = RaribleApiTokenActivityFactory.build_transfer_activity(instance)
+    await producer_send(token_transfer_activity)
+
+
+class Ownership(Model):
+    _custom_generated_pk = True
+    id = fields.TextField(pk=True, generated=False, required=True, null=False)
+
+    contract = AccountAddressField(null=False)
+    token_id = fields.TextField(null=False)
+    owner = AccountAddressField(null=False)
+    balance = AssetValueField()
+    updated = fields.DatetimeField(null=False)
+
+    def full_id(self):
+        return f"{self.contract}:{self.token_id}:{self.owner}"
+
+
+@post_save(Ownership)
+async def signal_ownership_post_save(
+    sender: Ownership,
+    instance: Ownership,
+    created: bool,
+    using_db: "Optional[BaseDBAsyncClient]",
+    update_fields: List[str],
+) -> None:
+    from rarible_marketplace_indexer.types.rarible_api_objects.ownership.factory import RaribleApiOwnershipFactory
+
+    event = RaribleApiOwnershipFactory.build_update(instance)
+    await producer_send(event)
+
+
+@post_delete(Ownership)
+async def signal_ownership_post_delete(sender: "Type[Signal]", instance: Ownership, using_db: "Optional[BaseDBAsyncClient]") -> None:
+    from rarible_marketplace_indexer.types.rarible_api_objects.ownership.factory import RaribleApiOwnershipFactory
+
+    event = RaribleApiOwnershipFactory.build_delete(instance)
+    await producer_send(event)
+
+
+class Token(Model):
+    class Meta:
+        table = 'token'
+
+    _custom_generated_pk = True
+
+    id = fields.TextField(pk=True, generated=False, required=True, null=False)
+    tzkt_id = fields.IntField()
+    contract = AccountAddressField(null=False)
+    token_id = fields.TextField(null=False)
+    minted_at = fields.DatetimeField(null=False)
+    minted = AssetValueField()
+    supply = AssetValueField()
+    deleted = fields.BooleanField(default=False)
+    updated = fields.DatetimeField(null=False)
+    metadata_synced = fields.BooleanField(required=True)
+    metadata_retries = fields.IntField(required=True)
+    db_updated_at = fields.DatetimeField(auto_now=True)
+
+    def full_id(self):
+        return f"{self.contract}:{self.token_id}"
+
+
+class Collection(Model):
+    class Meta:
+        table = 'collection'
+
+    _custom_generated_pk = True
+
+    contract = AccountAddressField(pk=True, required=True)
+    owner = AccountAddressField(required=True)
+    metadata_synced = fields.BooleanField(required=True)
+    metadata_retries = fields.IntField(required=True)
+    db_updated_at = fields.DatetimeField(auto_now=True)
+
+    def full_id(self):
+        return f"{self.contract}"
+
+
+@post_save(Token)
+async def signal_token_post_save(
+        sender: Token,
+        instance: Token,
+        created: bool,
+        using_db: "Optional[BaseDBAsyncClient]",
+        update_fields: List[str],
+) -> None:
+    from rarible_marketplace_indexer.types.rarible_api_objects.token.factory import RaribleApiTokenFactory
+    if instance.deleted:
+        event = RaribleApiTokenFactory.build_delete(instance)
+    else:
+        event = RaribleApiTokenFactory.build_update(instance)
+    await producer_send(event)

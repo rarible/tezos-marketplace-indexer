@@ -1,36 +1,38 @@
 import uuid
 from dataclasses import dataclass
-from typing import List
-from typing import Optional
+from datetime import datetime
+from typing import Optional, List
 
 from humps.main import camelize
 
 from rarible_marketplace_indexer.producer.const import KafkaTopic
 from rarible_marketplace_indexer.types.rarible_api_objects import AbstractRaribleApiObject
+from rarible_marketplace_indexer.types.tezos_objects.asset_value.asset_value import AssetValue
 from rarible_marketplace_indexer.types.tezos_objects.tezos_object_hash import ImplicitAccountAddress
 from rarible_marketplace_indexer.types.tezos_objects.tezos_object_hash import OriginatedAccountAddress
 
 
 @dataclass
-class Collection:
-    id: OriginatedAccountAddress
-    owner: Optional[ImplicitAccountAddress]
-    name: Optional[str]
-    minters: List[ImplicitAccountAddress]
-    standard: str = 'fa2'
-    symbol: Optional[str] = None
+class TokenBody:
+    id: Optional[str]
+    contract: OriginatedAccountAddress
+    token_id: str
+    creators: List[ImplicitAccountAddress]
+    supply: AssetValue
+    minted_at: datetime
+    last_updated_at: datetime
+    deleted: bool
 
-
-class RaribleApiCollection(AbstractRaribleApiObject):
+class RaribleApiToken(AbstractRaribleApiObject):
     class Config:
         alias_generator = camelize
         allow_population_by_field_name = True
         use_enum_values = True
         arbitrary_types_allowed = True
 
-    _kafka_topic = KafkaTopic.COLLECTION_TOPIC
+    _kafka_topic = KafkaTopic.ITEM_TOPIC
 
-    id: uuid.UUID
-    event_id: str
-    collection: Collection
-    type: str = 'UPDATE'
+    event_id: uuid.UUID
+    item_id: str
+    item: Optional[TokenBody]
+    type: str

@@ -2,27 +2,24 @@ import logging
 
 from dipdup.context import HookContext
 
-from rarible_marketplace_indexer.models import IndexEnum
+from rarible_marketplace_indexer.models import IndexEnum, Collection
 from rarible_marketplace_indexer.models import IndexingStatus
 from rarible_marketplace_indexer.producer.helper import producer_send
 from rarible_marketplace_indexer.types.rarible_api_objects.collection.factory import RaribleApiCollectionFactory
+from rarible_marketplace_indexer.types.tezos_objects.tezos_object_hash import OriginatedAccountAddress, \
+    ImplicitAccountAddress
 
 
 async def process_collection_events(
     ctx: HookContext,
-    force_reindex: bool,
-    head: int,
+    level: int,
 ) -> None:
     logger = logging.getLogger('dipdup.collection')
     tzkt = ctx.get_tzkt_datasource('tzkt')
     index = await IndexingStatus.get_or_none(index=IndexEnum.COLLECTION)
-    current_level = int(index.last_level) if index is not None else 0
+    current_level = int(index.last_level) if index is not None else level
 
-    if current_level == 0 and force_reindex is False:
-        current_level = head - 1
-    elif force_reindex is True:
-        current_level = head
-    logger.info(f"Processing originations from level {current_level}")
+    logger.info(f"Processing collections from level {current_level}")
 
     last_id = 0
     cr_filter = ""
@@ -40,14 +37,21 @@ async def process_collection_events(
                             origination['alias'] = contract['alias']
                         else:
                             origination['alias'] = ""
-                        logger.info(f"New FA2 originated: {origination['originatedContract']['address']}")
+                        address = origination['originatedContract']['address']
+                        await Collection.update_or_create(
+                            contract=OriginatedAccountAddress(address),
+                            owner=ImplicitAccountAddress(origination['sender']['address']),
+                            metadata_synced=False,
+                            metadata_retries=0
+                        )
                         collection_event = RaribleApiCollectionFactory.build(origination, tzkt)
                         assert collection_event
                         await producer_send(collection_event)
+                        logger.info(f"Proccessed collection {address}")
         if len(originations) < 100:
             last_id = None
     if index is None:
-        await IndexingStatus.create(index=IndexEnum.COLLECTION, last_level=head)
+        await IndexingStatus.create(index=IndexEnum.COLLECTION, last_level=level)
     else:
-        index.last_level = head
+        index.last_level = level
         await index.save()
