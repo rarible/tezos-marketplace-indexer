@@ -14,7 +14,6 @@ from rarible_marketplace_indexer.types.tezos_objects.tezos_object_hash import Or
 
 activity_model = ActivityModel(
     type=ActivityTypeEnum.ORDER_MATCH,
-    network='mainnet',
     platform=PlatformEnum.OBJKT_V1,
     order_id=UUID('1603ff55-2507-5cba-b50c-3ae50162c5ee'),
     internal_order_id=145,

@@ -14,7 +14,6 @@ from rarible_marketplace_indexer.types.tezos_objects.tezos_object_hash import Or
 
 order_model = OrderModel(
     id=None,
-    network='mainnet',
     fill='0',
     platform=PlatformEnum.FXHASH_V1,
     internal_order_id='38889',

@@ -9,7 +9,6 @@ from rarible_marketplace_indexer.types.tezos_objects.tezos_object_hash import Im
 from rarible_marketplace_indexer.types.tezos_objects.tezos_object_hash import OriginatedAccountAddress
 
 activity_api_object = RaribleApiTokenTransferActivity(
-    network='mainnet',
     type=ActivityTypeEnum.TOKEN_TRANSFER,
     transfer_id=62734941,
     transfer_from=ImplicitAccountAddress('tz1Zw7KfW7y9TT1p5vNDHf2sehmQXefhyzwg'),
