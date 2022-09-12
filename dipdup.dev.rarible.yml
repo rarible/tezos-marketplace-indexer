@@ -130,3 +130,7 @@ custom:
     password: ${KAFKA_PASSWORD:-changeme}
   token_indexing:
     enabled: true
+
+hasura:
+  url: ${HASURA_URL:-http://hasura:8080}
+  admin_secret: ${HASURA_ADMIN_SECRET:-changeme}
