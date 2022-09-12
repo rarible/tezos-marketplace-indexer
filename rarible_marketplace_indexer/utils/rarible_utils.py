@@ -354,10 +354,16 @@ async def import_legacy_order(order: dict):
         RaribleMetrics.set_order_activity(PlatformEnum.RARIBLE_V1, ActivityTypeEnum.ORDER_LIST, 1)
 
 
-def is_json(myjson):
+def is_json(json_payload):
+    logger = logging.getLogger('metadata')
     try:
-        json.loads(myjson)
-    except ValueError as e:
+        if json_payload is not None:
+            if type(json_payload) is dict:
+                json.dumps(json_payload)
+            elif type(json_payload) is str:
+                json.loads(json_payload)
+    except Exception as error:
+        logger.warning(f"Invalid metadata <{json_payload}>: {error}")
         return False
     return True
 
