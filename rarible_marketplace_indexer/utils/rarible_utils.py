@@ -48,7 +48,8 @@ def generate_random_unique_ophash(size=50, chars=(string.ascii_lowercase + strin
 
 def reconcile_item(contract, token_id):
     logger = logging.getLogger('dipdup.reconcile')
-    response = requests.post(f"{os.getenv('UNION_API')}/v0.1/refresh/item/TEZOS:{contract}:{token_id}/reconcile?full=true")
+    response = requests.post(
+        f"{os.getenv('UNION_API')}/v0.1/refresh/item/TEZOS:{contract}:{token_id}/reconcile?full=true")
     if not response.ok:
         logger.info(f"{contract}:{token_id} need reconcile: Error {response.status_code} - {response.reason}")
     else:
@@ -71,7 +72,7 @@ class RaribleUtils:
     @classmethod
     def _get_contract(cls, asset_bytes: bytes, offset: int) -> OriginatedAccountAddress:
         header = bytes.fromhex('025a79')
-        return OriginatedAccountAddress(b58encode_check(header + asset_bytes[offset : offset + 20]).decode())
+        return OriginatedAccountAddress(b58encode_check(header + asset_bytes[offset: offset + 20]).decode())
 
     @classmethod
     def _get_token_id(cls, asset_bytes: bytes) -> int:
@@ -142,40 +143,43 @@ class RaribleUtils:
 
     @staticmethod
     def get_order_hash(
-        contract: OriginatedAccountAddress,
-        token_id: int,
-        seller: ImplicitAccountAddress,
-        platform: PlatformEnum,
-        asset_class: str = None,
-        asset: str = None,
+            contract: OriginatedAccountAddress,
+            token_id: int,
+            seller: ImplicitAccountAddress,
+            platform: PlatformEnum,
+            asset_class: str = None,
+            asset: str = None,
     ) -> str:
         return uuid5(
-            namespace=uuid.NAMESPACE_OID, name=f'{platform}/{TransactionTypeEnum.SALE}-{contract}:{token_id}@{seller}/{asset_class}-{asset}'
+            namespace=uuid.NAMESPACE_OID,
+            name=f'{platform}/{TransactionTypeEnum.SALE}-{contract}:{token_id}@{seller}/{asset_class}-{asset}'
         ).hex
 
     @staticmethod
     def get_bid_hash(
-        contract: OriginatedAccountAddress,
-        token_id: int,
-        bidder: ImplicitAccountAddress,
-        platform: PlatformEnum,
-        asset_class: str = None,
-        asset: str = None,
+            contract: OriginatedAccountAddress,
+            token_id: int,
+            bidder: ImplicitAccountAddress,
+            platform: PlatformEnum,
+            asset_class: str = None,
+            asset: str = None,
     ) -> str:
         return uuid5(
-            namespace=uuid.NAMESPACE_OID, name=f'{platform}/{TransactionTypeEnum.BID}-{contract}:{token_id}@{bidder}/{asset_class}-{asset}'
+            namespace=uuid.NAMESPACE_OID,
+            name=f'{platform}/{TransactionTypeEnum.BID}-{contract}:{token_id}@{bidder}/{asset_class}-{asset}'
         ).hex
 
     @staticmethod
     def get_floor_bid_hash(
-        contract: OriginatedAccountAddress,
-        bidder: ImplicitAccountAddress,
-        platform: PlatformEnum,
-        asset_class: str = None,
-        asset: str = None,
+            contract: OriginatedAccountAddress,
+            bidder: ImplicitAccountAddress,
+            platform: PlatformEnum,
+            asset_class: str = None,
+            asset: str = None,
     ) -> str:
         return uuid5(
-            namespace=uuid.NAMESPACE_OID, name=f'{platform}/{TransactionTypeEnum.FLOOR_BID}-{contract}@{bidder}/{asset_class}-{asset}'
+            namespace=uuid.NAMESPACE_OID,
+            name=f'{platform}/{TransactionTypeEnum.FLOOR_BID}-{contract}@{bidder}/{asset_class}-{asset}'
         ).hex
 
     @classmethod
@@ -217,7 +221,8 @@ async def import_legacy_order(order: dict):
     elif order["take"]["assetType"]["assetClass"] == "FA_2":
         take_type = AssetClassEnum.FUNGIBLE_TOKEN
         asset_type = MichelsonType.match(michelson_to_micheline('pair address nat'))
-        asset_object = (order["take"]["assetType"]["assetClass"]["contract"], order["take"]["assetType"]["assetClass"]["tokenId"])
+        asset_object = (
+        order["take"]["assetType"]["assetClass"]["contract"], order["take"]["assetType"]["assetClass"]["tokenId"])
 
     if asset_type is not None:
         asset = asset_type.from_python_object(asset_object).pack().hex()
@@ -230,7 +235,8 @@ async def import_legacy_order(order: dict):
     if take_contract is not None:
         take_contract = OriginatedAccountAddress(order["take"]["assetType"].get("contract"))
 
-    take = TakeDto(asset_class=take_type, contract=take_contract, token_id=take_token_id, value=AssetValue(order["take"]["value"]))
+    take = TakeDto(asset_class=take_type, contract=take_contract, token_id=take_token_id,
+                   value=AssetValue(order["take"]["value"]))
 
     internal_order_id = RaribleUtils.get_order_hash(
         contract=OriginatedAccountAddress(make.contract),
@@ -313,8 +319,8 @@ async def import_legacy_order(order: dict):
             internal_order_id=internal_order_id,
             operation_timestamp=datetime.strptime(order["createdAt"], date_pattern),
         )
-        .order_by('-operation_timestamp')
-        .first()
+            .order_by('-operation_timestamp')
+            .first()
     )
 
     if last_order_activity is None:
@@ -348,6 +354,14 @@ async def import_legacy_order(order: dict):
         RaribleMetrics.set_order_activity(PlatformEnum.RARIBLE_V1, ActivityTypeEnum.ORDER_LIST, 1)
 
 
+def is_json(myjson):
+    try:
+        json.loads(myjson)
+    except ValueError as e:
+        return False
+    return True
+
+
 async def process_metadata(ctx: HookContext, asset_type: str, asset_id: str):
     try:
         if asset_type is IndexEnum.COLLECTION:
@@ -359,7 +373,10 @@ async def process_metadata(ctx: HookContext, asset_type: str, asset_id: str):
                     url=f'v1/contracts/{asset_id}/bigmaps/metadata/keys/""',
                 )
                 contract_metadata = await fetch_metadata(ctx, metadata_url_raw)
-            return contract_metadata
+            if is_json(contract_metadata):
+                return contract_metadata
+            else:
+                return None
         elif asset_type is IndexEnum.NFT:
             parsed_id = asset_id.split(":")
             if len(parsed_id) != 2:
@@ -374,7 +391,10 @@ async def process_metadata(ctx: HookContext, asset_type: str, asset_id: str):
                     url=f'v1/contracts/{contract}/bigmaps/token_metadata/keys/{token_id}',
                 )
                 token_metadata = await fetch_metadata(ctx, metadata_url_raw)
-            return token_metadata
+            if is_json(token_metadata):
+                return token_metadata
+            else:
+                return None
     except Exception as ex:
         logging.getLogger("collection_metadata").warning(f"Couldn't process metadata for asset {asset_id}: {ex}")
         return None
