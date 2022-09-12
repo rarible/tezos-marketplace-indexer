@@ -4,7 +4,7 @@ tezos-marketplace-indexer-rarible:
   command: [
     "dipdup", "-c", "dipdup.yml",
     "-c", 'dipdup.{{ include "app.env" $ }}.rarible.yml',
-    "run", "hasura configure"
+    "run"
     ]
   environments:
     APPLICATION_ENVIRONMENT: '{{ include "app.env" $ }}'
@@ -39,7 +39,7 @@ tezos-marketplace-indexer-tezos:
   command: [
     "dipdup", "-c", "dipdup.yml",
     "-c", 'dipdup.{{ include "app.env" $ }}.tezos.yml',
-    "run", "hasura configure"
+    "run"
     ]
   environments:
     APPLICATION_ENVIRONMENT: '{{ include "app.env" $ }}'
@@ -73,7 +73,7 @@ tezos-marketplace-indexer-metadata:
   command: [
     "dipdup", "-c", "dipdup.yml",
     "-c", 'dipdup.{{ include "app.env" $ }}.metadata.yml',
-    "run", "hasura configure"
+    "run"
     ]
   environments:
     APPLICATION_ENVIRONMENT: '{{ include "app.env" $ }}'
