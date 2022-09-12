@@ -12,6 +12,7 @@ from uuid import uuid5
 
 import aiohttp
 import requests
+import warlock as warlock
 from base58 import b58encode_check
 from dipdup.context import HookContext
 from pytezos import MichelsonType
@@ -222,7 +223,7 @@ async def import_legacy_order(order: dict):
         take_type = AssetClassEnum.FUNGIBLE_TOKEN
         asset_type = MichelsonType.match(michelson_to_micheline('pair address nat'))
         asset_object = (
-        order["take"]["assetType"]["assetClass"]["contract"], order["take"]["assetType"]["assetClass"]["tokenId"])
+            order["take"]["assetType"]["assetClass"]["contract"], order["take"]["assetType"]["assetClass"]["tokenId"])
 
     if asset_type is not None:
         asset = asset_type.from_python_object(asset_object).pack().hex()
@@ -354,18 +355,648 @@ async def import_legacy_order(order: dict):
         RaribleMetrics.set_order_activity(PlatformEnum.RARIBLE_V1, ActivityTypeEnum.ORDER_LIST, 1)
 
 
-def is_json(json_payload):
+collection_metadata_schema = {
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "$ref": "#/definitions/contractMetadataTzip16",
+    "definitions": {
+        "bignum": {
+            "title": "Big number",
+            "description": "Decimal representation of a big number",
+            "type": "string"
+        },
+        "contractMetadataTzip16": {
+            "title": "contractMetadataTzip16",
+            "description": "Smart Contract Metadata Standard (TZIP-16).",
+            "type": "object",
+            "properties": {
+                "name": {
+                    "description": "The identification of the contract.",
+                    "type": "string"
+                },
+                "description": {
+                    "description": "Natural language description of the contract and/or its behavior.",
+                    "type": "string"
+                },
+                "version": {
+                    "description": "The version of the contract code.",
+                    "type": "string"
+                },
+                "license": {
+                    "description": "The software license of the contract.",
+                    "type": "object",
+                    "properties": {
+                        "name": {
+                            "description": "A mnemonic name for the license, see also the License-name case.",
+                            "type": "string"
+                        },
+                        "details": {
+                            "description": "Paragraphs of free text, with punctuation and proper language.",
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "name"
+                    ],
+                    "additionalProperties": False
+                },
+                "authors": {
+                    "description": "The list of authors of the contract.",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "homepage": {
+                    "description": "A link for humans to follow for documentation, sources, issues, etc.",
+                    "type": "string"
+                },
+                "source": {
+                    "description": "Description of how the contract's Michelson was generated.",
+                    "type": "object",
+                    "properties": {
+                        "tools": {
+                            "title": "Contract Producing Tools",
+                            "description": "List of tools/versions used in producing the Michelson.",
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        },
+                        "location": {
+                            "title": "Source Location",
+                            "description": "Location (URL) of the source code.",
+                            "type": "string"
+                        }
+                    },
+                    "additionalProperties": False
+                },
+                "interfaces": {
+                    "description": "The list of interfaces the contract claims to implement (e.g. TZIP-12).",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "errors": {
+                    "description": "Error translators.",
+                    "type": "array",
+                    "items": {
+                        "oneOf": [
+                            {
+                                "title": "staticErrorTranslator",
+                                "description": "A convertor between error codes and expanded messages.",
+                                "type": "object",
+                                "properties": {
+                                    "error": {
+                                        "$ref": "#/definitions/micheline.tzip-16.expression"
+                                    },
+                                    "expansion": {
+                                        "$ref": "#/definitions/micheline.tzip-16.expression"
+                                    },
+                                    "languages": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string"
+                                        }
+                                    }
+                                },
+                                "required": [
+                                    "expansion",
+                                    "error"
+                                ],
+                                "additionalProperties": False
+                            },
+                            {
+                                "title": "dynamicErrorTranslator",
+                                "description": "An off-chain-view to call to convert error codes to expanded messages.",
+                                "type": "object",
+                                "properties": {
+                                    "view": {
+                                        "type": "string"
+                                    },
+                                    "languages": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string"
+                                        }
+                                    }
+                                },
+                                "required": [
+                                    "view"
+                                ],
+                                "additionalProperties": False
+                            }
+                        ]
+                    }
+                },
+                "views": {
+                    "description": "The storage queries, a.k.a. off-chain views provided.",
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "name": {
+                                "type": "string"
+                            },
+                            "description": {
+                                "description": "Plain language documentation of the off-chain view; with punctuation.",
+                                "type": "string"
+                            },
+                            "implementations": {
+                                "description": "The list of available and equivalent implementations.",
+                                "type": "array",
+                                "items": {
+                                    "oneOf": [
+                                        {
+                                            "title": "michelsonStorageView",
+                                            "description": "An off-chain view using Michelson as a scripting language to interpret the storage of a contract.",
+                                            "type": "object",
+                                            "properties": {
+                                                "michelsonStorageView": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "parameter": {
+                                                            "description": "The Michelson type of the potential external parameters required by the code of the view.",
+                                                            "$ref": "#/definitions/micheline.tzip-16.expression"
+                                                        },
+                                                        "returnType": {
+                                                            "description": "The type of the result of the view, i.e. the value left on the stack by the code.",
+                                                            "$ref": "#/definitions/micheline.tzip-16.expression"
+                                                        },
+                                                        "code": {
+                                                            "description": "The Michelson code expression implementing the view.",
+                                                            "$ref": "#/definitions/micheline.tzip-16.expression"
+                                                        },
+                                                        "annotations": {
+                                                            "description": "List of objects documenting the annotations used in the 3 above fields.",
+                                                            "type": "array",
+                                                            "items": {
+                                                                "type": "object",
+                                                                "properties": {
+                                                                    "name": {
+                                                                        "type": "string"
+                                                                    },
+                                                                    "description": {
+                                                                        "type": "string"
+                                                                    }
+                                                                },
+                                                                "required": [
+                                                                    "description",
+                                                                    "name"
+                                                                ],
+                                                                "additionalProperties": False
+                                                            }
+                                                        },
+                                                        "version": {
+                                                            "description": "A string representing the version of Michelson that the view is meant to work with; versions here should be base58check-encoded protocol hashes.",
+                                                            "type": "string"
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "code",
+                                                        "returnType"
+                                                    ],
+                                                    "additionalProperties": False
+                                                }
+                                            },
+                                            "required": [
+                                                "michelsonStorageView"
+                                            ],
+                                            "additionalProperties": False
+                                        },
+                                        {
+                                            "title": "restApiQueryView",
+                                            "description": "An off-chain view using a REST API described in a separate OpenAPI specification. The following parameters form a pointer to the localtion in the OpenAPI description.",
+                                            "type": "object",
+                                            "properties": {
+                                                "restApiQuery": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "specificationUri": {
+                                                            "description": "A URI pointing at the location of the OpenAPI specification.",
+                                                            "type": "string"
+                                                        },
+                                                        "baseUri": {
+                                                            "description": "The URI-prefix to use to query the API.",
+                                                            "type": "string"
+                                                        },
+                                                        "path": {
+                                                            "description": "The path component of the URI to look-up in the OpenAPI specification.",
+                                                            "type": "string"
+                                                        },
+                                                        "method": {
+                                                            "description": "The HTTP method to use.",
+                                                            "type": "string",
+                                                            "enum": [
+                                                                "GET",
+                                                                "POST",
+                                                                "PUT"
+                                                            ]
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "path",
+                                                        "specificationUri"
+                                                    ],
+                                                    "additionalProperties": False
+                                                }
+                                            },
+                                            "required": [
+                                                "restApiQuery"
+                                            ],
+                                            "additionalProperties": False
+                                        }
+                                    ]
+                                }
+                            },
+                            "pure": {
+                                "type": "boolean"
+                            }
+                        },
+                        "required": [
+                            "implementations",
+                            "name"
+                        ],
+                        "additionalProperties": False
+                    }
+                }
+            }
+        },
+        "micheline.tzip-16.expression": {
+            "oneOf": [
+                {
+                    "title": "Int",
+                    "type": "object",
+                    "properties": {
+                        "int": {
+                            "$ref": "#/definitions/bignum"
+                        }
+                    },
+                    "required": [
+                        "int"
+                    ],
+                    "additionalProperties": False
+                },
+                {
+                    "title": "String",
+                    "type": "object",
+                    "properties": {
+                        "string": {
+                            "$ref": "#/definitions/unistring"
+                        }
+                    },
+                    "required": [
+                        "string"
+                    ],
+                    "additionalProperties": False
+                },
+                {
+                    "title": "Bytes",
+                    "type": "object",
+                    "properties": {
+                        "bytes": {
+                            "type": "string",
+                            "pattern": "^[a-zA-Z0-9]+$"
+                        }
+                    },
+                    "required": [
+                        "bytes"
+                    ],
+                    "additionalProperties": False
+                },
+                {
+                    "title": "Sequence",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/micheline.tzip-16.expression"
+                    }
+                },
+                {
+                    "title": "Generic prim (any number of args with or without annot)",
+                    "type": "object",
+                    "properties": {
+                        "prim": {
+                            "$ref": "#/definitions/unistring"
+                        },
+                        "args": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/micheline.tzip-16.expression"
+                            }
+                        },
+                        "annots": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "required": [
+                        "prim"
+                    ],
+                    "additionalProperties": False
+                }
+            ]
+        },
+        "unistring": {
+            "title": "Universal string representation",
+            "description": "Either a plain UTF8 string, or a sequence of bytes for strings that contain invalid byte sequences.",
+            "oneOf": [
+                {
+                    "type": "string"
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "invalid_utf8_string": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer",
+                                "minimum": 0,
+                                "maximum": 255
+                            }
+                        }
+                    },
+                    "required": [
+                        "invalid_utf8_string"
+                    ],
+                    "additionalProperties": False
+                }
+            ]
+        }
+    }
+}
+
+token_metadata_schema = {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$ref": "#/definitions/asset",
+    "title": "Rich Metadata",
+    "definitions": {
+        "asset": {
+            "type": "object",
+            "additionalProperties": True,
+            "properties": {
+                "description": {
+                    "type": "string",
+                    "description": "General notes, abstracts, or summaries about the contents of an asset."
+                },
+                "minter": {
+                    "type": "string",
+                    "format": "tzaddress",
+                    "description": "The tz address responsible for minting the asset."
+                },
+                "creators": {
+                    "type": "array",
+                    "description": "The primary person, people, or organization(s) responsible for creating the intellectual content of the asset.",
+                    "uniqueItems": True,
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "contributors": {
+                    "type": "array",
+                    "description": "The person, people, or organization(s) that have made substantial creative contributions to the asset.",
+                    "uniqueItems": True,
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "publishers": {
+                    "type": "array",
+                    "description": "The person, people, or organization(s) primarily responsible for distributing or making the asset available to others in its present form.",
+                    "uniqueItems": True,
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "date": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "A date associated with the creation or availability of the asset."
+                },
+                "blockLevel": {
+                    "type": "integer",
+                    "description": "Chain block level associated with the creation or availability of the asset."
+                },
+                "type": {
+                    "type": "string",
+                    "description": "A broad definition of the type of content of the asset."
+                },
+                "tags": {
+                    "type": "array",
+                    "description": "A list of tags that describe the subject or content of the asset.",
+                    "uniqueItems": True,
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "genres": {
+                    "type": "array",
+                    "description": "A list of genres that describe the subject or content of the asset.",
+                    "uniqueItems": True,
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "language": {
+                    "type": "string",
+                    "format": "https://tools.ietf.org/html/rfc1766",
+                    "description": "The language of the intellectual content of the asset as defined in RFC 1776."
+                },
+                "identifier": {
+                    "type": "string",
+                    "description": "A string or number used to uniquely identify the asset. Ex. URL, URN, UUID, ISBN, etc."
+                },
+                "rights": {
+                    "type": "string",
+                    "description": "A statement about the asset rights."
+                },
+                "rightUri": {
+                    "type": "string",
+                    "format": "uri-reference",
+                    "description": "Links to a statement of rights."
+                },
+                "artifactUri": {
+                    "type": "string",
+                    "format": "uri-reference",
+                    "description": "A URI to the asset."
+                },
+                "displayUri": {
+                    "type": "string",
+                    "format": "uri-reference",
+                    "description": "A URI to an image of the asset. Used for display purposes."
+                },
+                "thumbnailUri": {
+                    "type": "string",
+                    "format": "uri-reference",
+                    "description": "A URI to an image of the asset for wallets and client applications to have a scaled down image to present to end-users. Reccomened maximum size of 350x350px."
+                },
+                "externalUri": {
+                    "type": "string",
+                    "format": "uri-reference",
+                    "description": "A URI with additional information about the subject or content of the asset."
+                },
+                "isTransferable": {
+                    "type": "boolean",
+                    "description": "All tokens will be transferable by default to allow end-users to send them to other end-users. However, this field exists to serve in special cases where owners will not be able to transfer the token."
+                },
+                "isBooleanAmount": {
+                    "type": "boolean",
+                    "description": "Describes whether an account can have an amount of exactly 0 or 1. (The purpose of this field is for wallets to determine whether or not to display balance information and an amount field when transferring.)"
+                },
+                "shouldPreferSymbol": {
+                    "type": "boolean",
+                    "description": "Allows wallets to decide whether or not a symbol should be displayed in place of a name."
+                },
+                "ttl": {
+                    "type": "integer",
+                    "description": "The maximum amount of time in seconds the asset metadata should be cached."
+                },
+                "formats": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/format"
+                    }
+                },
+                "attributes": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/attribute"
+                    },
+                    "description": "Custom attributes about the subject or content of the asset."
+                },
+                "assets": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/asset"
+                    },
+                    "description": "Facilitates the description of collections and other types of resources that contain multiple assets."
+                }
+            }
+        },
+        "format": {
+            "type": "object",
+            "additionalProperties": False,
+            "properties": {
+                "uri": {
+                    "type": "string",
+                    "format": "uri-reference",
+                    "description": "A URI to the asset represented in this format."
+                },
+                "hash": {
+                    "type": "string",
+                    "description": "A checksum hash of the content of the asset in this format."
+                },
+                "mimeType": {
+                    "type": "string",
+                    "description": "Media (MIME) type of the format."
+                },
+                "fileSize": {
+                    "type": "integer",
+                    "description": "Size in bytes of the content of the asset in this format."
+                },
+                "fileName": {
+                    "type": "string",
+                    "description": "Filename for the asset in this format. For display purposes."
+                },
+                "duration": {
+                    "type": "string",
+                    "format": "time",
+                    "description": "Time duration of the content of the asset in this format."
+                },
+                "dimensions": {
+                    "$ref": "#/definitions/dimensions",
+                    "description": "Dimensions of the content of the asset in this format."
+                },
+                "dataRate": {
+                    "$ref": "#/definitions/dataRate",
+                    "description": "Data rate which the content of the asset in this format was captured at."
+                }
+            }
+        },
+        "attribute": {
+            "type": "object",
+            "additionalProperties": False,
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "description": "Name of the attribute."
+                },
+                "value": {
+                    "type": "string",
+                    "description": "Value of the attribute."
+                },
+                "type": {
+                    "type": "string",
+                    "description": "Type of the value. To be used for display purposes."
+                }
+            },
+            "required": [
+                "name",
+                "value"
+            ]
+        },
+        "dataRate": {
+            "type": "object",
+            "additionalProperties": False,
+            "properties": {
+                "value": {
+                    "type": "integer"
+                },
+                "unit": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "unit",
+                "value"
+            ]
+        },
+        "dimensions": {
+            "type": "object",
+            "additionalProperties": False,
+            "properties": {
+                "value": {
+                    "type": "string"
+                },
+                "unit": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "unit",
+                "value"
+            ]
+        }
+    }
+}
+
+CollectionMetadata = warlock.model_factory(collection_metadata_schema)
+TokenMetadata = warlock.model_factory(token_metadata_schema)
+
+
+def is_collection_metadata_valid(metadata):
     logger = logging.getLogger('metadata')
-    try:
-        if json_payload is not None:
-            if type(json_payload) is dict:
-                json.dumps(json_payload)
-            elif type(json_payload) is str:
-                json.loads(json_payload)
-    except Exception as error:
-        logger.warning(f"Invalid metadata <{json_payload}>: {error}")
+    if metadata is None:
         return False
-    return True
+    try:
+        CollectionMetadata(metadata)
+        return True
+    except Exception as error:
+        logger.warning(f"Invalid metadata for collection {error}: {metadata}")
+        return False
+
+
+def is_token_metadata_valid(metadata):
+    logger = logging.getLogger('metadata')
+    if metadata is None:
+        return False
+    try:
+        TokenMetadata(metadata)
+        return True
+    except Exception as error:
+        logger.warning(f"Invalid metadata for token {error}: {metadata}")
+        return False
 
 
 async def process_metadata(ctx: HookContext, asset_type: str, asset_id: str):
@@ -379,7 +1010,7 @@ async def process_metadata(ctx: HookContext, asset_type: str, asset_id: str):
                     url=f'v1/contracts/{asset_id}/bigmaps/metadata/keys/""',
                 )
                 contract_metadata = await fetch_metadata(ctx, metadata_url_raw)
-            if is_json(contract_metadata):
+            if is_collection_metadata_valid(contract_metadata):
                 return contract_metadata
             else:
                 return None
@@ -397,7 +1028,7 @@ async def process_metadata(ctx: HookContext, asset_type: str, asset_id: str):
                     url=f'v1/contracts/{contract}/bigmaps/token_metadata/keys/{token_id}',
                 )
                 token_metadata = await fetch_metadata(ctx, metadata_url_raw)
-            if is_json(token_metadata):
+            if is_token_metadata_valid(token_metadata):
                 return token_metadata
             else:
                 return None

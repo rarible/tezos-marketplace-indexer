@@ -11,3 +11,4 @@ prance==0.21.8.0
 pytezos==3.6.1
 attrs==21.4.0
 click==8.0.4
+warlock==2.0.1
