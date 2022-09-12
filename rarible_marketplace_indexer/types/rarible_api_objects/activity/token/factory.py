@@ -53,7 +53,7 @@ class RaribleApiTokenActivityFactory:
     def _build_mint_activity(cls, transfer_data: TokenTransferData, datasource: TzktDatasource) -> RaribleApiTokenMintActivity:
         base = cls._build_base_activity(transfer_data, datasource)
         if RaribleMetrics.enabled is True:
-            RaribleMetrics.set_token_activity(ActivityTypeEnum.TOKEN_MINT, transfer_data.contract_address, 1)
+            RaribleMetrics.set_token_activity(ActivityTypeEnum.TOKEN_MINT, 1)
         return RaribleApiTokenMintActivity(
             type=ActivityTypeEnum.TOKEN_MINT,
             owner=transfer_data.to_address,
@@ -64,7 +64,7 @@ class RaribleApiTokenActivityFactory:
     def _build_transfer_activity(cls, transfer_data: TokenTransferData, datasource: TzktDatasource) -> RaribleApiTokenTransferActivity:
         base = cls._build_base_activity(transfer_data, datasource)
         if RaribleMetrics.enabled is True:
-            RaribleMetrics.set_token_activity(ActivityTypeEnum.TOKEN_TRANSFER, transfer_data.contract_address, 1)
+            RaribleMetrics.set_token_activity(ActivityTypeEnum.TOKEN_TRANSFER, 1)
         if is_address_ignored(transfer_data.from_address) is False and is_address_ignored(transfer_data.to_address) is False:
             return RaribleApiTokenTransferActivity(
                 type=ActivityTypeEnum.TOKEN_TRANSFER,
@@ -77,7 +77,7 @@ class RaribleApiTokenActivityFactory:
     def _build_burn_activity(cls, transfer_data: TokenTransferData, datasource: TzktDatasource) -> RaribleApiTokenBurnActivity:
         base = cls._build_base_activity(transfer_data, datasource)
         if RaribleMetrics.enabled is True:
-            RaribleMetrics.set_token_activity(ActivityTypeEnum.TOKEN_BURN, transfer_data.contract_address, 1)
+            RaribleMetrics.set_token_activity(ActivityTypeEnum.TOKEN_BURN, 1)
         return RaribleApiTokenBurnActivity(
             type=ActivityTypeEnum.TOKEN_BURN,
             owner=transfer_data.from_address,

@@ -14,7 +14,7 @@ _order_activity = Histogram(
 _token_activity = Histogram(
     'dipdup_rarible_token_activity',
     'Number of Tezos token activities over time',
-    ['index_type', 'contract'],
+    ['index_type'],
 )
 
 
@@ -29,5 +29,5 @@ class RaribleMetrics:
         _order_activity.labels(index=index, index_type=index_type).observe(value)
 
     @classmethod
-    def set_token_activity(cls, index_type: str, contract: str, value: int) -> None:
-        _token_activity.labels(index_type=index_type, contract=contract).observe(value)
+    def set_token_activity(cls, index_type: str, value: int) -> None:
+        _token_activity.labels(index_type=index_type).observe(value)
