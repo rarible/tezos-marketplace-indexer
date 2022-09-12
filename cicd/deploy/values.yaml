@@ -20,6 +20,7 @@ tezos-marketplace-indexer-rarible:
     # KAFKA_SASL_MECHANISM:
     # KAFKA_USERNAME:
     # KAFKA_PASSWORD:
+    HASURA_URL: 'http://hasura:8080'
     # HASURA_GRAPHQL_ADMIN_SECRET:
   livenessProbe: false
   readinessProbe: false
@@ -54,6 +55,7 @@ tezos-marketplace-indexer-tezos:
     # KAFKA_SASL_MECHANISM:
     # KAFKA_USERNAME:
     # KAFKA_PASSWORD:
+    HASURA_URL: 'http://hasura:8080'
     # HASURA_GRAPHQL_ADMIN_SECRET:
   livenessProbe: false
   readinessProbe: false
@@ -87,6 +89,7 @@ tezos-marketplace-indexer-metadata:
     # KAFKA_SASL_MECHANISM:
     # KAFKA_USERNAME:
     # KAFKA_PASSWORD:
+    HASURA_URL: 'http://hasura:8080'
     # HASURA_GRAPHQL_ADMIN_SECRET:
   livenessProbe: false
   readinessProbe: false
@@ -97,9 +100,9 @@ tezos-marketplace-indexer-metadata:
 #     limits:
 #       cpu: '4'
 #       memory: 2Gi
-  
+
 hasura:
-  image: 
+  image:
     registry: docker.io
     repository: hasura/graphql-engine
     tag: v2.2.0
@@ -110,7 +113,7 @@ hasura:
   livenessProbe:
     httpGet:
       path: /healthz
-  readinessProbe: 
+  readinessProbe:
     httpGet:
       path: /healthz
   environments:
@@ -122,8 +125,8 @@ hasura:
     # provided via secrets
     # HASURA_GRAPHQL_ADMIN_SECRET:
     # HASURA_GRAPHQL_DATABASE_URL:
- 
-tzkt: 
+
+tzkt:
   enabled: false
   network: mainnet
   api:
@@ -150,10 +153,10 @@ tzkt:
         memory: 192Mi
   service:
     port: 5000
-    # nodePort: 
+    # nodePort:
   environments:
     Logging__LogLevel__Default: Warning
     TokenMetadata__DipDup__Url: http://hasura:8080/v1/graphql
     TezosNode__Endpoint: http://dev-tezos-node:8732/
     # provided via secrets
-    # ConnectionStrings__DefaultConnection: 
+    # ConnectionStrings__DefaultConnection:
