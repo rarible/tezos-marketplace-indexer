@@ -233,10 +233,10 @@ class TokenTransfer(Model):
 
     _custom_generated_pk = True
 
-    id = fields.IntField(pk=True, generated=False, required=True)
+    id = fields.BigIntField(pk=True, generated=False, required=True)
     type = fields.CharEnumField(ActivityTypeEnum)
-    tzkt_token_id = fields.IntField(null=False)
-    tzkt_transaction_id = fields.IntField(null=True)
+    tzkt_token_id = fields.BigIntField(null=False)
+    tzkt_transaction_id = fields.BigIntField(null=True)
     contract = AccountAddressField(null=False)
     token_id = fields.TextField(null=False)
     from_address = AccountAddressField(null=True)
@@ -308,7 +308,7 @@ class Token(Model):
     _custom_generated_pk = True
 
     id = fields.TextField(pk=True, generated=False, required=True, null=False)
-    tzkt_id = fields.IntField()
+    tzkt_id = fields.BigIntField()
     contract = AccountAddressField(null=False)
     token_id = fields.TextField(null=False)
     minted_at = fields.DatetimeField(null=False)
