@@ -18,7 +18,7 @@ tezos-marketplace-indexer-rarible:
        memory: 2Gi
 
 tezos-marketplace-indexer-tezos:
-  replicas: 0
+  replicas: 1
   environments:
     TZKT_URL: https://api.tzkt.io
     NETWORK: mainnet
