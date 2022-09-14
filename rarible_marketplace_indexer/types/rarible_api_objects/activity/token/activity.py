@@ -31,9 +31,6 @@ class BaseRaribleApiTokenActivity(AbstractRaribleApiObject):
         super().__init__(**data)
         self.id = uuid5(namespace=uuid.NAMESPACE_OID, name=f"{self.network}.{self.transfer_id}")
 
-    def get_key(self):
-        return f"{self.contract}:{self.token_id}"
-
 
 class RaribleApiTokenMintActivity(BaseRaribleApiTokenActivity):
     type: Literal[ActivityTypeEnum.TOKEN_MINT] = ActivityTypeEnum.TOKEN_MINT

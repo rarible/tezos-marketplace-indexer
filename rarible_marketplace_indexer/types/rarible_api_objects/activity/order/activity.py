@@ -9,13 +9,13 @@ from rarible_marketplace_indexer.models import PlatformEnum
 from rarible_marketplace_indexer.producer.const import KafkaTopic
 from rarible_marketplace_indexer.types.rarible_api_objects import AbstractRaribleApiObject
 from rarible_marketplace_indexer.types.rarible_api_objects.asset.asset import AbstractAsset
-from rarible_marketplace_indexer.types.rarible_api_objects.asset.asset import TokenAsset
 from rarible_marketplace_indexer.types.tezos_objects.tezos_object_hash import ImplicitAccountAddress
 from rarible_marketplace_indexer.types.tezos_objects.tezos_object_hash import OperationHash
 
 
 class AbstractRaribleApiOrderActivity(AbstractRaribleApiObject):
     _kafka_topic = KafkaTopic.ACTIVITY_TOPIC
+    _kafka_key: str
     type: str
     order_id: uuid.UUID
     source: PlatformEnum
@@ -34,16 +34,6 @@ class RaribleApiOrderListActivity(AbstractRaribleApiOrderActivity):
     make: AbstractAsset
     take: Optional[AbstractAsset]
 
-    def get_key(self):
-        if self.make is TokenAsset:
-            make: TokenAsset = self.make
-            return f"{make.asset_type.contract}:{make.asset_type.token_id}"
-        elif self.take is TokenAsset:
-            take: TokenAsset = self.take
-            return f"{take.asset_type.contract}:{take.asset_type.token_id}"
-        else:
-            return self.order_id
-
 
 class RaribleApiOrderMatchActivity(AbstractRaribleApiOrderActivity):
     type: Literal[
@@ -56,16 +46,6 @@ class RaribleApiOrderMatchActivity(AbstractRaribleApiOrderActivity):
     buyer: ImplicitAccountAddress
     seller: ImplicitAccountAddress
 
-    def get_key(self):
-        if self.nft is TokenAsset:
-            make: TokenAsset = self.nft
-            return f"{make.asset_type.contract}:{make.asset_type.token_id}"
-        elif self.payment is TokenAsset:
-            take: TokenAsset = self.payment
-            return f"{take.asset_type.contract}:{take.asset_type.token_id}"
-        else:
-            return self.order_id
-
 
 class RaribleApiOrderCancelActivity(AbstractRaribleApiOrderActivity):
     type: Literal[
@@ -76,16 +56,6 @@ class RaribleApiOrderCancelActivity(AbstractRaribleApiOrderActivity):
     maker: ImplicitAccountAddress
     make: AbstractAsset
     take: Optional[AbstractAsset]
-
-    def get_key(self):
-        if self.make is TokenAsset:
-            make: TokenAsset = self.make
-            return f"{make.asset_type.contract}:{make.asset_type.token_id}"
-        elif self.take is TokenAsset:
-            take: TokenAsset = self.take
-            return f"{take.asset_type.contract}:{take.asset_type.token_id}"
-        else:
-            return self.order_id
 
 
 RaribleApiOrderActivity = Union[

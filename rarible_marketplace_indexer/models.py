@@ -1,18 +1,13 @@
 import uuid
 from enum import Enum
 from typing import Any
-from typing import List
-from typing import Optional
 from typing import TypeVar
 from uuid import uuid5
 
 from dipdup.models import Model
 from dipdup.models import Transaction
 from tortoise import fields
-from tortoise.backends.base.client import BaseDBAsyncClient
-from tortoise.signals import post_save
 
-from rarible_marketplace_indexer.producer.helper import producer_send
 from rarible_marketplace_indexer.types.rarible_api_objects.asset.enum import AssetClassEnum
 from rarible_marketplace_indexer.types.tezos_objects.asset_value.asset_value import AssetValueField
 from rarible_marketplace_indexer.types.tezos_objects.tezos_object_hash import AccountAddressField
@@ -195,29 +190,3 @@ class LegacyOrderModel(Model):
     hash = fields.CharField(index=True, pk=True, required=True, max_length=64)
     id = fields.UUIDField(generated=False, required=True)
     data = fields.JSONField()
-
-
-@post_save(OrderModel)
-async def signal_order_post_save(
-    sender: OrderModel,
-    instance: OrderModel,
-    created: bool,
-    using_db: "Optional[BaseDBAsyncClient]",
-    update_fields: List[str],
-) -> None:
-    from rarible_marketplace_indexer.types.rarible_api_objects.order.factory import RaribleApiOrderFactory
-
-    await producer_send(RaribleApiOrderFactory.build(instance))
-
-
-@post_save(ActivityModel)
-async def signal_activity_post_save(
-    sender: ActivityModel,
-    instance: ActivityModel,
-    created: bool,
-    using_db: "Optional[BaseDBAsyncClient]",
-    update_fields: List[str],
-) -> None:
-    from rarible_marketplace_indexer.types.rarible_api_objects.activity.order.factory import RaribleApiOrderActivityFactory
-
-    await producer_send(RaribleApiOrderActivityFactory.build(instance))

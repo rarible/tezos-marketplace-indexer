@@ -25,7 +25,15 @@ from rarible_marketplace_indexer.models import OrderStatusEnum
 from rarible_marketplace_indexer.models import PlatformEnum
 from rarible_marketplace_indexer.models import TransactionTypeEnum
 from rarible_marketplace_indexer.prometheus.rarible_metrics import RaribleMetrics
+from rarible_marketplace_indexer.types.rarible_api_objects import AbstractRaribleApiObject
+from rarible_marketplace_indexer.types.rarible_api_objects.activity.order.activity import RaribleApiOrderCancelActivity
+from rarible_marketplace_indexer.types.rarible_api_objects.activity.order.activity import RaribleApiOrderListActivity
+from rarible_marketplace_indexer.types.rarible_api_objects.activity.order.activity import RaribleApiOrderMatchActivity
+from rarible_marketplace_indexer.types.rarible_api_objects.activity.token.activity import RaribleApiTokenActivity
+from rarible_marketplace_indexer.types.rarible_api_objects.asset.asset import TokenAsset
 from rarible_marketplace_indexer.types.rarible_api_objects.asset.enum import AssetClassEnum
+from rarible_marketplace_indexer.types.rarible_api_objects.collection.collection import RaribleApiCollection
+from rarible_marketplace_indexer.types.rarible_api_objects.order.order import RaribleApiOrder
 from rarible_marketplace_indexer.types.rarible_exchange.parameter.sell import Part
 from rarible_marketplace_indexer.types.tezos_objects.asset_value.asset_value import AssetValue
 from rarible_marketplace_indexer.types.tezos_objects.asset_value.xtz_value import Xtz
@@ -46,7 +54,9 @@ def generate_random_unique_ophash(size=50, chars=(string.ascii_lowercase + strin
 
 def reconcile_item(contract, token_id):
     logger = logging.getLogger('dipdup.reconcile')
-    response = requests.post(f"{os.getenv('UNION_API')}/v0.1/refresh/item/TEZOS:{contract}:{token_id}/reconcile?full=true")
+    response = requests.post(
+        f"{os.getenv('UNION_API')}/v0.1/refresh/item/TEZOS:{contract}:{token_id}/reconcile?full=true"
+    )
     if not response.ok:
         logger.info(f"{contract}:{token_id} need reconcile: Error {response.status_code} - {response.reason}")
     else:
@@ -148,7 +158,8 @@ class RaribleUtils:
         asset: str = None,
     ) -> str:
         return uuid5(
-            namespace=uuid.NAMESPACE_OID, name=f'{platform}/{TransactionTypeEnum.SALE}-{contract}:{token_id}@{seller}/{asset_class}-{asset}'
+            namespace=uuid.NAMESPACE_OID,
+            name=f'{platform}/{TransactionTypeEnum.SALE}-{contract}:{token_id}@{seller}/{asset_class}-{asset}',
         ).hex
 
     @staticmethod
@@ -161,7 +172,8 @@ class RaribleUtils:
         asset: str = None,
     ) -> str:
         return uuid5(
-            namespace=uuid.NAMESPACE_OID, name=f'{platform}/{TransactionTypeEnum.BID}-{contract}:{token_id}@{bidder}/{asset_class}-{asset}'
+            namespace=uuid.NAMESPACE_OID,
+            name=f'{platform}/{TransactionTypeEnum.BID}-{contract}:{token_id}@{bidder}/{asset_class}-{asset}',
         ).hex
 
     @staticmethod
@@ -173,7 +185,8 @@ class RaribleUtils:
         asset: str = None,
     ) -> str:
         return uuid5(
-            namespace=uuid.NAMESPACE_OID, name=f'{platform}/{TransactionTypeEnum.FLOOR_BID}-{contract}@{bidder}/{asset_class}-{asset}'
+            namespace=uuid.NAMESPACE_OID,
+            name=f'{platform}/{TransactionTypeEnum.FLOOR_BID}-{contract}@{bidder}/{asset_class}-{asset}',
         ).hex
 
     @classmethod
@@ -215,7 +228,10 @@ async def import_legacy_order(order: dict):
     elif order["take"]["assetType"]["assetClass"] == "FA_2":
         take_type = AssetClassEnum.FUNGIBLE_TOKEN
         asset_type = MichelsonType.match(michelson_to_micheline('pair address nat'))
-        asset_object = (order["take"]["assetType"]["assetClass"]["contract"], order["take"]["assetType"]["assetClass"]["tokenId"])
+        asset_object = (
+            order["take"]["assetType"]["assetClass"]["contract"],
+            order["take"]["assetType"]["assetClass"]["tokenId"],
+        )
 
     if asset_type is not None:
         asset = asset_type.from_python_object(asset_object).pack().hex()
@@ -228,7 +244,9 @@ async def import_legacy_order(order: dict):
     if take_contract is not None:
         take_contract = OriginatedAccountAddress(order["take"]["assetType"].get("contract"))
 
-    take = TakeDto(asset_class=take_type, contract=take_contract, token_id=take_token_id, value=AssetValue(order["take"]["value"]))
+    take = TakeDto(
+        asset_class=take_type, contract=take_contract, token_id=take_token_id, value=AssetValue(order["take"]["value"])
+    )
 
     internal_order_id = RaribleUtils.get_order_hash(
         contract=OriginatedAccountAddress(make.contract),
@@ -345,3 +363,79 @@ async def import_legacy_order(order: dict):
 
     if RaribleMetrics.enabled is True:
         RaribleMetrics.set_order_activity(PlatformEnum.RARIBLE_V1, ActivityTypeEnum.ORDER_LIST, 1)
+
+
+def get_rarible_order_list_activity_kafka_key(activity: RaribleApiOrderListActivity) -> str:
+    print("triggered")
+    if isinstance(activity.make, TokenAsset):
+        print("key1")
+        make: TokenAsset = activity.make
+        return f"{make.asset_type.contract}:{make.asset_type.token_id}"
+    elif isinstance(activity.take, TokenAsset):
+        print("key2")
+        take: TokenAsset = activity.take
+        return f"{take.asset_type.contract}:{take.asset_type.token_id}"
+    else:
+        print("key3")
+        return activity.order_id
+
+
+def get_rarible_order_match_activity_kafka_key(activity: RaribleApiOrderMatchActivity) -> str:
+    if isinstance(activity.nft, TokenAsset):
+        make: TokenAsset = activity.nft
+        return f"{make.asset_type.contract}:{make.asset_type.token_id}"
+    elif isinstance(activity.payment, TokenAsset):
+        take: TokenAsset = activity.payment
+        return f"{take.asset_type.contract}:{take.asset_type.token_id}"
+    else:
+        return activity.order_id
+
+
+def get_rarible_order_cancel_activity_kafka_key(activity: RaribleApiOrderCancelActivity) -> str:
+    if isinstance(activity.make, TokenAsset):
+        make: TokenAsset = activity.make
+        return f"{make.asset_type.contract}:{make.asset_type.token_id}"
+    elif isinstance(activity.take, TokenAsset):
+        take: TokenAsset = activity.take
+        return f"{take.asset_type.contract}:{take.asset_type.token_id}"
+    else:
+        return activity.order_id
+
+
+def get_rarible_order_kafka_key(order: RaribleApiOrder) -> str:
+    assert order
+    if isinstance(order.make, TokenAsset):
+        make: TokenAsset = order.make
+        return f"{make.asset_type.contract}:{make.asset_type.token_id}"
+    elif isinstance(order.take, TokenAsset):
+        take: TokenAsset = order.take
+        return f"{take.asset_type.contract}:{take.asset_type.token_id}"
+    else:
+        return order.id
+
+
+def get_rarible_token_activity_kafka_key(activity: RaribleApiTokenActivity) -> str:
+    return f"{activity.contract}:{activity.token_id}"
+
+
+def get_rarible_collection_activity_kafka_key(activity: RaribleApiCollection) -> str:
+    return f"{activity.collection.id}"
+
+
+def get_kafka_key(api_object: AbstractRaribleApiObject) -> str:
+    key = api_object.id
+    if isinstance(api_object, RaribleApiOrder):
+        key = get_rarible_order_kafka_key(api_object)
+    elif isinstance(api_object, RaribleApiOrderListActivity):
+        key = get_rarible_order_list_activity_kafka_key(api_object)
+    elif isinstance(api_object, RaribleApiOrderMatchActivity):
+        key = get_rarible_order_match_activity_kafka_key(api_object)
+    elif isinstance(api_object, RaribleApiOrderCancelActivity):
+        key = get_rarible_order_cancel_activity_kafka_key(api_object)
+    elif isinstance(api_object, RaribleApiTokenActivity):
+        key = get_rarible_token_activity_kafka_key(api_object)
+    elif isinstance(api_object, RaribleApiCollection):
+        key = get_rarible_collection_activity_kafka_key(api_object)
+    else:
+        key = str(api_object.id)
+    return key

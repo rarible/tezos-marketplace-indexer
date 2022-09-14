@@ -29,6 +29,3 @@ class AbstractRaribleApiObject(BaseModel):
         if type(v) is int:
             v = str(v)
         return super()._get_value(v, *args, **kwargs)
-
-    def get_key(self):
-        return self.id

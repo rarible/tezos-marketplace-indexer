@@ -35,6 +35,3 @@ class RaribleApiCollection(AbstractRaribleApiObject):
     event_id: str
     collection: Collection
     type: str = "UPDATE"
-
-    def get_key(self):
-        return f"{self.collection.id}"
