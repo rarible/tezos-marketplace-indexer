@@ -60,7 +60,9 @@ async def fix_v1_fill_value():
                 .order_by('-id')
                 .first()
             )
-            sell_activities: list[ActivityModel] = await ActivityModel.filter(order_id=order_model.id, type=ActivityTypeEnum.ORDER_MATCH)
+            sell_activities: list[ActivityModel] = await ActivityModel.filter(
+                order_id=order_model.id, type=ActivityTypeEnum.ORDER_MATCH
+            )
             total_sales = 0
             for sell_activity in sell_activities:
                 total_sales = total_sales + sell_activity.make_value

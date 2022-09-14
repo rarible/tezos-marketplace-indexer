@@ -1,5 +1,7 @@
 from typing import List
+from typing import Optional
 
+from tortoise import BaseDBAsyncClient
 from tortoise.signals import post_save
 
 from rarible_marketplace_indexer.models import ActivityModel

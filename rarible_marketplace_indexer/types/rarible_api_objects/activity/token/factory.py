@@ -11,18 +11,22 @@ from rarible_marketplace_indexer.types.rarible_api_objects.activity.token.activi
 from rarible_marketplace_indexer.types.rarible_api_objects.activity.token.activity import RaribleApiTokenActivity
 from rarible_marketplace_indexer.types.rarible_api_objects.activity.token.activity import RaribleApiTokenBurnActivity
 from rarible_marketplace_indexer.types.rarible_api_objects.activity.token.activity import RaribleApiTokenMintActivity
-from rarible_marketplace_indexer.types.rarible_api_objects.activity.token.activity import RaribleApiTokenTransferActivity
+from rarible_marketplace_indexer.types.rarible_api_objects.activity.token.activity import (
+    RaribleApiTokenTransferActivity,
+)
 from rarible_marketplace_indexer.types.tezos_objects.asset_value.asset_value import AssetValue
 from rarible_marketplace_indexer.types.tezos_objects.tezos_object_hash import OriginatedAccountAddress
 
 
-def is_address_ignored(address):
+def ignore(address):
     return address in [None, "tz1burnburnburnburnburnburnburjAYjjX", "tz1Ke2h7sDdakHJQh8WX4Z372du1KChsksyU"]
 
 
 class RaribleApiTokenActivityFactory:
     @classmethod
-    def _build_base_activity(cls, transfer_data: TokenTransferData, datasource: TzktDatasource) -> BaseRaribleApiTokenActivity:
+    def _build_base_activity(
+        cls, transfer_data: TokenTransferData, datasource: TzktDatasource
+    ) -> BaseRaribleApiTokenActivity:
         try:
             value = AssetValue(transfer_data.amount)
         except TypeError:
@@ -50,7 +54,9 @@ class RaribleApiTokenActivityFactory:
         )
 
     @classmethod
-    def _build_mint_activity(cls, transfer_data: TokenTransferData, datasource: TzktDatasource) -> RaribleApiTokenMintActivity:
+    def _build_mint_activity(
+        cls, transfer_data: TokenTransferData, datasource: TzktDatasource
+    ) -> RaribleApiTokenMintActivity:
         base = cls._build_base_activity(transfer_data, datasource)
         if RaribleMetrics.enabled is True:
             RaribleMetrics.set_token_activity(ActivityTypeEnum.TOKEN_MINT, 1)
@@ -61,11 +67,13 @@ class RaribleApiTokenActivityFactory:
         )
 
     @classmethod
-    def _build_transfer_activity(cls, transfer_data: TokenTransferData, datasource: TzktDatasource) -> RaribleApiTokenTransferActivity:
+    def _build_transfer_activity(
+        cls, transfer_data: TokenTransferData, datasource: TzktDatasource
+    ) -> RaribleApiTokenTransferActivity:
         base = cls._build_base_activity(transfer_data, datasource)
         if RaribleMetrics.enabled is True:
             RaribleMetrics.set_token_activity(ActivityTypeEnum.TOKEN_TRANSFER, 1)
-        if is_address_ignored(transfer_data.from_address) is False and is_address_ignored(transfer_data.to_address) is False:
+        if ignore(transfer_data.from_address) is False and ignore(transfer_data.to_address) is False:
             return RaribleApiTokenTransferActivity(
                 type=ActivityTypeEnum.TOKEN_TRANSFER,
                 transfer_from=transfer_data.from_address,
@@ -74,7 +82,9 @@ class RaribleApiTokenActivityFactory:
             )
 
     @classmethod
-    def _build_burn_activity(cls, transfer_data: TokenTransferData, datasource: TzktDatasource) -> RaribleApiTokenBurnActivity:
+    def _build_burn_activity(
+        cls, transfer_data: TokenTransferData, datasource: TzktDatasource
+    ) -> RaribleApiTokenBurnActivity:
         base = cls._build_base_activity(transfer_data, datasource)
         if RaribleMetrics.enabled is True:
             RaribleMetrics.set_token_activity(ActivityTypeEnum.TOKEN_BURN, 1)
@@ -95,7 +105,7 @@ class RaribleApiTokenActivityFactory:
         return method_map.get(
             (
                 transfer_data.from_address is not None,
-                is_address_ignored(transfer_data.to_address) is False,
+                ignore(transfer_data.to_address) is False,
             ),
             cls._build_transfer_activity,
         )
