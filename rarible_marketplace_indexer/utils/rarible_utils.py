@@ -366,17 +366,13 @@ async def import_legacy_order(order: dict):
 
 
 def get_rarible_order_list_activity_kafka_key(activity: RaribleApiOrderListActivity) -> str:
-    print("triggered")
     if isinstance(activity.make, TokenAsset):
-        print("key1")
         make: TokenAsset = activity.make
         return f"{make.asset_type.contract}:{make.asset_type.token_id}"
     elif isinstance(activity.take, TokenAsset):
-        print("key2")
         take: TokenAsset = activity.take
         return f"{take.asset_type.contract}:{take.asset_type.token_id}"
     else:
-        print("key3")
         return activity.order_id
 
 

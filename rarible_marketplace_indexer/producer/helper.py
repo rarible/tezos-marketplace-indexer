@@ -11,7 +11,6 @@ from rarible_marketplace_indexer.utils.rarible_utils import get_kafka_key
 
 async def producer_send(api_object: AbstractRaribleApiObject):
     producer = ProducerContainer.get_instance()
-    print(type(api_object))
     await producer.send(topic=api_object.kafka_topic, key=get_kafka_key(api_object), value=api_object)
 
 
