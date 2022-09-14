@@ -4,9 +4,7 @@ from typing import Any
 from humps.main import camelize
 from pydantic import BaseModel
 
-from rarible_marketplace_indexer.types.tezos_objects.asset_value.base_value import (
-    BaseValue,
-)
+from rarible_marketplace_indexer.types.tezos_objects.asset_value.base_value import BaseValue
 
 
 class AbstractRaribleApiObject(BaseModel):

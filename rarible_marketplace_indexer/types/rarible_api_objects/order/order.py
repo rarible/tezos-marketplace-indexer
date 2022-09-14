@@ -1,22 +1,18 @@
 from datetime import datetime
-from typing import List, Optional
+from typing import List
+from typing import Optional
 
 from humps.main import camelize
 
-from rarible_marketplace_indexer.models import OrderStatusEnum, PlatformEnum
+from rarible_marketplace_indexer.models import OrderStatusEnum
+from rarible_marketplace_indexer.models import PlatformEnum
 from rarible_marketplace_indexer.producer.const import KafkaTopic
-from rarible_marketplace_indexer.types.rarible_api_objects import (
-    AbstractRaribleApiObject,
-)
-from rarible_marketplace_indexer.types.rarible_api_objects.asset.asset import (
-    AbstractAsset,
-    TokenAsset,
-)
+from rarible_marketplace_indexer.types.rarible_api_objects import AbstractRaribleApiObject
+from rarible_marketplace_indexer.types.rarible_api_objects.asset.asset import AbstractAsset
+from rarible_marketplace_indexer.types.rarible_api_objects.asset.asset import TokenAsset
 from rarible_marketplace_indexer.types.rarible_exchange.parameter.sell import Part
 from rarible_marketplace_indexer.types.tezos_objects.asset_value.xtz_value import Xtz
-from rarible_marketplace_indexer.types.tezos_objects.tezos_object_hash import (
-    ImplicitAccountAddress,
-)
+from rarible_marketplace_indexer.types.tezos_objects.tezos_object_hash import ImplicitAccountAddress
 
 
 class RaribleApiOrder(AbstractRaribleApiObject):

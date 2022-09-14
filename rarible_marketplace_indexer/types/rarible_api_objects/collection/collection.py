@@ -1,17 +1,14 @@
 import uuid
 from dataclasses import dataclass
-from typing import List, Optional
+from typing import List
+from typing import Optional
 
 from humps.main import camelize
 
 from rarible_marketplace_indexer.producer.const import KafkaTopic
-from rarible_marketplace_indexer.types.rarible_api_objects import (
-    AbstractRaribleApiObject,
-)
-from rarible_marketplace_indexer.types.tezos_objects.tezos_object_hash import (
-    ImplicitAccountAddress,
-    OriginatedAccountAddress,
-)
+from rarible_marketplace_indexer.types.rarible_api_objects import AbstractRaribleApiObject
+from rarible_marketplace_indexer.types.tezos_objects.tezos_object_hash import ImplicitAccountAddress
+from rarible_marketplace_indexer.types.tezos_objects.tezos_object_hash import OriginatedAccountAddress
 
 
 @dataclass
