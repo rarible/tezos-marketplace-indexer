@@ -29,7 +29,7 @@ class BaseRaribleApiTokenActivity(AbstractRaribleApiObject):
 
     def __init__(self, **data: Any) -> None:
         super().__init__(**data)
-        self.id = uuid5(namespace=uuid.NAMESPACE_OID, name=f'{self.network}.{self.transfer_id}')
+        self.id = uuid5(namespace=uuid.NAMESPACE_OID, name=f"{self.network}.{self.transfer_id}")
 
 
 class RaribleApiTokenMintActivity(BaseRaribleApiTokenActivity):
@@ -39,7 +39,7 @@ class RaribleApiTokenMintActivity(BaseRaribleApiTokenActivity):
 
 class RaribleApiTokenTransferActivity(BaseRaribleApiTokenActivity):
     type: Literal[ActivityTypeEnum.TOKEN_TRANSFER] = ActivityTypeEnum.TOKEN_TRANSFER
-    transfer_from: Union[ImplicitAccountAddress, OriginatedAccountAddress] = Field(alias='from')
+    transfer_from: Union[ImplicitAccountAddress, OriginatedAccountAddress] = Field(alias="from")
     owner: Union[ImplicitAccountAddress, OriginatedAccountAddress]
 
 
@@ -48,4 +48,8 @@ class RaribleApiTokenBurnActivity(BaseRaribleApiTokenActivity):
     owner: Union[ImplicitAccountAddress, OriginatedAccountAddress]
 
 
-RaribleApiTokenActivity = Union[RaribleApiTokenMintActivity, RaribleApiTokenTransferActivity, RaribleApiTokenBurnActivity]
+RaribleApiTokenActivity = Union[
+    RaribleApiTokenMintActivity,
+    RaribleApiTokenTransferActivity,
+    RaribleApiTokenBurnActivity,
+]

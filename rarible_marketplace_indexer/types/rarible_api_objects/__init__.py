@@ -15,7 +15,7 @@ class AbstractRaribleApiObject(BaseModel):
             BaseValue: lambda v: str(v),
         }
 
-    _id_prefix = 'tezos'
+    _id_prefix = "tezos"
     _kafka_topic: str
     id: uuid.UUID
     network: str
