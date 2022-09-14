@@ -14,11 +14,19 @@ class TestAsset:
                 'asset_value': '10.0000011',
             },
             {
-                'asset_type': {'asset_class': 'TEZOS_MT', 'contract': 'KT1HbQepzV1nVGg8QVznG7z4RcHseD5kwqBn', 'token_id': 42},
+                'asset_type': {
+                    'asset_class': 'TEZOS_MT',
+                    'contract': 'KT1HbQepzV1nVGg8QVznG7z4RcHseD5kwqBn',
+                    'token_id': 42,
+                },
                 'asset_value': '127_000_000_000_000_000_000_000_000_000.00000111111',
             },
             {
-                'asset_type': {'asset_class': 'TEZOS_NFT', 'contract': 'KT1FvqJwEDWb1Gwc55Jd1jjTHRVWbYKUUpyq', 'token_id': 42},
+                'asset_type': {
+                    'asset_class': 'TEZOS_NFT',
+                    'contract': 'KT1FvqJwEDWb1Gwc55Jd1jjTHRVWbYKUUpyq',
+                    'token_id': 42,
+                },
                 'asset_value': '155.0000000000_1111111111_2234567890_0000360890_1234567890',
             },
         ]
