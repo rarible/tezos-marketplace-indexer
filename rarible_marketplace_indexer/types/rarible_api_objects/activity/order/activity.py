@@ -15,7 +15,6 @@ from rarible_marketplace_indexer.types.tezos_objects.tezos_object_hash import Op
 
 class AbstractRaribleApiOrderActivity(AbstractRaribleApiObject):
     _kafka_topic = KafkaTopic.ACTIVITY_TOPIC
-    _kafka_key: str
     type: str
     order_id: uuid.UUID
     source: PlatformEnum
