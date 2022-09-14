@@ -4,7 +4,9 @@ from typing import Any
 from humps.main import camelize
 from pydantic import BaseModel
 
-from rarible_marketplace_indexer.types.tezos_objects.asset_value.base_value import BaseValue
+from rarible_marketplace_indexer.types.tezos_objects.asset_value.base_value import (
+    BaseValue,
+)
 
 
 class AbstractRaribleApiObject(BaseModel):
@@ -15,7 +17,7 @@ class AbstractRaribleApiObject(BaseModel):
             BaseValue: lambda v: str(v),
         }
 
-    _id_prefix = 'tezos'
+    _id_prefix = "tezos"
     _kafka_topic: str
     id: uuid.UUID
     network: str
@@ -29,3 +31,6 @@ class AbstractRaribleApiObject(BaseModel):
         if type(v) is int:
             v = str(v)
         return super()._get_value(v, *args, **kwargs)
+
+    def get_key(self):
+        return self.id
