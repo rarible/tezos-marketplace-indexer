@@ -38,7 +38,9 @@ class FxhashV2ListingOrderListEvent(AbstractOrderListEvent):
             maker=ImplicitAccountAddress(transaction.data.sender_address),
             make=MakeDto(
                 asset_class=AssetClassEnum.MULTI_TOKEN,
-                contract=OriginatedAccountAddress(FxhashV2ListingOrderListEvent.fxhash_nft_addresses.get(transaction.parameter.gentk.version)),
+                contract=OriginatedAccountAddress(
+                    FxhashV2ListingOrderListEvent.fxhash_nft_addresses.get(transaction.parameter.gentk.version)
+                ),
                 token_id=int(transaction.parameter.gentk.id),
                 value=make_value,
             ),

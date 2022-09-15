@@ -40,7 +40,7 @@ class RaribleApiTokenMintActivity(BaseRaribleApiTokenActivity):
 
 class RaribleApiTokenTransferActivity(BaseRaribleApiTokenActivity):
     type: Literal[ActivityTypeEnum.TOKEN_TRANSFER] = ActivityTypeEnum.TOKEN_TRANSFER
-    transfer_from: Union[ImplicitAccountAddress, OriginatedAccountAddress] = Field(alias='from')
+    transfer_from: Union[ImplicitAccountAddress, OriginatedAccountAddress] = Field(alias="from")
     owner: Union[ImplicitAccountAddress, OriginatedAccountAddress]
 
 
@@ -49,4 +49,8 @@ class RaribleApiTokenBurnActivity(BaseRaribleApiTokenActivity):
     owner: Union[ImplicitAccountAddress, OriginatedAccountAddress]
 
 
-RaribleApiTokenActivity = Union[RaribleApiTokenMintActivity, RaribleApiTokenTransferActivity, RaribleApiTokenBurnActivity]
+RaribleApiTokenActivity = Union[
+    RaribleApiTokenMintActivity,
+    RaribleApiTokenTransferActivity,
+    RaribleApiTokenBurnActivity,
+]

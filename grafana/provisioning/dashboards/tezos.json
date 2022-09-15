@@ -90,8 +90,8 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 8,
-        "w": 12,
+        "h": 7,
+        "w": 24,
         "x": 0,
         "y": 1
       },
@@ -122,92 +122,6 @@
         }
       ],
       "title": "NFT activities",
-      "type": "timeseries"
-    },
-    {
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 0,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "auto",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 12,
-        "y": 1
-      },
-      "id": 5,
-      "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom"
-        },
-        "tooltip": {
-          "mode": "multi",
-          "sort": "none"
-        }
-      },
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "MM2Dgw4nk"
-          },
-          "exemplar": true,
-          "expr": "dipdup_index_levels_to_sync_total_count",
-          "interval": "",
-          "legendFormat": "{{index}}",
-          "refId": "A"
-        }
-      ],
-      "title": "Indexing queue",
-      "transformations": [],
       "type": "timeseries"
     },
     {
@@ -265,7 +179,7 @@
         "h": 9,
         "w": 12,
         "x": 0,
-        "y": 9
+        "y": 8
       },
       "id": 2,
       "options": {
@@ -378,7 +292,7 @@
         "h": 9,
         "w": 12,
         "x": 12,
-        "y": 9
+        "y": 8
       },
       "id": 3,
       "options": {
@@ -520,7 +434,7 @@
         "h": 15,
         "w": 24,
         "x": 0,
-        "y": 18
+        "y": 17
       },
       "id": 20,
       "options": {
@@ -593,7 +507,7 @@
         "h": 9,
         "w": 24,
         "x": 0,
-        "y": 33
+        "y": 32
       },
       "id": 49,
       "options": {
@@ -653,7 +567,7 @@
           "refId": "C"
         }
       ],
-      "title": "Tezos order activities (merged)",
+      "title": "Tezos total order activities (merged)",
       "transformations": [
         {
           "id": "filterFieldsByName",
@@ -728,7 +642,7 @@
         "h": 22,
         "w": 24,
         "x": 0,
-        "y": 42
+        "y": 41
       },
       "id": 39,
       "options": {
@@ -804,1444 +718,1616 @@
       "type": "table"
     },
     {
-      "collapsed": false,
+      "collapsed": true,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 63
+      },
+      "id": 13,
+      "panels": [
+        {
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 7,
+            "w": 12,
+            "x": 0,
+            "y": 64
+          },
+          "id": 11,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "sortBy": "Total",
+              "sortDesc": true
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "desc"
+            }
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "MM2Dgw4nk"
+              },
+              "exemplar": true,
+              "expr": "rate(dipdup_rarible_order_activity_count{}[1m]) * 60",
+              "interval": "",
+              "legendFormat": "{{index}} {{index_type}}",
+              "refId": "A"
+            }
+          ],
+          "title": "Rarible activities",
+          "transformations": [
+            {
+              "id": "filterFieldsByName",
+              "options": {
+                "include": {
+                  "names": [
+                    "PlatformEnum.RARIBLE_V1 ActivityTypeEnum.ORDER_CANCEL",
+                    "PlatformEnum.RARIBLE_V1 ActivityTypeEnum.ORDER_LIST",
+                    "PlatformEnum.RARIBLE_V1 ActivityTypeEnum.ORDER_MATCH",
+                    "PlatformEnum.RARIBLE_V2 ActivityTypeEnum.ORDER_CANCEL",
+                    "PlatformEnum.RARIBLE_V2 ActivityTypeEnum.ORDER_LIST",
+                    "PlatformEnum.RARIBLE_V2 ActivityTypeEnum.ORDER_MATCH",
+                    "Time"
+                  ],
+                  "pattern": "/RARIBLE/"
+                }
+              }
+            },
+            {
+              "id": "renameByRegex",
+              "options": {
+                "regex": "PlatformEnum.",
+                "renamePattern": ""
+              }
+            },
+            {
+              "id": "renameByRegex",
+              "options": {
+                "regex": "ActivityTypeEnum.",
+                "renamePattern": ""
+              }
+            }
+          ],
+          "type": "timeseries"
+        },
+        {
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {
+                "align": "auto",
+                "displayMode": "auto"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              }
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "index"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 257
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "index_type"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 306
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Value (lastNotNull)"
+                },
+                "properties": [
+                  {
+                    "id": "custom.displayMode",
+                    "value": "lcd-gauge"
+                  },
+                  {
+                    "id": "displayName",
+                    "value": "Value"
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 7,
+            "w": 12,
+            "x": 12,
+            "y": 64
+          },
+          "id": 40,
+          "options": {
+            "footer": {
+              "fields": "",
+              "reducer": [
+                "sum"
+              ],
+              "show": false
+            },
+            "frameIndex": 3,
+            "showHeader": true,
+            "sortBy": [
+              {
+                "desc": true,
+                "displayName": "Value (lastNotNull)"
+              }
+            ]
+          },
+          "pluginVersion": "8.4.6",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "MM2Dgw4nk"
+              },
+              "exemplar": false,
+              "expr": "sum by (index_type) (dipdup_rarible_order_activity_sum{index=~\"PlatformEnum.RARIBLE_V2|PlatformEnum.RARIBLE_V1\"})",
+              "format": "table",
+              "instant": true,
+              "interval": "",
+              "legendFormat": "{{index}} {{index_type}}",
+              "refId": "A"
+            }
+          ],
+          "title": "Rarible total order activities",
+          "transformations": [
+            {
+              "id": "groupBy",
+              "options": {
+                "fields": {
+                  "Value": {
+                    "aggregations": [
+                      "lastNotNull"
+                    ],
+                    "operation": "aggregate"
+                  },
+                  "index": {
+                    "aggregations": []
+                  },
+                  "index_type": {
+                    "aggregations": [],
+                    "operation": "groupby"
+                  }
+                }
+              }
+            }
+          ],
+          "type": "table"
+        }
+      ],
+      "title": "Rarible",
+      "type": "row"
+    },
+    {
+      "collapsed": true,
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
         "y": 64
       },
-      "id": 13,
-      "panels": [],
-      "title": "Rarible",
-      "type": "row"
-    },
-    {
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
+      "id": 19,
+      "panels": [
+        {
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": []
           },
-          "custom": {
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 0,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
+          "gridPos": {
+            "h": 7,
+            "w": 12,
+            "x": 0,
+            "y": 65
+          },
+          "id": 41,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "sortBy": "Total",
+              "sortDesc": true
             },
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "auto",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
+            "tooltip": {
+              "mode": "multi",
+              "sort": "desc"
             }
           },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "MM2Dgw4nk"
+              },
+              "exemplar": true,
+              "expr": "rate(dipdup_rarible_order_activity_count{}[1m]) * 60",
+              "interval": "",
+              "legendFormat": "{{index}} {{index_type}}",
+              "refId": "A"
+            }
+          ],
+          "title": "OBJKT activities",
+          "transformations": [
+            {
+              "id": "filterFieldsByName",
+              "options": {
+                "include": {
+                  "names": [
+                    "PlatformEnum.OBJKT_V1 ActivityTypeEnum.ORDER_CANCEL",
+                    "PlatformEnum.OBJKT_V1 ActivityTypeEnum.ORDER_LIST",
+                    "PlatformEnum.OBJKT_V1 ActivityTypeEnum.ORDER_MATCH",
+                    "PlatformEnum.OBJKT_V2 ActivityTypeEnum.ORDER_CANCEL",
+                    "PlatformEnum.OBJKT_V2 ActivityTypeEnum.ORDER_LIST",
+                    "PlatformEnum.OBJKT_V2 ActivityTypeEnum.ORDER_MATCH",
+                    "Time"
+                  ],
+                  "pattern": "/OBJKT/"
+                }
+              }
+            },
+            {
+              "id": "renameByRegex",
+              "options": {
+                "regex": "PlatformEnum.",
+                "renamePattern": ""
+              }
+            },
+            {
+              "id": "renameByRegex",
+              "options": {
+                "regex": "ActivityTypeEnum.",
+                "renamePattern": ""
+              }
+            }
+          ],
+          "type": "timeseries"
+        },
+        {
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {
+                "align": "auto",
+                "displayMode": "auto"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              }
+            },
+            "overrides": [
               {
-                "color": "green",
-                "value": null
+                "matcher": {
+                  "id": "byName",
+                  "options": "index_type"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 306
+                  }
+                ]
               },
               {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 0,
-        "y": 65
-      },
-      "id": 11,
-      "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom",
-          "sortBy": "Total",
-          "sortDesc": true
-        },
-        "tooltip": {
-          "mode": "multi",
-          "sort": "desc"
-        }
-      },
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "MM2Dgw4nk"
-          },
-          "exemplar": true,
-          "expr": "rate(dipdup_rarible_order_activity_count{}[1m]) * 60",
-          "interval": "",
-          "legendFormat": "{{index}} {{index_type}}",
-          "refId": "A"
-        }
-      ],
-      "title": "Rarible activities",
-      "transformations": [
-        {
-          "id": "filterFieldsByName",
-          "options": {
-            "include": {
-              "names": [
-                "PlatformEnum.RARIBLE_V1 ActivityTypeEnum.ORDER_CANCEL",
-                "PlatformEnum.RARIBLE_V1 ActivityTypeEnum.ORDER_LIST",
-                "PlatformEnum.RARIBLE_V1 ActivityTypeEnum.ORDER_MATCH",
-                "PlatformEnum.RARIBLE_V2 ActivityTypeEnum.ORDER_CANCEL",
-                "PlatformEnum.RARIBLE_V2 ActivityTypeEnum.ORDER_LIST",
-                "PlatformEnum.RARIBLE_V2 ActivityTypeEnum.ORDER_MATCH",
-                "Time"
-              ],
-              "pattern": "/RARIBLE/"
-            }
-          }
-        },
-        {
-          "id": "renameByRegex",
-          "options": {
-            "regex": "PlatformEnum.",
-            "renamePattern": ""
-          }
-        },
-        {
-          "id": "renameByRegex",
-          "options": {
-            "regex": "ActivityTypeEnum.",
-            "renamePattern": ""
-          }
-        }
-      ],
-      "type": "timeseries"
-    },
-    {
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "custom": {
-            "align": "auto",
-            "displayMode": "auto"
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              }
-            ]
-          }
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "index"
-            },
-            "properties": [
-              {
-                "id": "custom.width",
-                "value": 257
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "index_type"
-            },
-            "properties": [
-              {
-                "id": "custom.width",
-                "value": 306
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Value"
-            },
-            "properties": [
-              {
-                "id": "custom.displayMode",
-                "value": "lcd-gauge"
-              }
-            ]
-          }
-        ]
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 12,
-        "y": 65
-      },
-      "id": 40,
-      "options": {
-        "footer": {
-          "fields": "",
-          "reducer": [
-            "sum"
-          ],
-          "show": false
-        },
-        "frameIndex": 3,
-        "showHeader": true,
-        "sortBy": [
-          {
-            "desc": true,
-            "displayName": "Value"
-          }
-        ]
-      },
-      "pluginVersion": "8.4.6",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "MM2Dgw4nk"
-          },
-          "exemplar": false,
-          "expr": "dipdup_rarible_order_activity_sum",
-          "format": "table",
-          "instant": true,
-          "interval": "",
-          "legendFormat": "{{index}} {{index_type}}",
-          "refId": "A"
-        }
-      ],
-      "title": "Rarible total order activities",
-      "transformations": [
-        {
-          "id": "renameByRegex",
-          "options": {
-            "regex": "PlatformEnum.",
-            "renamePattern": ""
-          }
-        },
-        {
-          "id": "renameByRegex",
-          "options": {
-            "regex": "ActivityTypeEnum.",
-            "renamePattern": ""
-          }
-        },
-        {
-          "id": "organize",
-          "options": {
-            "excludeByName": {
-              "Time": true,
-              "__name__": true,
-              "app": true,
-              "controller_uid": true,
-              "env": true,
-              "instance": true,
-              "job": true,
-              "job_name": true,
-              "namespace": true,
-              "pod_name": true,
-              "stack": true,
-              "tenant": true
-            },
-            "indexByName": {},
-            "renameByName": {}
-          }
-        },
-        {
-          "id": "filterByValue",
-          "options": {
-            "filters": [
-              {
-                "config": {
-                  "id": "regex",
-                  "options": {
-                    "value": "RARIBLE"
-                  }
+                "matcher": {
+                  "id": "byName",
+                  "options": "Value (lastNotNull)"
                 },
-                "fieldName": "index"
+                "properties": [
+                  {
+                    "id": "custom.displayMode",
+                    "value": "lcd-gauge"
+                  },
+                  {
+                    "id": "displayName",
+                    "value": "Value"
+                  }
+                ]
               }
-            ],
-            "match": "all",
-            "type": "include"
-          }
+            ]
+          },
+          "gridPos": {
+            "h": 7,
+            "w": 12,
+            "x": 12,
+            "y": 65
+          },
+          "id": 50,
+          "options": {
+            "footer": {
+              "fields": "",
+              "reducer": [
+                "sum"
+              ],
+              "show": false
+            },
+            "frameIndex": 3,
+            "showHeader": true,
+            "sortBy": [
+              {
+                "desc": true,
+                "displayName": "Value (lastNotNull)"
+              }
+            ]
+          },
+          "pluginVersion": "8.4.6",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "MM2Dgw4nk"
+              },
+              "exemplar": false,
+              "expr": "sum by (index_type) (dipdup_rarible_order_activity_sum{index=~\"PlatformEnum.OBJKT_V1|PlatformEnum.OBJKT_V2\"})",
+              "format": "table",
+              "instant": true,
+              "interval": "",
+              "legendFormat": "{{index}} {{index_type}}",
+              "refId": "A"
+            }
+          ],
+          "title": "OBJKT total order activities",
+          "transformations": [
+            {
+              "id": "groupBy",
+              "options": {
+                "fields": {
+                  "Value": {
+                    "aggregations": [
+                      "lastNotNull"
+                    ],
+                    "operation": "aggregate"
+                  },
+                  "index": {
+                    "aggregations": []
+                  },
+                  "index_type": {
+                    "aggregations": [],
+                    "operation": "groupby"
+                  }
+                }
+              }
+            }
+          ],
+          "type": "table"
         }
       ],
-      "type": "table"
-    },
-    {
-      "collapsed": false,
-      "gridPos": {
-        "h": 1,
-        "w": 24,
-        "x": 0,
-        "y": 73
-      },
-      "id": 19,
-      "panels": [],
       "title": "OBJKT",
       "type": "row"
     },
     {
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 0,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "auto",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 0,
-        "y": 74
-      },
-      "id": 41,
-      "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom",
-          "sortBy": "Total",
-          "sortDesc": true
-        },
-        "tooltip": {
-          "mode": "multi",
-          "sort": "desc"
-        }
-      },
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "MM2Dgw4nk"
-          },
-          "exemplar": true,
-          "expr": "rate(dipdup_rarible_order_activity_count{}[1m]) * 60",
-          "interval": "",
-          "legendFormat": "{{index}} {{index_type}}",
-          "refId": "A"
-        }
-      ],
-      "title": "OBJKT activities",
-      "transformations": [
-        {
-          "id": "filterFieldsByName",
-          "options": {
-            "include": {
-              "names": [
-                "PlatformEnum.OBJKT_V1 ActivityTypeEnum.ORDER_CANCEL",
-                "PlatformEnum.OBJKT_V1 ActivityTypeEnum.ORDER_LIST",
-                "PlatformEnum.OBJKT_V1 ActivityTypeEnum.ORDER_MATCH",
-                "PlatformEnum.OBJKT_V2 ActivityTypeEnum.ORDER_CANCEL",
-                "PlatformEnum.OBJKT_V2 ActivityTypeEnum.ORDER_LIST",
-                "PlatformEnum.OBJKT_V2 ActivityTypeEnum.ORDER_MATCH",
-                "Time"
-              ],
-              "pattern": "/OBJKT/"
-            }
-          }
-        },
-        {
-          "id": "renameByRegex",
-          "options": {
-            "regex": "PlatformEnum.",
-            "renamePattern": ""
-          }
-        },
-        {
-          "id": "renameByRegex",
-          "options": {
-            "regex": "ActivityTypeEnum.",
-            "renamePattern": ""
-          }
-        }
-      ],
-      "type": "timeseries"
-    },
-    {
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "custom": {
-            "align": "auto",
-            "displayMode": "auto"
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              }
-            ]
-          }
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "index"
-            },
-            "properties": [
-              {
-                "id": "custom.width",
-                "value": 257
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "index_type"
-            },
-            "properties": [
-              {
-                "id": "custom.width",
-                "value": 306
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Value"
-            },
-            "properties": [
-              {
-                "id": "custom.displayMode",
-                "value": "lcd-gauge"
-              }
-            ]
-          }
-        ]
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 12,
-        "y": 74
-      },
-      "id": 42,
-      "options": {
-        "footer": {
-          "fields": "",
-          "reducer": [
-            "sum"
-          ],
-          "show": false
-        },
-        "frameIndex": 3,
-        "showHeader": true,
-        "sortBy": [
-          {
-            "desc": true,
-            "displayName": "Value"
-          }
-        ]
-      },
-      "pluginVersion": "8.4.6",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "MM2Dgw4nk"
-          },
-          "exemplar": false,
-          "expr": "dipdup_rarible_order_activity_sum",
-          "format": "table",
-          "instant": true,
-          "interval": "",
-          "legendFormat": "{{index}} {{index_type}}",
-          "refId": "A"
-        }
-      ],
-      "title": "OBJKT total order activities",
-      "transformations": [
-        {
-          "id": "renameByRegex",
-          "options": {
-            "regex": "PlatformEnum.",
-            "renamePattern": ""
-          }
-        },
-        {
-          "id": "renameByRegex",
-          "options": {
-            "regex": "ActivityTypeEnum.",
-            "renamePattern": ""
-          }
-        },
-        {
-          "id": "organize",
-          "options": {
-            "excludeByName": {
-              "Time": true,
-              "__name__": true,
-              "app": true,
-              "controller_uid": true,
-              "env": true,
-              "instance": true,
-              "job": true,
-              "job_name": true,
-              "namespace": true,
-              "pod_name": true,
-              "stack": true,
-              "tenant": true
-            },
-            "indexByName": {},
-            "renameByName": {}
-          }
-        },
-        {
-          "id": "filterByValue",
-          "options": {
-            "filters": [
-              {
-                "config": {
-                  "id": "regex",
-                  "options": {
-                    "value": "OBJKT"
-                  }
-                },
-                "fieldName": "index"
-              }
-            ],
-            "match": "all",
-            "type": "include"
-          }
-        }
-      ],
-      "type": "table"
-    },
-    {
-      "collapsed": false,
+      "collapsed": true,
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 82
+        "y": 65
       },
-      "id": 17,
-      "panels": [],
-      "title": "HEN",
+      "id": 52,
+      "panels": [
+        {
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 7,
+            "w": 12,
+            "x": 0,
+            "y": 104
+          },
+          "id": 53,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "sortBy": "Total",
+              "sortDesc": true
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "desc"
+            }
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "MM2Dgw4nk"
+              },
+              "exemplar": true,
+              "expr": "rate(dipdup_rarible_order_activity_count{}[1m]) * 60",
+              "interval": "",
+              "legendFormat": "{{index}} {{index_type}}",
+              "refId": "A"
+            }
+          ],
+          "title": "FXHASH activities",
+          "transformations": [
+            {
+              "id": "filterFieldsByName",
+              "options": {
+                "include": {
+                  "names": [
+                    "Time"
+                  ],
+                  "pattern": "/FXHASH/"
+                }
+              }
+            },
+            {
+              "id": "renameByRegex",
+              "options": {
+                "regex": "PlatformEnum.",
+                "renamePattern": ""
+              }
+            },
+            {
+              "id": "renameByRegex",
+              "options": {
+                "regex": "ActivityTypeEnum.",
+                "renamePattern": ""
+              }
+            }
+          ],
+          "type": "timeseries"
+        },
+        {
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {
+                "align": "auto",
+                "displayMode": "auto"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              }
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "index"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 257
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "index_type"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 306
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Value (lastNotNull)"
+                },
+                "properties": [
+                  {
+                    "id": "custom.displayMode",
+                    "value": "lcd-gauge"
+                  },
+                  {
+                    "id": "displayName",
+                    "value": "Value"
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 7,
+            "w": 12,
+            "x": 12,
+            "y": 104
+          },
+          "id": 54,
+          "options": {
+            "footer": {
+              "fields": "",
+              "reducer": [
+                "sum"
+              ],
+              "show": false
+            },
+            "frameIndex": 3,
+            "showHeader": true,
+            "sortBy": [
+              {
+                "desc": true,
+                "displayName": "Value"
+              }
+            ]
+          },
+          "pluginVersion": "8.4.6",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "MM2Dgw4nk"
+              },
+              "exemplar": false,
+              "expr": "dipdup_rarible_order_activity_sum{index=~\"PlatformEnum.FXHASH_V1|PlatformEnum.FXHASH_V2\"}",
+              "format": "table",
+              "instant": true,
+              "interval": "",
+              "legendFormat": "{{index}} {{index_type}}",
+              "refId": "A"
+            }
+          ],
+          "title": "FXHASH total order activities",
+          "transformations": [
+            {
+              "id": "renameByRegex",
+              "options": {
+                "regex": "PlatformEnum.",
+                "renamePattern": ""
+              }
+            },
+            {
+              "id": "renameByRegex",
+              "options": {
+                "regex": "ActivityTypeEnum.",
+                "renamePattern": ""
+              }
+            },
+            {
+              "id": "organize",
+              "options": {
+                "excludeByName": {
+                  "Time": true,
+                  "__name__": true,
+                  "app": true,
+                  "env": true,
+                  "index": true,
+                  "instance": true,
+                  "job": true,
+                  "namespace": true,
+                  "pod_name": true,
+                  "stack": true,
+                  "tenant": true
+                },
+                "indexByName": {},
+                "renameByName": {}
+              }
+            },
+            {
+              "id": "groupBy",
+              "options": {
+                "fields": {
+                  "Value": {
+                    "aggregations": [
+                      "lastNotNull"
+                    ],
+                    "operation": "aggregate"
+                  },
+                  "index_type": {
+                    "aggregations": [],
+                    "operation": "groupby"
+                  }
+                }
+              }
+            }
+          ],
+          "type": "table"
+        }
+      ],
+      "title": "FXHASH",
       "type": "row"
     },
     {
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 0,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "auto",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 0,
-        "y": 83
-      },
-      "id": 43,
-      "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom",
-          "sortBy": "Total",
-          "sortDesc": true
-        },
-        "tooltip": {
-          "mode": "multi",
-          "sort": "desc"
-        }
-      },
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "MM2Dgw4nk"
-          },
-          "exemplar": true,
-          "expr": "rate(dipdup_rarible_order_activity_count{}[1m]) * 60",
-          "interval": "",
-          "legendFormat": "{{index}} {{index_type}}",
-          "refId": "A"
-        }
-      ],
-      "title": "HEN activities",
-      "transformations": [
-        {
-          "id": "filterFieldsByName",
-          "options": {
-            "include": {
-              "names": [
-                "PlatformEnum.HEN ActivityTypeEnum.ORDER_CANCEL",
-                "PlatformEnum.HEN ActivityTypeEnum.ORDER_LIST",
-                "PlatformEnum.HEN ActivityTypeEnum.ORDER_MATCH",
-                "Time"
-              ],
-              "pattern": "/HEN/"
-            }
-          }
-        },
-        {
-          "id": "renameByRegex",
-          "options": {
-            "regex": "PlatformEnum.",
-            "renamePattern": ""
-          }
-        },
-        {
-          "id": "renameByRegex",
-          "options": {
-            "regex": "ActivityTypeEnum.",
-            "renamePattern": ""
-          }
-        }
-      ],
-      "type": "timeseries"
-    },
-    {
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "custom": {
-            "align": "auto",
-            "displayMode": "auto"
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              }
-            ]
-          }
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "index"
-            },
-            "properties": [
-              {
-                "id": "custom.width",
-                "value": 257
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "index_type"
-            },
-            "properties": [
-              {
-                "id": "custom.width",
-                "value": 306
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Value"
-            },
-            "properties": [
-              {
-                "id": "custom.displayMode",
-                "value": "lcd-gauge"
-              }
-            ]
-          }
-        ]
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 12,
-        "y": 83
-      },
-      "id": 44,
-      "options": {
-        "footer": {
-          "fields": "",
-          "reducer": [
-            "sum"
-          ],
-          "show": false
-        },
-        "frameIndex": 3,
-        "showHeader": true,
-        "sortBy": [
-          {
-            "desc": true,
-            "displayName": "Value"
-          }
-        ]
-      },
-      "pluginVersion": "8.4.6",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "MM2Dgw4nk"
-          },
-          "exemplar": false,
-          "expr": "dipdup_rarible_order_activity_sum",
-          "format": "table",
-          "instant": true,
-          "interval": "",
-          "legendFormat": "{{index}} {{index_type}}",
-          "refId": "A"
-        }
-      ],
-      "title": "HEN total order activities",
-      "transformations": [
-        {
-          "id": "renameByRegex",
-          "options": {
-            "regex": "PlatformEnum.",
-            "renamePattern": ""
-          }
-        },
-        {
-          "id": "renameByRegex",
-          "options": {
-            "regex": "ActivityTypeEnum.",
-            "renamePattern": ""
-          }
-        },
-        {
-          "id": "organize",
-          "options": {
-            "excludeByName": {
-              "Time": true,
-              "__name__": true,
-              "app": true,
-              "env": true,
-              "instance": true,
-              "job": true,
-              "namespace": true,
-              "pod_name": true,
-              "stack": true,
-              "tenant": true
-            },
-            "indexByName": {},
-            "renameByName": {}
-          }
-        },
-        {
-          "id": "filterByValue",
-          "options": {
-            "filters": [
-              {
-                "config": {
-                  "id": "regex",
-                  "options": {
-                    "value": "HEN"
-                  }
-                },
-                "fieldName": "index"
-              }
-            ],
-            "match": "all",
-            "type": "include"
-          }
-        }
-      ],
-      "type": "table"
-    },
-    {
-      "collapsed": false,
+      "collapsed": true,
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 91
+        "y": 66
       },
       "id": 27,
-      "panels": [],
+      "panels": [
+        {
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 7,
+            "w": 12,
+            "x": 0,
+            "y": 82
+          },
+          "id": 45,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "sortBy": "Total",
+              "sortDesc": true
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "desc"
+            }
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "MM2Dgw4nk"
+              },
+              "exemplar": true,
+              "expr": "rate(dipdup_rarible_order_activity_count{}[1m]) * 60",
+              "interval": "",
+              "legendFormat": "{{index}} {{index_type}}",
+              "refId": "A"
+            }
+          ],
+          "title": "TEIA activities",
+          "transformations": [
+            {
+              "id": "filterFieldsByName",
+              "options": {
+                "include": {
+                  "names": [
+                    "PlatformEnum.TEIA_V1 ActivityTypeEnum.ORDER_CANCEL",
+                    "PlatformEnum.TEIA_V1 ActivityTypeEnum.ORDER_LIST",
+                    "PlatformEnum.TEIA_V1 ActivityTypeEnum.ORDER_MATCH",
+                    "Time"
+                  ],
+                  "pattern": "/TEIA/"
+                }
+              }
+            },
+            {
+              "id": "renameByRegex",
+              "options": {
+                "regex": "PlatformEnum.",
+                "renamePattern": ""
+              }
+            },
+            {
+              "id": "renameByRegex",
+              "options": {
+                "regex": "ActivityTypeEnum.",
+                "renamePattern": ""
+              }
+            }
+          ],
+          "type": "timeseries"
+        },
+        {
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {
+                "align": "auto",
+                "displayMode": "auto"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              }
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "index"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 257
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "index_type"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 306
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Value"
+                },
+                "properties": [
+                  {
+                    "id": "custom.displayMode",
+                    "value": "lcd-gauge"
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 7,
+            "w": 12,
+            "x": 12,
+            "y": 82
+          },
+          "id": 46,
+          "options": {
+            "footer": {
+              "fields": "",
+              "reducer": [
+                "sum"
+              ],
+              "show": false
+            },
+            "frameIndex": 3,
+            "showHeader": true,
+            "sortBy": [
+              {
+                "desc": true,
+                "displayName": "Value"
+              }
+            ]
+          },
+          "pluginVersion": "8.4.6",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "MM2Dgw4nk"
+              },
+              "exemplar": false,
+              "expr": "dipdup_rarible_order_activity_sum{index=\"PlatformEnum.TEIA_V1\"}",
+              "format": "table",
+              "instant": true,
+              "interval": "",
+              "legendFormat": "{{index}} {{index_type}}",
+              "refId": "A"
+            }
+          ],
+          "title": "TEIA total order activities",
+          "transformations": [
+            {
+              "id": "renameByRegex",
+              "options": {
+                "regex": "PlatformEnum.",
+                "renamePattern": ""
+              }
+            },
+            {
+              "id": "renameByRegex",
+              "options": {
+                "regex": "ActivityTypeEnum.",
+                "renamePattern": ""
+              }
+            },
+            {
+              "id": "organize",
+              "options": {
+                "excludeByName": {
+                  "Time": true,
+                  "__name__": true,
+                  "app": true,
+                  "env": true,
+                  "index": true,
+                  "instance": true,
+                  "job": true,
+                  "namespace": true,
+                  "pod_name": true,
+                  "stack": true,
+                  "tenant": true
+                },
+                "indexByName": {},
+                "renameByName": {}
+              }
+            }
+          ],
+          "type": "table"
+        }
+      ],
       "title": "TEIA",
       "type": "row"
     },
     {
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 0,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "auto",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 0,
-        "y": 92
-      },
-      "id": 45,
-      "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom",
-          "sortBy": "Total",
-          "sortDesc": true
-        },
-        "tooltip": {
-          "mode": "multi",
-          "sort": "desc"
-        }
-      },
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "MM2Dgw4nk"
-          },
-          "exemplar": true,
-          "expr": "rate(dipdup_rarible_order_activity_count{}[1m]) * 60",
-          "interval": "",
-          "legendFormat": "{{index}} {{index_type}}",
-          "refId": "A"
-        }
-      ],
-      "title": "TEIA activities",
-      "transformations": [
-        {
-          "id": "filterFieldsByName",
-          "options": {
-            "include": {
-              "names": [
-                "PlatformEnum.TEIA_V1 ActivityTypeEnum.ORDER_CANCEL",
-                "PlatformEnum.TEIA_V1 ActivityTypeEnum.ORDER_LIST",
-                "PlatformEnum.TEIA_V1 ActivityTypeEnum.ORDER_MATCH",
-                "Time"
-              ],
-              "pattern": "/TEIA/"
-            }
-          }
-        },
-        {
-          "id": "renameByRegex",
-          "options": {
-            "regex": "PlatformEnum.",
-            "renamePattern": ""
-          }
-        },
-        {
-          "id": "renameByRegex",
-          "options": {
-            "regex": "ActivityTypeEnum.",
-            "renamePattern": ""
-          }
-        }
-      ],
-      "type": "timeseries"
-    },
-    {
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "custom": {
-            "align": "auto",
-            "displayMode": "auto"
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              }
-            ]
-          }
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "index"
-            },
-            "properties": [
-              {
-                "id": "custom.width",
-                "value": 257
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "index_type"
-            },
-            "properties": [
-              {
-                "id": "custom.width",
-                "value": 306
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Value"
-            },
-            "properties": [
-              {
-                "id": "custom.displayMode",
-                "value": "lcd-gauge"
-              }
-            ]
-          }
-        ]
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 12,
-        "y": 92
-      },
-      "id": 46,
-      "options": {
-        "footer": {
-          "fields": "",
-          "reducer": [
-            "sum"
-          ],
-          "show": false
-        },
-        "frameIndex": 3,
-        "showHeader": true,
-        "sortBy": [
-          {
-            "desc": true,
-            "displayName": "Value"
-          }
-        ]
-      },
-      "pluginVersion": "8.4.6",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "MM2Dgw4nk"
-          },
-          "exemplar": false,
-          "expr": "dipdup_rarible_order_activity_sum",
-          "format": "table",
-          "instant": true,
-          "interval": "",
-          "legendFormat": "{{index}} {{index_type}}",
-          "refId": "A"
-        }
-      ],
-      "title": "TEIA total order activities",
-      "transformations": [
-        {
-          "id": "renameByRegex",
-          "options": {
-            "regex": "PlatformEnum.",
-            "renamePattern": ""
-          }
-        },
-        {
-          "id": "renameByRegex",
-          "options": {
-            "regex": "ActivityTypeEnum.",
-            "renamePattern": ""
-          }
-        },
-        {
-          "id": "organize",
-          "options": {
-            "excludeByName": {
-              "Time": true,
-              "__name__": true,
-              "app": true,
-              "env": true,
-              "instance": true,
-              "job": true,
-              "namespace": true,
-              "pod_name": true,
-              "stack": true,
-              "tenant": true
-            },
-            "indexByName": {},
-            "renameByName": {}
-          }
-        },
-        {
-          "id": "filterByValue",
-          "options": {
-            "filters": [
-              {
-                "config": {
-                  "id": "regex",
-                  "options": {
-                    "value": "TEIA"
-                  }
-                },
-                "fieldName": "index"
-              }
-            ],
-            "match": "all",
-            "type": "include"
-          }
-        }
-      ],
-      "type": "table"
-    },
-    {
-      "collapsed": false,
+      "collapsed": true,
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 100
+        "y": 67
       },
       "id": 29,
-      "panels": [],
+      "panels": [
+        {
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 7,
+            "w": 12,
+            "x": 0,
+            "y": 83
+          },
+          "id": 48,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "sortBy": "Total",
+              "sortDesc": true
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "desc"
+            }
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "MM2Dgw4nk"
+              },
+              "exemplar": true,
+              "expr": "rate(dipdup_rarible_order_activity_count{}[1m]) * 60",
+              "interval": "",
+              "legendFormat": "{{index}} {{index_type}}",
+              "refId": "A"
+            }
+          ],
+          "title": "VERSUM activities",
+          "transformations": [
+            {
+              "id": "filterFieldsByName",
+              "options": {
+                "include": {
+                  "names": [
+                    "PlatformEnum.VERSUM_V1 ActivityTypeEnum.ORDER_CANCEL",
+                    "PlatformEnum.VERSUM_V1 ActivityTypeEnum.ORDER_LIST",
+                    "PlatformEnum.VERSUM_V1 ActivityTypeEnum.ORDER_MATCH",
+                    "Time"
+                  ],
+                  "pattern": "/VERSUM/"
+                }
+              }
+            },
+            {
+              "id": "renameByRegex",
+              "options": {
+                "regex": "PlatformEnum.",
+                "renamePattern": ""
+              }
+            },
+            {
+              "id": "renameByRegex",
+              "options": {
+                "regex": "ActivityTypeEnum.",
+                "renamePattern": ""
+              }
+            }
+          ],
+          "type": "timeseries"
+        },
+        {
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {
+                "align": "auto",
+                "displayMode": "auto"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              }
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "index"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 257
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "index_type"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 306
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Value"
+                },
+                "properties": [
+                  {
+                    "id": "custom.displayMode",
+                    "value": "lcd-gauge"
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 7,
+            "w": 12,
+            "x": 12,
+            "y": 83
+          },
+          "id": 47,
+          "options": {
+            "footer": {
+              "fields": "",
+              "reducer": [
+                "sum"
+              ],
+              "show": false
+            },
+            "frameIndex": 3,
+            "showHeader": true,
+            "sortBy": [
+              {
+                "desc": true,
+                "displayName": "Value"
+              }
+            ]
+          },
+          "pluginVersion": "8.4.6",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "MM2Dgw4nk"
+              },
+              "exemplar": false,
+              "expr": "dipdup_rarible_order_activity_sum{index=\"PlatformEnum.VERSUM_V1\"}",
+              "format": "table",
+              "instant": true,
+              "interval": "",
+              "legendFormat": "{{index}} {{index_type}}",
+              "refId": "A"
+            }
+          ],
+          "title": "VERSUM total order activities",
+          "transformations": [
+            {
+              "id": "renameByRegex",
+              "options": {
+                "regex": "PlatformEnum.",
+                "renamePattern": ""
+              }
+            },
+            {
+              "id": "renameByRegex",
+              "options": {
+                "regex": "ActivityTypeEnum.",
+                "renamePattern": ""
+              }
+            },
+            {
+              "id": "organize",
+              "options": {
+                "excludeByName": {
+                  "Time": true,
+                  "__name__": true,
+                  "app": true,
+                  "env": true,
+                  "index": true,
+                  "instance": true,
+                  "job": true,
+                  "namespace": true,
+                  "pod_name": true,
+                  "stack": true,
+                  "tenant": true
+                },
+                "indexByName": {},
+                "renameByName": {}
+              }
+            }
+          ],
+          "type": "table"
+        }
+      ],
       "title": "VERSUM",
       "type": "row"
     },
     {
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
+      "collapsed": true,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 68
+      },
+      "id": 17,
+      "panels": [
+        {
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": []
           },
-          "custom": {
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 0,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
+          "gridPos": {
+            "h": 7,
+            "w": 12,
+            "x": 0,
+            "y": 81
+          },
+          "id": 43,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "sortBy": "Total",
+              "sortDesc": true
             },
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "auto",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
+            "tooltip": {
+              "mode": "multi",
+              "sort": "desc"
             }
           },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "MM2Dgw4nk"
+              },
+              "exemplar": true,
+              "expr": "rate(dipdup_rarible_order_activity_count{}[1m]) * 60",
+              "interval": "",
+              "legendFormat": "{{index}} {{index_type}}",
+              "refId": "A"
+            }
+          ],
+          "title": "HEN activities",
+          "transformations": [
+            {
+              "id": "filterFieldsByName",
+              "options": {
+                "include": {
+                  "names": [
+                    "PlatformEnum.HEN ActivityTypeEnum.ORDER_CANCEL",
+                    "PlatformEnum.HEN ActivityTypeEnum.ORDER_LIST",
+                    "PlatformEnum.HEN ActivityTypeEnum.ORDER_MATCH",
+                    "Time"
+                  ],
+                  "pattern": "/HEN/"
+                }
+              }
+            },
+            {
+              "id": "renameByRegex",
+              "options": {
+                "regex": "PlatformEnum.",
+                "renamePattern": ""
+              }
+            },
+            {
+              "id": "renameByRegex",
+              "options": {
+                "regex": "ActivityTypeEnum.",
+                "renamePattern": ""
+              }
+            }
+          ],
+          "type": "timeseries"
+        },
+        {
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {
+                "align": "auto",
+                "displayMode": "auto"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              }
+            },
+            "overrides": [
               {
-                "color": "green",
-                "value": null
+                "matcher": {
+                  "id": "byName",
+                  "options": "index"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 257
+                  }
+                ]
               },
               {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 0,
-        "y": 101
-      },
-      "id": 48,
-      "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom",
-          "sortBy": "Total",
-          "sortDesc": true
-        },
-        "tooltip": {
-          "mode": "multi",
-          "sort": "desc"
-        }
-      },
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "MM2Dgw4nk"
-          },
-          "exemplar": true,
-          "expr": "rate(dipdup_rarible_order_activity_count{}[1m]) * 60",
-          "interval": "",
-          "legendFormat": "{{index}} {{index_type}}",
-          "refId": "A"
-        }
-      ],
-      "title": "VERSUM activities",
-      "transformations": [
-        {
-          "id": "filterFieldsByName",
-          "options": {
-            "include": {
-              "names": [
-                "PlatformEnum.VERSUM_V1 ActivityTypeEnum.ORDER_CANCEL",
-                "PlatformEnum.VERSUM_V1 ActivityTypeEnum.ORDER_LIST",
-                "PlatformEnum.VERSUM_V1 ActivityTypeEnum.ORDER_MATCH",
-                "Time"
-              ],
-              "pattern": "/VERSUM/"
-            }
-          }
-        },
-        {
-          "id": "renameByRegex",
-          "options": {
-            "regex": "PlatformEnum.",
-            "renamePattern": ""
-          }
-        },
-        {
-          "id": "renameByRegex",
-          "options": {
-            "regex": "ActivityTypeEnum.",
-            "renamePattern": ""
-          }
-        }
-      ],
-      "type": "timeseries"
-    },
-    {
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "custom": {
-            "align": "auto",
-            "displayMode": "auto"
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              }
-            ]
-          }
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "index"
-            },
-            "properties": [
-              {
-                "id": "custom.width",
-                "value": 257
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "index_type"
-            },
-            "properties": [
-              {
-                "id": "custom.width",
-                "value": 306
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Value"
-            },
-            "properties": [
-              {
-                "id": "custom.displayMode",
-                "value": "lcd-gauge"
-              }
-            ]
-          }
-        ]
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 12,
-        "y": 101
-      },
-      "id": 47,
-      "options": {
-        "footer": {
-          "fields": "",
-          "reducer": [
-            "sum"
-          ],
-          "show": false
-        },
-        "frameIndex": 3,
-        "showHeader": true,
-        "sortBy": [
-          {
-            "desc": true,
-            "displayName": "Value"
-          }
-        ]
-      },
-      "pluginVersion": "8.4.6",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "MM2Dgw4nk"
-          },
-          "exemplar": false,
-          "expr": "dipdup_rarible_order_activity_sum",
-          "format": "table",
-          "instant": true,
-          "interval": "",
-          "legendFormat": "{{index}} {{index_type}}",
-          "refId": "A"
-        }
-      ],
-      "title": "VERSUM total order activities",
-      "transformations": [
-        {
-          "id": "renameByRegex",
-          "options": {
-            "regex": "PlatformEnum.",
-            "renamePattern": ""
-          }
-        },
-        {
-          "id": "renameByRegex",
-          "options": {
-            "regex": "ActivityTypeEnum.",
-            "renamePattern": ""
-          }
-        },
-        {
-          "id": "organize",
-          "options": {
-            "excludeByName": {
-              "Time": true,
-              "__name__": true,
-              "app": true,
-              "env": true,
-              "instance": true,
-              "job": true,
-              "namespace": true,
-              "pod_name": true,
-              "stack": true,
-              "tenant": true
-            },
-            "indexByName": {},
-            "renameByName": {}
-          }
-        },
-        {
-          "id": "filterByValue",
-          "options": {
-            "filters": [
-              {
-                "config": {
-                  "id": "regex",
-                  "options": {
-                    "value": "VERSUM"
-                  }
+                "matcher": {
+                  "id": "byName",
+                  "options": "index_type"
                 },
-                "fieldName": "index"
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 306
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Value"
+                },
+                "properties": [
+                  {
+                    "id": "custom.displayMode",
+                    "value": "lcd-gauge"
+                  }
+                ]
               }
-            ],
-            "match": "all",
-            "type": "include"
-          }
+            ]
+          },
+          "gridPos": {
+            "h": 7,
+            "w": 12,
+            "x": 12,
+            "y": 81
+          },
+          "id": 44,
+          "options": {
+            "footer": {
+              "fields": "",
+              "reducer": [
+                "sum"
+              ],
+              "show": false
+            },
+            "frameIndex": 3,
+            "showHeader": true,
+            "sortBy": [
+              {
+                "desc": true,
+                "displayName": "Value"
+              }
+            ]
+          },
+          "pluginVersion": "8.4.6",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "MM2Dgw4nk"
+              },
+              "exemplar": false,
+              "expr": "dipdup_rarible_order_activity_sum{index=\"PlatformEnum.HEN\"}",
+              "format": "table",
+              "instant": true,
+              "interval": "",
+              "legendFormat": "{{index}} {{index_type}}",
+              "refId": "A"
+            }
+          ],
+          "title": "HEN total order activities",
+          "transformations": [
+            {
+              "id": "renameByRegex",
+              "options": {
+                "regex": "PlatformEnum.",
+                "renamePattern": ""
+              }
+            },
+            {
+              "id": "renameByRegex",
+              "options": {
+                "regex": "ActivityTypeEnum.",
+                "renamePattern": ""
+              }
+            },
+            {
+              "id": "organize",
+              "options": {
+                "excludeByName": {
+                  "Time": true,
+                  "__name__": true,
+                  "app": true,
+                  "env": true,
+                  "index": true,
+                  "instance": true,
+                  "job": true,
+                  "namespace": true,
+                  "pod_name": true,
+                  "stack": true,
+                  "tenant": true
+                },
+                "indexByName": {},
+                "renameByName": {}
+              }
+            }
+          ],
+          "type": "table"
         }
       ],
-      "type": "table"
+      "title": "HEN",
+      "type": "row"
     }
   ],
   "refresh": "5s",
@@ -2252,13 +2338,13 @@
     "list": []
   },
   "time": {
-    "from": "now-1h",
+    "from": "now-3h",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "",
   "title": "Tezos.Indexer",
   "uid": "WR2Rz7WVz",
-  "version": 24,
+  "version": 29,
   "weekStart": ""
 }

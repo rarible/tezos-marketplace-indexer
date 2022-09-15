@@ -4,7 +4,8 @@ from typing import List
 
 from dipdup.context import HookContext
 
-from rarible_marketplace_indexer.models import Collection, IndexEnum
+from rarible_marketplace_indexer.models import Collection
+from rarible_marketplace_indexer.models import IndexEnum
 from rarible_marketplace_indexer.utils.rarible_utils import process_metadata
 
 
@@ -26,5 +27,7 @@ async def process_missing_metadata_for_collection(
         else:
             await ctx.update_contract_metadata(os.getenv('NETWORK'), collection.contract, metadata)
             collection.metadata_synced = True
-            logger.info(f"Successfully saved metadata for {collection.contract} (retries {collection.metadata_retries})")
+            logger.info(
+                f"Successfully saved metadata for {collection.contract} (retries {collection.metadata_retries})"
+            )
         await collection.save()

@@ -23,12 +23,12 @@ contracts:
   objkt_v2:
     address: KT1WvzYHCNBvDSdwafTHv7nJ1dWmZ8GCYuuC
     typename: objkt_marketplace_v2
-#  fxhash_v1:
-#    address: KT1Xo5B7PNBAeynZPmca4bRh6LQow4og1Zb9
-#    typename: fxhash_v1
-#  fxhash_v2:
-#    address: KT1GbyoDi7H1sfXmimXpptZJuCdHMh66WS9u
-#    typename: fxhash_v2
+  fxhash_v1:
+    address: KT1Xo5B7PNBAeynZPmca4bRh6LQow4og1Zb9
+    typename: fxhash_v1
+  fxhash_v2:
+    address: KT1GbyoDi7H1sfXmimXpptZJuCdHMh66WS9u
+    typename: fxhash_v2
 
 indexes:
   hen_actions:
@@ -151,55 +151,55 @@ indexes:
             destination: versum_v1
             entrypoint: collect_swap
 
-#  fxhash_v1_actions:
-#    kind: operation
-#    datasource: tzkt
-#    contracts:
-#      - fxhash_v1
-#    types:
-#      - transaction
-#    first_level: 1832146
-#    handlers:
-#      - callback: fxhash_v1_order_list
-#        pattern:
-#          - destination: fxhash_v1
-#            type: transaction
-#            entrypoint: offer
-#      - callback: fxhash_v1_order_cancel
-#        pattern:
-#          - destination: fxhash_v1
-#            type: transaction
-#            entrypoint: cancel_offer
-#      - callback: fxhash_v1_order_match
-#        pattern:
-#          - destination: fxhash_v1
-#            type: transaction
-#            entrypoint: collect
-#
-#  fxhash_v2_actions:
-#     kind: operation
-#     datasource: tzkt
-#     contracts:
-#       - fxhash_v2
-#     types:
-#       - transaction
-#     first_level: 2280663
-#     handlers:
-#       - callback: fxhash_v2_listing_order_list
-#         pattern:
-#           - destination: fxhash_v2
-#             type: transaction
-#             entrypoint: listing
-#       - callback: fxhash_v2_listing_order_cancel
-#         pattern:
-#           - destination: fxhash_v2
-#             type: transaction
-#             entrypoint: listing_cancel
-#       - callback: fxhash_v2_listing_order_match
-#         pattern:
-#           - destination: fxhash_v2
-#             type: transaction
-#             entrypoint: listing_accept
+  fxhash_v1_actions:
+    kind: operation
+    datasource: tzkt
+    contracts:
+      - fxhash_v1
+    types:
+      - transaction
+    first_level: 1832146
+    handlers:
+      - callback: fxhash_v1_order_list
+        pattern:
+          - destination: fxhash_v1
+            type: transaction
+            entrypoint: offer
+      - callback: fxhash_v1_order_cancel
+        pattern:
+          - destination: fxhash_v1
+            type: transaction
+            entrypoint: cancel_offer
+      - callback: fxhash_v1_order_match
+        pattern:
+          - destination: fxhash_v1
+            type: transaction
+            entrypoint: collect
+
+  fxhash_v2_actions:
+     kind: operation
+     datasource: tzkt
+     contracts:
+       - fxhash_v2
+     types:
+       - transaction
+     first_level: 2280663
+     handlers:
+       - callback: fxhash_v2_listing_order_list
+         pattern:
+           - destination: fxhash_v2
+             type: transaction
+             entrypoint: listing
+       - callback: fxhash_v2_listing_order_cancel
+         pattern:
+           - destination: fxhash_v2
+             type: transaction
+             entrypoint: listing_cancel
+       - callback: fxhash_v2_listing_order_match
+         pattern:
+           - destination: fxhash_v2
+             type: transaction
+             entrypoint: listing_accept
             
 advanced:
   rollback_depth: 2

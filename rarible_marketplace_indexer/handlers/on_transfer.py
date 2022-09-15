@@ -31,13 +31,17 @@ async def on_transfer(ctx: HandlerContext, token_transfer: TokenTransferData) ->
             if is_burn:
                 burned = await Token.get_or_none(id=token_id)
             is_transfer_to = (
-                token_transfer.to_address is not None and token_transfer.to_address not in null_addresses and token_transfer.amount > 0
+                token_transfer.to_address is not None
+                and token_transfer.to_address not in null_addresses
+                and token_transfer.amount > 0
             )
             if is_transfer_to:
                 ownership_to = await Ownership.get_or_none(id=ownership_id(token_transfer, token_transfer.to_address))
             is_transfer_from = token_transfer.from_address is not None and token_transfer.amount > 0
             if is_transfer_from:
-                ownership_from = await Ownership.get_or_none(id=ownership_id(token_transfer, token_transfer.from_address))
+                ownership_from = await Ownership.get_or_none(
+                    id=ownership_id(token_transfer, token_transfer.from_address)
+                )
 
             # persist
             if is_mint:
@@ -52,7 +56,7 @@ async def on_transfer(ctx: HandlerContext, token_transfer: TokenTransferData) ->
                         supply=token_transfer.amount,
                         updated=token_transfer.timestamp,
                         metadata_synced=False,
-                        metadata_retries=0
+                        metadata_retries=0,
                     )
                 else:
                     minted.minted += token_transfer.amount
@@ -78,7 +82,7 @@ async def on_transfer(ctx: HandlerContext, token_transfer: TokenTransferData) ->
                         token_id=token_transfer.token_id,
                         owner=token_transfer.to_address,
                         balance=token_transfer.amount,
-                        updated=token_transfer.timestamp
+                        updated=token_transfer.timestamp,
                     )
                 else:
                     ownership_to.balance += token_transfer.amount

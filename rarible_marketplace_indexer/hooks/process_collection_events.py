@@ -1,14 +1,14 @@
 import logging
-import os
 
 from dipdup.context import HookContext
 
-from rarible_marketplace_indexer.models import IndexEnum, Collection
+from rarible_marketplace_indexer.models import Collection
+from rarible_marketplace_indexer.models import IndexEnum
 from rarible_marketplace_indexer.models import IndexingStatus
 from rarible_marketplace_indexer.producer.helper import producer_send
 from rarible_marketplace_indexer.types.rarible_api_objects.collection.factory import RaribleApiCollectionFactory
-from rarible_marketplace_indexer.types.tezos_objects.tezos_object_hash import OriginatedAccountAddress, \
-    ImplicitAccountAddress
+from rarible_marketplace_indexer.types.tezos_objects.tezos_object_hash import ImplicitAccountAddress
+from rarible_marketplace_indexer.types.tezos_objects.tezos_object_hash import OriginatedAccountAddress
 
 
 async def process_collection_events(
@@ -25,11 +25,15 @@ async def process_collection_events(
     last_id = 0
     cr_filter = ""
     while last_id is not None:
-        originations = await tzkt.request(method='get', url=f"v1/operations/originations?limit=100&level.gt={current_level}{cr_filter}")
+        originations = await tzkt.request(
+            method='get', url=f"v1/operations/originations?limit=100&level.gt={current_level}{cr_filter}"
+        )
         for origination in originations:
             if origination.get("originatedContract") is not None:
                 if origination["originatedContract"].get("address") is not None:
-                    contract = await tzkt.request(method='get', url=f"v1/contracts/{origination['originatedContract']['address']}")
+                    contract = await tzkt.request(
+                        method='get', url=f"v1/contracts/{origination['originatedContract']['address']}"
+                    )
                     current_level = origination['level']
                     last_id = origination['id']
                     cr_filter = f"&id.cr={last_id}"
@@ -39,15 +43,13 @@ async def process_collection_events(
                         else:
                             origination['alias'] = ""
                         address = origination['originatedContract']['address']
-                        collection = await Collection.get_or_none(
-                            contract=OriginatedAccountAddress(address)
-                        )
+                        collection = await Collection.get_or_none(contract=OriginatedAccountAddress(address))
                         if collection is None:
                             await Collection.create(
                                 contract=OriginatedAccountAddress(address),
                                 owner=ImplicitAccountAddress(origination['sender']['address']),
                                 metadata_synced=False,
-                                metadata_retries=0
+                                metadata_retries=0,
                             )
                             collection_event = RaribleApiCollectionFactory.build(origination, tzkt)
                             assert collection_event

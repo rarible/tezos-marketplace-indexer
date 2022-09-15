@@ -56,7 +56,10 @@ class AbstractOrderListEvent(EventInterface):
             dto.start_at = transaction.data.timestamp
 
         order = await OrderModel.get_or_none(
-            internal_order_id=dto.internal_order_id, network=os.getenv("NETWORK"), platform=cls.platform, status=OrderStatusEnum.ACTIVE
+            internal_order_id=dto.internal_order_id,
+            network=os.getenv("NETWORK"),
+            platform=cls.platform,
+            status=OrderStatusEnum.ACTIVE,
         )
 
         if dto.take.asset_class == AssetClassEnum.FUNGIBLE_TOKEN:
@@ -75,7 +78,9 @@ class AbstractOrderListEvent(EventInterface):
                     decimals = int(meta["decimals"])
                     dto.take.value = dto.take.value / Decimal(math.pow(10, decimals))
                 except Exception:
-                    logger.info(f"Failed to get decimals for FT token {dto.take.contract}:{dto.take.token_id} with meta: {meta}")
+                    logger.info(
+                        f"Failed to get decimals for FT token {dto.take.contract}:{dto.take.token_id} with meta: {meta}"
+                    )
 
         if order is None:
             order = await OrderModel.create(
@@ -104,7 +109,8 @@ class AbstractOrderListEvent(EventInterface):
         else:
             order.last_updated_at = transaction.data.timestamp
             order.make_value = dto.make.value
-            order.take_value = dto.take.value
+            order.make_price = dto.take.value
+            order.take_value = dto.take.value * dto.make.value
             order.origin_fees = get_json_parts(dto.origin_fees)
             order.payouts = get_json_parts(dto.payouts)
             await order.save()
@@ -252,7 +258,10 @@ class AbstractLegacyOrderCancelEvent(EventInterface):
 
                 last_order_activity = (
                     await ActivityModel.filter(
-                        network=os.getenv("NETWORK"), platform=cls.platform, order_id=order.id, type=ActivityTypeEnum.ORDER_CANCEL
+                        network=os.getenv("NETWORK"),
+                        platform=cls.platform,
+                        order_id=order.id,
+                        type=ActivityTypeEnum.ORDER_CANCEL,
                     )
                     .order_by('-operation_timestamp')
                     .first()
@@ -507,7 +516,10 @@ class AbstractPutBidEvent(EventInterface):
             dto.end_at = dto.start_at + timedelta(weeks=1)
 
         order = await OrderModel.get_or_none(
-            internal_order_id=dto.internal_order_id, network=os.getenv("NETWORK"), platform=cls.platform, status=OrderStatusEnum.ACTIVE
+            internal_order_id=dto.internal_order_id,
+            network=os.getenv("NETWORK"),
+            platform=cls.platform,
+            status=OrderStatusEnum.ACTIVE,
         )
 
         if order is None:
@@ -587,7 +599,10 @@ class AbstractPutFloorBidEvent(EventInterface):
             dto.end_at = dto.start_at + timedelta(weeks=1)
 
         order = await OrderModel.get_or_none(
-            internal_order_id=dto.internal_order_id, network=os.getenv("NETWORK"), platform=cls.platform, status=OrderStatusEnum.ACTIVE
+            internal_order_id=dto.internal_order_id,
+            network=os.getenv("NETWORK"),
+            platform=cls.platform,
+            status=OrderStatusEnum.ACTIVE,
         )
 
         if order is None:
