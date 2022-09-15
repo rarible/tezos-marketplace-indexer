@@ -47,7 +47,7 @@ up_test: prepare_services_testnet
 	docker-compose -f docker-compose.testnet.yml up --build --remove-orphans --force-recreate --no-deps --abort-on-container-exit indexer-rarible indexer-tezos indexer-metadata
 
 up_prod: prepare_services_prod
-	docker-compose -f docker-compose.prod.yml up --build --remove-orphans --force-recreate --no-deps --abort-on-container-exit indexer-rarible indexer-tezos indexer-metadata
+	docker-compose -f docker-compose.prod.yml up --build --remove-orphans --force-recreate --no-deps --abort-on-container-exit indexer-metadata
 
 down_dev:
 	docker-compose -f docker-compose.dev.yml down --volumes
