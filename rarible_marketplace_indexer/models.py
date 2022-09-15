@@ -266,6 +266,9 @@ class Collection(Model):
 
 
 class TZProfile(Model):
+    class Meta:
+        table = "tzprofiles"
+
     account = fields.CharField(36, pk=True)
     contract = fields.CharField(36)
     valid_claims = fields.JSONField()
@@ -280,6 +283,3 @@ class TZProfile(Model):
     discord = fields.CharField(max_length=256, null=True)
     github = fields.CharField(max_length=256, null=True)
     ethereum = fields.CharField(max_length=42, null=True)
-
-    class Meta:
-        table = "tzprofiles"

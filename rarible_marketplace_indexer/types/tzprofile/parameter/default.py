@@ -3,9 +3,12 @@
 
 from __future__ import annotations
 
-from typing import List, Set, Union
+from typing import List
+from typing import Set
+from typing import Union
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
+from pydantic import Field
 
 
 class ListItem(BaseModel):

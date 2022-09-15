@@ -1,5 +1,6 @@
-from dipdup.models import Origination
 from dipdup.context import HandlerContext
+from dipdup.models import Origination
+
 from rarible_marketplace_indexer.models import TZProfile
 from rarible_marketplace_indexer.types.tzprofile.storage import TzprofileStorage
 from rarible_marketplace_indexer.utils.tzprofile_utils import resolve_profile

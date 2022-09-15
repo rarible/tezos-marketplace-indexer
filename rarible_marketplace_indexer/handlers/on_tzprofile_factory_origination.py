@@ -1,8 +1,8 @@
 import logging
-
-from dipdup.models import Origination
-from dipdup.context import HandlerContext
 from typing import cast
+
+from dipdup.context import HandlerContext
+from dipdup.models import Origination
 
 from rarible_marketplace_indexer.types.tzprofile.storage import TzprofileStorage
 
@@ -11,9 +11,7 @@ async def on_tzprofile_factory_origination(
     ctx: HandlerContext,
     tzprofile_origination: Origination[TzprofileStorage],
 ) -> None:
-    originated_contract = cast(
-        str, tzprofile_origination.data.originated_contract_address
-    )
+    originated_contract = cast(str, tzprofile_origination.data.originated_contract_address)
     index_name = f"tzprofiles_{originated_contract}"
     try:
         await ctx.add_contract(

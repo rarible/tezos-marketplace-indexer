@@ -1,15 +1,16 @@
-import os
-import aiohttp
-from urllib.parse import urljoin
-import json
 import hashlib
+import json
 import logging
-from tenacity import retry, stop_after_attempt, retry_if_exception_type, wait_fixed
-
+import os
 from enum import Enum
+from urllib.parse import urljoin
 
+import aiohttp
 from didkit import verify_credential
-
+from tenacity import retry
+from tenacity import retry_if_exception_type
+from tenacity import stop_after_attempt
+from tenacity import wait_fixed
 
 KEPLER_ENDPOINT = os.getenv("KEPLER_ENDPOINT", "https://kepler.tzprofiles.com/")
 
@@ -143,6 +144,7 @@ def parse_claim(vc, profile):
     except Exception as e:
         logging.exception(e)
 
+
 # TODO need to handle cases where storage.owner != originator
 
 
@@ -155,7 +157,7 @@ async def resolve_profile(storage, profile):
             validate_vc(vc, profile.account)
             profile.valid_claims += [(claim.string_0, json.dumps(vc), "VerifiableCredential")]
             parse_claim(vc, profile)
-        except DeletedCredential as e:
+        except DeletedCredential:
             pass
         except (FailedChecksum, FailedVerification, Spoof, UnknownCredential) as e:
             logging.exception(e)

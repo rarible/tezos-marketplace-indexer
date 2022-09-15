@@ -1,5 +1,6 @@
-from dipdup.models import Transaction
 from dipdup.context import HandlerContext
+from dipdup.models import Transaction
+
 from rarible_marketplace_indexer.models import TZProfile
 from rarible_marketplace_indexer.types.tzprofile.parameter.default import DefaultParameter
 from rarible_marketplace_indexer.types.tzprofile.storage import TzprofileStorage
