@@ -22,7 +22,7 @@ class TokenBody:
     supply: AssetValue
     minted: AssetValue
     minted_at: datetime
-    updated_at: datetime
+    updated: datetime
     deleted: bool
 
 
