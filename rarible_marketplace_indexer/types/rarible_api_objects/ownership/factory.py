@@ -13,7 +13,7 @@ class RaribleApiOwnershipFactory:
         return RaribleApiOwnership(
             id=random_id,
             event_id=random_id,
-            ownershipId=full_id,
+            ownership_id=full_id,
             type="UPDATE",
             ownership=OwnershipBody(
                 id=full_id,
@@ -29,4 +29,4 @@ class RaribleApiOwnershipFactory:
     def build_delete(ownership: Ownership) -> RaribleApiOwnership:
         random_id = uuid.uuid4()
         full_id = ownership.full_id()
-        return RaribleApiOwnership(id=random_id, event_id=random_id, ownershipId=full_id, type="DELETE")
+        return RaribleApiOwnership(id=random_id, event_id=random_id, ownership_id=full_id, type="DELETE")
