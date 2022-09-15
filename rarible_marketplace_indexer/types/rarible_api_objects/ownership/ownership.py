@@ -19,7 +19,8 @@ class OwnershipBody:
     token_id: str
     owner: ImplicitAccountAddress
     balance: AssetValue
-    date: datetime
+    updated: datetime
+    created: datetime
 
 
 class RaribleApiOwnership(AbstractRaribleApiObject):
