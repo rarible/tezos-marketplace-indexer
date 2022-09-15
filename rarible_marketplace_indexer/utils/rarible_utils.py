@@ -38,6 +38,8 @@ from rarible_marketplace_indexer.types.rarible_api_objects.asset.asset import To
 from rarible_marketplace_indexer.types.rarible_api_objects.asset.enum import AssetClassEnum
 from rarible_marketplace_indexer.types.rarible_api_objects.collection.collection import RaribleApiCollection
 from rarible_marketplace_indexer.types.rarible_api_objects.order.order import RaribleApiOrder
+from rarible_marketplace_indexer.types.rarible_api_objects.ownership.ownership import RaribleApiOwnership
+from rarible_marketplace_indexer.types.rarible_api_objects.token.token import RaribleApiToken
 from rarible_marketplace_indexer.types.rarible_exchange.parameter.sell import Part
 from rarible_marketplace_indexer.types.tezos_objects.asset_value.asset_value import AssetValue
 from rarible_marketplace_indexer.types.tezos_objects.asset_value.xtz_value import Xtz
@@ -422,6 +424,14 @@ def get_rarible_collection_activity_kafka_key(activity: RaribleApiCollection) ->
     return f"{activity.collection.id}"
 
 
+def get_rarible_ownership_kafka_key(ownership: RaribleApiOwnership) -> str:
+    return f"{ownership.ownership.contract}:{ownership.ownership.token_id}"
+
+
+def get_rarible_token_kafka_key(token: RaribleApiToken) -> str:
+    return f"{token.item.contract}:{token.item.token_id}"
+
+
 def get_kafka_key(api_object: AbstractRaribleApiObject) -> str:
     key = api_object.id
     if isinstance(api_object, RaribleApiOrder):
@@ -436,6 +446,10 @@ def get_kafka_key(api_object: AbstractRaribleApiObject) -> str:
         key = get_rarible_token_activity_kafka_key(api_object)
     elif isinstance(api_object, RaribleApiCollection):
         key = get_rarible_collection_activity_kafka_key(api_object)
+    elif isinstance(api_object, RaribleApiOwnership):
+        key = get_rarible_ownership_kafka_key(api_object)
+    elif isinstance(api_object, RaribleApiToken):
+        key = get_rarible_token_kafka_key(api_object)
     else:
         key = str(api_object.id)
     return key
