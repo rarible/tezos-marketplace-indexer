@@ -18,7 +18,7 @@ class OwnershipBody:
     contract: OriginatedAccountAddress
     token_id: str
     owner: ImplicitAccountAddress
-    value: AssetValue
+    balance: AssetValue
     date: datetime
 
 
