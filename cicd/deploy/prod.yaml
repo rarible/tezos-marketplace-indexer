@@ -14,13 +14,6 @@ tezos-marketplace-indexer-tezos:
   environments:
     TZKT_URL: http://tzkt:5000
     NETWORK: mainnet
-  resources:
-     requests:
-       cpu: '1'
-       memory: 2Gi
-     limits:
-       cpu: '1'
-       memory: 2Gi
 
 tezos-marketplace-indexer-metadata:
   replicas: 1

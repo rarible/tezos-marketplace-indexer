@@ -162,7 +162,9 @@ class RaribleLegacyOrderMatchEvent(AbstractLegacyOrderMatchEvent):
             else 0
         )
 
-        take_data = None if take_type == 0 else bytes.fromhex(transaction.parameter.order_left.take_asset.asset_type.asset_data)
+        take_data = (
+            None if take_type == 0 else bytes.fromhex(transaction.parameter.order_left.take_asset.asset_type.asset_data)
+        )
 
         take = RaribleUtils.get_take_dto(
             sale_type=take_type,
@@ -184,7 +186,11 @@ class RaribleLegacyOrderMatchEvent(AbstractLegacyOrderMatchEvent):
 
         fees_type = MichelsonType.match(
             michelson_to_micheline(
-                '(pair (list (pair (address %part_account) (nat %part_value))) (list (pair (address %part_account) (nat %part_value))))'
+                '(pair '
+                '(list '
+                '(pair (address %part_account) (nat %part_value)'
+                ')) '
+                '(list (pair (address %part_account) (nat %part_value))))'
             )
         )
         fees = fees_type.unpack(bytes.fromhex(transaction.parameter.order_right.data)).to_python_object()
@@ -320,7 +326,9 @@ class RaribleAcceptFloorBidEvent(AbstractAcceptFloorBidEvent):
     RaribleAcceptFloorBidTransaction = Transaction[AcceptFloorBidParameter, RaribleBidsStorage]
 
     @staticmethod
-    def _get_accept_floor_bid_dto(transaction: RaribleAcceptFloorBidTransaction, datasource: TzktDatasource) -> MatchDto:
+    def _get_accept_floor_bid_dto(
+        transaction: RaribleAcceptFloorBidTransaction, datasource: TzktDatasource
+    ) -> MatchDto:
         internal_order_id = RaribleUtils.get_floor_bid_hash(
             contract=OriginatedAccountAddress(transaction.parameter.afb_asset_contract),
             bidder=ImplicitAccountAddress(transaction.parameter.afb_bidder),
@@ -361,7 +369,9 @@ class RaribleFloorBidCancelEvent(AbstractFloorBidCancelEvent):
     RaribleCancelFloorBidTransaction = Transaction[CancelFloorBidParameter, RaribleBidsStorage]
 
     @staticmethod
-    def _get_cancel_floor_bid_dto(transaction: RaribleCancelFloorBidTransaction, datasource: TzktDatasource) -> CancelDto:
+    def _get_cancel_floor_bid_dto(
+        transaction: RaribleCancelFloorBidTransaction, datasource: TzktDatasource
+    ) -> CancelDto:
         internal_order_id = RaribleUtils.get_floor_bid_hash(
             contract=OriginatedAccountAddress(transaction.parameter.cfb_asset_contract),
             bidder=ImplicitAccountAddress(transaction.data.sender_address),

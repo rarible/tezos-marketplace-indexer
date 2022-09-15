@@ -35,7 +35,7 @@ async def on_restart(
     if ctx.config.indexes.get("fxhash_v2_actions") is not None:
         FxhashV2ListingOrderListEvent.fxhash_nft_addresses = {
             "0": ctx.config.custom.get("fxhash_nft_v1"),
-            "1": ctx.config.custom.get("fxhash_nft_v2")
+            "1": ctx.config.custom.get("fxhash_nft_v2"),
         }
 
     if os.getenv('APPLICATION_ENVIRONMENT') == 'prod' and ctx.config.hooks.get("import_legacy_orders") is not None:

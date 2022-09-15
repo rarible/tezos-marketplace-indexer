@@ -19,5 +19,8 @@ class NullKafkaProducer:
         pass
 
     async def send(self, topic: str, value: BaseModel = None, key: Optional[Union[int, str]] = None, *args, **kwargs):
-        message = {'topic': topic, 'message': {'key': kafka_key_serializer(key), 'value': kafka_value_serializer(value)}}
+        message = {
+            'topic': topic,
+            'message': {'key': kafka_key_serializer(key), 'value': kafka_value_serializer(value)},
+        }
         self._logger.info(message)

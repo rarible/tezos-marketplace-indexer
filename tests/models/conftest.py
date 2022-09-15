@@ -78,7 +78,9 @@ def data_loader(object_type: str):
             with open(join(message_dir, f'{datafile_basename}.json'), mode='r') as fp:
                 test_message = json.dumps(json.load(fp), sort_keys=True).encode()
 
-            yield object_dataclass(test_model=test_model, test_api_object=test_api_object, test_message=test_message)  # noqa
+            yield object_dataclass(
+                test_model=test_model, test_api_object=test_api_object, test_message=test_message
+            )  # noqa
 
 
 @pytest.fixture(params=data_loader(TestingSubject.order))

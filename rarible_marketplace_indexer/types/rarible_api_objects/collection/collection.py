@@ -17,7 +17,7 @@ class Collection:
     owner: Optional[ImplicitAccountAddress]
     name: Optional[str]
     minters: List[ImplicitAccountAddress]
-    standard: str = 'fa2'
+    standard: str = "fa2"
     symbol: Optional[str] = None
 
 
@@ -33,4 +33,4 @@ class RaribleApiCollection(AbstractRaribleApiObject):
     id: uuid.UUID
     event_id: str
     collection: Collection
-    type: str = 'UPDATE'
+    type: str = "UPDATE"
