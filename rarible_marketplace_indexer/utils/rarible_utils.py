@@ -425,11 +425,12 @@ def get_rarible_collection_activity_kafka_key(activity: RaribleApiCollection) ->
 
 
 def get_rarible_ownership_kafka_key(ownership: RaribleApiOwnership) -> str:
-    return f"{ownership.ownership.contract}:{ownership.ownership.token_id}"
+    parts = ownership.ownership_id.split(':')
+    return f"{parts[0]}:{parts[1]}"
 
 
 def get_rarible_token_kafka_key(token: RaribleApiToken) -> str:
-    return f"{token.item.contract}:{token.item.token_id}"
+    return token.item_id
 
 
 def get_kafka_key(api_object: AbstractRaribleApiObject) -> str:
