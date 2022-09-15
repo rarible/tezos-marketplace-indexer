@@ -21,8 +21,9 @@ class RaribleApiTokenFactory:
                 token_id=token.token_id,
                 creators=[],
                 supply=token.supply,
+                minted=token.minted,
                 minted_at=token.minted_at,
-                last_updated_at=token.updated,
+                updated=token.updated,
                 deleted=token.deleted,
             ),
         )

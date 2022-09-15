@@ -20,8 +20,9 @@ class RaribleApiOwnershipFactory:
                 contract=ownership.contract,
                 token_id=ownership.token_id,
                 owner=ownership.owner,
-                value=ownership.balance,
-                date=ownership.updated,
+                balance=ownership.balance,
+                updated=ownership.updated,
+                created=ownership.created
             ),
         )
 

@@ -20,8 +20,9 @@ class TokenBody:
     token_id: str
     creators: List[ImplicitAccountAddress]
     supply: AssetValue
+    minted: AssetValue
     minted_at: datetime
-    last_updated_at: datetime
+    updated_at: datetime
     deleted: bool
 
 

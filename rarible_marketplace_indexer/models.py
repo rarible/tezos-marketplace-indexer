@@ -221,6 +221,7 @@ class Ownership(Model):
     owner = AccountAddressField(null=False)
     balance = AssetValueField()
     updated = fields.DatetimeField(null=False)
+    created = fields.DatetimeField(null=False)
 
     def full_id(self):
         return f"{self.contract}:{self.token_id}:{self.owner}"
