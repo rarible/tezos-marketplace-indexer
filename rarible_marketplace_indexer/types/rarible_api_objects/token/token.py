@@ -1,7 +1,8 @@
 import uuid
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Optional, List
+from typing import List
+from typing import Optional
 
 from humps.main import camelize
 
@@ -22,6 +23,7 @@ class TokenBody:
     minted_at: datetime
     last_updated_at: datetime
     deleted: bool
+
 
 class RaribleApiToken(AbstractRaribleApiObject):
     class Config:

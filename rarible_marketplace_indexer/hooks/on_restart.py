@@ -7,7 +7,8 @@ from dipdup.context import HookContext
 from prometheus_client import MetricsHandler
 
 from rarible_marketplace_indexer.event.fxhash_v2_action import FxhashV2ListingOrderListEvent
-from rarible_marketplace_indexer.models import IndexingStatus, IndexEnum
+from rarible_marketplace_indexer.models import IndexEnum
+from rarible_marketplace_indexer.models import IndexingStatus
 from rarible_marketplace_indexer.producer.container import ProducerContainer
 from rarible_marketplace_indexer.prometheus.rarible_metrics import RaribleMetrics
 
@@ -51,4 +52,3 @@ async def on_restart(
         index = await IndexingStatus.get_or_none(index=IndexEnum.COLLECTION)
         if index is None:
             await ctx.fire_hook("process_collection_events", level=0)
-
