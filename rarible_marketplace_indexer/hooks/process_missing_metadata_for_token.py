@@ -3,10 +3,10 @@ import os
 from typing import List
 
 from dipdup.context import HookContext
+from rarible_marketplace_indexer.jobs.metadata import process_metadata
 
 from rarible_marketplace_indexer.models import IndexEnum
 from rarible_marketplace_indexer.models import Token
-from rarible_marketplace_indexer.utils.rarible_utils import process_metadata
 
 
 async def process_missing_metadata_for_token(

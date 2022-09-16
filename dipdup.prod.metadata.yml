@@ -111,3 +111,16 @@ custom:
     username: ${KAFKA_USERNAME:-rarible}
     password: ${KAFKA_PASSWORD:-changeme}
   run_fix_jobs: False
+  royalties:
+    hen: "KT1RJ6PbjHpwc3M5rw5s2Nbmefwbuwbdxton"
+    hen_royalties: "KT1Hkg5qeNhfwpKW4fXvq7HGZB9z2EnmCCA9"
+    kalamint: "KT1EpGgjQs73QfFJs9z7m1Mxm5MTnpC2tqse"
+    fxhash_v1: "KT1KEa8z6vWXDJrVqtMrAeDVzsvxat3kHaCE"
+    fxhash_v1_manager: "KT1XCoGnfupWk7Sp8536EfrxcP73LmT68Nyr"
+    fxhash_v2: "KT1U6EHmNxJTkvaWJ4ThczG4FSDaHC21ssvi"
+    versum: "KT1LjmAdYQCLBjwv4S2oFkEzyHVkomAf5MrW"
+    royalties_manager: "KT1HNNrmCk1fpqveRDz8Fvww2GM4gPzmA7fo"
+    bidou_8x8: "KT1MxDwChiDwd6WBVs24g1NjERUoK622ZEFp"
+    bidou_24x24: "KT1TR1ErEQPTdtaJ7hbvKTJSa1tsGnHGZTpf"
+    dogami: "KT1NVvPsNDChrLRH5K2cy6Sc9r1uuUwdiZQd"
+    dogami_gap: "KT1CAbPGHUWvkSA9bxMPkqSgabgsjtmRYEda"
