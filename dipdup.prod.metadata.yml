@@ -53,25 +53,25 @@ templates:
         path: store.records
 
 indexes:
-  tzprofiles_originations:
-    kind: operation
-    datasource: tzkt
-    types:
-      - origination
-    handlers:
-       - callback: on_tzprofile_factory_origination
-         pattern:
-           - type: origination
-             similar_to: tzprofile
-       - callback: on_tzprofile_factory_origination
-         pattern:
-           - type: origination
-             similar_to: tzprofile_old
-  tezos_domains_big_map_mainnet:
-    template: tezos_domains_big_map
-    values:
-      datasource: tzkt
-      name_registry: tezos_domains_registry
+#  tzprofiles_originations:
+#    kind: operation
+#    datasource: tzkt
+#    types:
+#      - origination
+#    handlers:
+#       - callback: on_tzprofile_factory_origination
+#         pattern:
+#           - type: origination
+#             similar_to: tzprofile
+#       - callback: on_tzprofile_factory_origination
+#         pattern:
+#           - type: origination
+#             similar_to: tzprofile_old
+#  tezos_domains_big_map_mainnet:
+#    template: tezos_domains_big_map
+#    values:
+#      datasource: tzkt
+#      name_registry: tezos_domains_registry
 
 hooks:
   process_missing_metadata_for_token:
