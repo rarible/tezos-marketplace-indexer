@@ -6,6 +6,7 @@ from uuid import uuid5
 
 from dipdup.models import Model
 from dipdup.models import Transaction
+from tortoise import ForeignKeyFieldInstance
 from tortoise import fields
 
 from rarible_marketplace_indexer.types.rarible_api_objects.asset.enum import AssetClassEnum
@@ -264,3 +265,50 @@ class Collection(Model):
 
     def full_id(self):
         return f"{self.contract}"
+
+
+class TZProfile(Model):
+    class Meta:
+        table = "tzprofiles"
+
+    account = fields.CharField(36, pk=True)
+    contract = fields.CharField(36)
+    valid_claims = fields.JSONField()
+    invalid_claims = fields.JSONField()
+    errored = fields.BooleanField()
+    alias = fields.TextField(null=True)
+    description = fields.TextField(null=True)
+    logo = fields.TextField(null=True)
+    website = fields.TextField(null=True)
+    twitter = fields.CharField(max_length=256, null=True)
+    domain_name = fields.TextField(null=True)
+    discord = fields.CharField(max_length=256, null=True)
+    github = fields.CharField(max_length=256, null=True)
+    ethereum = fields.CharField(max_length=42, null=True)
+
+
+class TLD(Model):
+    class Meta:
+        table = "tezos_domains_tld"
+
+    id = fields.CharField(max_length=255, pk=True)
+    owner = fields.CharField(max_length=36)
+
+
+class Domain(Model):
+    class Meta:
+        table = "tezos_domains_domain"
+
+    id = fields.CharField(max_length=255, pk=True)
+    tld: ForeignKeyFieldInstance[TLD] = fields.ForeignKeyField('models.TLD', 'domains')
+    owner = fields.CharField(max_length=36)
+    token_id = fields.BigIntField(null=True)
+
+
+class Record(Model):
+    class Meta:
+        table = "tezos_domains_record"
+
+    id = fields.CharField(max_length=255, pk=True)
+    domain: ForeignKeyFieldInstance[Domain] = fields.ForeignKeyField('models.Domain', 'records')
+    address = fields.CharField(max_length=36, null=True)

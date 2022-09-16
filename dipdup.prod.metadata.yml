@@ -3,7 +3,7 @@ spec_version: 1.2
 datasources:
   tzkt:
     kind: tzkt
-    url: ${TZKT_URL:-https://api.ghostnet.tzkt.io}
+    url: ${TZKT_URL:-https://api.tzkt.io}
     http:
       connection_timeout: 60
   metadata:
@@ -13,6 +13,65 @@ datasources:
   ipfs:
     kind: ipfs
     url: https://ipfs.io/ipfs
+
+contracts:
+  tzprofile_old:
+    address: KT1KsmdYxuJHCMqLRX1PH7JJeXvXaMeicEa7
+    typename: tzprofile
+  tzprofile:
+    address: KT1G6jaUQkRcxJcnrNLjCTn7xgD686PM2mEd
+    typename: tzprofile
+  tezos_domains_registry:
+    address: KT1GBZmSxmnKJXGMdMLbugPfLyUPmuLSMwKS
+    typename: tezos_domains_registry
+
+templates:
+  tzprofiles:
+    kind: operation
+    datasource: tzkt
+    contracts:
+      - <contract>
+    types:
+      - transaction
+      - origination
+    handlers:
+      - callback: on_tzprofile_origination
+        pattern:
+          - type: origination
+            originated_contract: <contract>
+      - callback: on_tzprofile_update
+        pattern:
+          - destination: <contract>
+            entrypoint: default
+  tezos_domains_big_map:
+    kind: big_map
+    datasource: <datasource>
+    skip_history: once
+    handlers:
+      - callback: on_tezos_domains_update_records
+        contract: <name_registry>
+        path: store.records
+
+indexes:
+#  tzprofiles_originations:
+#    kind: operation
+#    datasource: tzkt
+#    types:
+#      - origination
+#    handlers:
+#       - callback: on_tzprofile_factory_origination
+#         pattern:
+#           - type: origination
+#             similar_to: tzprofile
+#       - callback: on_tzprofile_factory_origination
+#         pattern:
+#           - type: origination
+#             similar_to: tzprofile_old
+#  tezos_domains_big_map_mainnet:
+#    template: tezos_domains_big_map
+#    values:
+#      datasource: tzkt
+#      name_registry: tezos_domains_registry
 
 hooks:
   process_missing_metadata_for_token:
@@ -34,6 +93,7 @@ advanced:
   rollback_depth: 2
   early_realtime: True
   metadata_interface: True
+  merge_subscriptions: True
   reindex:
     manual: wipe
     migration: exception
@@ -50,3 +110,4 @@ custom:
     mechanism: ${KAFKA_SASL_MECHANISM:-PLAIN}
     username: ${KAFKA_USERNAME:-rarible}
     password: ${KAFKA_PASSWORD:-changeme}
+  run_fix_jobs: False

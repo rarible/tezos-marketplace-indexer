@@ -219,3 +219,4 @@ custom:
     password: ${KAFKA_PASSWORD:-changeme}
   fxhash_nft_v1: KT1BEc3m6yxN856Y4zfArpDqQ1uZZ1HkDTRh
   fxhash_nft_v2: KT1WSwXCWPPAxAy4ibPmFyCm4NhmSJT9UuxQ
+  run_fix_jobs: False
