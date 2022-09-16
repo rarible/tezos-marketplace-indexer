@@ -3,8 +3,8 @@ import os
 from typing import List
 
 from dipdup.context import HookContext
-from rarible_marketplace_indexer.jobs.metadata import process_metadata
 
+from rarible_marketplace_indexer.jobs.metadata import process_metadata
 from rarible_marketplace_indexer.models import Collection
 from rarible_marketplace_indexer.models import IndexEnum
 

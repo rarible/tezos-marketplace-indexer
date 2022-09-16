@@ -3,8 +3,8 @@ import logging
 import aiohttp
 import requests
 import warlock
+from dipdup.context import DipDupContext
 
-from dipdup.context import HookContext
 from rarible_marketplace_indexer.models import IndexEnum
 
 collection_metadata_schema = {
@@ -501,7 +501,7 @@ def is_token_metadata_valid(metadata):
         return False
 
 
-async def fetch_metadata(ctx: HookContext, metadata_url: str):
+async def fetch_metadata(ctx: DipDupContext, metadata_url: str):
     logger = logging.getLogger('metadata')
     if metadata_url is not None and metadata_url != b'':
         value = metadata_url["value"]
@@ -537,7 +537,7 @@ async def fetch_metadata(ctx: HookContext, metadata_url: str):
                 return None
 
 
-async def get_collection_metadata(ctx: HookContext, asset_id: str):
+async def get_collection_metadata(ctx: DipDupContext, asset_id: str):
     contract_metadata = await ctx.get_metadata_datasource('metadata').get_contract_metadata(asset_id)
     if contract_metadata is None:
         tzkt = ctx.get_tzkt_datasource("tzkt")
@@ -546,13 +546,14 @@ async def get_collection_metadata(ctx: HookContext, asset_id: str):
             url=f'v1/contracts/{asset_id}/bigmaps/metadata/keys/""',
         )
         contract_metadata = await fetch_metadata(ctx, metadata_url_raw)
-    if is_collection_metadata_valid(contract_metadata):
-        return contract_metadata
-    else:
-        return None
+    return contract_metadata
+    # if is_collection_metadata_valid(contract_metadata):
+    #     return contract_metadata
+    # else:
+    #     return None
 
 
-async def get_token_metadata(ctx: HookContext, asset_id: str):
+async def get_token_metadata(ctx: DipDupContext, asset_id: str):
     parsed_id = asset_id.split(":")
     if len(parsed_id) != 2:
         raise Exception(f"Invalid Token ID: {asset_id}")
@@ -566,13 +567,14 @@ async def get_token_metadata(ctx: HookContext, asset_id: str):
             url=f'v1/contracts/{contract}/bigmaps/token_metadata/keys/{token_id}',
         )
         token_metadata = await fetch_metadata(ctx, metadata_url_raw)
-    if is_token_metadata_valid(token_metadata):
-        return token_metadata
-    else:
-        return None
+    return token_metadata
+    # if is_token_metadata_valid(token_metadata):
+    #     return token_metadata
+    # else:
+    #     return None
 
 
-async def process_metadata(ctx: HookContext, asset_type: str, asset_id: str):
+async def process_metadata(ctx: DipDupContext, asset_type: str, asset_id: str):
     try:
         if asset_type is IndexEnum.COLLECTION:
             return get_collection_metadata(ctx, asset_id)

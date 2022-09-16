@@ -22,7 +22,7 @@ class RaribleApiOwnershipFactory:
                 owner=ownership.owner,
                 balance=ownership.balance,
                 updated=ownership.updated,
-                created=ownership.created
+                created=ownership.created,
             ),
         )
 

@@ -3,6 +3,7 @@ import logging
 import os
 import random
 import string
+import urllib
 import uuid
 from datetime import datetime
 from typing import Dict
@@ -10,19 +11,17 @@ from typing import List
 from typing import Optional
 from uuid import uuid5
 
-import aiohttp
 import requests
-import warlock as warlock
 from base58 import b58encode_check
-from dipdup.context import HookContext
+from dipdup.context import DipDupContext
 from pytezos import MichelsonType
 from pytezos import michelson_to_micheline
+from requests import Response
 
 from rarible_marketplace_indexer.event.dto import MakeDto
 from rarible_marketplace_indexer.event.dto import TakeDto
 from rarible_marketplace_indexer.models import ActivityModel
 from rarible_marketplace_indexer.models import ActivityTypeEnum
-from rarible_marketplace_indexer.models import IndexEnum
 from rarible_marketplace_indexer.models import LegacyOrderModel
 from rarible_marketplace_indexer.models import OrderModel
 from rarible_marketplace_indexer.models import OrderStatusEnum
@@ -454,3 +453,16 @@ def get_kafka_key(api_object: AbstractRaribleApiObject) -> str:
     else:
         key = str(api_object.id)
     return key
+
+
+async def get_key_for_big_map(ctx: DipDupContext, contract: str, name: str, key: str) -> Response:
+    class PayloadSafeSession(requests.Session):
+        def send(self, *a, **kw):
+            a[0].url = urllib.parse.unquote(a[0].url)
+            return requests.Session.send(self, *a, **kw)
+
+    s = PayloadSafeSession()
+    return s.get(
+        f'{ctx.config.get_tzkt_datasource("tzkt").url}/v1/contracts/{contract}/bigmaps/'
+        f'{name}/keys/' + urllib.parse.unquote(key)
+    )

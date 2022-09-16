@@ -83,7 +83,7 @@ async def on_transfer(ctx: HandlerContext, token_transfer: TokenTransferData) ->
                         owner=token_transfer.to_address,
                         balance=token_transfer.amount,
                         updated=token_transfer.timestamp,
-                        created=token_transfer.timestamp
+                        created=token_transfer.timestamp,
                     )
                 else:
                     ownership_to.balance += token_transfer.amount
