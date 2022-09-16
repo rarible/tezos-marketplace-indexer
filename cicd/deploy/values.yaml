@@ -1,12 +1,8 @@
 tezos-marketplace-indexer-rarible:
   image:
     repository: tezos-marketplace-indexer
-  command: [
-    "dipdup", "hasura", "configure", "--force", "&&",
-    "dipdup", "-c", "dipdup.yml",
-    "-c", 'dipdup.{{ include "app.env" $ }}.rarible.yml',
-    "run"
-    ]
+  command: [ "/bin/sh", "-c" ]
+  args: [ 'dipdup hasura configure --force && dipdup.yml -c dipdup.{{ include "app.env" $ }}.rarible.yml run' ]
   environments:
     APPLICATION_ENVIRONMENT: '{{ include "app.env" $ }}'
     KAFKA_ENABLED: "true"
