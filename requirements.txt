@@ -12,3 +12,5 @@ pytezos==3.6.1
 attrs==21.4.0
 click==8.0.4
 warlock==2.0.1
+tenacity==8.0.1
+didkit==0.3.1
