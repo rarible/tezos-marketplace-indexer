@@ -10,17 +10,16 @@ from rarible_marketplace_indexer.models import Token
 from rarible_marketplace_indexer.models import TokenTransfer
 
 
-def ownership_id(token_transfer: TokenTransferData, owner):
-    return f"{token_transfer.contract_address}:{token_transfer.token_id}:{owner}"
-
-
 async def on_transfer(ctx: HandlerContext, token_transfer: TokenTransferData) -> None:
     logger = logging.getLogger('dipdup.on_transfer')
 
     if token_transfer.standard == TokenStandard.FA2:
         null_addresses = [None, "tz1burnburnburnburnburnburnburjAYjjX", "tz1Ke2h7sDdakHJQh8WX4Z372du1KChsksyU"]
         transfer = await TokenTransfer.get_or_none(id=token_transfer.id)
-        token_id = f"{token_transfer.contract_address}:{token_transfer.token_id}"
+        token_id = Token.get_id(token_transfer.contract_address, token_transfer.token_id)
+        ownership_id = Ownership.get_id(
+            token_transfer.contract_address, token_transfer.token_id, token_transfer.to_address
+        )
         if transfer is None:
             is_mint = token_transfer.from_address is None
             minted = None
@@ -36,12 +35,10 @@ async def on_transfer(ctx: HandlerContext, token_transfer: TokenTransferData) ->
                 and token_transfer.amount > 0
             )
             if is_transfer_to:
-                ownership_to = await Ownership.get_or_none(id=ownership_id(token_transfer, token_transfer.to_address))
+                ownership_to = await Ownership.get_or_none(id=ownership_id)
             is_transfer_from = token_transfer.from_address is not None and token_transfer.amount > 0
             if is_transfer_from:
-                ownership_from = await Ownership.get_or_none(
-                    id=ownership_id(token_transfer, token_transfer.from_address)
-                )
+                ownership_from = await Ownership.get_or_none(id=ownership_id)
 
             # persist
             if is_mint:
@@ -57,6 +54,8 @@ async def on_transfer(ctx: HandlerContext, token_transfer: TokenTransferData) ->
                         updated=token_transfer.timestamp,
                         metadata_synced=False,
                         metadata_retries=0,
+                        royalties_synced=False,
+                        royalties_retries=0,
                     )
                 else:
                     minted.minted += token_transfer.amount
@@ -77,7 +76,7 @@ async def on_transfer(ctx: HandlerContext, token_transfer: TokenTransferData) ->
             if is_transfer_to:
                 if ownership_to is None:
                     ownership_to = Ownership(
-                        id=ownership_id(token_transfer, token_transfer.to_address),
+                        id=ownership_id,
                         contract=token_transfer.contract_address,
                         token_id=token_transfer.token_id,
                         owner=token_transfer.to_address,

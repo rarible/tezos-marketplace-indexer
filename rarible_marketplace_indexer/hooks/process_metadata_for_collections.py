@@ -9,7 +9,7 @@ from rarible_marketplace_indexer.models import Collection
 from rarible_marketplace_indexer.models import IndexEnum
 
 
-async def process_missing_metadata_for_collection(
+async def process_metadata_for_collections(
     ctx: HookContext,
 ) -> None:
     logging.getLogger("dipdup.kafka").disabled = True

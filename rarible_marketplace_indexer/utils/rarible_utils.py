@@ -466,3 +466,12 @@ async def get_key_for_big_map(ctx: DipDupContext, contract: str, name: str, key:
         f'{ctx.config.get_tzkt_datasource("tzkt").url}/v1/contracts/{contract}/bigmaps/'
         f'{name}/keys/' + urllib.parse.unquote(key)
     )
+
+
+async def get_bidou_data(ctx: DipDupContext, contract: str, token_id: str):
+    try:
+        key = await get_key_for_big_map(ctx, contract, "rgb", token_id)
+        bidou_data = key.json().get("value")
+        return bidou_data
+    except Exception as ex:
+        raise Exception(f"Could not fetch data for bidou token: ${ex}")

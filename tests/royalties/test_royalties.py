@@ -7,7 +7,7 @@ from dipdup.config import DipDupConfig
 from dipdup.config import SqliteDatabaseConfig
 from dipdup.dipdup import DipDup
 
-from rarible_marketplace_indexer.jobs.royalties import process_royalties
+from rarible_marketplace_indexer.jobs.royalties import fetch_royalties
 
 config_path = join(dirname(__file__), 'royalties_config.yml')
 config = DipDupConfig.load([config_path])
@@ -33,7 +33,7 @@ class RoyaltiesTest(IsolatedAsyncioTestCase):
         async with AsyncExitStack() as stack:
             dipdup = await create_test_dipdup(config, stack)
             ctx = dipdup._ctx
-            r = await process_royalties(ctx, "KT1RJ6PbjHpwc3M5rw5s2Nbmefwbuwbdxton", "717867")
+            r = await fetch_royalties(ctx, "KT1RJ6PbjHpwc3M5rw5s2Nbmefwbuwbdxton", "717867")
             self.assertEqual(1, len(r))
             self.assertEqual("tz1ZqdrwVRUs8H1Vts2pFvmR1PLikE8eBVZv", r[0].part_account)
             self.assertEqual("1500", r[0].part_value)
@@ -42,7 +42,7 @@ class RoyaltiesTest(IsolatedAsyncioTestCase):
         async with AsyncExitStack() as stack:
             dipdup = await create_test_dipdup(config, stack)
             ctx = dipdup._ctx
-            r = await process_royalties(ctx, "KT1EpGgjQs73QfFJs9z7m1Mxm5MTnpC2tqse", "53057")
+            r = await fetch_royalties(ctx, "KT1EpGgjQs73QfFJs9z7m1Mxm5MTnpC2tqse", "53057")
             self.assertEqual(1, len(r))
             self.assertEqual("tz1gSCfWiPL8e6us331gtHCvJr9Cuf3jX8g6", r[0].part_account)
             self.assertEqual("1000", r[0].part_value)
@@ -51,7 +51,7 @@ class RoyaltiesTest(IsolatedAsyncioTestCase):
         async with AsyncExitStack() as stack:
             dipdup = await create_test_dipdup(config, stack)
             ctx = dipdup._ctx
-            r = await process_royalties(ctx, "KT1RCzrLhBpdKXkyasKGpDTCcdbBTipUk77x", "5492")
+            r = await fetch_royalties(ctx, "KT1RCzrLhBpdKXkyasKGpDTCcdbBTipUk77x", "5492")
             self.assertEqual(1, len(r))
             self.assertEqual("tz1ZLRT3xiBgGRdNrTYXr8Stz4TppT3hukRi", r[0].part_account)
             self.assertEqual("700", r[0].part_value)
@@ -60,7 +60,7 @@ class RoyaltiesTest(IsolatedAsyncioTestCase):
         async with AsyncExitStack() as stack:
             dipdup = await create_test_dipdup(config, stack)
             ctx = dipdup._ctx
-            r = await process_royalties(ctx, "KT1KEa8z6vWXDJrVqtMrAeDVzsvxat3kHaCE", "522648")
+            r = await fetch_royalties(ctx, "KT1KEa8z6vWXDJrVqtMrAeDVzsvxat3kHaCE", "522648")
             self.assertEqual(1, len(r))
             self.assertEqual("tz1b8GULAVKS1oHpYLJbwuTKvUegXtRbxH82", r[0].part_account)
             self.assertEqual("1500", r[0].part_value)
@@ -69,7 +69,7 @@ class RoyaltiesTest(IsolatedAsyncioTestCase):
         async with AsyncExitStack() as stack:
             dipdup = await create_test_dipdup(config, stack)
             ctx = dipdup._ctx
-            r = await process_royalties(ctx, "KT1U6EHmNxJTkvaWJ4ThczG4FSDaHC21ssvi", "638313")
+            r = await fetch_royalties(ctx, "KT1U6EHmNxJTkvaWJ4ThczG4FSDaHC21ssvi", "638313")
             self.assertEqual(2, len(r))
             self.assertEqual("tz1NpUTYsVB2Hdci6ycdWdTz66GvR5oLqQp8", r[0].part_account)
             self.assertEqual("550", r[0].part_value)
@@ -80,7 +80,7 @@ class RoyaltiesTest(IsolatedAsyncioTestCase):
         async with AsyncExitStack() as stack:
             dipdup = await create_test_dipdup(config, stack)
             ctx = dipdup._ctx
-            r = await process_royalties(ctx, "KT1LjmAdYQCLBjwv4S2oFkEzyHVkomAf5MrW", "19471")
+            r = await fetch_royalties(ctx, "KT1LjmAdYQCLBjwv4S2oFkEzyHVkomAf5MrW", "19471")
             self.assertEqual(1, len(r))
             self.assertEqual("tz1VNAyq17Xpz8QpbxMepbfdrcqNkomeKP35", r[0].part_account)
             self.assertEqual("2500", r[0].part_value)
@@ -89,7 +89,7 @@ class RoyaltiesTest(IsolatedAsyncioTestCase):
         async with AsyncExitStack() as stack:
             dipdup = await create_test_dipdup(config, stack)
             ctx = dipdup._ctx
-            r = await process_royalties(ctx, "KT18pVpRXKPY2c4U2yFEGSH3ZnhB2kL8kwXS", "54686")
+            r = await fetch_royalties(ctx, "KT18pVpRXKPY2c4U2yFEGSH3ZnhB2kL8kwXS", "54686")
             self.assertEqual(1, len(r))
             self.assertEqual("tz2G4MMCYStTP9eUU35WQCqMSSJGtjJRZx9g", r[0].part_account)
             self.assertEqual("1000", r[0].part_value)
@@ -98,7 +98,7 @@ class RoyaltiesTest(IsolatedAsyncioTestCase):
         async with AsyncExitStack() as stack:
             dipdup = await create_test_dipdup(config, stack)
             ctx = dipdup._ctx
-            r = await process_royalties(ctx, "KT1EffErZNVCPXW2trCMD5gGkACdAbAzj4tT", "0")
+            r = await fetch_royalties(ctx, "KT1EffErZNVCPXW2trCMD5gGkACdAbAzj4tT", "0")
             self.assertEqual(1, len(r))
             self.assertEqual("tz2L6ikhCEHz9rZnZWobd7jFSJ6KfkESSP88", r[0].part_account)
             self.assertEqual("1000", r[0].part_value)
@@ -107,7 +107,7 @@ class RoyaltiesTest(IsolatedAsyncioTestCase):
         async with AsyncExitStack() as stack:
             dipdup = await create_test_dipdup(config, stack)
             ctx = dipdup._ctx
-            r = await process_royalties(ctx, "KT1PNcZQkJXMQ2Mg92HG1kyrcu3auFX5pfd8", "897")
+            r = await fetch_royalties(ctx, "KT1PNcZQkJXMQ2Mg92HG1kyrcu3auFX5pfd8", "897")
             self.assertEqual(1, len(r))
             self.assertEqual("tz1SLgrDBpFWjGCnCwyNpCpQC1v8v2N8M2Ks", r[0].part_account)
             self.assertEqual("500", r[0].part_value)
@@ -116,7 +116,7 @@ class RoyaltiesTest(IsolatedAsyncioTestCase):
         async with AsyncExitStack() as stack:
             dipdup = await create_test_dipdup(config, stack)
             ctx = dipdup._ctx
-            r = await process_royalties(ctx, "KT1QkWhenHZGrRHjrpJMJKYtbJLLy1J6Zk5j", "149")
+            r = await fetch_royalties(ctx, "KT1QkWhenHZGrRHjrpJMJKYtbJLLy1J6Zk5j", "149")
             self.assertEqual(1, len(r))
             self.assertEqual("tz1e91CZhDWn5v4WAmYojVtKt7ECC5SNtf1c", r[0].part_account)
             self.assertEqual("1000", r[0].part_value)
@@ -125,7 +125,7 @@ class RoyaltiesTest(IsolatedAsyncioTestCase):
         async with AsyncExitStack() as stack:
             dipdup = await create_test_dipdup(config, stack)
             ctx = dipdup._ctx
-            r = await process_royalties(ctx, "KT1N4Rrm6BU6229drs6scrH3vard1pPngMyA", "1")
+            r = await fetch_royalties(ctx, "KT1N4Rrm6BU6229drs6scrH3vard1pPngMyA", "1")
             self.assertEqual(1, len(r))
             self.assertEqual("tz2L6ikhCEHz9rZnZWobd7jFSJ6KfkESSP88", r[0].part_account)
             self.assertEqual("1500", r[0].part_value)
@@ -134,7 +134,7 @@ class RoyaltiesTest(IsolatedAsyncioTestCase):
         async with AsyncExitStack() as stack:
             dipdup = await create_test_dipdup(config, stack)
             ctx = dipdup._ctx
-            r = await process_royalties(ctx, "KT1LRLiZni9vRBUf78bzkKcAxTdchY1k5WjE", "1")
+            r = await fetch_royalties(ctx, "KT1LRLiZni9vRBUf78bzkKcAxTdchY1k5WjE", "1")
             self.assertEqual(1, len(r))
             self.assertEqual("tz1bJhxQejTtMNLwxf4BcNpYrNmLRcFycShL", r[0].part_account)
             self.assertEqual("500", r[0].part_value)
@@ -147,3 +147,21 @@ class RoyaltiesTest(IsolatedAsyncioTestCase):
     #         self.assertEqual(1, len(r))
     #         self.assertEqual("tz1bJhxQejTtMNLwxf4BcNpYrNmLRcFycShL", r[0].part_account)
     #         self.assertEqual("500", r[0].part_value)
+
+    async def test_royalties_bidou_8x8(self) -> None:
+        async with AsyncExitStack() as stack:
+            dipdup = await create_test_dipdup(config, stack)
+            ctx = dipdup._ctx
+            r = await fetch_royalties(ctx, "KT1MxDwChiDwd6WBVs24g1NjERUoK622ZEFp", "69")
+            self.assertEqual(1, len(r))
+            self.assertEqual("tz2QhmKtUWRyArfaqfBedvVdidgKpCcckMXV", r[0].part_account)
+            self.assertEqual("1000", r[0].part_value)
+
+    async def test_royalties_bidou_24x24(self) -> None:
+        async with AsyncExitStack() as stack:
+            dipdup = await create_test_dipdup(config, stack)
+            ctx = dipdup._ctx
+            r = await fetch_royalties(ctx, "KT1TR1ErEQPTdtaJ7hbvKTJSa1tsGnHGZTpf", "1853")
+            self.assertEqual(1, len(r))
+            self.assertEqual("tz1a9QWs5PdGwpaJ37PMqaYwzufbseDm1KWv", r[0].part_account)
+            self.assertEqual("1500", r[0].part_value)
