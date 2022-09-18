@@ -250,6 +250,7 @@ class Token(Model):
     tzkt_id = fields.BigIntField()
     contract = AccountAddressField(null=False)
     token_id = fields.TextField(null=False)
+    creator = AccountAddressField(null=True)
     minted_at = fields.DatetimeField(null=False)
     minted = AssetValueField()
     supply = AssetValueField()

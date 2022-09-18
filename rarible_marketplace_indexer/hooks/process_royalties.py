@@ -32,6 +32,7 @@ async def process_royalties(
                 id=token.id, contract=token.contract, token_id=token.token_id, parts=get_json_parts(royalties)
             )
             token.royalties_synced = True
+            token.creator = royalties[0].part_account
             logger.info(
                 f"Successfully saved royalties for {token.contract}:{token.token_id} (retries {token.metadata_retries})"
             )
