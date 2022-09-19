@@ -66,6 +66,14 @@ class MetadataTest(IsolatedAsyncioTestCase):
             self.assertIsNotNone(metadata)
             self.assertEqual("Bear 5492", metadata.get("name"))
 
+    async def test_token_metadata_standard_non_tzkt(self) -> None:
+        async with AsyncExitStack() as stack:
+            dipdup = await create_test_dipdup(config, stack)
+            ctx = dipdup._ctx
+            metadata = await process_metadata(ctx, IndexEnum.NFT, "KT1RvZVDVbZzURnaRmdX2PtbYDVwiuxKQ1tE:51")
+            self.assertIsNotNone(metadata)
+            self.assertEqual("Basquidoo #048", metadata.get("name"))
+
     async def test_collection_metadata_rarible_non_standard(self) -> None:
         async with AsyncExitStack() as stack:
             dipdup = await create_test_dipdup(config, stack)

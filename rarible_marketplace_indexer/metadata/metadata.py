@@ -506,11 +506,8 @@ def is_token_metadata_valid(metadata):
 async def fetch_metadata(ctx: DipDupContext, metadata_url: str):
     logger = logging.getLogger('metadata')
     if metadata_url is not None and metadata_url != b'':
-        value = metadata_url["value"]
-        if type(value) is dict:
-            return value
-        url = bytes.fromhex(value).decode("utf-8")
-        if url.startswith("http"):
+        url = bytes.fromhex(metadata_url).decode("utf-8")
+        if url.startswith("http") or url.startswith("https"):
             response = requests.get(url)
             if response.ok:
                 try:
@@ -537,7 +534,13 @@ async def fetch_metadata(ctx: DipDupContext, metadata_url: str):
             except aiohttp.client_exceptions.ClientResponseError as error:
                 logger.warning(f"Could not parse metadata: {error}")
                 return None
-
+        else:
+            try:
+                metadata = await ctx.get_ipfs_datasource("ipfs").get(url)
+                return metadata
+            except aiohttp.client_exceptions.ClientResponseError as error:
+                logger.warning(f"Could not parse metadata: {error}")
+                return None
 
 async def get_collection_metadata(ctx: DipDupContext, asset_id: str):
     try:
@@ -546,7 +549,8 @@ async def get_collection_metadata(ctx: DipDupContext, asset_id: str):
             metadata_url_raw = await get_key_for_big_map(ctx, asset_id, "metadata", '""')
             if metadata_url_raw.status_code == 200:
                 metadata_url_json = metadata_url_raw.json()
-                contract_metadata = await fetch_metadata(ctx, metadata_url_json)
+                metadata_url = metadata_url_json.get("value")
+                contract_metadata = await fetch_metadata(ctx, metadata_url)
             if contract_metadata is None:
                 name_result = await get_key_for_big_map(ctx, asset_id, "metadata", "name")
                 if name_result.status_code == 200:
@@ -590,8 +594,12 @@ async def get_token_metadata(ctx: DipDupContext, asset_id: str):
     else:
         token_metadata = await ctx.get_metadata_datasource('metadata').get_token_metadata(contract, token_id)
         if token_metadata is None:
-            metadata_url_raw = await get_key_for_big_map(ctx, contract, "token_metadata", token_id)
-            token_metadata = await fetch_metadata(ctx, metadata_url_raw)
+            metadata_url_response = await get_key_for_big_map(ctx, contract, "token_metadata", token_id)
+            if metadata_url_response.status_code == 200:
+                metadata_raw = metadata_url_response.json().get("value")
+                token_info = metadata_raw.get("token_info")
+                metadata_url = token_info.get("")
+                token_metadata = await fetch_metadata(ctx, metadata_url)
     return token_metadata
     # if is_token_metadata_valid(token_metadata):
     #     return token_metadata
