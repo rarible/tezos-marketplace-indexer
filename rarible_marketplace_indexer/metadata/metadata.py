@@ -555,10 +555,10 @@ async def get_collection_metadata(ctx: DipDupContext, asset_id: str):
                 name_result = await get_key_for_big_map(ctx, asset_id, "metadata", "name")
                 if name_result.status_code == 200:
                     name_raw = name_result.json().get("value")
-                contract_metadata = {"name": bytes.fromhex(name_raw).decode("utf-8")}
+                    contract_metadata = {"name": bytes.fromhex(name_raw).decode("utf-8")}
         return contract_metadata
     except Exception as ex:
-        logging.getLogger('collection').warning(f"Could not fetch metadata for collection {asset_id}: {ex}")
+        logging.getLogger('collection_metadata').warning(f"Could not fetch metadata for collection {asset_id}: {ex}")
         return None
     # if is_collection_metadata_valid(contract_metadata):
     #     return contract_metadata
