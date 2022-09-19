@@ -215,8 +215,8 @@ class TokenTransfer(Model):
 
 class Ownership(Model):
     _custom_generated_pk = True
-    id = fields.TextField(pk=True, generated=False, required=True, null=False)
 
+    id = fields.UUIDField(pk=True, generated=False, required=True, null=False)
     contract = AccountAddressField(null=False)
     token_id = fields.TextField(null=False)
     owner = AccountAddressField(null=False)
@@ -224,8 +224,20 @@ class Ownership(Model):
     updated = fields.DatetimeField(null=False)
     created = fields.DatetimeField(null=False)
 
+    def __init__(self, **kwargs: Any) -> None:
+        try:
+            kwargs['id'] = self.get_id(**kwargs)
+        except TypeError:
+            pass
+        super().__init__(**kwargs)
+
     def full_id(self):
         return f"{self.contract}:{self.token_id}:{self.owner}"
+
+    @staticmethod
+    def get_id(contract, token_id, owner, *args, **kwargs):
+        oid = '.'.join(map(str, filter(bool, [contract, token_id, owner])))
+        return uuid5(namespace=uuid.NAMESPACE_OID, name=oid)
 
 
 class Token(Model):
@@ -234,21 +246,39 @@ class Token(Model):
 
     _custom_generated_pk = True
 
-    id = fields.TextField(pk=True, generated=False, required=True, null=False)
+    id = fields.UUIDField(pk=True, generated=False, required=True, null=False)
     tzkt_id = fields.BigIntField()
     contract = AccountAddressField(null=False)
     token_id = fields.TextField(null=False)
+    creator = AccountAddressField(null=True)
     minted_at = fields.DatetimeField(null=False)
     minted = AssetValueField()
     supply = AssetValueField()
     deleted = fields.BooleanField(default=False)
     updated = fields.DatetimeField(null=False)
     metadata_synced = fields.BooleanField(required=True)
+    royalties_synced = fields.BooleanField(required=True)
     metadata_retries = fields.IntField(required=True)
+    royalties_retries = fields.IntField(required=True)
     db_updated_at = fields.DatetimeField(auto_now=True)
+
+    def __init__(self, **kwargs: Any) -> None:
+        try:
+            kwargs['id'] = self.get_id(**kwargs)
+        except TypeError:
+            pass
+        super().__init__(**kwargs)
 
     def full_id(self):
         return f"{self.contract}:{self.token_id}"
+
+    @staticmethod
+    def get_id(contract, token_id, *args, **kwargs):
+        assert contract
+        assert token_id is not None
+
+        oid = '.'.join(map(str, filter(bool, [contract, token_id])))
+        return uuid5(namespace=uuid.NAMESPACE_OID, name=oid)
 
 
 class Collection(Model):
@@ -265,6 +295,31 @@ class Collection(Model):
 
     def full_id(self):
         return f"{self.contract}"
+
+
+class Royalties(Model):
+    class Meta:
+        table = "royalties"
+
+    id = fields.UUIDField(pk=True, generated=False, required=True)
+    contract = AccountAddressField(null=False)
+    token_id = fields.TextField(null=False)
+    parts = fields.JSONField()
+
+    def __init__(self, **kwargs: Any) -> None:
+        try:
+            kwargs['id'] = self.get_id(**kwargs)
+        except TypeError:
+            pass
+        super().__init__(**kwargs)
+
+    @staticmethod
+    def get_id(contract, token_id, *args, **kwargs):
+        assert contract
+        assert token_id is not None
+
+        oid = '.'.join(map(str, filter(bool, [contract, token_id])))
+        return uuid5(namespace=uuid.NAMESPACE_OID, name=oid)
 
 
 class TZProfile(Model):

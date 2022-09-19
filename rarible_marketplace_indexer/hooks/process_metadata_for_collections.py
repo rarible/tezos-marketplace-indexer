@@ -4,12 +4,12 @@ from typing import List
 
 from dipdup.context import HookContext
 
+from rarible_marketplace_indexer.jobs.metadata import process_metadata
 from rarible_marketplace_indexer.models import Collection
 from rarible_marketplace_indexer.models import IndexEnum
-from rarible_marketplace_indexer.utils.rarible_utils import process_metadata
 
 
-async def process_missing_metadata_for_collection(
+async def process_metadata_for_collections(
     ctx: HookContext,
 ) -> None:
     logging.getLogger("dipdup.kafka").disabled = True
