@@ -5,7 +5,7 @@ tezos-marketplace-indexer-rarible:
     "dipdup", "-c", "dipdup.yml",
     "-c", 'dipdup.{{ include "app.env" $ }}.rarible.yml',
     "run"
-    ]
+  ]
   environments:
     APPLICATION_ENVIRONMENT: '{{ include "app.env" $ }}'
     KAFKA_ENABLED: "true"
