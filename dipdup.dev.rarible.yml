@@ -131,3 +131,4 @@ custom:
   token_indexing:
     enabled: true
   run_fix_jobs: False
+  first_collection_level: 0

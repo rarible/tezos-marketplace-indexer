@@ -3,9 +3,9 @@ from typing import List
 
 from dipdup.context import HookContext
 
-from rarible_marketplace_indexer.jobs.royalties import fetch_royalties
 from rarible_marketplace_indexer.models import Royalties
 from rarible_marketplace_indexer.models import Token
+from rarible_marketplace_indexer.royalties.royalties import fetch_royalties
 from rarible_marketplace_indexer.utils.rarible_utils import get_json_parts
 
 
@@ -15,7 +15,7 @@ async def process_royalties(
     logging.getLogger("dipdup.kafka").disabled = True
     logger = logging.getLogger("royalties")
     logger.setLevel("INFO")
-    logger.info("Starting royalties job")
+    logger.info("Running royalties job")
     missing_royalties_tokens: List[Token] = await Token.filter(
         royalties_synced=False,
         royalties_retries__lt=5,
@@ -29,7 +29,10 @@ async def process_royalties(
             )
         else:
             await Royalties.update_or_create(
-                id=token.id, contract=token.contract, token_id=token.token_id, parts=get_json_parts(royalties)
+                id=Royalties.get_id(token.contract, token.id),
+                contract=token.contract,
+                token_id=token.token_id,
+                parts=get_json_parts(royalties),
             )
             token.royalties_synced = True
             token.creator = royalties[0].part_account
@@ -37,3 +40,4 @@ async def process_royalties(
                 f"Successfully saved royalties for {token.contract}:{token.token_id} (retries {token.metadata_retries})"
             )
         await token.save()
+    logger.info("Royalties job finished")

@@ -30,6 +30,12 @@ indexes:
     handlers:
       - callback: on_transfer
 
+  originations:
+    kind: head
+    datasource: tzkt
+    handlers:
+      - callback: on_head
+
   rarible_exchange_actions:
     kind: operation
     datasource: tzkt
@@ -119,3 +125,4 @@ custom:
     username: ${KAFKA_USERNAME:-rarible}
     password: ${KAFKA_PASSWORD:-changeme}
   run_fix_jobs: True
+  first_collection_level: 1212043

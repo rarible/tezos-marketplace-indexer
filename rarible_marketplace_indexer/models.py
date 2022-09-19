@@ -322,6 +322,39 @@ class Royalties(Model):
         return uuid5(namespace=uuid.NAMESPACE_OID, name=oid)
 
 
+class CollectionMetadata(Model):
+    class Meta:
+        table = "metadata_collection"
+
+    contract = AccountAddressField(pk=True, required=True)
+    metadata = fields.JSONField(null=True)
+
+
+class TokenMetadata(Model):
+    class Meta:
+        table = "metadata_token"
+
+    id = fields.UUIDField(pk=True, generated=False, required=True, null=False)
+    contract = AccountAddressField(null=False)
+    token_id = fields.TextField(null=False)
+    metadata = fields.JSONField(null=True)
+
+    def __init__(self, **kwargs: Any) -> None:
+        try:
+            kwargs['id'] = self.get_id(**kwargs)
+        except TypeError:
+            pass
+        super().__init__(**kwargs)
+
+    @staticmethod
+    def get_id(contract, token_id, *args, **kwargs):
+        assert contract
+        assert token_id is not None
+
+        oid = '.'.join(map(str, filter(bool, [contract, token_id])))
+        return uuid5(namespace=uuid.NAMESPACE_OID, name=oid)
+
+
 class TZProfile(Model):
     class Meta:
         table = "tzprofiles"

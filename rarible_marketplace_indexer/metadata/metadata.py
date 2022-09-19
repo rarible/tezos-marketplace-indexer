@@ -577,9 +577,11 @@ async def get_token_metadata(ctx: DipDupContext, asset_id: str):
 async def process_metadata(ctx: DipDupContext, asset_type: str, asset_id: str):
     try:
         if asset_type is IndexEnum.COLLECTION:
-            return get_collection_metadata(ctx, asset_id)
+            metadata = await get_collection_metadata(ctx, asset_id)
+            return metadata
         elif asset_type is IndexEnum.NFT:
-            return get_token_metadata(ctx, asset_id)
+            metadata = await get_token_metadata(ctx, asset_id)
+            return metadata
     except Exception as ex:
         logging.getLogger("metadata").warning(f"Couldn't process metadata for asset {asset_id}: {ex}")
         return None
