@@ -139,14 +139,14 @@ class RoyaltiesTest(IsolatedAsyncioTestCase):
             self.assertEqual("tz1bJhxQejTtMNLwxf4BcNpYrNmLRcFycShL", r[0].part_account)
             self.assertEqual("500", r[0].part_value)
 
-    # async def test_royalties_embedded_royalties(self) -> None:
-    #     async with AsyncExitStack() as stack:
-    #         dipdup = await create_test_dipdup(config, stack)
-    #         ctx = dipdup._ctx
-    #         r = await process_royalties(ctx, "KT1LRLiZni9vRBUf78bzkKcAxTdchY1k5WjE", "1")
-    #         self.assertEqual(1, len(r))
-    #         self.assertEqual("tz1bJhxQejTtMNLwxf4BcNpYrNmLRcFycShL", r[0].part_account)
-    #         self.assertEqual("500", r[0].part_value)
+    async def test_royalties_embedded_royalties(self) -> None:
+        async with AsyncExitStack() as stack:
+            dipdup = await create_test_dipdup(config, stack)
+            ctx = dipdup._ctx
+            r = await fetch_royalties(ctx, "KT1NVvPsNDChrLRH5K2cy6Sc9r1uuUwdiZQd", "8276")
+            self.assertEqual(1, len(r))
+            self.assertEqual("tz1bj9NxKYups7WCFmytkYJTw6rxtizJR79K", r[0].part_account)
+            self.assertEqual("700", r[0].part_value)
 
     async def test_royalties_bidou_8x8(self) -> None:
         async with AsyncExitStack() as stack:

@@ -1,3 +1,4 @@
+import json
 import logging
 import math
 from typing import Any
@@ -173,20 +174,20 @@ async def get_royalties_from_royalties_manager(
     return royalties
 
 
-# async def get_embedded_royalties(ctx: DipDupContext, token_metadata: dict[str, Any], id: str):
-#     royalties: [Part] = []
-#     try:
-#         metadata = token_metadata.get("token_info")
-#         embedded_royalty: str = metadata.get("royalties")
-#         decoded_embedded_royalty: dict[str, Any] = json.loads(bytes.fromhex(embedded_royalty).decode("utf-8"))
-#         shares = decoded_embedded_royalty.get("shares")
-#         decimals = int(decoded_embedded_royalty.get("decimals"))
-#         decimals = math.pow(10, decimals)
-#         for share in shares:
-#             royalties.append(Part(part_account=share, part_value=decimals))
-#     except Exception as ex:
-#         logger.debug(f"Could not fetch embedded royalties for {id}: {ex}")
-#     return []
+async def get_embedded_royalties(token_metadata: dict[str, Any], id: str):
+    royalties: [Part] = []
+    try:
+        metadata = token_metadata.get("token_info")
+        embedded_royalty: str = metadata.get("royalties")
+        decoded_embedded_royalty: dict[str, Any] = json.loads(bytes.fromhex(embedded_royalty).decode("utf-8"))
+        shares = decoded_embedded_royalty.get("shares")
+        decimals = int(decoded_embedded_royalty.get("decimals"))
+        decimals = math.pow(10, decimals)
+        for share in shares:
+            royalties.append(Part(part_account=share, part_value=decimals))
+    except Exception as ex:
+        logger.debug(f"Could not fetch embedded royalties for {id}: {ex}")
+    return []
 
 
 async def fetch_royalties(ctx: DipDupContext, contract: str, token_id: str) -> [Part]:
@@ -228,7 +229,11 @@ async def fetch_royalties(ctx: DipDupContext, contract: str, token_id: str) -> [
 
     token_metadata = await get_token_metadata(ctx, f"{contract}:{token_id}")
     if token_metadata is not None:
-        metadata_royalties = token_metadata.get("royalties")
+        token_metadata_royalties = token_metadata.get("royalties")
+        if type(token_metadata_royalties) is str:
+            metadata_royalties = json.loads(token_metadata_royalties)
+        else:
+            metadata_royalties = token_metadata_royalties
         if metadata_royalties is not None:
             shares = metadata_royalties.get("shares")
             decimals = metadata_royalties.get("decimals")
@@ -247,9 +252,9 @@ async def fetch_royalties(ctx: DipDupContext, contract: str, token_id: str) -> [
     if len(royalties) > 0:
         return royalties
 
-    # royalties = await get_embedded_royalties(token_metadata, f"{contract}:{token_id}")
-    # if len(royalties) > 0:
-    #     return royalties
+    royalties = await get_embedded_royalties(token_metadata, f"{contract}:{token_id}")
+    if len(royalties) > 0:
+        return royalties
 
     mint: TokenTransfer = (
         await TokenTransfer.filter(contract=contract, token_id=token_id, type=ActivityTypeEnum.TOKEN_MINT)
