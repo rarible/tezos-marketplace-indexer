@@ -542,6 +542,7 @@ async def fetch_metadata(ctx: DipDupContext, metadata_url: str):
                 logger.warning(f"Could not parse metadata: {error}")
                 return None
 
+
 async def get_collection_metadata(ctx: DipDupContext, asset_id: str):
     try:
         contract_metadata = await ctx.get_metadata_datasource('metadata').get_contract_metadata(asset_id)

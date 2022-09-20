@@ -329,6 +329,7 @@ class CollectionMetadata(Model):
     metadata_synced = fields.BooleanField(required=True)
     metadata_retries = fields.IntField(required=True)
 
+
 class TokenMetadata(Model):
     class Meta:
         table = "metadata_token"

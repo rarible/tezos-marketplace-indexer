@@ -4,9 +4,11 @@ from dipdup.context import HandlerContext
 from dipdup.enums import TokenStandard
 from dipdup.models import TokenTransferData
 
-from rarible_marketplace_indexer.models import ActivityTypeEnum, TokenMetadata, Royalties
+from rarible_marketplace_indexer.models import ActivityTypeEnum
 from rarible_marketplace_indexer.models import Ownership
+from rarible_marketplace_indexer.models import Royalties
 from rarible_marketplace_indexer.models import Token
+from rarible_marketplace_indexer.models import TokenMetadata
 from rarible_marketplace_indexer.models import TokenTransfer
 
 

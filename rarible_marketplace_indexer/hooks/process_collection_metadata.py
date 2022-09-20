@@ -1,13 +1,16 @@
 import json
 import logging
-from asyncio import create_task, gather
+from asyncio import create_task
+from asyncio import gather
 from collections import deque
 from typing import List
 
 from dipdup.context import HookContext
+
 from rarible_marketplace_indexer.metadata.metadata import process_metadata
-from rarible_marketplace_indexer.models import CollectionMetadata, IndexingStatus
+from rarible_marketplace_indexer.models import CollectionMetadata
 from rarible_marketplace_indexer.models import IndexEnum
+from rarible_marketplace_indexer.models import IndexingStatus
 
 pending_tasks = deque()
 
@@ -18,14 +21,17 @@ async def process_metadata_for_collection(ctx: HookContext, collection_meta: Col
     if metadata is None:
         collection_meta.metadata_retries = collection_meta.metadata_retries + 1
         collection_meta.metadata_synced = False
-        logger.warning(f"Metadata not found for {collection_meta.contract} (retries {collection_meta.metadata_retries})")
+        logger.warning(
+            f"Metadata not found for {collection_meta.contract} (retries {collection_meta.metadata_retries})"
+        )
     else:
         try:
             collection_meta.metadata_synced = True
             collection_meta.metadata_retries = collection_meta.metadata_retries
             collection_meta.metadata = json.dumps(metadata)
             logger.info(
-                f"Successfully saved metadata for {collection_meta.contract} (retries {collection_meta.metadata_retries})"
+                f"Successfully saved metadata for {collection_meta.contract} "
+                f"(retries {collection_meta.metadata_retries})"
             )
         except Exception as ex:
             logger.warning(f"Could not save collection metadata for {collection_meta.contract}: {ex}")
@@ -55,10 +61,14 @@ async def process_collection_metadata(
         done = False
         offset = 0
         while not done:
-            unsynced_tokens_metadata: List[CollectionMetadata] = await CollectionMetadata.filter(
-                metadata_synced=False,
-                metadata_retries__lt=5,
-            ).limit(1000).offset(offset)
+            unsynced_tokens_metadata: List[CollectionMetadata] = (
+                await CollectionMetadata.filter(
+                    metadata_synced=False,
+                    metadata_retries__lt=5,
+                )
+                .limit(1000)
+                .offset(offset)
+            )
             offset += 1000
             if len(unsynced_tokens_metadata) == 0:
                 done = True

@@ -2,7 +2,8 @@ import logging
 
 from dipdup.context import HookContext
 
-from rarible_marketplace_indexer.models import Collection, CollectionMetadata
+from rarible_marketplace_indexer.models import Collection
+from rarible_marketplace_indexer.models import CollectionMetadata
 from rarible_marketplace_indexer.models import IndexEnum
 from rarible_marketplace_indexer.models import IndexingStatus
 from rarible_marketplace_indexer.producer.helper import producer_send
@@ -47,13 +48,13 @@ async def process_collection_events(
                         if collection is None:
                             await Collection.create(
                                 contract=OriginatedAccountAddress(address),
-                                owner=ImplicitAccountAddress(origination['sender']['address'])
+                                owner=ImplicitAccountAddress(origination['sender']['address']),
                             )
                             await CollectionMetadata.create(
                                 contract=OriginatedAccountAddress(address),
                                 metadata=None,
                                 metadata_synced=False,
-                                metadata_retries=0
+                                metadata_retries=0,
                             )
                             collection_event = RaribleApiCollectionFactory.build(origination, tzkt)
                             assert collection_event

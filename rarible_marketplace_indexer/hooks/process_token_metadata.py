@@ -1,12 +1,16 @@
 import json
 import logging
-from asyncio import create_task, gather
+from asyncio import create_task
+from asyncio import gather
 from collections import deque
-from typing import List, Deque
+from typing import Deque
+from typing import List
 
 from dipdup.context import HookContext
+
 from rarible_marketplace_indexer.metadata.metadata import process_metadata
-from rarible_marketplace_indexer.models import IndexEnum, IndexingStatus
+from rarible_marketplace_indexer.models import IndexEnum
+from rarible_marketplace_indexer.models import IndexingStatus
 from rarible_marketplace_indexer.models import TokenMetadata
 
 pending_tasks = deque()
@@ -20,7 +24,8 @@ async def process_metadata_for_token(ctx: HookContext, token_meta: TokenMetadata
         token_meta.metadata_retries = token_meta.metadata_retries + 1
         token_meta.metadata_synced = False
         logger.warning(
-            f"Metadata not found for {token_meta.contract}:{token_meta.token_id} (retries {token_meta.metadata_retries})"
+            f"Metadata not found for {token_meta.contract}:{token_meta.token_id} "
+            f"(retries {token_meta.metadata_retries})"
         )
     else:
         try:
@@ -28,7 +33,8 @@ async def process_metadata_for_token(ctx: HookContext, token_meta: TokenMetadata
             token_meta.metadata_synced = True
             token_meta.metadata_retries = token_meta.metadata_retries
             logger.info(
-                f"Successfully saved metadata for {token_meta.contract}:{token_meta.token_id} (retries {token_meta.metadata_retries})"
+                f"Successfully saved metadata for {token_meta.contract}:{token_meta.token_id} "
+                f"(retries {token_meta.metadata_retries})"
             )
         except Exception as ex:
             logger.warning(f"Could not save token metadata for {token_meta.contract}:{token_meta.token_id}: {ex}")
@@ -59,10 +65,14 @@ async def process_token_metadata(
         done = False
         offset = 0
         while not done:
-            unsynced_tokens_metadata: List[TokenMetadata] = await TokenMetadata.filter(
-                metadata_synced=False,
-                metadata_retries__lt=5,
-            ).limit(1000).offset(offset)
+            unsynced_tokens_metadata: List[TokenMetadata] = (
+                await TokenMetadata.filter(
+                    metadata_synced=False,
+                    metadata_retries__lt=5,
+                )
+                .limit(1000)
+                .offset(offset)
+            )
             offset += 1000
             if len(unsynced_tokens_metadata) == 0:
                 done = True
@@ -80,6 +90,4 @@ async def process_token_metadata(
         for token in unsynced_tokens_metadata:
             pending_tasks.append(create_task(process_metadata_for_token(ctx, token)))
         await gather(*pending_tasks)
-        # if len(metadata_to_update) > 0:
-        #     await TokenMetadata.bulk_update(metadata_to_update, fields=["metadata", "metadata_retries", "metadata_synced"])
     logger.info("Token metadata job finished")
