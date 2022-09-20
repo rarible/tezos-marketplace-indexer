@@ -304,7 +304,7 @@ class Royalties(Model):
     id = fields.UUIDField(pk=True, generated=False, required=True)
     contract = AccountAddressField(null=False)
     token_id = fields.TextField(null=False)
-    parts = fields.JSONField()
+    parts = fields.JSONField(null=True)
 
     def __init__(self, **kwargs: Any) -> None:
         try:

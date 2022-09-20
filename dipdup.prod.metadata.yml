@@ -90,25 +90,19 @@ indexes:
 #      name_registry: tezos_domains_registry
 
 hooks:
-  process_metadata_for_tokens:
-    callback: process_metadata_for_tokens
+  process_tokens:
+    callback: process_tokens
     atomic: False
-  process_metadata_for_collections:
-    callback: process_metadata_for_collections
-    atomic: False
-  process_royalties:
-    callback: process_royalties
+  process_collections:
+    callback: process_collections
     atomic: False
 
 jobs:
-  process_metadata_for_tokens:
-    hook: process_metadata_for_tokens
+  process_tokens:
+    hook: process_tokens
     crontab: "* * * * *"
-  process_metadata_for_collections:
-    hook: process_metadata_for_collections
-    crontab: "* * * * *"
-  process_royalties:
-    hook: process_royalties
+  process_collections:
+    hook: process_collections
     crontab: "* * * * *"
 
 advanced:

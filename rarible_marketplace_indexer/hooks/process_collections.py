@@ -16,7 +16,7 @@ metadata_to_update: Deque[CollectionMetadata] = deque()
 
 
 async def process_collection_metadata(ctx: HookContext, collection: Collection):
-    logger = logging.getLogger("token_metadata")
+    logger = logging.getLogger("collection_metadata")
     metadata = await process_metadata(ctx, IndexEnum.COLLECTION, collection.contract)
     if metadata is None:
         collection.metadata_retries = collection.metadata_retries + 1
@@ -39,7 +39,7 @@ async def process_collection_metadata(ctx: HookContext, collection: Collection):
     collections_to_update.append(collection)
 
 
-async def process_metadata_for_collections(
+async def process_collections(
     ctx: HookContext,
 ) -> None:
     logging.getLogger("dipdup.kafka").disabled = True

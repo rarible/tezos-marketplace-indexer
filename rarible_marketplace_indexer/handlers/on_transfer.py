@@ -67,7 +67,7 @@ async def on_transfer(ctx: HandlerContext, token_transfer: TokenTransferData) ->
                         id=token_id,
                         contract=token_transfer.contract_address,
                         token_id=token_transfer.token_id,
-                        parts=[],
+                        parts=None,
                     )
                 else:
                     minted.minted += token_transfer.amount
