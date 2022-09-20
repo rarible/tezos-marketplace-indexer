@@ -230,22 +230,29 @@ async def fetch_royalties(ctx: DipDupContext, contract: str, token_id: str) -> [
 
     token_metadata = await get_token_metadata(ctx, f"{contract}:{token_id}")
     if token_metadata is not None:
-        token_metadata_royalties = token_metadata.get("royalties")
-        if type(token_metadata_royalties) is str:
-            metadata_royalties = json.loads(token_metadata_royalties)
-        else:
-            metadata_royalties = token_metadata_royalties
-        if metadata_royalties is not None:
-            shares = metadata_royalties.get("shares")
-            decimals = metadata_royalties.get("decimals")
-            if shares is not None and decimals is not None:
-                logger.debug(f"Token {contract}:{token_id} royalties pattern is OBJKT")
-                return await get_objkt_royalties(contract, token_id, metadata_royalties)
-        attributes = token_metadata.get("attributes")
-        if attributes is not None:
-            royalties = await get_sweet_io_royalties(contract, token_id, token_metadata)
-            if len(royalties) > 0:
-                return royalties
+        try:
+            if type(token_metadata) is bytes:
+                parsed_data = json.loads(str(token_metadata))
+                token_metadata = parsed_data
+            else:
+                token_metadata_royalties = token_metadata.get("royalties")
+                if type(token_metadata_royalties) is str:
+                    metadata_royalties = json.loads(token_metadata_royalties)
+                else:
+                    metadata_royalties = token_metadata_royalties
+                if metadata_royalties is not None:
+                    shares = metadata_royalties.get("shares")
+                    decimals = metadata_royalties.get("decimals")
+                    if shares is not None and decimals is not None:
+                        logger.debug(f"Token {contract}:{token_id} royalties pattern is OBJKT")
+                        return await get_objkt_royalties(contract, token_id, metadata_royalties)
+                attributes = token_metadata.get("attributes")
+                if attributes is not None:
+                    royalties = await get_sweet_io_royalties(contract, token_id, token_metadata)
+                    if len(royalties) > 0:
+                        return royalties
+        except Exception as ex:
+            logger.debug(f"Could not parse royalties from metadata for {contract}:{token_id}: {ex}")
 
     royalties = await get_royalties_from_royalties_manager(
         ctx, known_addresses.get("royalties_manager"), contract, token_id
