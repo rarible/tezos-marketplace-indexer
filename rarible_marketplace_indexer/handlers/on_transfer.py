@@ -52,22 +52,22 @@ async def on_transfer(ctx: HandlerContext, token_transfer: TokenTransferData) ->
                         minted=token_transfer.amount,
                         supply=token_transfer.amount,
                         updated=token_transfer.timestamp,
-                        metadata_synced=False,
-                        metadata_retries=0,
-                        royalties_synced=False,
-                        royalties_retries=0,
                     )
                     await TokenMetadata.update_or_create(
                         id=token_id,
                         contract=token_transfer.contract_address,
                         token_id=token_transfer.token_id,
                         metadata=None,
+                        metadata_synced=False,
+                        metadata_retries=0,
                     )
                     await Royalties.update_or_create(
                         id=token_id,
                         contract=token_transfer.contract_address,
                         token_id=token_transfer.token_id,
                         parts=None,
+                        royalties_synced=False,
+                        royalties_retries=0,
                     )
                 else:
                     minted.minted += token_transfer.amount

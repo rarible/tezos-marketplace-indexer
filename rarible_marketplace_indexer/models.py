@@ -60,7 +60,9 @@ class PlatformEnum(str, Enum):
 
 class IndexEnum(str, Enum):
     COLLECTION: _StrEnumValue = 'COLLECTION'
+    COLLECTION_METADATA: _StrEnumValue = 'COLLECTION_METADATA'
     NFT: _StrEnumValue = 'NFT'
+    NFT_METADATA: _StrEnumValue = 'NFT_METADATA'
     LEGACY_ORDERS: _StrEnumValue = 'LEGACY_ORDERS'
     V1_CLEANING: _StrEnumValue = 'V1_CLEANING'
     V1_FILL_FIX: _StrEnumValue = 'V1_FILL_FIX'
@@ -256,10 +258,6 @@ class Token(Model):
     supply = AssetValueField()
     deleted = fields.BooleanField(default=False)
     updated = fields.DatetimeField(null=False)
-    metadata_synced = fields.BooleanField(required=True)
-    royalties_synced = fields.BooleanField(required=True)
-    metadata_retries = fields.IntField(required=True)
-    royalties_retries = fields.IntField(required=True)
     db_updated_at = fields.DatetimeField(auto_now=True)
 
     def __init__(self, **kwargs: Any) -> None:
@@ -289,8 +287,6 @@ class Collection(Model):
 
     contract = AccountAddressField(pk=True, required=True)
     owner = AccountAddressField(required=True)
-    metadata_synced = fields.BooleanField(required=True)
-    metadata_retries = fields.IntField(required=True)
     db_updated_at = fields.DatetimeField(auto_now=True)
 
     def full_id(self):
@@ -305,6 +301,8 @@ class Royalties(Model):
     contract = AccountAddressField(null=False)
     token_id = fields.TextField(null=False)
     parts = fields.JSONField(null=True)
+    royalties_synced = fields.BooleanField(required=True)
+    royalties_retries = fields.IntField(required=True)
 
     def __init__(self, **kwargs: Any) -> None:
         try:
@@ -328,7 +326,8 @@ class CollectionMetadata(Model):
 
     contract = AccountAddressField(pk=True, required=True)
     metadata = fields.TextField(null=True)
-
+    metadata_synced = fields.BooleanField(required=True)
+    metadata_retries = fields.IntField(required=True)
 
 class TokenMetadata(Model):
     class Meta:
@@ -338,6 +337,8 @@ class TokenMetadata(Model):
     contract = AccountAddressField(null=False)
     token_id = fields.TextField(null=False)
     metadata = fields.TextField(null=True)
+    metadata_synced = fields.BooleanField(required=True)
+    metadata_retries = fields.IntField(required=True)
 
     def __init__(self, **kwargs: Any) -> None:
         try:
