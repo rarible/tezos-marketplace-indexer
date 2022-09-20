@@ -567,44 +567,48 @@ async def get_collection_metadata(ctx: DipDupContext, asset_id: str):
 
 
 async def get_token_metadata(ctx: DipDupContext, asset_id: str):
-    parsed_id = asset_id.split(":")
-    if len(parsed_id) != 2:
-        raise Exception(f"Invalid Token ID: {asset_id}")
-    contract = parsed_id[0]
-    token_id = parsed_id[1]
-    if contract == ctx.config.custom.get("royalties").get("bidou_8x8") or contract == ctx.config.custom.get(
-        "royalties"
-    ).get("bidou_24x24"):
-        bidou_metadata = await get_bidou_data(ctx, contract, token_id)
-        creater = bidou_metadata.get("creater")
-        creator = bidou_metadata.get("creator")
-        creater_name = bidou_metadata.get("creater_name")
-        creator_name = bidou_metadata.get("creator_name")
-        account = creater if creater is not None else creator
-        name = creater_name if creater_name is not None else creator_name
-        token_metadata = {
-            "name": bidou_metadata.get("token_name"),
-            "description": bidou_metadata.get("token_description"),
-            "content": [
-                {"uri": "", "mimeType": "image/jpeg", "representation": "PREVIEW"},
-                {"uri": "", "mimeType": "image/jpeg", "representation": "ORIGINAL"},
-            ],
-            "attributes": [{"creator": account}, {"creator_name": name}],
-        }
-    else:
-        token_metadata = await ctx.get_metadata_datasource('metadata').get_token_metadata(contract, token_id)
-        if token_metadata is None:
-            metadata_url_response = await get_key_for_big_map(ctx, contract, "token_metadata", token_id)
-            if metadata_url_response.status_code == 200:
-                metadata_raw = metadata_url_response.json().get("value")
-                token_info = metadata_raw.get("token_info")
-                metadata_url = token_info.get("")
-                token_metadata = await fetch_metadata(ctx, metadata_url)
-    return token_metadata
+    try:
+        parsed_id = asset_id.split(":")
+        if len(parsed_id) != 2:
+            raise Exception(f"Invalid Token ID: {asset_id}")
+        contract = parsed_id[0]
+        token_id = parsed_id[1]
+        if contract == ctx.config.custom.get("royalties").get("bidou_8x8") or contract == ctx.config.custom.get(
+            "royalties"
+        ).get("bidou_24x24"):
+            bidou_metadata = await get_bidou_data(ctx, contract, token_id)
+            creater = bidou_metadata.get("creater")
+            creator = bidou_metadata.get("creator")
+            creater_name = bidou_metadata.get("creater_name")
+            creator_name = bidou_metadata.get("creator_name")
+            account = creater if creater is not None else creator
+            name = creater_name if creater_name is not None else creator_name
+            token_metadata = {
+                "name": bidou_metadata.get("token_name"),
+                "description": bidou_metadata.get("token_description"),
+                "content": [
+                    {"uri": "", "mimeType": "image/jpeg", "representation": "PREVIEW"},
+                    {"uri": "", "mimeType": "image/jpeg", "representation": "ORIGINAL"},
+                ],
+                "attributes": [{"creator": account}, {"creator_name": name}],
+            }
+        else:
+            token_metadata = await ctx.get_metadata_datasource('metadata').get_token_metadata(contract, token_id)
+            if token_metadata is None:
+                metadata_url_response = await get_key_for_big_map(ctx, contract, "token_metadata", token_id)
+                if metadata_url_response.status_code == 200:
+                    metadata_raw = metadata_url_response.json().get("value")
+                    token_info = metadata_raw.get("token_info")
+                    metadata_url = token_info.get("")
+                    token_metadata = await fetch_metadata(ctx, metadata_url)
+        return token_metadata
     # if is_token_metadata_valid(token_metadata):
     #     return token_metadata
     # else:
     #     return None
+    except Exception as ex:
+        logging.getLogger('token_metadata').warning(f"Could not fetch metadata for token {asset_id}: {ex}")
+        return None
 
 
 async def process_metadata(ctx: DipDupContext, asset_type: str, asset_id: str):

@@ -5,11 +5,11 @@ datasources:
     kind: tzkt
     url: ${TZKT_URL:-https://api.tzkt.io}
     http:
-      batch_size: 5000
-  metadata:
-    kind: metadata
-    url: https://metadata.dipdup.net
-    network: mainnet
+      retry_count: 5 # retry infinetely
+      retry_sleep: 1
+      connection_limit: 100
+      connection_timeout: 60
+      batch_size: 10000
 
 contracts:
   rarible_exchange_legacy:

@@ -327,7 +327,7 @@ class CollectionMetadata(Model):
         table = "metadata_collection"
 
     contract = AccountAddressField(pk=True, required=True)
-    metadata = fields.JSONField(null=True)
+    metadata = fields.TextField(null=True)
 
 
 class TokenMetadata(Model):
@@ -337,7 +337,7 @@ class TokenMetadata(Model):
     id = fields.UUIDField(pk=True, generated=False, required=True, null=False)
     contract = AccountAddressField(null=False)
     token_id = fields.TextField(null=False)
-    metadata = fields.JSONField(null=True)
+    metadata = fields.TextField(null=True)
 
     def __init__(self, **kwargs: Any) -> None:
         try:

@@ -4,7 +4,7 @@ from dipdup.context import HandlerContext
 from dipdup.enums import TokenStandard
 from dipdup.models import TokenTransferData
 
-from rarible_marketplace_indexer.models import ActivityTypeEnum
+from rarible_marketplace_indexer.models import ActivityTypeEnum, TokenMetadata, Royalties
 from rarible_marketplace_indexer.models import Ownership
 from rarible_marketplace_indexer.models import Token
 from rarible_marketplace_indexer.models import TokenTransfer
@@ -56,6 +56,18 @@ async def on_transfer(ctx: HandlerContext, token_transfer: TokenTransferData) ->
                         metadata_retries=0,
                         royalties_synced=False,
                         royalties_retries=0,
+                    )
+                    await TokenMetadata.update_or_create(
+                        id=token_id,
+                        contract=token_transfer.contract_address,
+                        token_id=token_transfer.token_id,
+                        metadata=None,
+                    )
+                    await Royalties.update_or_create(
+                        id=token_id,
+                        contract=token_transfer.contract_address,
+                        token_id=token_transfer.token_id,
+                        parts=[],
                     )
                 else:
                     minted.minted += token_transfer.amount

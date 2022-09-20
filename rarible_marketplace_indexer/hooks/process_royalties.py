@@ -1,12 +1,46 @@
 import logging
-from typing import List
+from asyncio import create_task, gather
+from collections import deque
+from typing import List, Deque
 
 from dipdup.context import HookContext
 
 from rarible_marketplace_indexer.models import Royalties
 from rarible_marketplace_indexer.models import Token
 from rarible_marketplace_indexer.royalties.royalties import fetch_royalties
-from rarible_marketplace_indexer.utils.rarible_utils import get_json_parts
+
+
+pending_tasks = deque()
+tokens_to_update: Deque[Token] = deque()
+royalties_to_update: Deque[Royalties] = deque()
+
+
+async def process_token_royalties(ctx, token):
+    logger = logging.getLogger("royalties")
+    royalties = await fetch_royalties(ctx, token.contract, token.token_id)
+    if royalties is None:
+        token.royalties_retries = token.royalties_retries + 1
+        token.royalties_synced = False
+        logger.warning(
+            f"Royalties not found for {token.contract}:{token.token_id} (retries {token.royalties_retries})"
+        )
+    else:
+        try:
+            token_royalties = await Royalties.get_or_none(
+                id=token.id,
+            )
+            token_royalties.parts = royalties
+            token.royalties_synced = True
+            token.royalties_retries = token.royalties_retries
+            royalties_to_update.append(token_royalties)
+            logger.info(
+                f"Successfully saved royalties for {token.contract}:{token.token_id} (retries {token.royalties_retries})"
+            )
+        except Exception as ex:
+            logger.warning(f"Could not save royalties for {token.contract}:{token.token_id}: {ex}")
+            token.royalties_retries = token.royalties_retries + 1
+            token.royalties_synced = False
+    tokens_to_update.append(token)
 
 
 async def process_royalties(
@@ -21,23 +55,8 @@ async def process_royalties(
         royalties_retries__lt=5,
     ).limit(1000)
     for token in missing_royalties_tokens:
-        royalties = await fetch_royalties(ctx, token.contract, token.token_id)
-        if royalties is None:
-            token.royalties_retries = token.royalties_retries + 1
-            logger.warning(
-                f"Royalties not found for {token.contract}:{token.token_id} (retries {token.royalties_retries})"
-            )
-        else:
-            await Royalties.update_or_create(
-                id=Royalties.get_id(token.contract, token.id),
-                contract=token.contract,
-                token_id=token.token_id,
-                parts=get_json_parts(royalties),
-            )
-            token.royalties_synced = True
-            token.creator = royalties[0].part_account
-            logger.info(
-                f"Successfully saved royalties for {token.contract}:{token.token_id} (retries {token.metadata_retries})"
-            )
-        await token.save()
+        pending_tasks.append(create_task(process_token_royalties(ctx, token)))
+    await gather(*pending_tasks)
+    await Token.bulk_update(tokens_to_update, fields=["royalties_synced", "royalties_retries"])
+    await Royalties.bulk_update(royalties_to_update, fields=["parts"])
     logger.info("Royalties job finished")
