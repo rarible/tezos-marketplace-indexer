@@ -236,7 +236,7 @@ class Ownership(Model):
 
     @staticmethod
     def get_id(contract, token_id, owner, *args, **kwargs):
-        oid = '.'.join(map(str, filter(bool, [contract, token_id, owner])))
+        oid = f"{contract}:{token_id}:{owner}"
         return uuid5(namespace=uuid.NAMESPACE_OID, name=oid)
 
 
@@ -277,7 +277,7 @@ class Token(Model):
         assert contract
         assert token_id is not None
 
-        oid = '.'.join(map(str, filter(bool, [contract, token_id])))
+        oid = f"{contract}:{token_id}"
         return uuid5(namespace=uuid.NAMESPACE_OID, name=oid)
 
 

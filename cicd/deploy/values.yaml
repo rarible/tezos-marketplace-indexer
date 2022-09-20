@@ -2,9 +2,8 @@ tezos-marketplace-indexer-rarible:
   image:
     repository: tezos-marketplace-indexer
   command: [
-    "dipdup", "-c", "dipdup.yml",
-    "-c", 'dipdup.{{ include "app.env" $ }}.rarible.yml',
-    "run"
+    "dipdup", "-c", "dipdup.yml", "-c", 'dipdup.{{ include "app.env" $ }}.rarible.yml', "hasura", "configure", "--force", "&&",
+    "dipdup", "-c", "dipdup.yml", "-c", 'dipdup.{{ include "app.env" $ }}.rarible.yml', "run"
   ]
   environments:
     APPLICATION_ENVIRONMENT: '{{ include "app.env" $ }}'
