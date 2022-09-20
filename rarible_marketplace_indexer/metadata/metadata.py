@@ -9,6 +9,9 @@ from rarible_marketplace_indexer.models import IndexEnum
 from rarible_marketplace_indexer.utils.rarible_utils import get_bidou_data
 from rarible_marketplace_indexer.utils.rarible_utils import get_key_for_big_map
 
+logger = logging.getLogger('metadata')
+logger.setLevel("INFO")
+
 collection_metadata_schema = {
     "$schema": "http://json-schema.org/draft-04/schema#",
     "$ref": "#/definitions/contractMetadataTzip16",
@@ -480,7 +483,6 @@ TokenMetadata = warlock.model_factory(token_metadata_schema)
 
 
 def is_collection_metadata_valid(metadata):
-    logger = logging.getLogger('metadata')
     if metadata is None:
         return False
     try:
@@ -492,7 +494,6 @@ def is_collection_metadata_valid(metadata):
 
 
 def is_token_metadata_valid(metadata):
-    logger = logging.getLogger('metadata')
     if metadata is None:
         return False
     try:
@@ -504,7 +505,6 @@ def is_token_metadata_valid(metadata):
 
 
 async def fetch_metadata(ctx: DipDupContext, metadata_url: str):
-    logger = logging.getLogger('metadata')
     if metadata_url is not None and metadata_url != b'':
         url = bytes.fromhex(metadata_url).decode("utf-8")
         if url.startswith("http") or url.startswith("https"):
@@ -594,14 +594,20 @@ async def get_token_metadata(ctx: DipDupContext, asset_id: str):
                 "attributes": [{"creator": account}, {"creator_name": name}],
             }
         else:
-            token_metadata = await ctx.get_metadata_datasource('metadata').get_token_metadata(contract, token_id)
+            token_metadata = await ctx.get_metadata_datasource('metadata').get_token_metadata(contract, int(token_id))
             if token_metadata is None:
                 metadata_url_response = await get_key_for_big_map(ctx, contract, "token_metadata", token_id)
                 if metadata_url_response.status_code == 200:
                     metadata_raw = metadata_url_response.json().get("value")
+                    print(f"metadata_raw = {metadata_raw}")
                     token_info = metadata_raw.get("token_info")
+                    print(f"token_info = {metadata_raw}")
                     metadata_url = token_info.get("")
+                    print(f"metadata_url = {metadata_url}")
+                    if metadata_url is None and token_info is not None:
+                        token_metadata = token_info
                     token_metadata = await fetch_metadata(ctx, metadata_url)
+                    print(f"token_metadata = {token_metadata}")
         return token_metadata
     # if is_token_metadata_valid(token_metadata):
     #     return token_metadata

@@ -14,6 +14,7 @@ from rarible_marketplace_indexer.utils.rarible_utils import get_bidou_data
 from rarible_marketplace_indexer.utils.rarible_utils import get_key_for_big_map
 
 logger = logging.getLogger("royalties")
+logger.setLevel("INFO")
 
 
 async def get_objkt_royalties(contract: str, token_id: str, data: dict[str, Any]):

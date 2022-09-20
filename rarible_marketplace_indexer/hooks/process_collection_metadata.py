@@ -13,10 +13,11 @@ from rarible_marketplace_indexer.models import IndexEnum
 from rarible_marketplace_indexer.models import IndexingStatus
 
 pending_tasks = deque()
+logger = logging.getLogger("collection_metadata")
+logger.setLevel("INFO")
 
 
 async def process_metadata_for_collection(ctx: HookContext, collection_meta: CollectionMetadata):
-    logger = logging.getLogger("collection_metadata")
     metadata = await process_metadata(ctx, IndexEnum.COLLECTION, collection_meta.contract)
     if metadata is None:
         collection_meta.metadata_retries = collection_meta.metadata_retries + 1
@@ -54,7 +55,6 @@ async def process_collection_metadata(
     ctx: HookContext,
 ) -> None:
     logging.getLogger("dipdup.kafka").disabled = True
-    logger = logging.getLogger("collection_metadata")
     logger.info("Running collection metadata job")
     index = await IndexingStatus.get_or_none(index=IndexEnum.COLLECTION_METADATA)
     if index is None:

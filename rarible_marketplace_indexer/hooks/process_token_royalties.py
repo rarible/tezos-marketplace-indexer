@@ -13,10 +13,11 @@ from rarible_marketplace_indexer.utils.rarible_utils import get_json_parts
 
 pending_tasks = deque()
 royalties_to_update: Deque[Royalties] = deque()
+logger = logging.getLogger("token_royalties")
+logger.setLevel("INFO")
 
 
 async def process_royalties_for_token(ctx: HookContext, token_royalties: Royalties):
-    logger = logging.getLogger("token_royalties")
     royalties = await fetch_royalties(ctx, token_royalties.contract, token_royalties.token_id)
     if royalties is None:
         token_royalties.royalties_retries = token_royalties.royalties_retries + 1
@@ -45,7 +46,6 @@ async def process_token_royalties(
     ctx: HookContext,
 ) -> None:
     logging.getLogger("dipdup.kafka").disabled = True
-    logger = logging.getLogger("token_royalties")
     logger.info("Running royalties job")
     unsynced_royalties: List[Royalties] = await Royalties.filter(
         royalties_synced=False,
