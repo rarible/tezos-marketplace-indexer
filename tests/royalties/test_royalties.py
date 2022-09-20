@@ -7,7 +7,7 @@ from dipdup.config import DipDupConfig
 from dipdup.config import SqliteDatabaseConfig
 from dipdup.dipdup import DipDup
 
-from rarible_marketplace_indexer.jobs.royalties import fetch_royalties
+from rarible_marketplace_indexer.royalties.royalties import fetch_royalties
 
 config_path = join(dirname(__file__), 'royalties_config.yml')
 config = DipDupConfig.load([config_path])

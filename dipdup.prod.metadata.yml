@@ -5,14 +5,30 @@ datasources:
     kind: tzkt
     url: ${TZKT_URL:-https://api.tzkt.io}
     http:
+      retry_count: 5
+      retry_sleep: 1
+      connection_limit: 100
       connection_timeout: 60
+      batch_size: 10000
   metadata:
     kind: metadata
     url: https://metadata.dipdup.net
     network: mainnet
+    http:
+      retry_count: 5
+      retry_sleep: 1
+      connection_limit: 100
+      connection_timeout: 60
+      batch_size: 10000
   ipfs:
     kind: ipfs
     url: https://ipfs.io/ipfs
+    http:
+      retry_count: 1
+      retry_sleep: 1
+      connection_limit: 100
+      connection_timeout: 5
+      batch_size: 10000
 
 contracts:
   tzprofile_old:
@@ -74,25 +90,25 @@ indexes:
 #      name_registry: tezos_domains_registry
 
 hooks:
-  process_metadata_for_tokens:
-    callback: process_metadata_for_tokens
+  process_token_metadata:
+    callback: process_token_metadata
     atomic: False
-  process_metadata_for_collections:
-    callback: process_metadata_for_collections
+  process_collection_metadata:
+    callback: process_collection_metadata
     atomic: False
-  process_royalties:
-    callback: process_royalties
+  process_token_royalties:
+    callback: process_token_royalties
     atomic: False
 
 jobs:
-  process_metadata_for_tokens:
-    hook: process_metadata_for_tokens
+  process_token_metadata:
+    hook: process_token_metadata
     crontab: "* * * * *"
-  process_metadata_for_collections:
-    hook: process_metadata_for_collections
+  process_collection_metadata:
+    hook: process_collection_metadata
     crontab: "* * * * *"
-  process_royalties:
-    hook: process_royalties
+  process_token_royalties:
+    hook: process_token_royalties
     crontab: "* * * * *"
 
 advanced:

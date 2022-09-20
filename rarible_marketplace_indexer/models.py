@@ -60,7 +60,9 @@ class PlatformEnum(str, Enum):
 
 class IndexEnum(str, Enum):
     COLLECTION: _StrEnumValue = 'COLLECTION'
+    COLLECTION_METADATA: _StrEnumValue = 'COLLECTION_METADATA'
     NFT: _StrEnumValue = 'NFT'
+    NFT_METADATA: _StrEnumValue = 'NFT_METADATA'
     LEGACY_ORDERS: _StrEnumValue = 'LEGACY_ORDERS'
     V1_CLEANING: _StrEnumValue = 'V1_CLEANING'
     V1_FILL_FIX: _StrEnumValue = 'V1_FILL_FIX'
@@ -236,7 +238,7 @@ class Ownership(Model):
 
     @staticmethod
     def get_id(contract, token_id, owner, *args, **kwargs):
-        oid = '.'.join(map(str, filter(bool, [contract, token_id, owner])))
+        oid = f"{contract}:{token_id}:{owner}"
         return uuid5(namespace=uuid.NAMESPACE_OID, name=oid)
 
 
@@ -256,10 +258,6 @@ class Token(Model):
     supply = AssetValueField()
     deleted = fields.BooleanField(default=False)
     updated = fields.DatetimeField(null=False)
-    metadata_synced = fields.BooleanField(required=True)
-    royalties_synced = fields.BooleanField(required=True)
-    metadata_retries = fields.IntField(required=True)
-    royalties_retries = fields.IntField(required=True)
     db_updated_at = fields.DatetimeField(auto_now=True)
 
     def __init__(self, **kwargs: Any) -> None:
@@ -277,7 +275,7 @@ class Token(Model):
         assert contract
         assert token_id is not None
 
-        oid = '.'.join(map(str, filter(bool, [contract, token_id])))
+        oid = f"{contract}:{token_id}"
         return uuid5(namespace=uuid.NAMESPACE_OID, name=oid)
 
 
@@ -289,8 +287,6 @@ class Collection(Model):
 
     contract = AccountAddressField(pk=True, required=True)
     owner = AccountAddressField(required=True)
-    metadata_synced = fields.BooleanField(required=True)
-    metadata_retries = fields.IntField(required=True)
     db_updated_at = fields.DatetimeField(auto_now=True)
 
     def full_id(self):
@@ -304,7 +300,46 @@ class Royalties(Model):
     id = fields.UUIDField(pk=True, generated=False, required=True)
     contract = AccountAddressField(null=False)
     token_id = fields.TextField(null=False)
-    parts = fields.JSONField()
+    parts = fields.JSONField(null=True)
+    royalties_synced = fields.BooleanField(required=True)
+    royalties_retries = fields.IntField(required=True)
+
+    def __init__(self, **kwargs: Any) -> None:
+        try:
+            kwargs['id'] = self.get_id(**kwargs)
+        except TypeError:
+            pass
+        super().__init__(**kwargs)
+
+    @staticmethod
+    def get_id(contract, token_id, *args, **kwargs):
+        assert contract
+        assert token_id is not None
+
+        oid = '.'.join(map(str, filter(bool, [contract, token_id])))
+        return uuid5(namespace=uuid.NAMESPACE_OID, name=oid)
+
+
+class CollectionMetadata(Model):
+    class Meta:
+        table = "metadata_collection"
+
+    contract = AccountAddressField(pk=True, required=True)
+    metadata = fields.TextField(null=True)
+    metadata_synced = fields.BooleanField(required=True)
+    metadata_retries = fields.IntField(required=True)
+
+
+class TokenMetadata(Model):
+    class Meta:
+        table = "metadata_token"
+
+    id = fields.UUIDField(pk=True, generated=False, required=True, null=False)
+    contract = AccountAddressField(null=False)
+    token_id = fields.TextField(null=False)
+    metadata = fields.TextField(null=True)
+    metadata_synced = fields.BooleanField(required=True)
+    metadata_retries = fields.IntField(required=True)
 
     def __init__(self, **kwargs: Any) -> None:
         try:
