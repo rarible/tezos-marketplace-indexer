@@ -3,6 +3,7 @@ import logging
 from dipdup.context import HookContext
 
 from rarible_marketplace_indexer.models import Collection
+from rarible_marketplace_indexer.models import CollectionMetadata
 from rarible_marketplace_indexer.models import IndexEnum
 from rarible_marketplace_indexer.models import IndexingStatus
 from rarible_marketplace_indexer.producer.helper import producer_send
@@ -18,7 +19,7 @@ async def process_collection_events(
     logger = logging.getLogger('dipdup.collection')
     tzkt = ctx.get_tzkt_datasource('tzkt')
     index = await IndexingStatus.get_or_none(index=IndexEnum.COLLECTION)
-    current_level = int(index.last_level) if index is not None else 0
+    current_level = int(index.last_level) if index is not None else level
 
     logger.info(f"Processing collections from level {current_level}")
 
@@ -48,6 +49,10 @@ async def process_collection_events(
                             await Collection.create(
                                 contract=OriginatedAccountAddress(address),
                                 owner=ImplicitAccountAddress(origination['sender']['address']),
+                            )
+                            await CollectionMetadata.create(
+                                contract=OriginatedAccountAddress(address),
+                                metadata=None,
                                 metadata_synced=False,
                                 metadata_retries=0,
                             )

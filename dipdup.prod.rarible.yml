@@ -5,11 +5,11 @@ datasources:
     kind: tzkt
     url: ${TZKT_URL:-https://api.tzkt.io}
     http:
-      batch_size: 5000
-  metadata:
-    kind: metadata
-    url: https://metadata.dipdup.net
-    network: mainnet
+      retry_count: 5 # retry infinetely
+      retry_sleep: 1
+      connection_limit: 100
+      connection_timeout: 60
+      batch_size: 10000
 
 contracts:
   rarible_exchange_legacy:
@@ -29,6 +29,12 @@ indexes:
     first_level: 2614021
     handlers:
       - callback: on_transfer
+
+  originations:
+    kind: head
+    datasource: tzkt
+    handlers:
+      - callback: on_head
 
   rarible_exchange_actions:
     kind: operation
@@ -119,3 +125,4 @@ custom:
     username: ${KAFKA_USERNAME:-rarible}
     password: ${KAFKA_PASSWORD:-changeme}
   run_fix_jobs: True
+  first_collection_level: 1212043

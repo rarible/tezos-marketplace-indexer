@@ -1,0 +1,17 @@
+spec_version: 1.2
+package: rarible_marketplace_indexer
+
+database:
+  kind: postgres
+  host: ${POSTGRES_HOST:-localhost}
+  port: ${POSTGRES_PORT:-5432}
+  user: ${POSTGRES_USER:-dipdup}
+  password: ${POSTGRES_PASS:-changeme}
+  database: ${POSTGRES_DB:-dipdup}
+
+hasura:
+  url: ${HASURA_URL:-http://localhost:49180}
+  admin_secret: ${HASURA_GRAPHQL_ADMIN_SECRET:-changeme}
+  select_limit: ${HASURA_SELECT_LIMIT:-1000}
+  allow_aggregations: false
+  rest: true
