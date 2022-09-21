@@ -6,13 +6,6 @@ datasources:
     url: ${TZKT_URL:-https://api.ghostnet.tzkt.io}
     http:
       connection_timeout: 60
-  metadata:
-    kind: metadata
-    url: https://metadata.dipdup.net
-    network: ithacanet
-  ipfs:
-    kind: ipfs
-    url: https://ipfs.io/ipfs
 
 contracts:
   rarible_exchange:
