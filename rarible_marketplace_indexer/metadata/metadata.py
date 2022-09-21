@@ -599,15 +599,11 @@ async def get_token_metadata(ctx: DipDupContext, asset_id: str):
                 metadata_url_response = await get_key_for_big_map(ctx, contract, "token_metadata", token_id)
                 if metadata_url_response.status_code == 200:
                     metadata_raw = metadata_url_response.json().get("value")
-                    print(f"metadata_raw = {metadata_raw}")
                     token_info = metadata_raw.get("token_info")
-                    print(f"token_info = {metadata_raw}")
                     metadata_url = token_info.get("")
-                    print(f"metadata_url = {metadata_url}")
                     if metadata_url is None and token_info is not None:
                         token_metadata = token_info
                     token_metadata = await fetch_metadata(ctx, metadata_url)
-                    print(f"token_metadata = {token_metadata}")
         return token_metadata
     # if is_token_metadata_valid(token_metadata):
     #     return token_metadata
