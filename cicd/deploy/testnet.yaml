@@ -26,11 +26,11 @@ tzkt:
         memory: 512Mi
     image:
       repository: fpto/rarible-tzkt-api
-      tag: v0.3.0
+      tag: v0.4.0
   indexer:
     image:
       repository: fpto/rarible-tzkt-indexer
-      tag: v0.3.0
+      tag: v0.4.0
   network: ghostnet
   service:
     nodePort: 30440
