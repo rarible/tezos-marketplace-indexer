@@ -1,9 +1,15 @@
+import asyncio
 import json
 import logging
+import os
 from asyncio import create_task
 from asyncio import gather
 from collections import deque
 from typing import List
+
+import tortoise
+from gql import Client, gql
+from gql.transport.aiohttp import AIOHTTPTransport
 
 from dipdup.context import HookContext
 
@@ -41,14 +47,12 @@ async def process_metadata_for_collection(ctx: HookContext, collection_meta: Col
     await collection_meta.save()
 
 
-async def boostrap_collection_metadata(ctx: HookContext, meta: CollectionMetadata):
-    logger = logging.getLogger("boostrap_token_metadata")
-    metadata = await ctx.get_metadata_datasource("metadata").get_contract_metadata(meta.contract)
-    if metadata is not None:
-        logger.info(f"boostraped collection {meta.contract}")
-        meta.metadata = metadata
-        meta.metadata_synced = True
-        await meta.save()
+async def boostrap_collection_metadata(meta: CollectionMetadata):
+    logger.info(f"Bootstrapped metadata for collection {meta.contract}")
+    try:
+        await meta.save(force_create=True)
+    except tortoise.exceptions.IntegrityError:
+        await meta.save(force_update=True)
 
 
 async def process_collection_metadata(
@@ -58,22 +62,40 @@ async def process_collection_metadata(
     logger.info("Running collection metadata job")
     index = await IndexingStatus.get_or_none(index=IndexEnum.COLLECTION_METADATA)
     if index is None:
+        transport = AIOHTTPTransport(url=ctx.get_metadata_datasource("metadata").url + "/v1/graphql")
+        client = Client(transport=transport, fetch_schema_from_transport=True)
         done = False
         offset = 0
         while not done:
-            unsynced_tokens_metadata: List[CollectionMetadata] = (
-                await CollectionMetadata.filter(
-                    metadata_synced=False,
-                    metadata_retries__lt=5,
-                )
-                .limit(1000)
-                .offset(offset)
+            query = gql(
+                """
+                    query MyQuery {
+                      contract_metadata(
+                        limit: 1000
+                        offset: %offset%
+                        where: {metadata: {_is_null: false}, network: {_eq: "%network%"}}
+                      ) {
+                        contract
+                        metadata
+                      }
+                    }
+            """.replace("%network%", os.getenv("NETWORK")).replace("%offset%", str(offset))
             )
             offset += 1000
-            if len(unsynced_tokens_metadata) == 0:
+            try:
+                result = await client.execute_async(query)
+            except asyncio.exceptions.TimeoutError:
+                result = await client.execute_async(query)
+            data = result.get("contract_metadata")
+            if len(data) == 0:
                 done = True
-            for meta in unsynced_tokens_metadata:
-                pending_tasks.append(create_task(boostrap_collection_metadata(ctx, meta)))
+            for meta in data:
+                pending_tasks.append(create_task(boostrap_collection_metadata(CollectionMetadata(
+                    contract=meta.get("contract"),
+                    metadata=meta.get("metadata"),
+                    metadata_synced=True,
+                    metadata_retries=0
+                ))))
             await gather(*pending_tasks)
 
         await IndexingStatus.create(index=IndexEnum.COLLECTION_METADATA, last_level="DONE")

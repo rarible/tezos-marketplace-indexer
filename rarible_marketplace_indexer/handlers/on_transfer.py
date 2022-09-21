@@ -55,22 +55,26 @@ async def on_transfer(ctx: HandlerContext, token_transfer: TokenTransferData) ->
                         supply=token_transfer.amount,
                         updated=token_transfer.timestamp,
                     )
-                    await TokenMetadata.update_or_create(
-                        id=token_id,
-                        contract=token_transfer.contract_address,
-                        token_id=token_transfer.token_id,
-                        metadata=None,
-                        metadata_synced=False,
-                        metadata_retries=0,
-                    )
-                    await Royalties.update_or_create(
-                        id=token_id,
-                        contract=token_transfer.contract_address,
-                        token_id=token_transfer.token_id,
-                        parts=None,
-                        royalties_synced=False,
-                        royalties_retries=0,
-                    )
+                    token_metadata = await TokenMetadata.get_or_none(id=token_id)
+                    if token_metadata is None:
+                        await TokenMetadata.create(
+                            id=token_id,
+                            contract=token_transfer.contract_address,
+                            token_id=token_transfer.token_id,
+                            metadata=None,
+                            metadata_synced=False,
+                            metadata_retries=0,
+                        )
+                    royalties = await Royalties.get_or_none(id=token_id)
+                    if royalties is None:
+                        await Royalties.create(
+                            id=token_id,
+                            contract=token_transfer.contract_address,
+                            token_id=token_transfer.token_id,
+                            parts=None,
+                            royalties_synced=False,
+                            royalties_retries=0,
+                        )
                 else:
                     minted.minted += token_transfer.amount
                     minted.supply += token_transfer.amount
