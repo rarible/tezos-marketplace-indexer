@@ -21,7 +21,7 @@ tezos-marketplace-indexer-metadata:
     NETWORK: ghostnet
 
 tzkt:
-  enabled: false
+  enabled: true
   api:
     resources:
       limits:
