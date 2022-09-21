@@ -9,7 +9,7 @@ datasources:
   metadata:
     kind: metadata
     url: https://metadata.dipdup.net
-    network: ithacanet
+    network: ghostnet
   ipfs:
     kind: ipfs
     url: https://ipfs.io/ipfs

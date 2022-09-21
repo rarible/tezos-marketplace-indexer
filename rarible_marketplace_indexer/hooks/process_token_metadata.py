@@ -48,7 +48,7 @@ async def boostrap_token_metadata(ctx: HookContext, meta: TokenMetadata):
     metadata = await ctx.get_metadata_datasource("metadata").get_token_metadata(meta.contract, int(meta.token_id))
     if metadata is not None:
         if metadata.get("token_info") is None and metadata.get("token_id") is None:
-            logger.info(f"boostraped token {meta.contract}:{meta.token_id}")
+            logger.info(f"Bootstrapped metadata for token {meta.contract}:{meta.token_id}")
             meta.metadata = metadata
             meta.metadata_synced = True
             await meta.save()
@@ -59,27 +59,27 @@ async def process_token_metadata(
 ) -> None:
     logging.getLogger("dipdup.kafka").disabled = True
     logger.info("Running token metadata job")
-    # index = await IndexingStatus.get_or_none(index=IndexEnum.NFT_METADATA)
-    # if index is None:
-    #     done = False
-    #     offset = 0
-    #     while not done:
-    #         unsynced_tokens_metadata: List[TokenMetadata] = (
-    #             await TokenMetadata.filter(
-    #                 metadata_synced=False,
-    #                 metadata_retries__lt=5,
-    #             )
-    #             .limit(100)
-    #             .offset(offset)
-    #         )
-    #         offset += 100
-    #         if len(unsynced_tokens_metadata) == 0:
-    #             done = True
-    #         for meta in unsynced_tokens_metadata:
-    #             pending_tasks.append(create_task(boostrap_token_metadata(ctx, meta)))
-    #         await gather(*pending_tasks)
-    #
-    #     await IndexingStatus.create(index=IndexEnum.NFT_METADATA, last_level="DONE")
+    index = await IndexingStatus.get_or_none(index=IndexEnum.NFT_METADATA)
+    if index is None:
+        done = False
+        offset = 0
+        while not done:
+            unsynced_tokens_metadata: List[TokenMetadata] = (
+                await TokenMetadata.filter(
+                    metadata_synced=False,
+                    metadata_retries__lt=5,
+                )
+                .limit(100)
+                .offset(offset)
+            )
+            offset += 100
+            if len(unsynced_tokens_metadata) == 0:
+                done = True
+            for meta in unsynced_tokens_metadata:
+                pending_tasks.append(create_task(boostrap_token_metadata(ctx, meta)))
+            await gather(*pending_tasks)
+
+        await IndexingStatus.create(index=IndexEnum.NFT_METADATA, last_level="DONE")
 
     done = False
     offset = 0

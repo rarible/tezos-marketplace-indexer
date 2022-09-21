@@ -4,24 +4,24 @@ hasura:
 
 tezos-marketplace-indexer-rarible:
   environments:
-    TZKT_URL: http://tzkt:5000
+    TZKT_URL: https://api.ghostnet.tzkt.io
     HASURA_URL: http://hasura:8080
     NETWORK: ghostnet
 
 tezos-marketplace-indexer-tezos:
   environments:
-    TZKT_URL: http://tzkt:5000
+    TZKT_URL: https://api.ghostnet.tzkt.io
     HASURA_URL: http://hasura:8080
     NETWORK: ghostnet
 
 tezos-marketplace-indexer-metadata:
   environments:
-    TZKT_URL: http://tzkt:5000
+    TZKT_URL: https://api.ghostnet.tzkt.io
     HASURA_URL: http://hasura:8080
     NETWORK: ghostnet
 
 tzkt:
-  enabled: true
+  enabled: false
   api:
     image:
       repository: fpto/rarible-tzkt-api
