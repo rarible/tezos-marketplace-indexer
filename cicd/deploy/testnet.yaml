@@ -29,12 +29,12 @@ tzkt:
       requests:
         memory: 512Mi
     image:
-      repository: fpto/rarible-tzkt-api
-      tag: v0.4.0
+      repository: bakingbad/tzkt-api
+      tag: 1.10.0
   indexer:
     image:
-      repository: fpto/rarible-tzkt-indexer
-      tag: v0.4.0
+      repository: bakingbad/tzkt-sync
+      tag: 1.10.0
   network: ghostnet
   service:
     nodePort: 30440
