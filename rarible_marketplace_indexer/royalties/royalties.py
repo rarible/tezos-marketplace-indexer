@@ -268,9 +268,11 @@ async def fetch_royalties(ctx: DipDupContext, contract: str, token_id: str) -> [
 
     mint: TokenTransfer = (
         await TokenTransfer.filter(contract=contract, token_id=token_id, type=ActivityTypeEnum.TOKEN_MINT)
-        .order_by("-id")
+        .order_by("date")
         .first()
     )
-
-    royalties = [Part(part_account=mint.to_address, part_value=0)]
+    if mint is not None:
+        royalties = [Part(part_account=mint.to_address, part_value=0)]
+    else:
+        royalties = []
     return royalties
