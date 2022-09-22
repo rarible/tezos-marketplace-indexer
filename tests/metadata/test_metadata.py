@@ -89,3 +89,11 @@ class MetadataTest(IsolatedAsyncioTestCase):
             metadata_dogami = await process_metadata(ctx, IndexEnum.COLLECTION, "KT1NVvPsNDChrLRH5K2cy6Sc9r1uuUwdiZQd")
             self.assertIsNotNone(metadata_dogami)
             self.assertEqual("DOGAMI", metadata_dogami.get("name"))
+
+    async def test_collection_onchain_standard(self) -> None:
+        async with AsyncExitStack() as stack:
+            dipdup = await create_test_dipdup(config, stack)
+            ctx = dipdup._ctx
+            metadata_onchain = await process_metadata(ctx, IndexEnum.COLLECTION, "KT1WvzYHCNBvDSdwafTHv7nJ1dWmZ8GCYuuC")
+            self.assertIsNotNone(metadata_onchain)
+            self.assertEqual("objkt.com Marketplace", metadata_onchain.get("name"))

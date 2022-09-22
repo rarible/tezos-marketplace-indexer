@@ -1,3 +1,4 @@
+import json
 import logging
 
 import aiohttp
@@ -557,6 +558,16 @@ async def get_collection_metadata(ctx: DipDupContext, asset_id: str):
                 if name_result.status_code == 200:
                     name_raw = name_result.json().get("value")
                     contract_metadata = {"name": bytes.fromhex(name_raw).decode("utf-8")}
+            if contract_metadata is None:
+                onchain_metadata_path = bytes.fromhex(metadata_url).decode("utf-8")
+                splitted_onchain_metadata_path = onchain_metadata_path.split(":")
+                if len(splitted_onchain_metadata_path) == 2:
+                    onchain_metadata_key = splitted_onchain_metadata_path[1]
+                    onchain_metadata_result = await get_key_for_big_map(ctx, asset_id, "metadata", onchain_metadata_key)
+                    if onchain_metadata_result.status_code == 200:
+                        onchain_metadata_raw = onchain_metadata_result.json().get("value")
+                        if onchain_metadata_raw is not None:
+                            contract_metadata = json.loads(bytes.fromhex(onchain_metadata_raw).decode("utf-8"))
         return contract_metadata
     except Exception as ex:
         logging.getLogger('collection_metadata').warning(f"Could not fetch metadata for collection {asset_id}: {ex}")
