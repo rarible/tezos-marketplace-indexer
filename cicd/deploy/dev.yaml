@@ -24,8 +24,8 @@ tzkt:
   enabled: true
   api:
     image:
-      repository: mystdeim/tzkt-api
-      tag: 0.3
+      repository: fpto/rarible-tzkt-api
+      tag: 1.10.0
     resources:
       limits:
         memory: 768Mi
@@ -33,7 +33,7 @@ tzkt:
         memory: 512Mi
   indexer:
     image:
-      repository: bakingbad/tzkt-sync
+      repository: fpto/rarible-tzkt-indexer
       tag: 1.10.0
   network: ghostnet
   service:
