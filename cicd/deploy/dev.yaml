@@ -24,8 +24,8 @@ tzkt:
   enabled: true
   api:
     image:
-      repository: fpto/rarible-tzkt-api
-      tag: 1.10.0
+      repository: mystdeim/tzkt-api
+      tag: 0.3
     resources:
       limits:
         memory: 768Mi
