@@ -316,7 +316,7 @@ class Royalties(Model):
         assert contract
         assert token_id is not None
 
-        oid = '.'.join(map(str, filter(bool, [contract, token_id])))
+        oid = f"{contract}:{token_id}"
         return uuid5(namespace=uuid.NAMESPACE_OID, name=oid)
 
 
@@ -353,7 +353,7 @@ class TokenMetadata(Model):
         assert contract
         assert token_id is not None
 
-        oid = '.'.join(map(str, filter(bool, [contract, token_id])))
+        oid = f"{contract}:{token_id}"
         return uuid5(namespace=uuid.NAMESPACE_OID, name=oid)
 
 
