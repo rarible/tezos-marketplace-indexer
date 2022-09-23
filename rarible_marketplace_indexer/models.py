@@ -303,21 +303,14 @@ class Royalties(Model):
     parts = fields.JSONField(null=True)
     royalties_synced = fields.BooleanField(required=True)
     royalties_retries = fields.IntField(required=True)
+    db_updated_at = fields.DatetimeField(auto_now=True)
 
     def __init__(self, **kwargs: Any) -> None:
         try:
-            kwargs['id'] = self.get_id(**kwargs)
+            kwargs['id'] = Token.get_id(**kwargs)
         except TypeError:
             pass
         super().__init__(**kwargs)
-
-    @staticmethod
-    def get_id(contract, token_id, *args, **kwargs):
-        assert contract
-        assert token_id is not None
-
-        oid = f"{contract}:{token_id}"
-        return uuid5(namespace=uuid.NAMESPACE_OID, name=oid)
 
 
 class CollectionMetadata(Model):
@@ -328,6 +321,7 @@ class CollectionMetadata(Model):
     metadata = fields.TextField(null=True)
     metadata_synced = fields.BooleanField(required=True)
     metadata_retries = fields.IntField(required=True)
+    db_updated_at = fields.DatetimeField(auto_now=True)
 
 
 class TokenMetadata(Model):
@@ -340,21 +334,14 @@ class TokenMetadata(Model):
     metadata = fields.TextField(null=True)
     metadata_synced = fields.BooleanField(required=True)
     metadata_retries = fields.IntField(required=True)
+    db_updated_at = fields.DatetimeField(auto_now=True)
 
     def __init__(self, **kwargs: Any) -> None:
         try:
-            kwargs['id'] = self.get_id(**kwargs)
+            kwargs['id'] = Token.get_id(**kwargs)
         except TypeError:
             pass
         super().__init__(**kwargs)
-
-    @staticmethod
-    def get_id(contract, token_id, *args, **kwargs):
-        assert contract
-        assert token_id is not None
-
-        oid = f"{contract}:{token_id}"
-        return uuid5(namespace=uuid.NAMESPACE_OID, name=oid)
 
 
 class TZProfile(Model):

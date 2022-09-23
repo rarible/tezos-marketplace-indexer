@@ -7,7 +7,7 @@ from typing import Dict
 from dipdup.context import DipDupContext
 
 from rarible_marketplace_indexer.metadata.metadata import get_token_metadata
-from rarible_marketplace_indexer.models import ActivityTypeEnum, TokenMetadata
+from rarible_marketplace_indexer.models import ActivityTypeEnum, TokenMetadata, Token
 from rarible_marketplace_indexer.models import TokenTransfer
 from rarible_marketplace_indexer.types.rarible_exchange.parameter.sell import Part
 from rarible_marketplace_indexer.utils.rarible_utils import get_bidou_data
@@ -228,7 +228,7 @@ async def fetch_royalties(ctx: DipDupContext, contract: str, token_id: str) -> [
         logger.debug(f"Token {contract}:{token_id} royalties pattern is KALAMINT (private collection)")
         return royalties
 
-    token_metadata = TokenMetadata.get_or_none(id=TokenMetadata.get_id(contract, token_id))
+    token_metadata = TokenMetadata.get_or_none(id=Token.get_id(contract, token_id))
     if token_metadata is None:
         token_metadata = await get_token_metadata(ctx, f"{contract}:{token_id}")
     if token_metadata is not None:

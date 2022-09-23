@@ -1,5 +1,7 @@
 import logging
 
+import tortoise
+
 from dipdup.context import HandlerContext
 from dipdup.enums import TokenStandard
 from dipdup.models import TokenTransferData
@@ -57,14 +59,17 @@ async def on_transfer(ctx: HandlerContext, token_transfer: TokenTransferData) ->
                     )
                     token_metadata = await TokenMetadata.get_or_none(id=token_id)
                     if token_metadata is None:
-                        await TokenMetadata.create(
-                            id=token_id,
-                            contract=token_transfer.contract_address,
-                            token_id=token_transfer.token_id,
-                            metadata=None,
-                            metadata_synced=False,
-                            metadata_retries=0,
-                        )
+                        try:
+                            await TokenMetadata.create(
+                                id=token_id,
+                                contract=token_transfer.contract_address,
+                                token_id=token_transfer.token_id,
+                                metadata=None,
+                                metadata_synced=False,
+                                metadata_retries=0,
+                            )
+                        except tortoise.exceptions.IntegrityError as ex:
+                            logger.debug("Token metadata already exists")
                     royalties = await Royalties.get_or_none(id=token_id)
                     if royalties is None:
                         await Royalties.create(

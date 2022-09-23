@@ -50,12 +50,14 @@ async def process_collection_events(
                                 contract=OriginatedAccountAddress(address),
                                 owner=ImplicitAccountAddress(origination['sender']['address']),
                             )
-                            await CollectionMetadata.create(
-                                contract=OriginatedAccountAddress(address),
-                                metadata=None,
-                                metadata_synced=False,
-                                metadata_retries=0,
-                            )
+                            collection_metadata = CollectionMetadata.get_or_none(contract=OriginatedAccountAddress(address))
+                            if collection_metadata is None:
+                                await CollectionMetadata.create(
+                                    contract=OriginatedAccountAddress(address),
+                                    metadata=None,
+                                    metadata_synced=False,
+                                    metadata_retries=0,
+                                )
                             collection_event = RaribleApiCollectionFactory.build(origination, tzkt)
                             assert collection_event
                             await producer_send(collection_event)
