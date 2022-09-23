@@ -36,9 +36,12 @@ tzkt:
         cpu: 200m
         memory: 1384Mi
     image:
-      repository: mystdeim/tzkt-api
-      tag: 0.2
+      repository: fpto/rarible-tzkt-api
+      tag: 1.10.0
   indexer:
+    image:
+      repository: fpto/rarible-tzkt-indexer
+      tag: 1.10.0
     resources:
       limits:
         cpu: 400m
