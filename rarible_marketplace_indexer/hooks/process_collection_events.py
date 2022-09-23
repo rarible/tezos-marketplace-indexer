@@ -50,7 +50,8 @@ async def process_collection_events(
                                 contract=OriginatedAccountAddress(address),
                                 owner=ImplicitAccountAddress(origination['sender']['address']),
                             )
-                            collection_metadata = CollectionMetadata.get_or_none(contract=OriginatedAccountAddress(address))
+                            collection_metadata = await CollectionMetadata.get_or_none(
+                                contract=OriginatedAccountAddress(address))
                             if collection_metadata is None:
                                 await CollectionMetadata.create(
                                     contract=OriginatedAccountAddress(address),
