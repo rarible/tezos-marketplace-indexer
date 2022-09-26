@@ -80,7 +80,7 @@ async def on_transfer(ctx: HandlerContext, token_transfer: TokenTransferData) ->
                             id=token_id,
                             contract=token_transfer.contract_address,
                             token_id=token_transfer.token_id,
-                            parts=None,
+                            parts=[],
                             royalties_synced=False,
                             royalties_retries=0,
                             db_updated_at=datetime.now().strftime(date_pattern)

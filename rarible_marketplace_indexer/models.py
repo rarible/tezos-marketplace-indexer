@@ -300,7 +300,7 @@ class Royalties(Model):
     id = fields.UUIDField(pk=True, generated=False, required=True)
     contract = AccountAddressField(null=False)
     token_id = fields.TextField(null=False)
-    parts = fields.JSONField(null=True)
+    parts = fields.JSONField(null=False)
     royalties_synced = fields.BooleanField(required=True)
     royalties_retries = fields.IntField(required=True)
     db_updated_at = fields.DatetimeField(required=True)
