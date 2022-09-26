@@ -107,11 +107,6 @@ advanced:
     config_modified: ignore
     schema_modified: ignore
 
-prometheus:
-  host: 0.0.0.0
-  port: 9191
-  update_interval: 5
-
 custom:
   enabled: ${KAFKA_ENABLED:-false}
   kafka_address: ${KAFKA_ADDRESS:-kafka:9092}
