@@ -5,6 +5,7 @@ import os
 from asyncio import create_task
 from asyncio import gather
 from collections import deque
+from datetime import datetime
 from typing import Deque
 from typing import List
 
@@ -18,6 +19,8 @@ from rarible_marketplace_indexer.models import IndexingStatus
 from rarible_marketplace_indexer.models import TokenMetadata
 from gql import gql, Client
 from gql.transport.aiohttp import AIOHTTPTransport
+
+from rarible_marketplace_indexer.utils.rarible_utils import date_pattern
 
 pending_tasks = deque()
 metadata_to_update: Deque[TokenMetadata] = deque()
@@ -102,7 +105,8 @@ async def process_token_metadata(
                     token_id=meta.get("token_id"),
                     metadata=meta.get("metadata"),
                     metadata_synced=True,
-                    metadata_retries=0
+                    metadata_retries=0,
+                    db_updated_at=datetime.now().strftime(date_pattern)
                 ))))
             await gather(*pending_tasks)
 

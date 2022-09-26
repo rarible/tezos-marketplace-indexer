@@ -5,6 +5,7 @@ import os
 from asyncio import create_task
 from asyncio import gather
 from collections import deque
+from datetime import datetime
 from typing import List
 
 import tortoise
@@ -17,6 +18,7 @@ from rarible_marketplace_indexer.metadata.metadata import process_metadata
 from rarible_marketplace_indexer.models import CollectionMetadata
 from rarible_marketplace_indexer.models import IndexEnum
 from rarible_marketplace_indexer.models import IndexingStatus
+from rarible_marketplace_indexer.utils.rarible_utils import date_pattern
 
 pending_tasks = deque()
 logger = logging.getLogger("collection_metadata")
@@ -94,7 +96,8 @@ async def process_collection_metadata(
                     contract=meta.get("contract"),
                     metadata=meta.get("metadata"),
                     metadata_synced=True,
-                    metadata_retries=0
+                    metadata_retries=0,
+                    db_updated_at=datetime.now().strftime(date_pattern)
                 ))))
             await gather(*pending_tasks)
 

@@ -1,4 +1,5 @@
 import logging
+from datetime import datetime
 
 from dipdup.context import HookContext
 
@@ -10,6 +11,7 @@ from rarible_marketplace_indexer.producer.helper import producer_send
 from rarible_marketplace_indexer.types.rarible_api_objects.collection.factory import RaribleApiCollectionFactory
 from rarible_marketplace_indexer.types.tezos_objects.tezos_object_hash import ImplicitAccountAddress
 from rarible_marketplace_indexer.types.tezos_objects.tezos_object_hash import OriginatedAccountAddress
+from rarible_marketplace_indexer.utils.rarible_utils import date_pattern
 
 
 async def process_collection_events(
@@ -49,6 +51,7 @@ async def process_collection_events(
                             await Collection.create(
                                 contract=OriginatedAccountAddress(address),
                                 owner=ImplicitAccountAddress(origination['sender']['address']),
+                                db_updated_at=datetime.now().strftime(date_pattern)
                             )
                             collection_metadata = await CollectionMetadata.get_or_none(
                                 contract=OriginatedAccountAddress(address))
@@ -58,6 +61,7 @@ async def process_collection_events(
                                     metadata=None,
                                     metadata_synced=False,
                                     metadata_retries=0,
+                                    db_updated_at=datetime.now().strftime(date_pattern)
                                 )
                             collection_event = RaribleApiCollectionFactory.build(origination, tzkt)
                             assert collection_event

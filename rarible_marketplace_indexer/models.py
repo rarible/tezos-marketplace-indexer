@@ -258,7 +258,7 @@ class Token(Model):
     supply = AssetValueField()
     deleted = fields.BooleanField(default=False)
     updated = fields.DatetimeField(null=False)
-    db_updated_at = fields.DatetimeField(auto_now=True)
+    db_updated_at = fields.DatetimeField(required=True)
 
     def __init__(self, **kwargs: Any) -> None:
         try:
@@ -287,7 +287,7 @@ class Collection(Model):
 
     contract = AccountAddressField(pk=True, required=True)
     owner = AccountAddressField(required=True)
-    db_updated_at = fields.DatetimeField(auto_now=True)
+    db_updated_at = fields.DatetimeField(required=True)
 
     def full_id(self):
         return f"{self.contract}"
@@ -303,7 +303,7 @@ class Royalties(Model):
     parts = fields.JSONField(null=True)
     royalties_synced = fields.BooleanField(required=True)
     royalties_retries = fields.IntField(required=True)
-    db_updated_at = fields.DatetimeField(auto_now=True)
+    db_updated_at = fields.DatetimeField(required=True)
 
     def __init__(self, **kwargs: Any) -> None:
         try:
@@ -321,7 +321,7 @@ class CollectionMetadata(Model):
     metadata = fields.TextField(null=True)
     metadata_synced = fields.BooleanField(required=True)
     metadata_retries = fields.IntField(required=True)
-    db_updated_at = fields.DatetimeField(auto_now=True)
+    db_updated_at = fields.DatetimeField(required=True)
 
 
 class TokenMetadata(Model):
@@ -334,7 +334,7 @@ class TokenMetadata(Model):
     metadata = fields.TextField(null=True)
     metadata_synced = fields.BooleanField(required=True)
     metadata_retries = fields.IntField(required=True)
-    db_updated_at = fields.DatetimeField(auto_now=True)
+    db_updated_at = fields.DatetimeField(required=True)
 
     def __init__(self, **kwargs: Any) -> None:
         try:

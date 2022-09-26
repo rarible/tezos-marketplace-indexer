@@ -1,4 +1,5 @@
 import logging
+from datetime import datetime
 
 import tortoise
 
@@ -12,6 +13,7 @@ from rarible_marketplace_indexer.models import Royalties
 from rarible_marketplace_indexer.models import Token
 from rarible_marketplace_indexer.models import TokenMetadata
 from rarible_marketplace_indexer.models import TokenTransfer
+from rarible_marketplace_indexer.utils.rarible_utils import date_pattern
 
 
 async def on_transfer(ctx: HandlerContext, token_transfer: TokenTransferData) -> None:
@@ -56,6 +58,7 @@ async def on_transfer(ctx: HandlerContext, token_transfer: TokenTransferData) ->
                         minted=token_transfer.amount,
                         supply=token_transfer.amount,
                         updated=token_transfer.timestamp,
+                        db_updated_at=datetime.now().strftime(date_pattern)
                     )
                     token_metadata = await TokenMetadata.get_or_none(id=token_id)
                     if token_metadata is None:
@@ -67,6 +70,7 @@ async def on_transfer(ctx: HandlerContext, token_transfer: TokenTransferData) ->
                                 metadata=None,
                                 metadata_synced=False,
                                 metadata_retries=0,
+                                db_updated_at=datetime.now().strftime(date_pattern)
                             )
                         except tortoise.exceptions.IntegrityError as ex:
                             logger.debug("Token metadata already exists")
@@ -79,6 +83,7 @@ async def on_transfer(ctx: HandlerContext, token_transfer: TokenTransferData) ->
                             parts=None,
                             royalties_synced=False,
                             royalties_retries=0,
+                            db_updated_at=datetime.now().strftime(date_pattern)
                         )
                 else:
                     minted.minted += token_transfer.amount

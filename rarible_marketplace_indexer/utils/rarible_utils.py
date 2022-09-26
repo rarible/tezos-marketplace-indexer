@@ -45,6 +45,8 @@ from rarible_marketplace_indexer.types.tezos_objects.asset_value.xtz_value impor
 from rarible_marketplace_indexer.types.tezos_objects.tezos_object_hash import ImplicitAccountAddress
 from rarible_marketplace_indexer.types.tezos_objects.tezos_object_hash import OriginatedAccountAddress
 
+date_pattern = "%Y-%m-%dT%H:%M:%SZ"
+
 
 def get_json_parts(parts: List[Part]):
     json_parts: List[Part] = []
@@ -211,8 +213,6 @@ async def import_legacy_order(order: dict):
     order = json.loads(order["data"])
     logger = logging.getLogger('dipdup.legacy')
     logger.info(f"Importing order: {order}")
-
-    date_pattern = "%Y-%m-%dT%H:%M:%SZ"
 
     make = MakeDto(
         asset_class=AssetClassEnum.MULTI_TOKEN,
