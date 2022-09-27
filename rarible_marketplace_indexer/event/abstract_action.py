@@ -520,6 +520,9 @@ class AbstractPutBidEvent(EventInterface):
     ):
         dto = cls._get_bid_dto(transaction, datasource)
 
+        if not dto.start_at:
+            dto.start_at = transaction.data.timestamp
+
         if cls.platform is PlatformEnum.RARIBLE_V2 and dto.end_at is None:
             dto.end_at = dto.start_at + timedelta(weeks=1)
 
