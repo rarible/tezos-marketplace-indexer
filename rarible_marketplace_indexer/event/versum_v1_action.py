@@ -64,12 +64,12 @@ class VersumV1OrderCancelEvent(AbstractOrderCancelEvent):
         return CancelDto(internal_order_id=transaction.parameter.__root__)
 
 
-class VersumV1OrderMatchEvent(AbstractPutBidEvent):
+class VersumV1OrderMatchEvent(AbstractOrderMatchEvent):
     platform = PlatformEnum.VERSUM_V1
     VersumMatchTransaction = Transaction[CollectSwapParameter, VersumV1Storage]
 
     @staticmethod
-    def _get_bid_dto(transaction: VersumMatchTransaction, datasource: TzktDatasource) -> MatchDto:
+    def _get_match_dto(transaction: VersumMatchTransaction, datasource: TzktDatasource) -> MatchDto:
         return MatchDto(
             internal_order_id=transaction.parameter.swap_id,
             taker=ImplicitAccountAddress(transaction.data.sender_address),
@@ -79,12 +79,12 @@ class VersumV1OrderMatchEvent(AbstractPutBidEvent):
         )
 
 
-class VersumV1PutBidEvent(AbstractOrderListEvent):
+class VersumV1PutBidEvent(AbstractPutBidEvent):
     platform = PlatformEnum.VERSUM_V1
     VersumListTransaction = Transaction[MakeOfferParameter, VersumV1Storage]
 
     @staticmethod
-    def _get_list_dto(
+    def _get_bid_dto(
         transaction: VersumListTransaction,
         datasource: TzktDatasource,
     ) -> ListDto:
