@@ -19,6 +19,11 @@ tezos-marketplace-indexer-metadata:
     TZKT_URL: http://tzkt:5000
     HASURA_URL: http://hasura:8080
     NETWORK: ghostnet
+  resources:
+    limits:
+      memory: 768Mi
+    requests:
+      memory: 512Mi
 
 tzkt:
   enabled: true
