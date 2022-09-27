@@ -14,7 +14,7 @@ from rarible_marketplace_indexer.event.dto import CancelDto
 from rarible_marketplace_indexer.event.dto import LegacyMatchDto
 from rarible_marketplace_indexer.event.dto import ListDto
 from rarible_marketplace_indexer.event.dto import MatchDto
-from rarible_marketplace_indexer.models import ActivityModel
+from rarible_marketplace_indexer.models import ActivityModel, PlatformEnum
 from rarible_marketplace_indexer.models import ActivityTypeEnum
 from rarible_marketplace_indexer.models import LegacyOrderModel
 from rarible_marketplace_indexer.models import OrderModel
@@ -60,6 +60,8 @@ class AbstractOrderListEvent(EventInterface):
             network=os.getenv("NETWORK"),
             platform=cls.platform,
             status=OrderStatusEnum.ACTIVE,
+            make_asset_class=dto.make.asset_class,
+            take_asset_class=dto.take.asset_class
         )
 
         if dto.take.asset_class == AssetClassEnum.FUNGIBLE_TOKEN:
@@ -173,11 +175,12 @@ class AbstractOrderCancelEvent(EventInterface):
         datasource: TzktDatasource,
     ):
         dto = cls._get_cancel_dto(transaction, datasource)
-        last_order_activity = (
+        last_order_activity: ActivityModel = (
             await ActivityModel.filter(
                 network=os.getenv("NETWORK"),
                 platform=cls.platform,
                 internal_order_id=dto.internal_order_id,
+                type=ActivityTypeEnum.ORDER_LIST
             )
             .order_by('-operation_level')
             .first()
@@ -195,6 +198,8 @@ class AbstractOrderCancelEvent(EventInterface):
                 platform=cls.platform,
                 internal_order_id=dto.internal_order_id,
                 status=OrderStatusEnum.ACTIVE,
+                make_asset_class=last_order_activity.make_asset_class,
+                take_asset_class=last_order_activity.take_asset_class
             )
             .order_by('-id')
             .first()
@@ -304,11 +309,12 @@ class AbstractOrderMatchEvent(EventInterface):
     ):
         dto = cls._get_match_dto(transaction, datasource)
 
-        last_list_activity = (
+        last_list_activity: ActivityModel = (
             await ActivityModel.filter(
                 network=os.getenv("NETWORK"),
                 platform=cls.platform,
                 internal_order_id=dto.internal_order_id,
+                type=ActivityTypeEnum.ORDER_LIST
             )
             .order_by('-operation_level')
             .first()
@@ -320,6 +326,8 @@ class AbstractOrderMatchEvent(EventInterface):
                 platform=cls.platform,
                 internal_order_id=dto.internal_order_id,
                 status=OrderStatusEnum.ACTIVE,
+                make_asset_class=last_list_activity.make_asset_class,
+                take_asset_class=last_list_activity.take_asset_class
             )
             .order_by('-id')
             .first()
@@ -512,7 +520,7 @@ class AbstractPutBidEvent(EventInterface):
     ):
         dto = cls._get_bid_dto(transaction, datasource)
 
-        if dto.end_at is None:
+        if cls.platform is PlatformEnum.RARIBLE_V2 and dto.end_at is None:
             dto.end_at = dto.start_at + timedelta(weeks=1)
 
         order = await OrderModel.get_or_none(
@@ -520,6 +528,8 @@ class AbstractPutBidEvent(EventInterface):
             network=os.getenv("NETWORK"),
             platform=cls.platform,
             status=OrderStatusEnum.ACTIVE,
+            make_asset_class=dto.make.asset_class,
+            take_asset_class=dto.take.asset_class
         )
 
         if order is None:
@@ -603,6 +613,8 @@ class AbstractPutFloorBidEvent(EventInterface):
             network=os.getenv("NETWORK"),
             platform=cls.platform,
             status=OrderStatusEnum.ACTIVE,
+            make_asset_class=dto.make.asset_class,
+            take_asset_class=dto.take.asset_class
         )
 
         if order is None:
@@ -689,11 +701,12 @@ class AbstractAcceptBidEvent(EventInterface):
                 network=os.getenv("NETWORK"),
                 platform=cls.platform,
                 internal_order_id=dto.internal_order_id,
+                type=ActivityTypeEnum.MAKE_BID
             )
             .order_by('-operation_level')
             .first()
         )
-        match_activity = last_list_activity.apply(transaction)
+        match_activity: ActivityModel = last_list_activity.apply(transaction)
 
         match_activity.type = ActivityTypeEnum.GET_BID
         match_activity.taker = transaction.data.sender_address
@@ -705,6 +718,8 @@ class AbstractAcceptBidEvent(EventInterface):
             platform=cls.platform,
             internal_order_id=dto.internal_order_id,
             status=OrderStatusEnum.ACTIVE,
+            make_asset_class=match_activity.make_asset_class,
+            take_asset_class=match_activity.take_asset_class
         )
         order.last_updated_at = transaction.data.timestamp
         order.taker = transaction.data.sender_address
@@ -738,11 +753,12 @@ class AbstractAcceptFloorBidEvent(EventInterface):
     ):
         dto = cls._get_accept_floor_bid_dto(transaction, datasource)
 
-        last_list_activity = (
+        last_list_activity: ActivityModel = (
             await ActivityModel.filter(
                 network=os.getenv("NETWORK"),
                 platform=cls.platform,
                 internal_order_id=dto.internal_order_id,
+                type=ActivityTypeEnum.MAKE_BID
             )
             .order_by('-operation_level')
             .first()
@@ -760,6 +776,8 @@ class AbstractAcceptFloorBidEvent(EventInterface):
             platform=cls.platform,
             internal_order_id=dto.internal_order_id,
             status=OrderStatusEnum.ACTIVE,
+            make_asset_class=last_list_activity.make_asset_class,
+            take_asset_class=last_list_activity.take_asset_class
         )
         order.last_updated_at = transaction.data.timestamp
         order.taker = transaction.data.sender_address
@@ -787,11 +805,12 @@ class AbstractBidCancelEvent(EventInterface):
         datasource: TzktDatasource,
     ):
         dto = cls._get_cancel_bid_dto(transaction, datasource)
-        last_order_activity = (
+        last_order_activity: ActivityModel = (
             await ActivityModel.filter(
                 network=os.getenv("NETWORK"),
                 platform=cls.platform,
                 internal_order_id=dto.internal_order_id,
+                type=ActivityTypeEnum.MAKE_BID
             )
             .order_by('-operation_level')
             .first()
@@ -807,6 +826,8 @@ class AbstractBidCancelEvent(EventInterface):
                 platform=cls.platform,
                 internal_order_id=dto.internal_order_id,
                 status=OrderStatusEnum.ACTIVE,
+                make_asset_class=last_order_activity.make_asset_class,
+                take_asset_class=last_order_activity.take_asset_class
             )
             .order_by('-id')
             .first()
@@ -842,11 +863,12 @@ class AbstractFloorBidCancelEvent(EventInterface):
                 network=os.getenv("NETWORK"),
                 platform=cls.platform,
                 internal_order_id=dto.internal_order_id,
+                type=ActivityTypeEnum.MAKE_BID
             )
             .order_by('-operation_level')
             .first()
         )
-        cancel_activity = last_order_activity.apply(transaction)
+        cancel_activity: ActivityModel = last_order_activity.apply(transaction)
 
         cancel_activity.type = ActivityTypeEnum.ORDER_CANCEL
         await cancel_activity.save()
@@ -857,6 +879,8 @@ class AbstractFloorBidCancelEvent(EventInterface):
                 platform=cls.platform,
                 internal_order_id=dto.internal_order_id,
                 status=OrderStatusEnum.ACTIVE,
+                make_asset_class=cancel_activity.make_asset_class,
+                take_asset_class=cancel_activity.take_asset_class
             )
             .order_by('-id')
             .first()
