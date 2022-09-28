@@ -567,8 +567,12 @@ class AbstractPutBidEvent(EventInterface):
             order.payouts = get_json_parts(order.payouts) + get_json_parts(dto.payouts)
             await order.save()
 
+        activity_type = ActivityTypeEnum.MAKE_BID
+        if dto.take.token_id is None:
+            activity_type = ActivityTypeEnum.MAKE_FLOOR_BID
+
         await ActivityModel.create(
-            type=ActivityTypeEnum.MAKE_BID,
+            type=activity_type,
             network=os.getenv("NETWORK"),
             platform=cls.platform,
             order_id=order.id,
@@ -704,14 +708,18 @@ class AbstractAcceptBidEvent(EventInterface):
                 network=os.getenv("NETWORK"),
                 platform=cls.platform,
                 internal_order_id=dto.internal_order_id,
-                type=ActivityTypeEnum.MAKE_BID
+                type__in=[ActivityTypeEnum.MAKE_BID, ActivityTypeEnum.MAKE_FLOOR_BID]
             )
             .order_by('-operation_level')
             .first()
         )
         match_activity: ActivityModel = last_list_activity.apply(transaction)
 
-        match_activity.type = ActivityTypeEnum.GET_BID
+        if match_activity.take_token_id is None:
+            match_activity.type = ActivityTypeEnum.GET_FLOOR_BID
+        else:
+            match_activity.type = ActivityTypeEnum.GET_BID
+
         match_activity.taker = transaction.data.sender_address
 
         await match_activity.save()
@@ -761,7 +769,7 @@ class AbstractAcceptFloorBidEvent(EventInterface):
                 network=os.getenv("NETWORK"),
                 platform=cls.platform,
                 internal_order_id=dto.internal_order_id,
-                type=ActivityTypeEnum.MAKE_BID
+                type=ActivityTypeEnum.MAKE_FLOOR_BID
             )
             .order_by('-operation_level')
             .first()
@@ -813,14 +821,17 @@ class AbstractBidCancelEvent(EventInterface):
                 network=os.getenv("NETWORK"),
                 platform=cls.platform,
                 internal_order_id=dto.internal_order_id,
-                type=ActivityTypeEnum.MAKE_BID
+                type__in=[ActivityTypeEnum.MAKE_BID, ActivityTypeEnum.MAKE_FLOOR_BID]
             )
             .order_by('-operation_level')
             .first()
         )
         cancel_activity = last_order_activity.apply(transaction)
 
-        cancel_activity.type = ActivityTypeEnum.CANCEL_BID
+        if cancel_activity.take_token_id is None:
+            cancel_activity.type = ActivityTypeEnum.CANCEL_FLOOR_BID
+        else:
+            cancel_activity.type = ActivityTypeEnum.CANCEL_BID
         await cancel_activity.save()
 
         order = (
@@ -866,7 +877,7 @@ class AbstractFloorBidCancelEvent(EventInterface):
                 network=os.getenv("NETWORK"),
                 platform=cls.platform,
                 internal_order_id=dto.internal_order_id,
-                type=ActivityTypeEnum.MAKE_BID
+                type=ActivityTypeEnum.MAKE_FLOOR_BID
             )
             .order_by('-operation_level')
             .first()

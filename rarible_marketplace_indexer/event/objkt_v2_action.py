@@ -103,7 +103,7 @@ class ObjktV2PutBidEvent(AbstractPutBidEvent):
             take=TakeDto(
                 asset_class=AssetClassEnum.MULTI_TOKEN,
                 contract=OriginatedAccountAddress(transaction.parameter.token.address),
-                token_id=int(transaction.parameter.token.token_id),
+                token_id=int(transaction.parameter.token.token_id) if transaction.parameter.token.token_id is not None else None,
                 value=take_value,
             ),
             start_at=transaction.data.timestamp,
@@ -135,7 +135,7 @@ class ObjktV2AcceptBidEvent(AbstractAcceptBidEvent):
         return MatchDto(
             internal_order_id=transaction.parameter.offer_id,
             taker=ImplicitAccountAddress(transaction.data.sender_address),
-            token_id=int(transaction.parameter.token_id),
+            token_id=int(transaction.parameter.token_id) if transaction.parameter.token_id is not None else None,
             match_amount=AssetValue(1),
             match_timestamp=transaction.data.timestamp,
         )
