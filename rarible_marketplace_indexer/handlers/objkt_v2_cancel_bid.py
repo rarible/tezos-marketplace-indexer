@@ -1,8 +1,10 @@
-from rarible_marketplace_indexer.event.objkt_v2_action import ObjktV2CancelBidEvent
-from rarible_marketplace_indexer.types.objkt_marketplace_v2.storage import ObjktMarketplaceV2Storage
 from dipdup.context import HandlerContext
 from dipdup.models import Transaction
+
+from rarible_marketplace_indexer.event.objkt_v2_action import ObjktV2CancelBidEvent
 from rarible_marketplace_indexer.types.objkt_marketplace_v2.parameter.retract_offer import RetractOfferParameter
+from rarible_marketplace_indexer.types.objkt_marketplace_v2.storage import ObjktMarketplaceV2Storage
+
 
 async def objkt_v2_cancel_bid(
     ctx: HandlerContext,

@@ -1,10 +1,12 @@
 from dipdup.datasources.tzkt.datasource import TzktDatasource
 from dipdup.models import Transaction
 
-from rarible_marketplace_indexer.event.abstract_action import AbstractOrderCancelEvent, AbstractPutBidEvent, \
-    AbstractBidCancelEvent, AbstractAcceptBidEvent
+from rarible_marketplace_indexer.event.abstract_action import AbstractAcceptBidEvent
+from rarible_marketplace_indexer.event.abstract_action import AbstractBidCancelEvent
+from rarible_marketplace_indexer.event.abstract_action import AbstractOrderCancelEvent
 from rarible_marketplace_indexer.event.abstract_action import AbstractOrderListEvent
 from rarible_marketplace_indexer.event.abstract_action import AbstractOrderMatchEvent
+from rarible_marketplace_indexer.event.abstract_action import AbstractPutBidEvent
 from rarible_marketplace_indexer.event.dto import CancelDto
 from rarible_marketplace_indexer.event.dto import ListDto
 from rarible_marketplace_indexer.event.dto import MakeDto
@@ -117,9 +119,7 @@ class ObjktV1CancelBidEvent(AbstractBidCancelEvent):
     ObjktCancelTransaction = Transaction[RetractBidParameter, ObjktMarketplaceStorage]
 
     @staticmethod
-    def _get_cancel_bid_dto(
-        transaction: ObjktCancelTransaction, datasource: TzktDatasource
-    ) -> CancelDto:
+    def _get_cancel_bid_dto(transaction: ObjktCancelTransaction, datasource: TzktDatasource) -> CancelDto:
         return CancelDto(internal_order_id=transaction.parameter.__root__)
 
 
@@ -128,9 +128,7 @@ class ObjktV1AcceptBidEvent(AbstractAcceptBidEvent):
     ObjktMatchTransaction = Transaction[FulfillBidParameter, ObjktMarketplaceStorage]
 
     @staticmethod
-    def _get_accept_bid_dto(
-        transaction: ObjktMatchTransaction, datasource: TzktDatasource
-    ) -> MatchDto:
+    def _get_accept_bid_dto(transaction: ObjktMatchTransaction, datasource: TzktDatasource) -> MatchDto:
         return MatchDto(
             internal_order_id=transaction.parameter.__root__,
             taker=ImplicitAccountAddress(transaction.data.sender_address),

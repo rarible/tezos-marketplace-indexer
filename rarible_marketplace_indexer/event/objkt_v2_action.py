@@ -1,10 +1,12 @@
 from dipdup.datasources.tzkt.datasource import TzktDatasource
 from dipdup.models import Transaction
 
-from rarible_marketplace_indexer.event.abstract_action import AbstractOrderCancelEvent, AbstractAcceptBidEvent, \
-    AbstractBidCancelEvent, AbstractPutBidEvent
+from rarible_marketplace_indexer.event.abstract_action import AbstractAcceptBidEvent
+from rarible_marketplace_indexer.event.abstract_action import AbstractBidCancelEvent
+from rarible_marketplace_indexer.event.abstract_action import AbstractOrderCancelEvent
 from rarible_marketplace_indexer.event.abstract_action import AbstractOrderListEvent
 from rarible_marketplace_indexer.event.abstract_action import AbstractOrderMatchEvent
+from rarible_marketplace_indexer.event.abstract_action import AbstractPutBidEvent
 from rarible_marketplace_indexer.event.dto import CancelDto
 from rarible_marketplace_indexer.event.dto import ListDto
 from rarible_marketplace_indexer.event.dto import MakeDto
@@ -103,7 +105,9 @@ class ObjktV2PutBidEvent(AbstractPutBidEvent):
             take=TakeDto(
                 asset_class=AssetClassEnum.MULTI_TOKEN,
                 contract=OriginatedAccountAddress(transaction.parameter.token.address),
-                token_id=int(transaction.parameter.token.token_id) if transaction.parameter.token.token_id is not None else None,
+                token_id=int(transaction.parameter.token.token_id)
+                if transaction.parameter.token.token_id is not None
+                else None,
                 value=take_value,
             ),
             start_at=transaction.data.timestamp,
@@ -118,9 +122,7 @@ class ObjktV2CancelBidEvent(AbstractBidCancelEvent):
     ObjktCancelTransaction = Transaction[RetractOfferParameter, ObjktMarketplaceV2Storage]
 
     @staticmethod
-    def _get_cancel_bid_dto(
-        transaction: ObjktCancelTransaction, datasource: TzktDatasource
-    ) -> CancelDto:
+    def _get_cancel_bid_dto(transaction: ObjktCancelTransaction, datasource: TzktDatasource) -> CancelDto:
         return CancelDto(internal_order_id=transaction.parameter.__root__)
 
 
@@ -129,9 +131,7 @@ class ObjktV2AcceptBidEvent(AbstractAcceptBidEvent):
     ObjktMatchTransaction = Transaction[FulfillOfferParameter, ObjktMarketplaceV2Storage]
 
     @staticmethod
-    def _get_accept_bid_dto(
-        transaction: ObjktMatchTransaction, datasource: TzktDatasource
-    ) -> MatchDto:
+    def _get_accept_bid_dto(transaction: ObjktMatchTransaction, datasource: TzktDatasource) -> MatchDto:
         return MatchDto(
             internal_order_id=transaction.parameter.offer_id,
             taker=ImplicitAccountAddress(transaction.data.sender_address),

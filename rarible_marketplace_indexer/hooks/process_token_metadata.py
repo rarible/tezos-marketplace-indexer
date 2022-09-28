@@ -10,16 +10,16 @@ from typing import Deque
 from typing import List
 
 import tortoise
-
 from dipdup.context import HookContext
-
-from rarible_marketplace_indexer.metadata.metadata import process_metadata
-from rarible_marketplace_indexer.models import IndexEnum, Token
-from rarible_marketplace_indexer.models import IndexingStatus
-from rarible_marketplace_indexer.models import TokenMetadata
-from gql import gql, Client
+from gql import Client
+from gql import gql
 from gql.transport.aiohttp import AIOHTTPTransport
 
+from rarible_marketplace_indexer.metadata.metadata import process_metadata
+from rarible_marketplace_indexer.models import IndexEnum
+from rarible_marketplace_indexer.models import IndexingStatus
+from rarible_marketplace_indexer.models import Token
+from rarible_marketplace_indexer.models import TokenMetadata
 from rarible_marketplace_indexer.utils.rarible_utils import date_pattern
 
 pending_tasks = deque()
@@ -61,7 +61,6 @@ async def boostrap_token_metadata(meta: TokenMetadata):
         await meta.save(force_update=True)
 
 
-
 async def process_token_metadata(
     ctx: HookContext,
 ) -> None:
@@ -87,7 +86,11 @@ async def process_token_metadata(
                         metadata
                       }
                     }
-            """.replace("%network%", os.getenv("NETWORK")).replace("%offset%", str(offset))
+            """.replace(
+                    "%network%", os.getenv("NETWORK")
+                ).replace(
+                    "%offset%", str(offset)
+                )
             )
             offset += 1000
             try:
@@ -99,15 +102,21 @@ async def process_token_metadata(
             if len(data) == 0:
                 done = True
             for meta in data:
-                pending_tasks.append(create_task(boostrap_token_metadata(TokenMetadata(
-                    id=Token.get_id(meta.get("contract"), meta.get("token_id")),
-                    contract=meta.get("contract"),
-                    token_id=meta.get("token_id"),
-                    metadata=meta.get("metadata"),
-                    metadata_synced=True,
-                    metadata_retries=0,
-                    db_updated_at=datetime.now().strftime(date_pattern)
-                ))))
+                pending_tasks.append(
+                    create_task(
+                        boostrap_token_metadata(
+                            TokenMetadata(
+                                id=Token.get_id(meta.get("contract"), meta.get("token_id")),
+                                contract=meta.get("contract"),
+                                token_id=meta.get("token_id"),
+                                metadata=meta.get("metadata"),
+                                metadata_synced=True,
+                                metadata_retries=0,
+                                db_updated_at=datetime.now().strftime(date_pattern),
+                            )
+                        )
+                    )
+                )
             await gather(*pending_tasks)
 
         await IndexingStatus.create(index=IndexEnum.NFT_METADATA, last_level="DONE")

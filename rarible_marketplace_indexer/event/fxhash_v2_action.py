@@ -1,10 +1,12 @@
 from dipdup.datasources.tzkt.datasource import TzktDatasource
 from dipdup.models import Transaction
 
-from rarible_marketplace_indexer.event.abstract_action import AbstractOrderCancelEvent, AbstractPutBidEvent, \
-    AbstractBidCancelEvent, AbstractAcceptBidEvent
+from rarible_marketplace_indexer.event.abstract_action import AbstractAcceptBidEvent
+from rarible_marketplace_indexer.event.abstract_action import AbstractBidCancelEvent
+from rarible_marketplace_indexer.event.abstract_action import AbstractOrderCancelEvent
 from rarible_marketplace_indexer.event.abstract_action import AbstractOrderListEvent
 from rarible_marketplace_indexer.event.abstract_action import AbstractOrderMatchEvent
+from rarible_marketplace_indexer.event.abstract_action import AbstractPutBidEvent
 from rarible_marketplace_indexer.event.dto import CancelDto
 from rarible_marketplace_indexer.event.dto import ListDto
 from rarible_marketplace_indexer.event.dto import MakeDto
@@ -43,9 +45,7 @@ class FxhashV2ListingOrderListEvent(AbstractOrderListEvent):
             maker=ImplicitAccountAddress(transaction.data.sender_address),
             make=MakeDto(
                 asset_class=AssetClassEnum.MULTI_TOKEN,
-                contract=OriginatedAccountAddress(
-                    fxhash_nft_addresses.get(transaction.parameter.gentk.version)
-                ),
+                contract=OriginatedAccountAddress(fxhash_nft_addresses.get(transaction.parameter.gentk.version)),
                 token_id=int(transaction.parameter.gentk.id),
                 value=make_value,
             ),
@@ -106,9 +106,7 @@ class FxhashV2PutBidEvent(AbstractPutBidEvent):
             ),
             take=TakeDto(
                 asset_class=AssetClassEnum.MULTI_TOKEN,
-                contract=OriginatedAccountAddress(
-                    fxhash_nft_addresses.get(transaction.parameter.gentk.version)
-                ),
+                contract=OriginatedAccountAddress(fxhash_nft_addresses.get(transaction.parameter.gentk.version)),
                 token_id=int(transaction.parameter.gentk.id),
                 value=take_value,
             ),
@@ -121,9 +119,7 @@ class FxhashV2CancelBidEvent(AbstractBidCancelEvent):
     FxhashCancelTransaction = Transaction[OfferCancelParameter, FxhashV2Storage]
 
     @staticmethod
-    def _get_cancel_bid_dto(
-        transaction: FxhashCancelTransaction, datasource: TzktDatasource
-    ) -> CancelDto:
+    def _get_cancel_bid_dto(transaction: FxhashCancelTransaction, datasource: TzktDatasource) -> CancelDto:
         return CancelDto(internal_order_id=transaction.parameter.__root__)
 
 
@@ -132,9 +128,7 @@ class FxhashV2AcceptBidEvent(AbstractAcceptBidEvent):
     FxhashMatchTransaction = Transaction[OfferAcceptParameter, FxhashV2Storage]
 
     @staticmethod
-    def _get_accept_bid_dto(
-        transaction: FxhashMatchTransaction, datasource: TzktDatasource
-    ) -> MatchDto:
+    def _get_accept_bid_dto(transaction: FxhashMatchTransaction, datasource: TzktDatasource) -> MatchDto:
         return MatchDto(
             internal_order_id=transaction.parameter.__root__,
             taker=ImplicitAccountAddress(transaction.data.sender_address),

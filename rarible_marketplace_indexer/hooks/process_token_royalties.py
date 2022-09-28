@@ -7,7 +7,8 @@ from typing import List
 
 from dipdup.context import HookContext
 
-from rarible_marketplace_indexer.models import Royalties, Token
+from rarible_marketplace_indexer.models import Royalties
+from rarible_marketplace_indexer.models import Token
 from rarible_marketplace_indexer.royalties.royalties import fetch_royalties
 from rarible_marketplace_indexer.utils.rarible_utils import get_json_parts
 
@@ -35,8 +36,9 @@ async def process_royalties_for_token(ctx: HookContext, token_royalties: Royalti
                 f"Successfully saved royalties for {token_royalties.contract}:{token_royalties.token_id} "
                 f"(retries {token_royalties.royalties_retries})"
             )
-            token = await Token.get(id=Token.get_id(contract=token_royalties.contract,
-                                                   token_id=token_royalties.token_id))
+            token = await Token.get(
+                id=Token.get_id(contract=token_royalties.contract, token_id=token_royalties.token_id)
+            )
             token.creator = royalties[0].part_account
             await token.save()
         except Exception as ex:

@@ -9,10 +9,10 @@ from datetime import datetime
 from typing import List
 
 import tortoise
-from gql import Client, gql
-from gql.transport.aiohttp import AIOHTTPTransport
-
 from dipdup.context import HookContext
+from gql import Client
+from gql import gql
+from gql.transport.aiohttp import AIOHTTPTransport
 
 from rarible_marketplace_indexer.metadata.metadata import process_metadata
 from rarible_marketplace_indexer.models import CollectionMetadata
@@ -81,7 +81,11 @@ async def process_collection_metadata(
                         metadata
                       }
                     }
-            """.replace("%network%", os.getenv("NETWORK")).replace("%offset%", str(offset))
+            """.replace(
+                    "%network%", os.getenv("NETWORK")
+                ).replace(
+                    "%offset%", str(offset)
+                )
             )
             offset += 1000
             try:
@@ -92,13 +96,19 @@ async def process_collection_metadata(
             if len(data) == 0:
                 done = True
             for meta in data:
-                pending_tasks.append(create_task(boostrap_collection_metadata(CollectionMetadata(
-                    contract=meta.get("contract"),
-                    metadata=meta.get("metadata"),
-                    metadata_synced=True,
-                    metadata_retries=0,
-                    db_updated_at=datetime.now().strftime(date_pattern)
-                ))))
+                pending_tasks.append(
+                    create_task(
+                        boostrap_collection_metadata(
+                            CollectionMetadata(
+                                contract=meta.get("contract"),
+                                metadata=meta.get("metadata"),
+                                metadata_synced=True,
+                                metadata_retries=0,
+                                db_updated_at=datetime.now().strftime(date_pattern),
+                            )
+                        )
+                    )
+                )
             await gather(*pending_tasks)
 
         await IndexingStatus.create(index=IndexEnum.COLLECTION_METADATA, last_level="DONE")

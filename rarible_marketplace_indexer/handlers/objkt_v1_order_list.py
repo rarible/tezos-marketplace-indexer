@@ -1,9 +1,10 @@
-
 from dipdup.context import HandlerContext
-from rarible_marketplace_indexer.event.objkt_action import ObjktV1OrderListEvent
-from rarible_marketplace_indexer.types.objkt_marketplace.storage import ObjktMarketplaceStorage
 from dipdup.models import Transaction
+
+from rarible_marketplace_indexer.event.objkt_action import ObjktV1OrderListEvent
 from rarible_marketplace_indexer.types.objkt_marketplace.parameter.ask import AskParameter
+from rarible_marketplace_indexer.types.objkt_marketplace.storage import ObjktMarketplaceStorage
+
 
 async def objkt_v1_order_list(
     ctx: HandlerContext,
