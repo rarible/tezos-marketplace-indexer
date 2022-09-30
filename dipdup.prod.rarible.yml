@@ -53,14 +53,23 @@ indexes:
             - destination: rarible_exchange
               type: transaction
               entrypoint: sell
+            - destination: rarible_exchange_old
+              type: transaction
+              entrypoint: sell
         - callback: rarible_order_cancel_list
           pattern:
             - destination: rarible_exchange
               type: transaction
               entrypoint: cancel_sale
+            - destination: rarible_exchange_old
+              type: transaction
+              entrypoint: cancel_sale
         - callback: rarible_order_match
           pattern:
             - destination: rarible_exchange
+              type: transaction
+              entrypoint: buy
+            - destination: rarible_exchange_old
               type: transaction
               entrypoint: buy
 
