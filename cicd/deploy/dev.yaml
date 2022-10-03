@@ -15,7 +15,6 @@ tezos-marketplace-indexer-tezos:
     NETWORK: ghostnet
 
 tezos-marketplace-indexer-metadata:
-  replicas: 0
   environments:
     TZKT_URL: http://tzkt:5000
     HASURA_URL: http://hasura:8080
@@ -27,6 +26,7 @@ tezos-marketplace-indexer-metadata:
       memory: 512Mi
 
 tzkt:
+  replicas: 0
   enabled: true
   api:
     image:
