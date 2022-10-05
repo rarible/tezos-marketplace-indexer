@@ -19,7 +19,7 @@ from rarible_marketplace_indexer.utils.rarible_utils import date_pattern
 async def on_transfer(ctx: HandlerContext, token_transfer: TokenTransferData) -> None:
     logger = logging.getLogger('dipdup.on_transfer')
 
-    if token_transfer.standard == TokenStandard.FA2:
+    if token_transfer.standard == TokenStandard.FA2 and token_transfer.tzkt_transaction_id is not None:
         null_addresses = [None, "tz1burnburnburnburnburnburnburjAYjjX", "tz1Ke2h7sDdakHJQh8WX4Z372du1KChsksyU"]
         transfer = await TokenTransfer.get_or_none(id=token_transfer.id)
         token_id = Token.get_id(token_transfer.contract_address, token_transfer.token_id)
@@ -130,16 +130,6 @@ async def on_transfer(ctx: HandlerContext, token_transfer: TokenTransferData) ->
                 activity_type = ActivityTypeEnum.TOKEN_MINT
             if is_burn:
                 activity_type = ActivityTypeEnum.TOKEN_BURN
-            transaction_id = list(
-                filter(
-                    bool,
-                    [
-                        token_transfer.tzkt_transaction_id,
-                        token_transfer.tzkt_origination_id,
-                        token_transfer.tzkt_migration_id,
-                    ],
-                )
-            ).pop()
             if is_mint and is_burn:
                 logger.warning(f"Token {token_transfer.contract_address}:{token_transfer.token_id} was minted to burn")
             else:
@@ -148,7 +138,7 @@ async def on_transfer(ctx: HandlerContext, token_transfer: TokenTransferData) ->
                     type=activity_type,
                     date=token_transfer.timestamp,
                     tzkt_token_id=token_transfer.tzkt_token_id,
-                    tzkt_transaction_id=transaction_id,
+                    tzkt_transaction_id=token_transfer.tzkt_transaction_id,
                     contract=token_transfer.contract_address,
                     token_id=token_transfer.token_id,
                     from_address=token_transfer.from_address,
