@@ -11,4 +11,3 @@ select t.id,
        tm.metadata
 from token t
          left join metadata_token tm on t.id = tm.id;
-create index concurrently if not exists token_transfer_hash ON dipdup.public.token_transfer (hash);
