@@ -6,6 +6,7 @@ select t.id,
        t.token_id,
        t.updated,
        t.contract,
+       t.creator,
        t.deleted,
        t.tzkt_id,
        tm.metadata
