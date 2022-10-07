@@ -20,6 +20,8 @@ from rarible_marketplace_indexer.models import TokenMetadata
 from gql import gql, Client
 from gql.transport.aiohttp import AIOHTTPTransport
 
+from rarible_marketplace_indexer.producer.helper import producer_send
+from rarible_marketplace_indexer.types.rarible_api_objects.token.factory import RaribleApiTokenFactory
 from rarible_marketplace_indexer.utils.rarible_utils import date_pattern
 
 pending_tasks = deque()
@@ -42,6 +44,9 @@ async def process_metadata_for_token(ctx: HookContext, token_meta: TokenMetadata
             token_meta.metadata = json.dumps(metadata)
             token_meta.metadata_synced = True
             token_meta.metadata_retries = token_meta.metadata_retries
+            token = await Token.get(id=token_meta.id)
+            event = RaribleApiTokenFactory.build_update(token)
+            await producer_send(event)
             logger.info(
                 f"Successfully saved metadata for {token_meta.contract}:{token_meta.token_id} "
                 f"(retries {token_meta.metadata_retries})"
@@ -65,7 +70,7 @@ async def boostrap_token_metadata(meta: TokenMetadata):
 async def process_token_metadata(
     ctx: HookContext,
 ) -> None:
-    logging.getLogger("dipdup.kafka").disabled = True
+    logging.getLogger("dipdup.kafka").setLevel("INFO")
     logger.info("Running token metadata job")
     index = await IndexingStatus.get_or_none(index=IndexEnum.NFT_METADATA)
     if index is None:

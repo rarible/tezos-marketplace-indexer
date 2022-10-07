@@ -2,11 +2,11 @@ import json
 import logging
 from datetime import datetime
 
-from rarible_marketplace_indexer.models import ActivityModel
+from rarible_marketplace_indexer.models import Activity
 from rarible_marketplace_indexer.models import ActivityTypeEnum
 from rarible_marketplace_indexer.models import IndexEnum
 from rarible_marketplace_indexer.models import IndexingStatus
-from rarible_marketplace_indexer.models import OrderModel
+from rarible_marketplace_indexer.models import Order
 from rarible_marketplace_indexer.models import OrderStatusEnum
 
 
@@ -24,7 +24,7 @@ async def cancel_obsolete_v1_orders():
         orders = json.load(data)
         while i < len(orders):
             order_model = (
-                await OrderModel.filter(
+                await Order.filter(
                     id=orders[i]["id"],
                 )
                 .order_by('-id')
@@ -53,14 +53,14 @@ async def fix_v1_fill_value():
         data = open("/app/rarible_marketplace_indexer/jobs/data/incorrect_fill_v1_orders.json")
         orders = json.load(data)
         for order in orders:
-            order_model: OrderModel = (
-                await OrderModel.filter(
+            order_model: Order = (
+                await Order.filter(
                     id=order["id"],
                 )
                 .order_by('-id')
                 .first()
             )
-            sell_activities: list[ActivityModel] = await ActivityModel.filter(
+            sell_activities: list[Activity] = await Activity.filter(
                 order_id=order_model.id, type=ActivityTypeEnum.ORDER_MATCH
             )
             total_sales = 0

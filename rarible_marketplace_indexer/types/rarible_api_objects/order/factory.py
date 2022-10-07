@@ -2,7 +2,7 @@ from typing import List
 
 from tortoise.fields import JSONField
 
-from rarible_marketplace_indexer.models import OrderModel
+from rarible_marketplace_indexer.models import Order
 from rarible_marketplace_indexer.types.rarible_api_objects.asset.asset import Asset
 from rarible_marketplace_indexer.types.rarible_api_objects.order.order import RaribleApiOrder
 from rarible_marketplace_indexer.types.rarible_exchange.parameter.sell import Part
@@ -17,7 +17,7 @@ class RaribleApiOrderFactory:
         return parts
 
     @staticmethod
-    def build(order: OrderModel) -> RaribleApiOrder:
+    def build(order: Order) -> RaribleApiOrder:
         return RaribleApiOrder(
             id=order.id,
             network=order.network,

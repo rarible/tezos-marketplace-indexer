@@ -20,10 +20,10 @@ from requests import Response
 
 from rarible_marketplace_indexer.event.dto import MakeDto
 from rarible_marketplace_indexer.event.dto import TakeDto
-from rarible_marketplace_indexer.models import ActivityModel
+from rarible_marketplace_indexer.models import Activity
 from rarible_marketplace_indexer.models import ActivityTypeEnum
-from rarible_marketplace_indexer.models import LegacyOrderModel
-from rarible_marketplace_indexer.models import OrderModel
+from rarible_marketplace_indexer.models import LegacyOrder
+from rarible_marketplace_indexer.models import Order
 from rarible_marketplace_indexer.models import OrderStatusEnum
 from rarible_marketplace_indexer.models import PlatformEnum
 from rarible_marketplace_indexer.models import TransactionTypeEnum
@@ -287,14 +287,14 @@ async def import_legacy_order(order: dict):
     for fee in order["data"]["payouts"]:
         payouts.append(Part(part_account=fee["account"], part_value=fee["value"]))
 
-    order_model = await OrderModel.get_or_none(
+    order_model = await Order.get_or_none(
         internal_order_id=internal_order_id,
         network=os.getenv('NETWORK'),
         platform=PlatformEnum.RARIBLE_V1,
     )
 
     if order_model is None:
-        order_model = await OrderModel.create(
+        order_model = await Order.create(
             network=os.getenv('NETWORK'),
             platform=PlatformEnum.RARIBLE_V1,
             internal_order_id=internal_order_id,
@@ -329,7 +329,7 @@ async def import_legacy_order(order: dict):
         await order_model.save()
 
     last_order_activity = (
-        await ActivityModel.filter(
+        await Activity.filter(
             network=os.getenv("NETWORK"),
             platform=PlatformEnum.RARIBLE_V1,
             internal_order_id=internal_order_id,
@@ -340,7 +340,7 @@ async def import_legacy_order(order: dict):
     )
 
     if last_order_activity is None:
-        await ActivityModel.create(
+        await Activity.create(
             type=ActivityTypeEnum.ORDER_LIST,
             network=os.getenv('NETWORK'),
             platform=PlatformEnum.RARIBLE_V1,
@@ -362,9 +362,9 @@ async def import_legacy_order(order: dict):
             operation_nonce=None,
         )
 
-    legacy_order = await LegacyOrderModel.get_or_none(hash=order["hash"])
+    legacy_order = await LegacyOrder.get_or_none(hash=order["hash"])
     if legacy_order is None:
-        await LegacyOrderModel.create(hash=order["hash"], id=order_model.id, data=order)
+        await LegacyOrder.create(hash=order["hash"], id=order_model.id, data=order)
 
     if RaribleMetrics.enabled is True:
         RaribleMetrics.set_order_activity(PlatformEnum.RARIBLE_V1, ActivityTypeEnum.ORDER_LIST, 1)
@@ -420,7 +420,7 @@ def get_rarible_token_activity_kafka_key(activity: RaribleApiTokenActivity) -> s
 
 
 def get_rarible_collection_activity_kafka_key(activity: RaribleApiCollection) -> str:
-    return f"{activity.collection.id}"
+    return f"{activity.collection['id']}"
 
 
 def get_rarible_ownership_kafka_key(ownership: RaribleApiOwnership) -> str:
