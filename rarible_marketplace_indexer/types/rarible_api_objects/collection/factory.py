@@ -1,13 +1,9 @@
-import json
-from datetime import datetime
 import os
 import uuid
+from datetime import datetime
 from uuid import uuid5
 
-from dipdup.datasources.tzkt.datasource import TzktDatasource
 from rarible_marketplace_indexer.models import Collection
-
-from rarible_marketplace_indexer.types.rarible_api_objects.collection.collection import CollectionEvent
 from rarible_marketplace_indexer.types.rarible_api_objects.collection.collection import RaribleApiCollection
 
 
@@ -19,5 +15,12 @@ class RaribleApiCollectionFactory:
             id=event_id,
             network=os.getenv("NETWORK"),
             event_id=str(event_id),
-            collection=event.__dict__.fromkeys(["id", "owner", "name", "minters", "standard", "symbol"]),
+            collection={
+                "id": event.__dict__.get("id"),
+                "owner": event.__dict__.get("owner"),
+                "name": event.__dict__.get("name"),
+                "minters": event.__dict__.get("minters"),
+                "standard": event.__dict__.get("standard"),
+                "symbol": event.__dict__.get("symbol")
+            }
         )
