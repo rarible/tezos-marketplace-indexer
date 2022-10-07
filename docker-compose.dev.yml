@@ -14,7 +14,7 @@ services:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-changeme}
       - ADMIN_SECRET=${ADMIN_SECRET:-changeme}
       - KAFKA_ADDRESS=kafka:9092
-      - KAFKA_ENABLED=true
+      - KAFKA_ENABLED=false
       - KAFKA_SECURITY_PROTOCOL=PLAINTEXT
       - NETWORK=ghostnet
       - UNION_API=https://dev-api.rarible.org
