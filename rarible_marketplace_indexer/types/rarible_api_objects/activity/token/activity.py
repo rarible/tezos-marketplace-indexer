@@ -18,7 +18,7 @@ from rarible_marketplace_indexer.types.tezos_objects.tezos_object_hash import Or
 
 class BaseRaribleApiTokenActivity(AbstractRaribleApiObject):
     _kafka_topic = KafkaTopic.ACTIVITY_TOPIC
-    id: str
+    id: Optional[uuid.UUID]
     transfer_id: int
     network: Optional[str]
     contract: OriginatedAccountAddress
@@ -30,7 +30,7 @@ class BaseRaribleApiTokenActivity(AbstractRaribleApiObject):
 
     def __init__(self, **data: Any) -> None:
         super().__init__(**data)
-        self.id = str(self.transfer_id)
+        self.id = uuid5(namespace=uuid.NAMESPACE_OID, name=f'{self.transfer_id}')
 
 
 class RaribleApiTokenMintActivity(BaseRaribleApiTokenActivity):
