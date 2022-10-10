@@ -10,6 +10,9 @@ class RaribleApiTokenFactory:
     def build_update(token: Token) -> RaribleApiToken:
         random_id = uuid.uuid4()
         full_id = token.full_id()
+        creators = []
+        if token.creator is not None:
+            creators.append(token.creator)
         return RaribleApiToken(
             id=random_id,
             event_id=random_id,
@@ -19,7 +22,7 @@ class RaribleApiTokenFactory:
                 id=full_id,
                 contract=token.contract,
                 token_id=token.token_id,
-                creators=[],
+                creators=creators,
                 supply=token.supply,
                 minted=token.minted,
                 minted_at=token.minted_at,
