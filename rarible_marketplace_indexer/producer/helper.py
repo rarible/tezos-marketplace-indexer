@@ -121,6 +121,6 @@ async def signal_token_post_save(
 
     if instance.deleted:
         event = RaribleApiTokenFactory.build_delete(instance)
-    # else:
-    #     event = RaribleApiTokenFactory.build_update(instance)
-        await producer_send(event)
+    else:
+        event = RaribleApiTokenFactory.build_update(instance)
+    await producer_send(event)
