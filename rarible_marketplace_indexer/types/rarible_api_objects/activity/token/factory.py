@@ -24,6 +24,7 @@ class RaribleApiTokenActivityFactory:
             value = AssetValue(0)
 
         return BaseRaribleApiTokenActivity(
+            id=str(transfer.id),
             network=None,
             transfer_id=transfer.id,
             contract=OriginatedAccountAddress(transfer.contract),
