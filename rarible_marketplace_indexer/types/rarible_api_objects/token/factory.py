@@ -1,7 +1,7 @@
 import uuid
 
 from rarible_marketplace_indexer.models import Token
-from rarible_marketplace_indexer.types.rarible_api_objects.token.token import RaribleApiToken
+from rarible_marketplace_indexer.types.rarible_api_objects.token.token import RaribleApiToken, RaribleItemMeta
 from rarible_marketplace_indexer.types.rarible_api_objects.token.token import TokenBody
 
 
@@ -36,3 +36,10 @@ class RaribleApiTokenFactory:
         random_id = uuid.uuid4()
         full_id = token.full_id()
         return RaribleApiToken(id=random_id, event_id=random_id, item_id=full_id, type="DELETE")
+
+    @staticmethod
+    def build_meta_update(token: Token) -> RaribleItemMeta:
+        random_id = uuid.uuid4()
+        full_id = token.full_id()
+        return RaribleItemMeta(id=random_id, item_id=full_id, type='UPDATE')
+
