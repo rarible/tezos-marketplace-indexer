@@ -26,6 +26,7 @@ tezos-marketplace-indexer-metadata:
       memory: 512Mi
 
 tzkt:
+  replicas: 0
   enabled: false
   api:
     resources:
