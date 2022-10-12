@@ -34,11 +34,9 @@ tezos-marketplace-indexer-metadata:
 
 aux-hasura:
   enabled: false
-  replicas: 0
 
 aux-tezos-marketplace-indexer-rarible:
   enabled: false
-  replicas: 0
 
 tzkt:
   enabled: false
