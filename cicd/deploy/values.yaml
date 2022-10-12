@@ -1,7 +1,7 @@
 tezos-marketplace-indexer-rarible:
   image:
     repository: tezos-marketplace-indexer
-  command: [ "./entrypoint.sh", '{{ include "app.env" $ }}', "rarible", "true"]
+  command: [ "./entrypoint.sh", '{{ include "app.env" $ }}', "rarible", "false"]
   environments:
     APPLICATION_ENVIRONMENT: '{{ include "app.env" $ }}'
     KAFKA_ENABLED: "true"
