@@ -146,6 +146,8 @@ aux-hasura:
     # HASURA_GRAPHQL_DATABASE_URL:
 
 aux-tezos-marketplace-indexer-rarible:
+  image:
+    repository: tezos-marketplace-indexer
   command: [
     "dipdup",
     "-c", "dipdup.yml",
