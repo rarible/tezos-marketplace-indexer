@@ -10,3 +10,4 @@ delete from dipdup_index where name = 'originations';
 delete from indexing_status where index = 'COLLECTION';
 delete from indexing_status where index = 'COLLECTION_METADATA';
 delete from indexing_status where index = 'NFT_METADATA';
+alter table indexing_status alter column index type character varying(20);
