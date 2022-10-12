@@ -66,7 +66,7 @@ indexes:
   token_transfers:
     kind: token_transfer
     datasource: tzkt
-    first_level: 2614021
+    first_level: 1212040
     handlers:
       - callback: on_transfer
 
@@ -255,7 +255,6 @@ indexes:
       - fxhash_v1
     types:
       - transaction
-    first_level: 1832146
     handlers:
       - callback: fxhash_v1_order_list
         pattern:
@@ -280,7 +279,6 @@ indexes:
        - fxhash_v2
      types:
        - transaction
-     first_level: 2280663
      handlers:
        - callback: fxhash_v2_listing_order_list
          pattern:
@@ -359,7 +357,7 @@ custom:
     username: ${KAFKA_USERNAME:-rarible}
     password: ${KAFKA_PASSWORD:-changeme}
   run_fix_jobs: True
-  first_collection_level: 1212043
+  first_collection_level: 1212040
   reset_new_persistence: True
   royalties:
     hen: "KT1RJ6PbjHpwc3M5rw5s2Nbmefwbuwbdxton"

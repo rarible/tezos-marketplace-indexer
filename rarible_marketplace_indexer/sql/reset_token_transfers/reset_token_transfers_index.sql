@@ -1,10 +1,10 @@
-drop table if exists "royalties" cascade;
-drop table if exists "collection" cascade;
-drop table if exists "metadata_collection" cascade;
-drop table if exists "metadata_token" cascade;
-drop table if exists "ownership" cascade;
-drop table if exists "token" cascade;
-drop table if exists "token_transfer" cascade;
+delete from "royalties";
+delete from "collection";
+delete from "metadata_collection";
+delete from "metadata_token";
+delete from "ownership";
+delete from "token";
+delete from "token_transfer";
 delete from dipdup_index where name = 'token_transfers';
 delete from dipdup_index where name = 'originations';
 delete from indexing_status where index = 'COLLECTION';
