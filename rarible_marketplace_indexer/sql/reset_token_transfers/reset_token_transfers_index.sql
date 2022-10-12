@@ -1,4 +1,12 @@
-delete from token;
-delete from token_transfer;
-delete from ownership;
+drop table if exists "royalties" cascade;
+drop table if exists "collection" cascade;
+drop table if exists "metadata_collection" cascade;
+drop table if exists "metadata_token" cascade;
+drop table if exists "ownership" cascade;
+drop table if exists "token" cascade;
+drop table if exists "token_transfer" cascade;
 delete from dipdup_index where name = 'token_transfers';
+delete from dipdup_index where name = 'originations';
+delete from indexing_status where index = 'COLLECTION';
+delete from indexing_status where index = 'COLLECTION_METADATA';
+delete from indexing_status where index = 'NFT_METADATA';

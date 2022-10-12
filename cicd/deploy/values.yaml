@@ -149,7 +149,7 @@ aux-tezos-marketplace-indexer-rarible:
   command: [
     "dipdup",
     "-c", "dipdup.yml",
-    "-c", 'dipdup.{{ include "app.env" $ }}.rarible.yml',
+    "-c", 'dipdup.{{ include "app.env" $ }}.rarible.aux.yml',
     "-c", 'dipdup.{{ include "app.env" $ }}.metadata.yml',
     "-c", 'dipdup.{{ include "app.env" $ }}.tezos.yml',
     "run"
