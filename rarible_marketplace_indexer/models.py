@@ -183,7 +183,7 @@ class IndexingStatus(Model):
     class Meta:
         table = 'indexing_status'
 
-    index = fields.CharEnumField(IndexEnum, index=True, pk=True, required=True)
+    index = fields.CharEnumField(IndexEnum, index=True, pk=True, required=True, max_length=20)
     last_level = fields.TextField()
 
 
