@@ -11,12 +11,22 @@ hasura:
       memory: 256Mi
 
 tezos-marketplace-indexer-rarible:
+  command: [
+    "dipdup", "-c", "dipdup.yml",
+    "-c", 'dipdup.{{ include "app.env" $ }}.rarible.yml',
+    "run"
+    ]
   replicas: 1
   environments: 
     TZKT_URL: http://tzkt:5000
     NETWORK: mainnet
 
 tezos-marketplace-indexer-tezos:
+  command: [
+    "dipdup", "-c", "dipdup.yml",
+    "-c", 'dipdup.{{ include "app.env" $ }}.tezos.yml',
+    "run"
+  ]
   replicas: 1
   environments:
     TZKT_URL: http://tzkt:5000
