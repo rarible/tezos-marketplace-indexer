@@ -23,6 +23,24 @@ tezos-marketplace-indexer-tezos:
     NETWORK: mainnet
 
 tezos-marketplace-indexer-metadata:
+  enabled: false
+  replicas: 1
+  environments:
+    TZKT_URL: http://tzkt:5000
+    NETWORK: mainnet
+
+aux-hasura:
+  replicas: 1
+  resources:
+    limits:
+      cpu: '1'
+      memory: 1Gi
+    requests:
+      cpu: 100m
+      memory: 256Mi
+
+aux-tezos-marketplace-indexer-rarible:
+  enabled: true
   replicas: 1
   environments:
     TZKT_URL: http://tzkt:5000
