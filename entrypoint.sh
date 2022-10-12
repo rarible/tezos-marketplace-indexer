@@ -16,7 +16,16 @@ fi
 
 if [ "$3" = "true" ]
   then
+    echo "------------------------"
+    echo " Configuring Hasura ..."
+    echo "------------------------"
     dipdup hasura configure --force
+    echo "------------------------"
+    echo "      Hasura done"
+    echo "------------------------"
 fi
 
+echo "------------------------"
+echo "  Launching Indexer ..."
+echo "------------------------"
 dipdup -c dipdup.yml -c dipdup."$1"."$2".yml run

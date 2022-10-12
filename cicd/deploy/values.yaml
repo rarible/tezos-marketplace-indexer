@@ -1,9 +1,7 @@
 tezos-marketplace-indexer-rarible:
   image:
     repository: tezos-marketplace-indexer
-  command: [
-    "dipdup", "-c", "dipdup.yml", "-c", 'dipdup.{{ include "app.env" $ }}.rarible.yml', "run"
-  ]
+  command: [ "./entrypoint.sh", '{{ include "app.env" $ }}', "rarible", "true"]
   environments:
     APPLICATION_ENVIRONMENT: '{{ include "app.env" $ }}'
     KAFKA_ENABLED: "true"
@@ -34,11 +32,7 @@ tezos-marketplace-indexer-rarible:
 tezos-marketplace-indexer-tezos:
   image:
     repository: tezos-marketplace-indexer
-  command: [
-    "dipdup", "-c", "dipdup.yml",
-    "-c", 'dipdup.{{ include "app.env" $ }}.tezos.yml',
-    "run"
-    ]
+  command: [ "./entrypoint.sh", '{{ include "app.env" $ }}', "tezos", "false"]
   environments:
     APPLICATION_ENVIRONMENT: '{{ include "app.env" $ }}'
     KAFKA_ENABLED: "true"
@@ -68,11 +62,7 @@ tezos-marketplace-indexer-tezos:
 tezos-marketplace-indexer-metadata:
   image:
     repository: tezos-marketplace-indexer
-  command: [
-    "dipdup", "-c", "dipdup.yml",
-    "-c", 'dipdup.{{ include "app.env" $ }}.metadata.yml',
-    "run"
-    ]
+  command: [ "./entrypoint.sh", '{{ include "app.env" $ }}', "metadata", "false"]
   environments:
     APPLICATION_ENVIRONMENT: '{{ include "app.env" $ }}'
     KAFKA_ENABLED: "true"
