@@ -361,6 +361,8 @@ custom:
   run_fix_jobs: True
   first_collection_level: 1212040
   reset_new_persistence: True
+  fxhash_nft_v1: KT1BEc3m6yxN856Y4zfArpDqQ1uZZ1HkDTRh
+  fxhash_nft_v2: KT1WSwXCWPPAxAy4ibPmFyCm4NhmSJT9UuxQ
   royalties:
     hen: "KT1RJ6PbjHpwc3M5rw5s2Nbmefwbuwbdxton"
     hen_royalties: "KT1Hkg5qeNhfwpKW4fXvq7HGZB9z2EnmCCA9"
