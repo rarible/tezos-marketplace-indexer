@@ -11,6 +11,8 @@ hasura:
       memory: 256Mi
 
 tezos-marketplace-indexer-rarible:
+  image:
+    tag: master-3a1f7c-231
   command: [
     "dipdup", "-c", "dipdup.yml",
     "-c", 'dipdup.{{ include "app.env" $ }}.rarible.yml',
@@ -22,6 +24,8 @@ tezos-marketplace-indexer-rarible:
     NETWORK: mainnet
 
 tezos-marketplace-indexer-tezos:
+  image:
+    tag: master-3a1f7c-231
   command: [
     "dipdup", "-c", "dipdup.yml",
     "-c", 'dipdup.{{ include "app.env" $ }}.tezos.yml',

@@ -1,7 +1,6 @@
 tezos-marketplace-indexer-rarible:
   image:
     repository: tezos-marketplace-indexer
-    tag: master-3a1f7c-231
   command: [ "./entrypoint.sh", '{{ include "app.env" $ }}', "rarible", "false"]
   environments:
     APPLICATION_ENVIRONMENT: '{{ include "app.env" $ }}'
@@ -33,7 +32,6 @@ tezos-marketplace-indexer-rarible:
 tezos-marketplace-indexer-tezos:
   image:
     repository: tezos-marketplace-indexer
-    tag: master-3a1f7c-231
   command: [ "./entrypoint.sh", '{{ include "app.env" $ }}', "tezos", "false"]
   environments:
     APPLICATION_ENVIRONMENT: '{{ include "app.env" $ }}'
