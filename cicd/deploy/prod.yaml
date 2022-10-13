@@ -37,11 +37,13 @@ tezos-marketplace-indexer-tezos:
     NETWORK: mainnet
 
 tezos-marketplace-indexer-metadata:
-  enabled: false
-  replicas: 0
+  enabled: true
+  replicas: 1
   environments:
     TZKT_URL: http://tzkt:5000
     NETWORK: mainnet
+    POSTGRES_HOST: 'tmp-pg1.rarible.int'
+    HASURA_URL: 'http://aux-hasura:8080'
 
 aux-hasura:
   replicas: 1
