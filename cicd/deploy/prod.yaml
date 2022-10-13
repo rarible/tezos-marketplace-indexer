@@ -49,6 +49,7 @@ tezos-marketplace-indexer-metadata:
     NETWORK: mainnet
     POSTGRES_HOST: 'tmp-pg1.rarible.int'
     HASURA_URL: 'http://aux-hasura:8080'
+    KAFKA_ENABLED: "false"
 
 aux-hasura:
   replicas: 1
