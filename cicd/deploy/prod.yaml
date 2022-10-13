@@ -50,6 +50,13 @@ tezos-marketplace-indexer-metadata:
     POSTGRES_HOST: 'tmp-pg1.rarible.int'
     HASURA_URL: 'http://aux-hasura:8080'
     KAFKA_ENABLED: "false"
+  resources:
+    limits:
+      cpu: '2'
+      memory: 3Gi
+    requests:
+      cpu: 200m
+      memory: 1384Mi
 
 aux-hasura:
   replicas: 1
