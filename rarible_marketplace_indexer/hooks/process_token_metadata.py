@@ -44,9 +44,9 @@ async def process_metadata_for_token(ctx: HookContext, token_meta: TokenMetadata
             token_meta.metadata = json.dumps(metadata)
             token_meta.metadata_synced = True
             token_meta.metadata_retries = token_meta.metadata_retries
-            token = await Token.get(id=token_meta.id)
-            event = RaribleApiTokenFactory.build_meta_update(token)
-            await producer_send(event)
+            # token = await Token.get(id=token_meta.id)
+            # event = RaribleApiTokenFactory.build_meta_update(token)
+            # await producer_send(event)
             logger.info(
                 f"Successfully saved metadata for {token_meta.contract}:{token_meta.token_id} "
                 f"(retries {token_meta.metadata_retries})"
