@@ -228,9 +228,11 @@ async def fetch_royalties(ctx: DipDupContext, contract: str, token_id: str) -> [
         logger.debug(f"Token {contract}:{token_id} royalties pattern is KALAMINT (private collection)")
         return royalties
 
-    token_metadata = TokenMetadata.get_or_none(id=Token.get_id(contract, token_id))
-    if token_metadata is None:
+    token_metadata = await TokenMetadata.get_or_none(id=Token.get_id(contract, token_id))
+    if token_metadata is None or token_metadata is not None and token_metadata.metadata is None:
         token_metadata = await get_token_metadata(ctx, f"{contract}:{token_id}")
+    else:
+        token_metadata = token_metadata.metadata
     if token_metadata is not None:
         try:
             if type(token_metadata) is bytes:
