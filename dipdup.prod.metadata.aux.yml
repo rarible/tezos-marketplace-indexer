@@ -120,12 +120,12 @@ jobs:
   process_token_metadata:
     hook: process_token_metadata
     crontab: "* * * * *"
-  process_collection_metadata:
-    hook: process_collection_metadata
-    crontab: "* * * * *"
-  process_token_royalties:
-    hook: process_token_royalties
-    crontab: "* * * * *"
+#  process_collection_metadata:
+#    hook: process_collection_metadata
+#    crontab: "* * * * *"
+#  process_token_royalties:
+#    hook: process_token_royalties
+#    crontab: "* * * * *"
 
 advanced:
   rollback_depth: 2
