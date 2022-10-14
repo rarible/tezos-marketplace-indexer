@@ -14,10 +14,10 @@ from rarible_marketplace_indexer.event.dto import CancelDto
 from rarible_marketplace_indexer.event.dto import LegacyMatchDto
 from rarible_marketplace_indexer.event.dto import ListDto
 from rarible_marketplace_indexer.event.dto import MatchDto
-from rarible_marketplace_indexer.models import ActivityModel
+from rarible_marketplace_indexer.models import Activity
 from rarible_marketplace_indexer.models import ActivityTypeEnum
-from rarible_marketplace_indexer.models import LegacyOrderModel
-from rarible_marketplace_indexer.models import OrderModel
+from rarible_marketplace_indexer.models import LegacyOrder
+from rarible_marketplace_indexer.models import Order
 from rarible_marketplace_indexer.models import OrderStatusEnum
 from rarible_marketplace_indexer.models import PlatformEnum
 from rarible_marketplace_indexer.prometheus.rarible_metrics import RaribleMetrics
@@ -56,7 +56,7 @@ class AbstractOrderListEvent(EventInterface):
         if not dto.start_at:
             dto.start_at = transaction.data.timestamp
 
-        order = await OrderModel.get_or_none(
+        order = await Order.get_or_none(
             internal_order_id=dto.internal_order_id,
             network=os.getenv("NETWORK"),
             platform=cls.platform,
@@ -86,7 +86,7 @@ class AbstractOrderListEvent(EventInterface):
                     )
 
         if order is None:
-            order = await OrderModel.create(
+            order = await Order.create(
                 network=os.getenv("NETWORK"),
                 platform=cls.platform,
                 internal_order_id=dto.internal_order_id,
@@ -119,7 +119,7 @@ class AbstractOrderListEvent(EventInterface):
             await order.save()
 
         list_activity = (
-            await ActivityModel.filter(
+            await Activity.filter(
                 network=os.getenv("NETWORK"),
                 platform=cls.platform,
                 internal_order_id=dto.internal_order_id,
@@ -133,7 +133,7 @@ class AbstractOrderListEvent(EventInterface):
         )
 
         if list_activity is None:
-            await ActivityModel.create(
+            await Activity.create(
                 type=ActivityTypeEnum.ORDER_LIST,
                 network=os.getenv("NETWORK"),
                 platform=cls.platform,
@@ -176,8 +176,8 @@ class AbstractOrderCancelEvent(EventInterface):
         datasource: TzktDatasource,
     ):
         dto = cls._get_cancel_dto(transaction, datasource)
-        last_order_activity: ActivityModel = (
-            await ActivityModel.filter(
+        last_order_activity = (
+            await Activity.filter(
                 network=os.getenv("NETWORK"),
                 platform=cls.platform,
                 internal_order_id=dto.internal_order_id,
@@ -194,7 +194,7 @@ class AbstractOrderCancelEvent(EventInterface):
                 await cancel_activity.save()
 
         order = (
-            await OrderModel.filter(
+            await Order.filter(
                 network=os.getenv("NETWORK"),
                 platform=cls.platform,
                 internal_order_id=dto.internal_order_id,
@@ -239,7 +239,7 @@ class AbstractLegacyOrderCancelEvent(EventInterface):
         dto = cls._get_legacy_cancel_dto(transaction, datasource)
         logger.info(f"Legacy order hash = {dto.internal_order_id}")
         legacy_order = (
-            await LegacyOrderModel.filter(
+            await LegacyOrder.filter(
                 hash=dto.internal_order_id,
             )
             .order_by('-id')
@@ -248,7 +248,7 @@ class AbstractLegacyOrderCancelEvent(EventInterface):
 
         if legacy_order is not None:
             order = (
-                await OrderModel.filter(
+                await Order.filter(
                     id=legacy_order.id,
                 )
                 .order_by('-id')
@@ -263,7 +263,7 @@ class AbstractLegacyOrderCancelEvent(EventInterface):
                 await order.save()
 
                 last_order_activity = (
-                    await ActivityModel.filter(
+                    await Activity.filter(
                         network=os.getenv("NETWORK"),
                         platform=cls.platform,
                         order_id=order.id,
@@ -293,7 +293,7 @@ class AbstractOrderMatchEvent(EventInterface):
 
     @staticmethod
     @final
-    def _process_order_match(order: OrderModel, dto: MatchDto) -> OrderModel:
+    def _process_order_match(order: Order, dto: MatchDto) -> Order:
         order.fill += dto.match_amount
 
         if order.fill == order.make_value:
@@ -310,8 +310,8 @@ class AbstractOrderMatchEvent(EventInterface):
     ):
         dto = cls._get_match_dto(transaction, datasource)
 
-        last_list_activity: ActivityModel = (
-            await ActivityModel.filter(
+        last_list_activity = (
+            await Activity.filter(
                 network=os.getenv("NETWORK"),
                 platform=cls.platform,
                 internal_order_id=dto.internal_order_id,
@@ -322,7 +322,7 @@ class AbstractOrderMatchEvent(EventInterface):
         )
 
         order = (
-            await OrderModel.filter(
+            await Order.filter(
                 network=os.getenv("NETWORK"),
                 platform=cls.platform,
                 internal_order_id=dto.internal_order_id,
@@ -372,7 +372,7 @@ class AbstractLegacyOrderMatchEvent(EventInterface):
         dto = cls._get_legacy_match_dto(transaction, datasource)
 
         order = (
-            await OrderModel.filter(
+            await Order.filter(
                 network=os.getenv("NETWORK"),
                 platform=cls.platform,
                 internal_order_id=dto.internal_order_id,
@@ -383,7 +383,7 @@ class AbstractLegacyOrderMatchEvent(EventInterface):
 
         if order is None:
             order = (
-                await OrderModel.filter(
+                await Order.filter(
                     network=os.getenv("NETWORK"),
                     platform=cls.platform,
                     make_asset_class=dto.make.asset_class,
@@ -402,7 +402,7 @@ class AbstractLegacyOrderMatchEvent(EventInterface):
             )
 
         if order is None:
-            order = await OrderModel.create(
+            order = await Order.create(
                 network=os.getenv("NETWORK"),
                 platform=cls.platform,
                 internal_order_id=dto.internal_order_id,
@@ -443,7 +443,7 @@ class AbstractLegacyOrderMatchEvent(EventInterface):
         await order.save()
 
         last_activity = (
-            await ActivityModel.filter(
+            await Activity.filter(
                 network=os.getenv("NETWORK"),
                 platform=cls.platform,
                 order_id=order.id,
@@ -465,7 +465,7 @@ class AbstractLegacyOrderMatchEvent(EventInterface):
             match_activity.take_value = AssetValue(order.make_price * dto.match_amount)
 
             last_match = (
-                await ActivityModel.filter(
+                await Activity.filter(
                     network=os.getenv("NETWORK"),
                     platform=cls.platform,
                     id=match_activity.id,
@@ -476,7 +476,7 @@ class AbstractLegacyOrderMatchEvent(EventInterface):
             if last_match is None:
                 await match_activity.save()
         else:
-            await ActivityModel.create(
+            await Activity.create(
                 type=ActivityTypeEnum.ORDER_MATCH,
                 network=os.getenv("NETWORK"),
                 platform=cls.platform,
@@ -527,7 +527,7 @@ class AbstractPutBidEvent(EventInterface):
         if cls.platform is PlatformEnum.RARIBLE_V2 and dto.end_at is None:
             dto.end_at = dto.start_at + timedelta(weeks=1)
 
-        order = await OrderModel.get_or_none(
+        order = await Order.get_or_none(
             internal_order_id=dto.internal_order_id,
             network=os.getenv("NETWORK"),
             platform=cls.platform,
@@ -537,7 +537,7 @@ class AbstractPutBidEvent(EventInterface):
         )
 
         if order is None:
-            order = await OrderModel.create(
+            order = await Order.create(
                 network=os.getenv("NETWORK"),
                 platform=cls.platform,
                 internal_order_id=dto.internal_order_id,
@@ -572,7 +572,7 @@ class AbstractPutBidEvent(EventInterface):
         if dto.take.token_id is None:
             activity_type = ActivityTypeEnum.MAKE_FLOOR_BID
 
-        await ActivityModel.create(
+        await Activity.create(
             type=activity_type,
             network=os.getenv("NETWORK"),
             platform=cls.platform,
@@ -616,7 +616,7 @@ class AbstractPutFloorBidEvent(EventInterface):
         if dto.end_at is None:
             dto.end_at = dto.start_at + timedelta(weeks=1)
 
-        order = await OrderModel.get_or_none(
+        order = await Order.get_or_none(
             internal_order_id=dto.internal_order_id,
             network=os.getenv("NETWORK"),
             platform=cls.platform,
@@ -626,7 +626,7 @@ class AbstractPutFloorBidEvent(EventInterface):
         )
 
         if order is None:
-            order = await OrderModel.create(
+            order = await Order.create(
                 network=os.getenv("NETWORK"),
                 platform=cls.platform,
                 internal_order_id=dto.internal_order_id,
@@ -657,7 +657,7 @@ class AbstractPutFloorBidEvent(EventInterface):
             order.payouts = get_json_parts(order.payouts) + get_json_parts(dto.payouts)
             await order.save()
 
-        await ActivityModel.create(
+        await Activity.create(
             type=ActivityTypeEnum.MAKE_FLOOR_BID,
             network=os.getenv("NETWORK"),
             platform=cls.platform,
@@ -691,7 +691,7 @@ class AbstractAcceptBidEvent(EventInterface):
 
     @staticmethod
     @final
-    def _process_bid_match(order: OrderModel, dto: MatchDto) -> OrderModel:
+    def _process_bid_match(order: Order, dto: MatchDto) -> Order:
         order.status = OrderStatusEnum.FILLED
         order.ended_at = dto.match_timestamp
         return order
@@ -705,7 +705,7 @@ class AbstractAcceptBidEvent(EventInterface):
         dto = cls._get_accept_bid_dto(transaction, datasource)
 
         last_list_activity = (
-            await ActivityModel.filter(
+            await Activity.filter(
                 network=os.getenv("NETWORK"),
                 platform=cls.platform,
                 internal_order_id=dto.internal_order_id,
@@ -725,7 +725,7 @@ class AbstractAcceptBidEvent(EventInterface):
 
         await match_activity.save()
 
-        order = await OrderModel.get(
+        order = await Order.get(
             network=os.getenv("NETWORK"),
             platform=cls.platform,
             internal_order_id=dto.internal_order_id,
@@ -752,7 +752,7 @@ class AbstractAcceptFloorBidEvent(EventInterface):
 
     @staticmethod
     @final
-    def _process_floor_bid_match(order: OrderModel, dto: MatchDto) -> OrderModel:
+    def _process_floor_bid_match(order: Order, dto: MatchDto) -> Order:
         order.status = OrderStatusEnum.FILLED
         order.ended_at = dto.match_timestamp
         return order
@@ -765,8 +765,8 @@ class AbstractAcceptFloorBidEvent(EventInterface):
     ):
         dto = cls._get_accept_floor_bid_dto(transaction, datasource)
 
-        last_list_activity: ActivityModel = (
-            await ActivityModel.filter(
+        last_list_activity = (
+            await Activity.filter(
                 network=os.getenv("NETWORK"),
                 platform=cls.platform,
                 internal_order_id=dto.internal_order_id,
@@ -783,7 +783,7 @@ class AbstractAcceptFloorBidEvent(EventInterface):
         match_activity.take_token_id = dto.token_id
         await match_activity.save()
 
-        order = await OrderModel.get(
+        order = await Order.get(
             network=os.getenv("NETWORK"),
             platform=cls.platform,
             internal_order_id=dto.internal_order_id,
@@ -817,8 +817,8 @@ class AbstractBidCancelEvent(EventInterface):
         datasource: TzktDatasource,
     ):
         dto = cls._get_cancel_bid_dto(transaction, datasource)
-        last_order_activity: ActivityModel = (
-            await ActivityModel.filter(
+        last_order_activity = (
+            await Activity.filter(
                 network=os.getenv("NETWORK"),
                 platform=cls.platform,
                 internal_order_id=dto.internal_order_id,
@@ -836,7 +836,7 @@ class AbstractBidCancelEvent(EventInterface):
         await cancel_activity.save()
 
         order = (
-            await OrderModel.filter(
+            await Order.filter(
                 network=os.getenv("NETWORK"),
                 platform=cls.platform,
                 internal_order_id=dto.internal_order_id,
@@ -874,7 +874,7 @@ class AbstractFloorBidCancelEvent(EventInterface):
     ):
         dto = cls._get_cancel_floor_bid_dto(transaction, datasource)
         last_order_activity = (
-            await ActivityModel.filter(
+            await Activity.filter(
                 network=os.getenv("NETWORK"),
                 platform=cls.platform,
                 internal_order_id=dto.internal_order_id,
@@ -889,7 +889,7 @@ class AbstractFloorBidCancelEvent(EventInterface):
         await cancel_activity.save()
 
         order = (
-            await OrderModel.filter(
+            await Order.filter(
                 network=os.getenv("NETWORK"),
                 platform=cls.platform,
                 internal_order_id=dto.internal_order_id,

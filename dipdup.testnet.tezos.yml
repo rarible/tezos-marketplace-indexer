@@ -102,13 +102,13 @@ indexes:
       - callback: objkt_v2_order_list
         pattern:
           - destination: objkt_v2
-            type: transaction
             entrypoint: ask
+            type: transaction
       - callback: objkt_v2_order_cancel_list
         pattern:
           - destination: objkt_v2
-            type: transaction
             entrypoint: retract_ask
+            type: transaction
       - callback: objkt_v2_order_match
         pattern:
           - destination: objkt_v2
@@ -128,28 +128,28 @@ indexes:
            entrypoint: fulfill_offer
 
   teia_v1_actions:
-     kind: operation
-     datasource: tzkt
-     contracts:
-       - teia_v1
-     types:
-       - transaction
-     handlers:
-       - callback: teia_v1_list_order
-         pattern:
-           - destination: teia_v1
-             type: transaction
-             entrypoint: swap
-       - callback: teia_v1_cancel_order
-         pattern:
-           - destination: teia_v1
-             type: transaction
-             entrypoint: cancel_swap
-       - callback: teia_v1_match_order
-         pattern:
-           - destination: teia_v1
-             type: transaction
-             entrypoint: collect
+    kind: operation
+    datasource: tzkt
+    contracts:
+      - teia_v1
+    types:
+      - transaction
+    handlers:
+      - callback: teia_v1_list_order
+        pattern:
+          - destination: teia_v1
+            type: transaction
+            entrypoint: swap
+      - callback: teia_v1_cancel_order
+        pattern:
+          - destination: teia_v1
+            type: transaction
+            entrypoint: cancel_swap
+      - callback: teia_v1_match_order
+        pattern:
+          - destination: teia_v1
+            type: transaction
+            entrypoint: collect
 
   versum:
     kind: operation
@@ -197,7 +197,6 @@ indexes:
       - fxhash_v1
     types:
       - transaction
-    first_level: 1832146
     handlers:
       - callback: fxhash_v1_order_list
         pattern:
@@ -222,7 +221,6 @@ indexes:
        - fxhash_v2
      types:
        - transaction
-     first_level: 2280663
      handlers:
        - callback: fxhash_v2_listing_order_list
          pattern:
@@ -254,6 +252,7 @@ indexes:
 
 advanced:
   rollback_depth: 2
+  early_realtime: True
   reindex:
     manual: wipe
     migration: exception

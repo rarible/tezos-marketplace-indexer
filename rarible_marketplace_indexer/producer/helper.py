@@ -7,9 +7,9 @@ from tortoise import BaseDBAsyncClient
 from tortoise.signals import post_delete
 from tortoise.signals import post_save
 
-from rarible_marketplace_indexer.models import ActivityModel
+from rarible_marketplace_indexer.models import Activity, Collection
 from rarible_marketplace_indexer.models import ActivityTypeEnum
-from rarible_marketplace_indexer.models import OrderModel
+from rarible_marketplace_indexer.models import Order
 from rarible_marketplace_indexer.models import Ownership
 from rarible_marketplace_indexer.models import Token
 from rarible_marketplace_indexer.models import TokenTransfer
@@ -23,10 +23,10 @@ async def producer_send(api_object: AbstractRaribleApiObject):
     await producer.send(topic=api_object.kafka_topic, key=get_kafka_key(api_object), value=api_object)
 
 
-@post_save(OrderModel)
+@post_save(Order)
 async def signal_order_post_save(
-    sender: OrderModel,
-    instance: OrderModel,
+    sender: Order,
+    instance: Order,
     created: bool,
     using_db: "Optional[BaseDBAsyncClient]",
     update_fields: List[str],
@@ -36,10 +36,23 @@ async def signal_order_post_save(
     await producer_send(RaribleApiOrderFactory.build(instance))
 
 
-@post_save(ActivityModel)
+@post_save(Collection)
+async def signal_collection_post_save(
+    sender: Collection,
+    instance: Collection,
+    created: bool,
+    using_db: "Optional[BaseDBAsyncClient]",
+    update_fields: List[str],
+) -> None:
+    from rarible_marketplace_indexer.types.rarible_api_objects.collection.factory import RaribleApiCollectionFactory
+
+    await producer_send(RaribleApiCollectionFactory.build(instance))
+
+
+@post_save(Activity)
 async def signal_activity_post_save(
-    sender: ActivityModel,
-    instance: ActivityModel,
+    sender: Activity,
+    instance: Activity,
     created: bool,
     using_db: "Optional[BaseDBAsyncClient]",
     update_fields: List[str],

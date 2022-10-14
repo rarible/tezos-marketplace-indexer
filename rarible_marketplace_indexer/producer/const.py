@@ -9,3 +9,4 @@ class KafkaTopic:
     COLLECTION_TOPIC: str = f'protocol.{ENV}.tezos.indexer.collection'
     OWNERSHIP_TOPIC: str = f'protocol.{ENV}.tezos.indexer.ownership'
     ITEM_TOPIC: str = f'protocol.{ENV}.tezos.indexer.item'
+    ITEM_META_TOPIC: str = f'protocol.{ENV}.tezos.indexer.item.meta'

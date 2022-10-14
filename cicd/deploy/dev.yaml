@@ -1,22 +1,29 @@
 hasura:
   service:
     nodePort: 30339
+  resources:
+    limits:
+      cpu: 300m
+      memory: 512Mi
+    requests:
+      cpu: 100m
+      memory: 256Mi
 
 tezos-marketplace-indexer-rarible:
   environments:
-    TZKT_URL: http://tzkt:5000
+    TZKT_URL: https://api.ghostnet.tzkt.io
     HASURA_URL: http://hasura:8080
     NETWORK: ghostnet
 
 tezos-marketplace-indexer-tezos:
   environments:
-    TZKT_URL: http://tzkt:5000
+    TZKT_URL: https://api.ghostnet.tzkt.io
     HASURA_URL: http://hasura:8080
     NETWORK: ghostnet
 
 tezos-marketplace-indexer-metadata:
   environments:
-    TZKT_URL: http://tzkt:5000
+    TZKT_URL: https://api.ghostnet.tzkt.io
     HASURA_URL: http://hasura:8080
     NETWORK: ghostnet
   resources:
@@ -25,8 +32,14 @@ tezos-marketplace-indexer-metadata:
     requests:
       memory: 512Mi
 
+aux-hasura:
+  enabled: false
+
+aux-tezos-marketplace-indexer-rarible:
+  enabled: false
+
 tzkt:
-  enabled: true
+  enabled: false
   api:
     image:
       repository: fpto/rarible-tzkt-api

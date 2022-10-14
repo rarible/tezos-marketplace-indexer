@@ -2,21 +2,77 @@ hasura:
   replicas: 1
   service:
     nodePort: 30139
+  resources:
+    limits:
+      cpu: '1'
+      memory: 1Gi
+    requests:
+      cpu: 100m
+      memory: 256Mi
 
 tezos-marketplace-indexer-rarible:
+  image:
+    tag: master-3a1f7c-231
+  command: [
+    "dipdup", "-c", "dipdup.yml",
+    "-c", 'dipdup.{{ include "app.env" $ }}.rarible.yml',
+    "run"
+    ]
   replicas: 1
   environments: 
     TZKT_URL: http://tzkt:5000
     NETWORK: mainnet
 
 tezos-marketplace-indexer-tezos:
+  image:
+    tag: master-3a1f7c-231
+  command: [
+    "dipdup", "-c", "dipdup.yml",
+    "-c", 'dipdup.{{ include "app.env" $ }}.tezos.yml',
+    "run"
+  ]
   replicas: 1
   environments:
     TZKT_URL: http://tzkt:5000
     NETWORK: mainnet
 
 tezos-marketplace-indexer-metadata:
+  enabled: true
   replicas: 1
+  command: [
+    "dipdup",
+    "-c", 'dipdup.{{ include "app.env" $ }}.metadata.aux.yml',
+    "run"
+  ]
+  environments:
+    TZKT_URL: http://tzkt:5000
+    NETWORK: mainnet
+    POSTGRES_HOST: 'tmp-pg1.rarible.int'
+    HASURA_URL: 'http://aux-hasura:8080'
+    KAFKA_ENABLED: "false"
+  resources:
+    limits:
+      cpu: '2'
+      memory: 3Gi
+    requests:
+      cpu: 200m
+      memory: 1384Mi
+
+aux-hasura:
+  replicas: 1
+  resources:
+    limits:
+      cpu: '1'
+      memory: 1Gi
+    requests:
+      cpu: 100m
+      memory: 256Mi
+
+aux-tezos-marketplace-indexer-rarible:
+  enabled: true
+  replicas: 1
+  image:
+    repository: tezos-marketplace-indexer
   environments:
     TZKT_URL: http://tzkt:5000
     NETWORK: mainnet
@@ -32,9 +88,12 @@ tzkt:
         cpu: 200m
         memory: 1384Mi
     image:
-      repository: mystdeim/tzkt-api
-      tag: 0.2
+      repository: fpto/rarible-tzkt-api
+      tag: 1.10.0
   indexer:
+    image:
+      repository: fpto/rarible-tzkt-indexer
+      tag: 1.10.0
     resources:
       limits:
         cpu: 400m

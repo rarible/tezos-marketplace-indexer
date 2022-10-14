@@ -1,0 +1,164 @@
+spec_version: 1.2
+package: rarible_marketplace_indexer
+
+database:
+  kind: postgres
+  host: tmp-pg1.rarible.int
+  port: ${POSTGRES_PORT:-5432}
+  user: ${POSTGRES_USER:-dipdup}
+  password: ${POSTGRES_PASS:-changeme}
+  database: ${POSTGRES_DB:-dipdup}
+
+hasura:
+  url: http://aux-hasura:8080
+  admin_secret: ${HASURA_GRAPHQL_ADMIN_SECRET:-changeme}
+  select_limit: ${HASURA_SELECT_LIMIT:-1000}
+  allow_aggregations: false
+  rest: true
+
+datasources:
+  tzkt:
+    kind: tzkt
+    url: ${TZKT_URL:-https://api.tzkt.io}
+    http:
+      retry_count: 1
+      retry_sleep: 1
+      connection_limit: 100
+      connection_timeout: 5
+      batch_size: 1000
+  metadata:
+    kind: metadata
+    url: https://metadata.dipdup.net
+    network: mainnet
+    http:
+      retry_count: 1
+      retry_sleep: 1
+      connection_limit: 100
+      connection_timeout: 5
+      batch_size: 1000
+  ipfs:
+    kind: ipfs
+    url: https://ipfs.io/ipfs
+    http:
+      retry_count: 1
+      retry_sleep: 1
+      connection_limit: 100
+      connection_timeout: 5
+      batch_size: 1000
+
+contracts:
+  tzprofile_old:
+    address: KT1KsmdYxuJHCMqLRX1PH7JJeXvXaMeicEa7
+    typename: tzprofile
+  tzprofile:
+    address: KT1G6jaUQkRcxJcnrNLjCTn7xgD686PM2mEd
+    typename: tzprofile
+  tezos_domains_registry:
+    address: KT1GBZmSxmnKJXGMdMLbugPfLyUPmuLSMwKS
+    typename: tezos_domains_registry
+
+templates:
+  tzprofiles:
+    kind: operation
+    datasource: tzkt
+    contracts:
+      - <contract>
+    types:
+      - transaction
+      - origination
+    handlers:
+      - callback: on_tzprofile_origination
+        pattern:
+          - type: origination
+            originated_contract: <contract>
+      - callback: on_tzprofile_update
+        pattern:
+          - destination: <contract>
+            entrypoint: default
+  tezos_domains_big_map:
+    kind: big_map
+    datasource: <datasource>
+    skip_history: once
+    handlers:
+      - callback: on_tezos_domains_update_records
+        contract: <name_registry>
+        path: store.records
+
+indexes:
+#  tzprofiles_originations:
+#    kind: operation
+#    datasource: tzkt
+#    types:
+#      - origination
+#    handlers:
+#       - callback: on_tzprofile_factory_origination
+#         pattern:
+#           - type: origination
+#             similar_to: tzprofile
+#       - callback: on_tzprofile_factory_origination
+#         pattern:
+#           - type: origination
+#             similar_to: tzprofile_old
+#  tezos_domains_big_map_mainnet:
+#    template: tezos_domains_big_map
+#    values:
+#      datasource: tzkt
+#      name_registry: tezos_domains_registry
+
+hooks:
+  process_token_metadata:
+    callback: process_token_metadata
+    atomic: False
+#  process_collection_metadata:
+#    callback: process_collection_metadata
+#    atomic: False
+#  process_token_royalties:
+#    callback: process_token_royalties
+#    atomic: False
+
+jobs:
+  process_token_metadata:
+    hook: process_token_metadata
+    crontab: "* * * * *"
+#  process_collection_metadata:
+#    hook: process_collection_metadata
+#    crontab: "* * * * *"
+#  process_token_royalties:
+#    hook: process_token_royalties
+#    crontab: "* * * * *"
+
+advanced:
+  rollback_depth: 2
+  early_realtime: True
+  metadata_interface: True
+  merge_subscriptions: True
+  reindex:
+    manual: wipe
+    migration: exception
+    rollback: ignore
+    config_modified: ignore
+    schema_modified: ignore
+
+custom:
+  enabled: false
+  kafka_address: ${KAFKA_ADDRESS:-kafka:9092}
+  client_id: dipdup-rarible-${APPLICATION_ENVIRONMENT:-mainnet}-producer
+  kafka_security_protocol: ${KAFKA_SECURITY_PROTOCOL:-SASL_PLAINTEXT}
+  sasl:
+    mechanism: ${KAFKA_SASL_MECHANISM:-PLAIN}
+    username: ${KAFKA_USERNAME:-rarible}
+    password: ${KAFKA_PASSWORD:-changeme}
+  run_fix_jobs: False
+  royalties:
+    hen: "KT1RJ6PbjHpwc3M5rw5s2Nbmefwbuwbdxton"
+    hen_royalties: "KT1Hkg5qeNhfwpKW4fXvq7HGZB9z2EnmCCA9"
+    kalamint: "KT1EpGgjQs73QfFJs9z7m1Mxm5MTnpC2tqse"
+    fxhash_v1: "KT1KEa8z6vWXDJrVqtMrAeDVzsvxat3kHaCE"
+    fxhash_v1_manager: "KT1XCoGnfupWk7Sp8536EfrxcP73LmT68Nyr"
+    fxhash_v2: "KT1U6EHmNxJTkvaWJ4ThczG4FSDaHC21ssvi"
+    versum: "KT1LjmAdYQCLBjwv4S2oFkEzyHVkomAf5MrW"
+    royalties_manager: "KT1HNNrmCk1fpqveRDz8Fvww2GM4gPzmA7fo"
+    bidou_8x8: "KT1MxDwChiDwd6WBVs24g1NjERUoK622ZEFp"
+    bidou_24x24: "KT1TR1ErEQPTdtaJ7hbvKTJSa1tsGnHGZTpf"
+    dogami: "KT1NVvPsNDChrLRH5K2cy6Sc9r1uuUwdiZQd"
+    dogami_gap: "KT1CAbPGHUWvkSA9bxMPkqSgabgsjtmRYEda"

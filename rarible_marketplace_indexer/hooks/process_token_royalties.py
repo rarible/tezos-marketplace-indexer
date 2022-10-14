@@ -51,7 +51,7 @@ async def process_royalties_for_token(ctx: HookContext, token_royalties: Royalti
 async def process_token_royalties(
     ctx: HookContext,
 ) -> None:
-    logging.getLogger("dipdup.kafka").disabled = True
+    logging.getLogger("dipdup.kafka").setLevel("INFO")
     logger.info("Running royalties job")
     unsynced_royalties: List[Royalties] = await Royalties.filter(
         royalties_synced=False,

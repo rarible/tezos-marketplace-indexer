@@ -46,27 +46,28 @@ async def process_collection_events(
                         else:
                             origination['alias'] = ""
                         address = origination['originatedContract']['address']
-                        collection = await Collection.get_or_none(contract=OriginatedAccountAddress(address))
+                        collection = await Collection.get_or_none(id=OriginatedAccountAddress(address))
                         if collection is None:
                             await Collection.create(
-                                contract=OriginatedAccountAddress(address),
+                                id=OriginatedAccountAddress(address),
                                 owner=ImplicitAccountAddress(origination['sender']['address']),
                                 db_updated_at=datetime.now().strftime(date_pattern),
+                                name=origination['alias'],
+                                minters=[],
+                                standard='fa2',
+                                symbol=None,
                             )
                             collection_metadata = await CollectionMetadata.get_or_none(
-                                contract=OriginatedAccountAddress(address)
-                            )
+                                id=OriginatedAccountAddress(address))
                             if collection_metadata is None:
                                 await CollectionMetadata.create(
-                                    contract=OriginatedAccountAddress(address),
+                                    id=OriginatedAccountAddress(address),
                                     metadata=None,
                                     metadata_synced=False,
                                     metadata_retries=0,
-                                    db_updated_at=datetime.now().strftime(date_pattern),
+                                    db_updated_at=datetime.now().strftime(date_pattern)
                                 )
-                            collection_event = RaribleApiCollectionFactory.build(origination, tzkt)
-                            assert collection_event
-                            await producer_send(collection_event)
+
                             logger.info(f"Proccessed collection {address}")
         if len(originations) < 100:
             last_id = None

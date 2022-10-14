@@ -53,3 +53,6 @@ async def on_restart(
             if first_level is None:
                 first_level = 0
             await ctx.fire_hook("process_collection_events", level=first_level, wait=False)
+
+    if ctx.config.custom.get("reset_new_persistence") == "True":
+        await ctx.execute_sql('reset_token_transfers')

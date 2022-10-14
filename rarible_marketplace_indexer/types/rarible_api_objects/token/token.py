@@ -39,3 +39,16 @@ class RaribleApiToken(AbstractRaribleApiObject):
     item_id: str
     item: Optional[TokenBody]
     type: str
+
+
+class RaribleItemMeta(AbstractRaribleApiObject):
+    class Config:
+        alias_generator = camelize
+        allow_population_by_field_name = True
+        use_enum_values = True
+        arbitrary_types_allowed = True
+
+    _kafka_topic = KafkaTopic.ITEM_META_TOPIC
+
+    item_id: str
+    type: str

@@ -10,16 +10,18 @@ from typing import Deque
 from typing import List
 
 import tortoise
+
 from dipdup.context import HookContext
-from gql import Client
-from gql import gql
-from gql.transport.aiohttp import AIOHTTPTransport
 
 from rarible_marketplace_indexer.metadata.metadata import process_metadata
-from rarible_marketplace_indexer.models import IndexEnum
+from rarible_marketplace_indexer.models import IndexEnum, Token
 from rarible_marketplace_indexer.models import IndexingStatus
-from rarible_marketplace_indexer.models import Token
 from rarible_marketplace_indexer.models import TokenMetadata
+from gql import gql, Client
+from gql.transport.aiohttp import AIOHTTPTransport
+
+from rarible_marketplace_indexer.producer.helper import producer_send
+from rarible_marketplace_indexer.types.rarible_api_objects.token.factory import RaribleApiTokenFactory
 from rarible_marketplace_indexer.utils.rarible_utils import date_pattern
 
 pending_tasks = deque()
@@ -42,6 +44,9 @@ async def process_metadata_for_token(ctx: HookContext, token_meta: TokenMetadata
             token_meta.metadata = json.dumps(metadata)
             token_meta.metadata_synced = True
             token_meta.metadata_retries = token_meta.metadata_retries
+            # token = await Token.get(id=token_meta.id)
+            # event = RaribleApiTokenFactory.build_meta_update(token)
+            # await producer_send(event)
             logger.info(
                 f"Successfully saved metadata for {token_meta.contract}:{token_meta.token_id} "
                 f"(retries {token_meta.metadata_retries})"
@@ -61,65 +66,66 @@ async def boostrap_token_metadata(meta: TokenMetadata):
         await meta.save(force_update=True)
 
 
+
 async def process_token_metadata(
     ctx: HookContext,
 ) -> None:
-    logging.getLogger("dipdup.kafka").disabled = True
+    logging.getLogger("dipdup.kafka").setLevel("INFO")
     logger.info("Running token metadata job")
     index = await IndexingStatus.get_or_none(index=IndexEnum.NFT_METADATA)
-    if index is None:
+    if index is None or (index is not None and index.last_level != "DONE"):
         transport = AIOHTTPTransport(url=ctx.get_metadata_datasource("metadata").url + "/v1/graphql")
         client = Client(transport=transport, fetch_schema_from_transport=True)
         done = False
         offset = 0
+        if index is not None:
+            offset = int(index.last_level)
         while not done:
-            query = gql(
-                """
-                    query MyQuery {
-                      token_metadata(
-                        where: {metadata: {_is_null: false}, network: {_eq: "%network%"}}
-                        limit: 1000
-                        offset: %offset%
-                      ) {
-                        contract
-                        token_id
-                        metadata
-                      }
-                    }
-            """.replace(
-                    "%network%", os.getenv("NETWORK")
-                ).replace(
-                    "%offset%", str(offset)
-                )
-            )
-            offset += 1000
             try:
-                result = await client.execute_async(query)
-            except asyncio.exceptions.TimeoutError:
-                result = await client.execute_async(query)
-
-            data = result.get("token_metadata")
-            if len(data) == 0:
-                done = True
-            for meta in data:
-                pending_tasks.append(
-                    create_task(
-                        boostrap_token_metadata(
-                            TokenMetadata(
-                                id=Token.get_id(meta.get("contract"), meta.get("token_id")),
-                                contract=meta.get("contract"),
-                                token_id=meta.get("token_id"),
-                                metadata=meta.get("metadata"),
-                                metadata_synced=True,
-                                metadata_retries=0,
-                                db_updated_at=datetime.now().strftime(date_pattern),
-                            )
-                        )
-                    )
+                query = gql(
+                    """
+                        query MyQuery {
+                          token_metadata(
+                            where: {metadata: {_is_null: false}, network: {_eq: "%network%"}}
+                            limit: 1000
+                            offset: %offset%
+                          ) {
+                            contract
+                            token_id
+                            metadata
+                          }
+                        }
+                """.replace("%network%", os.getenv("NETWORK")).replace("%offset%", str(offset))
                 )
-            await gather(*pending_tasks)
 
-        await IndexingStatus.create(index=IndexEnum.NFT_METADATA, last_level="DONE")
+                result = await client.execute_async(query)
+
+                data = result.get("token_metadata")
+                if len(data) == 0:
+                    done = True
+                for meta in data:
+                    pending_tasks.append(create_task(boostrap_token_metadata(TokenMetadata(
+                        id=Token.get_id(meta.get("contract"), meta.get("token_id")),
+                        contract=meta.get("contract"),
+                        token_id=meta.get("token_id"),
+                        metadata=meta.get("metadata"),
+                        metadata_synced=True,
+                        metadata_retries=0,
+                        db_updated_at=datetime.now().strftime(date_pattern)
+                    ))))
+                await gather(*pending_tasks)
+                if index is None:
+                    index = await IndexingStatus.create(index=IndexEnum.NFT_METADATA, last_level=f"{offset}")
+                else:
+                    index.last_level = f"{offset}"
+                    await index.save()
+                offset += 1000
+
+            except Exception as ex:
+                logger.warning(f"Could not get metadata from dipdup metadata service: {ex}")
+
+        index.last_level = "DONE"
+        await index.save()
 
     done = False
     offset = 0

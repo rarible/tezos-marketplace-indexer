@@ -68,7 +68,7 @@ class IndexEnum(str, Enum):
     V1_FILL_FIX: _StrEnumValue = 'V1_FILL_FIX'
 
 
-class ActivityModel(Model):
+class Activity(Model):
     class Meta:
         table = 'marketplace_activity'
 
@@ -126,7 +126,7 @@ class ActivityModel(Model):
         return activity
 
 
-class OrderModel(Model):
+class Order(Model):
     class Meta:
         table = 'marketplace_order'
 
@@ -183,11 +183,11 @@ class IndexingStatus(Model):
     class Meta:
         table = 'indexing_status'
 
-    index = fields.CharEnumField(IndexEnum, index=True, pk=True, required=True)
+    index = fields.CharEnumField(IndexEnum, index=True, pk=True, required=True, max_length=20)
     last_level = fields.TextField()
 
 
-class LegacyOrderModel(Model):
+class LegacyOrder(Model):
     class Meta:
         table = 'legacy_orders'
 
@@ -285,8 +285,11 @@ class Collection(Model):
 
     _custom_generated_pk = True
 
-    contract = AccountAddressField(pk=True, required=True)
+    id = AccountAddressField(pk=True, required=True)
     owner = AccountAddressField(required=True)
+    minters = fields.JSONField(required=True)
+    standard = fields.CharField(3, required=True)
+    symbol = fields.CharField(20, null=True)
     db_updated_at = fields.DatetimeField(required=True)
 
     def full_id(self):
@@ -317,7 +320,7 @@ class CollectionMetadata(Model):
     class Meta:
         table = "metadata_collection"
 
-    contract = AccountAddressField(pk=True, required=True)
+    id = AccountAddressField(pk=True, required=True)
     metadata = fields.TextField(null=True)
     metadata_synced = fields.BooleanField(required=True)
     metadata_retries = fields.IntField(required=True)

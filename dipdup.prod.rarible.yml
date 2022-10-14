@@ -110,6 +110,17 @@ hooks:
   import_legacy_orders:
     callback: import_legacy_orders
     atomic: False
+  process_transaction_hash:
+    callback: process_transaction_hash
+    atomic: False
+
+jobs:
+  process_transaction_hash:
+    hook: process_transaction_hash
+    interval: 60 # seconds
+    args:
+      iterations: 10
+      batch: 100
 
 advanced:
   rollback_depth: 2
