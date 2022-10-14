@@ -534,6 +534,7 @@ class AbstractPutBidEvent(EventInterface):
             status=OrderStatusEnum.ACTIVE,
             make_asset_class=dto.make.asset_class,
             take_asset_class=dto.take.asset_class,
+            is_bid=True
         )
 
         if order is None:
@@ -624,6 +625,7 @@ class AbstractPutFloorBidEvent(EventInterface):
             status=OrderStatusEnum.ACTIVE,
             make_asset_class=dto.make.asset_class,
             take_asset_class=dto.take.asset_class,
+            is_bid=True
         )
 
         if order is None:
