@@ -107,7 +107,7 @@ tzkt:
   environments:
     TezosNode__Endpoint: https://rpc.tzkt.io/mainnet
     TokenMetadata__DipDup__Url: https://metadata.dipdup.net/v1/graphql
-    ConnectionStrings__DefaultConnection_Host: tmp-pg1.rarible.int:5432
+    ConnectionStrings__DefaultConnection_Host: tmp-pg1.rarible.int
   ingress:
     hostname: 'tezos-tzkt.rarible.int'
     path: /
