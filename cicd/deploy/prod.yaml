@@ -105,7 +105,7 @@ tzkt:
   service:
     nodePort: 30140
   environments:
-    TezosNode__Endpoint: https://rpc.tzkt.io/mainnet
+    TezosNode__Endpoint: https://mainnet-tezos.giganode.io
     TokenMetadata__DipDup__Url: https://metadata.dipdup.net/v1/graphql
   ingress:
     hostname: 'tezos-tzkt.rarible.int'
