@@ -82,10 +82,10 @@ tzkt:
   api:
     resources:
       limits:
-        cpu: '1'
+        cpu: '2'
         memory: 3Gi
       requests:
-        cpu: 200m
+        cpu: '2'
         memory: 1384Mi
     image:
       repository: fpto/rarible-tzkt-api
@@ -107,7 +107,6 @@ tzkt:
   environments:
     TezosNode__Endpoint: https://rpc.tzkt.io/mainnet
     TokenMetadata__DipDup__Url: https://metadata.dipdup.net/v1/graphql
-    ConnectionStrings__DefaultConnection_Host: tmp-pg1.rarible.int
   ingress:
     hostname: 'tezos-tzkt.rarible.int'
     path: /

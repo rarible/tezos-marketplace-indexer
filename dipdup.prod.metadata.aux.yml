@@ -21,7 +21,7 @@ datasources:
     kind: tzkt
     url: ${TZKT_URL:-https://api.tzkt.io}
     http:
-      retry_count: 1
+      retry_count: 5
       retry_sleep: 1
       connection_limit: 100
       connection_timeout: 5
@@ -31,7 +31,7 @@ datasources:
     url: https://metadata.dipdup.net
     network: mainnet
     http:
-      retry_count: 1
+      retry_count: 5
       retry_sleep: 1
       connection_limit: 100
       connection_timeout: 5
@@ -112,9 +112,9 @@ hooks:
   process_collection_metadata:
     callback: process_collection_metadata
     atomic: False
-  process_token_royalties:
-    callback: process_token_royalties
-    atomic: False
+#  process_token_royalties:
+#    callback: process_token_royalties
+#    atomic: False
 
 jobs:
   process_token_metadata:
@@ -123,9 +123,9 @@ jobs:
   process_collection_metadata:
     hook: process_collection_metadata
     crontab: "* * * * *"
-  process_token_royalties:
-    hook: process_token_royalties
-    crontab: "* * * * *"
+#  process_token_royalties:
+#    hook: process_token_royalties
+#    crontab: "* * * * *"
 
 advanced:
   rollback_depth: 2
