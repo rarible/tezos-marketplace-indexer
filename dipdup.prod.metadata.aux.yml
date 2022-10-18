@@ -38,12 +38,12 @@ datasources:
       batch_size: 1000
   ipfs:
     kind: ipfs
-    url: https://ipfs.io/ipfs
+    url: http://backup1.ext.rarible.com:8080/ipfs
     http:
-      retry_count: 1
+      retry_count: 5
       retry_sleep: 1
       connection_limit: 100
-      connection_timeout: 5
+      connection_timeout: 60
       batch_size: 1000
 
 contracts:
