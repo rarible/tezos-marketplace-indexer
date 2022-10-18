@@ -48,6 +48,16 @@ from rarible_marketplace_indexer.types.tezos_objects.tezos_object_hash import Or
 date_pattern = "%Y-%m-%dT%H:%M:%SZ"
 
 
+class PayloadSafeSession(requests.Session):
+    def send(self, *a, **kw):
+        a[0].url = urllib.parse.unquote(a[0].url)
+        return requests.Session.send(self, *a, **kw)
+
+
+session = PayloadSafeSession()
+session.stream = True
+
+
 def get_json_parts(parts: List[Part]):
     json_parts: List[Part] = []
     for part in parts:
@@ -455,16 +465,11 @@ def get_kafka_key(api_object: AbstractRaribleApiObject) -> str:
     return key
 
 
-async def get_key_for_big_map(ctx: DipDupContext, contract: str, name: str, key: str) -> Response:
-    class PayloadSafeSession(requests.Session):
-        def send(self, *a, **kw):
-            a[0].url = urllib.parse.unquote(a[0].url)
-            return requests.Session.send(self, *a, **kw)
 
-    s = PayloadSafeSession()
-    return s.get(
+async def get_key_for_big_map(ctx: DipDupContext, contract: str, name: str, key: str) -> Response:
+    return session.get(
         f'{ctx.config.get_tzkt_datasource("tzkt").url}/v1/contracts/{contract}/bigmaps/'
-        f'{name}/keys/' + urllib.parse.unquote(key)
+        f'{name}/keys/' + urllib.parse.unquote(key), headers={"Connection": "close"}
     )
 
 
