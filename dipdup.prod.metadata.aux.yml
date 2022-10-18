@@ -38,7 +38,7 @@ datasources:
       batch_size: 1000
   ipfs:
     kind: ipfs
-    url: http://backup-ipfs1.ext.rarible.com:8080/ipfs
+    url: https://ipfs.io/ipfs
     http:
       retry_count: 5
       retry_sleep: 5
