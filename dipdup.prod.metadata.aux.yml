@@ -22,7 +22,7 @@ datasources:
     url: ${TZKT_URL:-https://api.tzkt.io}
     http:
       retry_count: 5
-      retry_sleep: 1
+      retry_sleep: 5
       connection_limit: 100
       connection_timeout: 5
       batch_size: 1000
@@ -38,10 +38,10 @@ datasources:
       batch_size: 1000
   ipfs:
     kind: ipfs
-    url: http://backup1.ext.rarible.com:8080
+    url: http://backup-ipfs1.ext.rarible.com:8080/ipfs
     http:
       retry_count: 5
-      retry_sleep: 1
+      retry_sleep: 5
       connection_limit: 100
       connection_timeout: 60
       batch_size: 1000
