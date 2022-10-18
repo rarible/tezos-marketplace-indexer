@@ -82,10 +82,10 @@ tzkt:
   api:
     resources:
       limits:
-        cpu: '1'
+        cpu: '2'
         memory: 3Gi
       requests:
-        cpu: 200m
+        cpu: '2'
         memory: 1384Mi
     image:
       repository: fpto/rarible-tzkt-api
