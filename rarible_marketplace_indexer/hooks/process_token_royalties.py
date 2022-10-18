@@ -51,12 +51,19 @@ async def process_token_royalties(
 ) -> None:
     logging.getLogger("dipdup.kafka").setLevel("INFO")
     logger.info("Running royalties job")
-    unsynced_royalties: List[Royalties] = await Royalties.filter(
-        royalties_synced=False,
-        royalties_retries__lt=5,
-    ).limit(100)
-    if len(unsynced_royalties) > 0:
+
+    done = False
+    offset = 0
+    while not done:
+        unsynced_royalties: List[Royalties] = await Royalties.filter(
+            royalties_synced=False,
+            royalties_retries__lt=5,
+        ).limit(100).offset(offset).order_by("-db_updated_at")
+
+        if len(unsynced_royalties) == 0:
+            done = True
         for royalties in unsynced_royalties:
             pending_tasks.append(create_task(process_royalties_for_token(ctx, royalties)))
+        offset += 100
     await gather(*pending_tasks)
     logger.info("Royalties job finished")
