@@ -162,3 +162,9 @@ custom:
     bidou_24x24: "KT1TR1ErEQPTdtaJ7hbvKTJSa1tsGnHGZTpf"
     dogami: "KT1NVvPsNDChrLRH5K2cy6Sc9r1uuUwdiZQd"
     dogami_gap: "KT1CAbPGHUWvkSA9bxMPkqSgabgsjtmRYEda"
+  token_metadata_ignore_list:
+    - KT1GBZmSxmnKJXGMdMLbugPfLyUPmuLSMwKS
+    - KT19hzFPbMW9cYgUhLNghytkWEymMKsPrdfX
+    - KT1BtmMAnmTGHAA9ZV8xPzuwZu4ibL7f5qb3
+    - KT1CJAbNconerFWduN9zp6xBtSTwZTZmphry
+    - KT1FVbyctinHvVJNyMWeueCzXFFX2MCqsYDj
