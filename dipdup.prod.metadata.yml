@@ -6,10 +6,10 @@ datasources:
     url: ${TZKT_URL:-https://api.tzkt.io}
     http:
       retry_count: 5
-      retry_sleep: 1
+      retry_sleep: 5
       connection_limit: 100
-      connection_timeout: 60
-      batch_size: 10000
+      connection_timeout: 5
+      batch_size: 1000
   metadata:
     kind: metadata
     url: https://metadata.dipdup.net
@@ -18,17 +18,17 @@ datasources:
       retry_count: 5
       retry_sleep: 1
       connection_limit: 100
-      connection_timeout: 60
-      batch_size: 10000
+      connection_timeout: 5
+      batch_size: 1000
   ipfs:
     kind: ipfs
-    url: https://ipfs.io/ipfs
+    url: http://backup-ipfs1.ext.rarible.com:8080/ipfs
     http:
-      retry_count: 1
-      retry_sleep: 1
+      retry_count: 5
+      retry_sleep: 5
       connection_limit: 100
-      connection_timeout: 5
-      batch_size: 10000
+      connection_timeout: 60
+      batch_size: 1000
 
 contracts:
   tzprofile_old:
@@ -146,3 +146,9 @@ custom:
     bidou_24x24: "KT1TR1ErEQPTdtaJ7hbvKTJSa1tsGnHGZTpf"
     dogami: "KT1NVvPsNDChrLRH5K2cy6Sc9r1uuUwdiZQd"
     dogami_gap: "KT1CAbPGHUWvkSA9bxMPkqSgabgsjtmRYEda"
+  token_metadata_ignore_list:
+    - KT1GBZmSxmnKJXGMdMLbugPfLyUPmuLSMwKS
+    - KT19hzFPbMW9cYgUhLNghytkWEymMKsPrdfX
+    - KT1BtmMAnmTGHAA9ZV8xPzuwZu4ibL7f5qb3
+    - KT1CJAbNconerFWduN9zp6xBtSTwZTZmphry
+    - KT1FVbyctinHvVJNyMWeueCzXFFX2MCqsYDj
