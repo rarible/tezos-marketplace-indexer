@@ -36,7 +36,7 @@ async def process_royalties_for_token(ctx: HookContext, token_royalties: Royalti
                 f"(retries {token_royalties.royalties_retries})"
             )
             token = await Token.get(id=Token.get_id(contract=token_royalties.contract,
-                                                   token_id=token_royalties.token_id))
+                                                    token_id=token_royalties.token_id))
             token.creator = royalties[0].part_account
             await token.save()
         except Exception as ex:

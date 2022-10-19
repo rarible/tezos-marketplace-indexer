@@ -16,6 +16,7 @@ from base58 import b58encode_check
 from dipdup.context import DipDupContext
 from pytezos import MichelsonType
 from pytezos import michelson_to_micheline
+from pytezos.michelson.forge import forge_script_expr
 from requests import Response
 
 from rarible_marketplace_indexer.event.dto import MakeDto
@@ -46,16 +47,6 @@ from rarible_marketplace_indexer.types.tezos_objects.tezos_object_hash import Im
 from rarible_marketplace_indexer.types.tezos_objects.tezos_object_hash import OriginatedAccountAddress
 
 date_pattern = "%Y-%m-%dT%H:%M:%SZ"
-
-
-class PayloadSafeSession(requests.Session):
-    def send(self, *a, **kw):
-        a[0].url = urllib.parse.unquote(a[0].url)
-        return requests.Session.send(self, *a, **kw)
-
-
-session = PayloadSafeSession()
-session.stream = True
 
 
 def get_json_parts(parts: List[Part]):
@@ -96,7 +87,7 @@ class RaribleUtils:
     @classmethod
     def _get_contract(cls, asset_bytes: bytes, offset: int) -> OriginatedAccountAddress:
         header = bytes.fromhex('025a79')
-        return OriginatedAccountAddress(b58encode_check(header + asset_bytes[offset : offset + 20]).decode())
+        return OriginatedAccountAddress(b58encode_check(header + asset_bytes[offset: offset + 20]).decode())
 
     @classmethod
     def _get_token_id(cls, asset_bytes: bytes) -> int:
@@ -167,12 +158,12 @@ class RaribleUtils:
 
     @staticmethod
     def get_order_hash(
-        contract: OriginatedAccountAddress,
-        token_id: int,
-        seller: ImplicitAccountAddress,
-        platform: PlatformEnum,
-        asset_class: str = None,
-        asset: str = None,
+            contract: OriginatedAccountAddress,
+            token_id: int,
+            seller: ImplicitAccountAddress,
+            platform: PlatformEnum,
+            asset_class: str = None,
+            asset: str = None,
     ) -> str:
         return uuid5(
             namespace=uuid.NAMESPACE_OID,
@@ -181,12 +172,12 @@ class RaribleUtils:
 
     @staticmethod
     def get_bid_hash(
-        contract: OriginatedAccountAddress,
-        token_id: int,
-        bidder: ImplicitAccountAddress,
-        platform: PlatformEnum,
-        asset_class: str = None,
-        asset: str = None,
+            contract: OriginatedAccountAddress,
+            token_id: int,
+            bidder: ImplicitAccountAddress,
+            platform: PlatformEnum,
+            asset_class: str = None,
+            asset: str = None,
     ) -> str:
         return uuid5(
             namespace=uuid.NAMESPACE_OID,
@@ -195,11 +186,11 @@ class RaribleUtils:
 
     @staticmethod
     def get_floor_bid_hash(
-        contract: OriginatedAccountAddress,
-        bidder: ImplicitAccountAddress,
-        platform: PlatformEnum,
-        asset_class: str = None,
-        asset: str = None,
+            contract: OriginatedAccountAddress,
+            bidder: ImplicitAccountAddress,
+            platform: PlatformEnum,
+            asset_class: str = None,
+            asset: str = None,
     ) -> str:
         return uuid5(
             namespace=uuid.NAMESPACE_OID,
@@ -465,18 +456,61 @@ def get_kafka_key(api_object: AbstractRaribleApiObject) -> str:
     return key
 
 
+def get_token_id_big_map_key_hash(token_id: str):
+    ty = MichelsonType.match({'prim': 'nat'})
+    key = ty.from_micheline_value({'int': f'{token_id}'}).pack(legacy=True)
+    return forge_script_expr(key)
+
+
+def get_royalties_manager_big_map_key_hash(contract: str, token_id: Optional[str]):
+    ty = MichelsonType.match({'prim': 'pair',
+                              'args': [
+                                  {'prim': 'address'},
+                                  {
+                                      'prim': 'option',
+                                      'args': [
+                                          {'prim': 'nat'}
+                                      ]
+                                  }
+                              ]
+                              }
+                             )
+    if token_id is None:
+        key = ty.from_micheline_value({'prim': 'Pair',
+                                  'args': [
+                                      {'string': contract},
+                                      {
+                                          'prim': 'None'
+                                      }
+                                  ]
+                                  }).pack(legacy=True)
+        return forge_script_expr(key)
+    else:
+        key = ty.from_micheline_value({'prim': 'Pair',
+                                  'args': [
+                                      {'string': contract},
+                                      {
+                                          'prim': 'Some',
+                                          'args': [
+                                              {'int': token_id}
+                                          ]
+                                      }
+                                  ]
+                                  }).pack(legacy=True)
+        return forge_script_expr(key)
+
 
 async def get_key_for_big_map(ctx: DipDupContext, contract: str, name: str, key: str) -> Response:
-    return session.get(
-        f'{ctx.config.get_tzkt_datasource("tzkt").url}/v1/contracts/{contract}/bigmaps/'
-        f'{name}/keys/' + urllib.parse.unquote(key), headers={"Connection": "close"}
+    return await ctx.get_tzkt_datasource("tzkt").request(
+        method='get',
+        url=f'/v1/contracts/{contract}/bigmaps/{name}/keys/{key}'
     )
 
 
 async def get_bidou_data(ctx: DipDupContext, contract: str, token_id: str):
     try:
-        key = await get_key_for_big_map(ctx, contract, "rgb", token_id)
-        bidou_data = key.json().get("value")
+        key = await get_key_for_big_map(ctx, contract, "rgb", get_token_id_big_map_key_hash(token_id))
+        bidou_data = key.get("value")
         return bidou_data
     except Exception as ex:
         raise Exception(f"Could not fetch data for bidou token: ${ex}")

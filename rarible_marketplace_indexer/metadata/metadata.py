@@ -549,25 +549,20 @@ async def get_collection_metadata(ctx: DipDupContext, asset_id: str):
         contract_metadata = await ctx.get_metadata_datasource('metadata').get_contract_metadata(asset_id)
         if contract_metadata is None:
             metadata_url_raw = await get_key_for_big_map(ctx, asset_id, "metadata", '""')
-            if metadata_url_raw.status_code == 200:
-                metadata_url_json = metadata_url_raw.json()
-                metadata_url = metadata_url_json.get("value")
-                contract_metadata = await fetch_metadata(ctx, metadata_url)
+            metadata_url = metadata_url_raw.get("value")
+            contract_metadata = await fetch_metadata(ctx, metadata_url)
             if contract_metadata is None:
                 name_result = await get_key_for_big_map(ctx, asset_id, "metadata", "name")
-                if name_result.status_code == 200:
-                    name_raw = name_result.json().get("value")
-                    contract_metadata = {"name": bytes.fromhex(name_raw).decode("utf-8")}
+                contract_metadata = {"name": bytes.fromhex(name_result.get("value")).decode("utf-8")}
             if contract_metadata is None:
                 onchain_metadata_path = bytes.fromhex(metadata_url).decode("utf-8")
                 splitted_onchain_metadata_path = onchain_metadata_path.split(":")
                 if len(splitted_onchain_metadata_path) == 2:
                     onchain_metadata_key = splitted_onchain_metadata_path[1]
                     onchain_metadata_result = await get_key_for_big_map(ctx, asset_id, "metadata", onchain_metadata_key)
-                    if onchain_metadata_result.status_code == 200:
-                        onchain_metadata_raw = onchain_metadata_result.json().get("value")
-                        if onchain_metadata_raw is not None:
-                            contract_metadata = json.loads(bytes.fromhex(onchain_metadata_raw).decode("utf-8"))
+                    onchain_metadata_raw = onchain_metadata_result.get("value")
+                    if onchain_metadata_raw is not None:
+                        contract_metadata = json.loads(bytes.fromhex(onchain_metadata_raw).decode("utf-8"))
         return contract_metadata
     except Exception as ex:
         logging.getLogger('collection_metadata').warning(f"Could not fetch metadata for collection {asset_id}: {ex}")
@@ -608,13 +603,12 @@ async def get_token_metadata(ctx: DipDupContext, asset_id: str):
             token_metadata = await ctx.get_metadata_datasource('metadata').get_token_metadata(contract, int(token_id))
             if token_metadata is None:
                 metadata_url_response = await get_key_for_big_map(ctx, contract, "token_metadata", token_id)
-                if metadata_url_response.status_code == 200:
-                    metadata_raw = metadata_url_response.json().get("value")
-                    token_info = metadata_raw.get("token_info")
-                    metadata_url = token_info.get("")
-                    if metadata_url is None and token_info is not None:
-                        token_metadata = token_info
-                    token_metadata = await fetch_metadata(ctx, metadata_url)
+                metadata_raw = metadata_url_response.get("value")
+                token_info = metadata_raw.get("token_info")
+                metadata_url = token_info.get("")
+                if metadata_url is None and token_info is not None:
+                    token_metadata = token_info
+                token_metadata = await fetch_metadata(ctx, metadata_url)
         return token_metadata
     # if is_token_metadata_valid(token_metadata):
     #     return token_metadata
