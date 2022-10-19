@@ -12,3 +12,8 @@ select t.id,
        tm.metadata
 from token t
          left join metadata_token tm on t.id = tm.id;
+
+create or replace view token_by_owner as
+select t.*, o.owner from ownership o
+    join token t on o.contract = t.contract and o.token_id = t.token_id
+    order by t.updated desc, t.id desc;
