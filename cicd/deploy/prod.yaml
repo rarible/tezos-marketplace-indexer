@@ -20,7 +20,7 @@ tezos-marketplace-indexer-rarible:
     ]
   replicas: 1
   environments: 
-    TZKT_URL: http://tzkt:5000
+    TZKT_URL: https://api.tzkt.io
     NETWORK: mainnet
 
 tezos-marketplace-indexer-tezos:
@@ -33,7 +33,7 @@ tezos-marketplace-indexer-tezos:
   ]
   replicas: 1
   environments:
-    TZKT_URL: http://tzkt:5000
+    TZKT_URL: https://api.tzkt.io
     NETWORK: mainnet
 
 tezos-marketplace-indexer-metadata:
@@ -45,7 +45,7 @@ tezos-marketplace-indexer-metadata:
     "run"
   ]
   environments:
-    TZKT_URL: https://api.tzkt.io
+    TZKT_URL: http://tzkt:5000
     NETWORK: mainnet
     POSTGRES_HOST: 'tmp-pg1.rarible.int'
     HASURA_URL: 'http://aux-hasura:8080'
