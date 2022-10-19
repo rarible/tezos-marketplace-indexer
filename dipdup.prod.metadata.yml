@@ -8,7 +8,7 @@ datasources:
       retry_count: 5
       retry_sleep: 5
       connection_limit: 100
-      connection_timeout: 60
+      connection_timeout: 600
       batch_size: 1000
   metadata:
     kind: metadata
@@ -16,7 +16,7 @@ datasources:
     network: mainnet
     http:
       retry_count: 5
-      retry_sleep: 1
+      retry_sleep: 5
       connection_limit: 100
       connection_timeout: 60
       batch_size: 1000
@@ -101,12 +101,6 @@ hooks:
     atomic: False
 
 jobs:
-  process_token_metadata:
-    hook: process_token_metadata
-    crontab: "* * * * *"
-  process_collection_metadata:
-    hook: process_collection_metadata
-    crontab: "* * * * *"
   process_token_royalties:
     hook: process_token_royalties
     crontab: "* * * * *"
