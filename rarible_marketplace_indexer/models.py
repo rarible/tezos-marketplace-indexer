@@ -302,7 +302,7 @@ class Royalties(Model):
 
     id = fields.UUIDField(pk=True, generated=False, required=True, index=True)
     contract = AccountAddressField(null=False, index=True)
-    token_id = fields.TextField(null=False, index=True)
+    token_id = fields.TextField(null=False)
     parts = fields.JSONField(null=False)
     royalties_synced = fields.BooleanField(required=True, index=True)
     royalties_retries = fields.IntField(required=True, index=True)
@@ -333,7 +333,7 @@ class TokenMetadata(Model):
 
     id = fields.UUIDField(pk=True, generated=False, required=True, null=False, index=True)
     contract = AccountAddressField(null=False, index=True)
-    token_id = fields.TextField(null=False, index=True)
+    token_id = fields.TextField(null=False)
     metadata = fields.TextField(null=True)
     metadata_synced = fields.BooleanField(required=True, index=True)
     metadata_retries = fields.IntField(required=True, index=True)
