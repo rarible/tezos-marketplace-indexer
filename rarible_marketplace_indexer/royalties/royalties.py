@@ -207,7 +207,8 @@ async def fetch_royalties(ctx: DipDupContext, contract: str, token_id: str) -> [
     elif contract == known_addresses.get("versum"):
         logger.debug(f"Token {contract}:{token_id} royalties pattern is VERSUM")
         return await get_versum_royalties(ctx, contract, token_id)
-    elif contract in [known_addresses.get("bidou_8x8"), known_addresses.get("bidou_24x24")]:
+    elif contract in [known_addresses.get("bidou_8x8"), known_addresses.get("bidou_24x24"), known_addresses.get(
+            "bidou_24x24_color")]:
         logger.debug("Token $contract:$tokenId royalties pattern is 8Bidou")
         return await get_bidou_royalties(ctx, contract, token_id, bidou_royalties)
 

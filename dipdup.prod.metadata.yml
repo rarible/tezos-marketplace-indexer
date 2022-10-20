@@ -138,6 +138,7 @@ custom:
     royalties_manager: "KT1HNNrmCk1fpqveRDz8Fvww2GM4gPzmA7fo"
     bidou_8x8: "KT1MxDwChiDwd6WBVs24g1NjERUoK622ZEFp"
     bidou_24x24: "KT1TR1ErEQPTdtaJ7hbvKTJSa1tsGnHGZTpf"
+    bidou_24x24_color: "KT1VikAWA8wQHLZgHoAGL7Z9kCjgbCEnvWA3"
     dogami: "KT1NVvPsNDChrLRH5K2cy6Sc9r1uuUwdiZQd"
     dogami_gap: "KT1CAbPGHUWvkSA9bxMPkqSgabgsjtmRYEda"
   token_metadata_ignore_list:
