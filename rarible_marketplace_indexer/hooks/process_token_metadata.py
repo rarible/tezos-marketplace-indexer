@@ -32,13 +32,11 @@ logger.setLevel("INFO")
 
 async def process_metadata_for_token(ctx: HookContext, token_meta: TokenMetadata):
     metadata = await process_metadata(ctx, IndexEnum.NFT, f"{token_meta.contract}:{token_meta.token_id}")
+    log = ""
     if metadata is None:
         token_meta.metadata_retries = token_meta.metadata_retries + 1
         token_meta.metadata_synced = False
-        logger.warning(
-            f"Metadata not found for {token_meta.contract}:{token_meta.token_id} "
-            f"(retries {token_meta.metadata_retries})"
-        )
+        log = f"Metadata not found for {token_meta.contract}:{token_meta.token_id} (retries {token_meta.metadata_retries})"
     else:
         try:
             token_meta.metadata = json.dumps(metadata)
@@ -48,14 +46,11 @@ async def process_metadata_for_token(ctx: HookContext, token_meta: TokenMetadata
             # event = RaribleApiTokenFactory.build_meta_update(token)
             # await producer_send(event)
         except Exception as ex:
-            logger.warning(f"Could not save token metadata for {token_meta.contract}:{token_meta.token_id}: {ex}")
+            log = f"Could not save token metadata for {token_meta.contract}:{token_meta.token_id}: {ex}"
             token_meta.metadata_retries = token_meta.metadata_retries + 1
             token_meta.metadata_synced = False
     await token_meta.save()
-    logger.info(
-        f"Successfully saved metadata for {token_meta.contract}:{token_meta.token_id} "
-        f"(retries {token_meta.metadata_retries})"
-    )
+    logger.info(log)
 
 
 async def boostrap_token_metadata(meta: TokenMetadata):

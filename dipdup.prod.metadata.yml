@@ -7,8 +7,8 @@ datasources:
     http:
       retry_count: 5
       retry_sleep: 5
-      connection_limit: 100
-      connection_timeout: 600
+      connection_limit: 1000
+      connection_timeout: 60
       batch_size: 1000
   metadata:
     kind: metadata
@@ -17,7 +17,7 @@ datasources:
     http:
       retry_count: 5
       retry_sleep: 5
-      connection_limit: 100
+      connection_limit: 1000
       connection_timeout: 60
       batch_size: 1000
   ipfs:
@@ -28,7 +28,7 @@ datasources:
       retry_sleep: 5
       connection_limit: 100
       connection_timeout: 60
-      batch_size: 1000
+      batch_size: 10000
 
 contracts:
   tzprofile_old:

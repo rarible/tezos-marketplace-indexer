@@ -22,36 +22,32 @@ async def process_royalties_for_token(ctx: HookContext, token_royalties: Royalti
     fetch_start = datetime.datetime.now()
     royalties = await fetch_royalties(ctx, token_royalties.contract, token_royalties.token_id)
     fetch_end = datetime.datetime.now()
+    log = ""
     if royalties is None:
         token_royalties.royalties_retries = token_royalties.royalties_retries + 1
         token_royalties.royalties_synced = False
-        logger.warning(
-            f"Royalties not found for {token_royalties.contract}:{token_royalties.token_id} "
-            f"(retries {token_royalties.royalties_retries})"
-        )
+        log = f"Royalties not found for {token_royalties.contract}:{token_royalties.token_id} (retries {token_royalties.royalties_retries})"
+
     else:
         try:
             token_royalties.parts = get_json_parts(royalties)
             token_royalties.royalties_synced = True
             token_royalties.royalties_retries = token_royalties.royalties_retries
-            token = await Token.get(id=Token.get_id(contract=token_royalties.contract,
-                                                    token_id=token_royalties.token_id))
-            token.creator = royalties[0].part_account
-            token_save_start = datetime.datetime.now()
-            await token.save()
-            token_save_end = datetime.datetime.now()
+            log = f"Successfully saved royalties for {token_royalties.contract}:{token_royalties.token_id} (retries {token_royalties.royalties_retries})"
+            # token = await Token.get(id=Token.get_id(contract=token_royalties.contract,
+            #                                         token_id=token_royalties.token_id))
+            # token.creator = royalties[0].part_account
+            # token_save_start = datetime.datetime.now()
+            # await token.save()
+            # token_save_end = datetime.datetime.now()
         except Exception as ex:
-            logger.warning(f"Could not save royalties for {token_royalties.contract}:{token_royalties.token_id}: {ex}")
+            log = f"Could not save royalties for {token_royalties.contract}:{token_royalties.token_id}: {ex}"
             token_royalties.royalties_retries = token_royalties.royalties_retries + 1
             token_royalties.royalties_synced = False
     royalties_save_start = datetime.datetime.now()
     await token_royalties.save()
     royalties_save_end = datetime.datetime.now()
-    logger.info(
-        f"Successfully saved royalties for {token_royalties.contract}:{token_royalties.token_id} "
-        f"(retries {token_royalties.royalties_retries}) (f {fetch_end - fetch_start}/ t "
-        f"{token_save_end - token_save_start} / r {royalties_save_end - royalties_save_start})"
-    )
+    logger.info(log)
 
 async def process_token_royalties(
     ctx: HookContext,
