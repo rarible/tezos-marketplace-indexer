@@ -8,7 +8,7 @@ import warlock
 from dipdup.context import DipDupContext
 
 from rarible_marketplace_indexer.models import IndexEnum
-from rarible_marketplace_indexer.utils.rarible_utils import get_bidou_data
+from rarible_marketplace_indexer.utils.rarible_utils import get_bidou_data, get_string_id_big_map_key_hash
 from rarible_marketplace_indexer.utils.rarible_utils import get_key_for_big_map
 
 logger = logging.getLogger('metadata')
@@ -549,12 +549,15 @@ async def get_collection_metadata(ctx: DipDupContext, asset_id: str):
     try:
         contract_metadata = await ctx.get_metadata_datasource('metadata').get_contract_metadata(asset_id)
         if contract_metadata is None:
-            metadata_url_raw = await get_key_for_big_map(ctx, asset_id, "metadata", '""')
-            metadata_url = metadata_url_raw.get("value")
-            contract_metadata = await fetch_metadata(ctx, metadata_url)
+            metadata_url_raw = await get_key_for_big_map(ctx, asset_id, "metadata", get_string_id_big_map_key_hash(""))
+            if metadata_url_raw is not None:
+                metadata_url = metadata_url_raw.get("value")
+                contract_metadata = await fetch_metadata(ctx, metadata_url)
             if contract_metadata is None:
-                name_result = await get_key_for_big_map(ctx, asset_id, "metadata", "name")
-                contract_metadata = {"name": bytes.fromhex(name_result.get("value")).decode("utf-8")}
+                name_result = await get_key_for_big_map(ctx, asset_id, "metadata", get_string_id_big_map_key_hash(
+                    "name"))
+                if name_result is not None:
+                    contract_metadata = {"name": bytes.fromhex(name_result.get("value")).decode("utf-8")}
             if contract_metadata is None:
                 onchain_metadata_path = bytes.fromhex(metadata_url).decode("utf-8")
                 splitted_onchain_metadata_path = onchain_metadata_path.split(":")
@@ -611,7 +614,7 @@ async def get_token_metadata(ctx: DipDupContext, asset_id: str):
                     token_metadata = token_info
                 else:
                     if metadata_url is not None:
-                        if "%05%01%00%00%00" not in metadata_url:
+                        if "%05%01%00%00%00" not in metadata_url and metadata_url != "":
                             token_metadata = await fetch_metadata(ctx, metadata_url)
         return token_metadata
     # if is_token_metadata_valid(token_metadata):

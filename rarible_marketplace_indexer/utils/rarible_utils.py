@@ -462,6 +462,12 @@ def get_token_id_big_map_key_hash(token_id: str):
     return forge_script_expr(key)
 
 
+def get_string_id_big_map_key_hash(value: str):
+    ty = MichelsonType.match({'prim': 'string'})
+    key = ty.from_micheline_value({'string': f'{value}'}).pack(legacy=True)
+    return forge_script_expr(key)
+
+
 def get_royalties_manager_big_map_key_hash(contract: str, token_id: Optional[str]):
     ty = MichelsonType.match({'prim': 'pair',
                               'args': [
@@ -500,11 +506,14 @@ def get_royalties_manager_big_map_key_hash(contract: str, token_id: Optional[str
         return forge_script_expr(key)
 
 
-async def get_key_for_big_map(ctx: DipDupContext, contract: str, name: str, key: str) -> Response:
-    return await ctx.get_tzkt_datasource("tzkt").request(
-        method='get',
-        url=f'/v1/contracts/{contract}/bigmaps/{name}/keys/{key}'
-    )
+async def get_key_for_big_map(ctx: DipDupContext, contract: str, name: str, key: str) -> Optional[Response]:
+    try:
+        return await ctx.get_tzkt_datasource("tzkt").request(
+            method='get',
+            url=f'/v1/contracts/{contract}/bigmaps/{name}/keys/{key}'
+        )
+    except:
+        return None
 
 
 async def get_bidou_data(ctx: DipDupContext, contract: str, token_id: str):
