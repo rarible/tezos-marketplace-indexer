@@ -49,8 +49,8 @@ async def process_royalties_for_token(ctx: HookContext, token_royalties: Royalti
     royalties_save_end = datetime.datetime.now()
     logger.info(
         f"Successfully saved royalties for {token_royalties.contract}:{token_royalties.token_id} "
-        f"(retries {token_royalties.royalties_retries}) (f {fetch_start - fetch_end}/ t "
-        f"{token_save_start - token_save_end} / r {royalties_save_start - royalties_save_end})"
+        f"(retries {token_royalties.royalties_retries}) (f {fetch_end - fetch_start}/ t "
+        f"{token_save_end - token_save_start} / r {royalties_save_end - royalties_save_start})"
     )
 
 async def process_token_royalties(
