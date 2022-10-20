@@ -8,7 +8,7 @@ import warlock
 from dipdup.context import DipDupContext
 
 from rarible_marketplace_indexer.models import IndexEnum
-from rarible_marketplace_indexer.utils.rarible_utils import get_bidou_data, get_string_id_big_map_key_hash
+from rarible_marketplace_indexer.utils.rarible_utils import get_bidou_data, get_string_id_big_map_key_hash, unpack_str
 from rarible_marketplace_indexer.utils.rarible_utils import get_key_for_big_map
 
 logger = logging.getLogger('metadata')
@@ -509,6 +509,8 @@ def is_token_metadata_valid(metadata):
 async def fetch_metadata(ctx: DipDupContext, metadata_url: str):
     if metadata_url is not None and metadata_url != b'':
         url = bytes.fromhex(metadata_url).decode("utf-8")
+        if url.startswith("\x05\x01\x00\x00\x00"):
+            url = unpack_str(bytes.fromhex(metadata_url))
         if url.startswith("http") or url.startswith("https"):
             response = requests.get(url)
             if response.ok:
@@ -536,13 +538,22 @@ async def fetch_metadata(ctx: DipDupContext, metadata_url: str):
             except aiohttp.client_exceptions.ClientResponseError as error:
                 logger.warning(f"Could not parse metadata: {error}")
                 return None
-        else:
+        elif url.startswith("ipfs:/"):
+            ipfs_hash = url.split("ipfs:/")[1]
             try:
-                metadata = await ctx.get_ipfs_datasource("ipfs").get(url)
+                metadata = await ctx.get_ipfs_datasource("ipfs").get(ipfs_hash)
                 return metadata
             except aiohttp.client_exceptions.ClientResponseError as error:
                 logger.warning(f"Could not parse metadata: {error}")
                 return None
+        else:
+            if url != "":
+                try:
+                    metadata = await ctx.get_ipfs_datasource("ipfs").get(url)
+                    return metadata
+                except aiohttp.client_exceptions.ClientResponseError as error:
+                    logger.warning(f"Could not parse metadata: {error}")
+                    return None
 
 
 async def get_collection_metadata(ctx: DipDupContext, asset_id: str):
@@ -614,7 +625,7 @@ async def get_token_metadata(ctx: DipDupContext, asset_id: str):
                     token_metadata = token_info
                 else:
                     if metadata_url is not None:
-                        if "%05%01%00%00%00" not in metadata_url and metadata_url != "":
+                        if metadata_url != "":
                             token_metadata = await fetch_metadata(ctx, metadata_url)
         return token_metadata
     # if is_token_metadata_valid(token_metadata):

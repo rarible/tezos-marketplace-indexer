@@ -468,6 +468,11 @@ def get_string_id_big_map_key_hash(value: str):
     return forge_script_expr(key)
 
 
+def unpack_str(value: str):
+    ty = MichelsonType.match({'prim': 'string'})
+    return ty.unpack(value).to_python_object()
+
+
 def get_royalties_manager_big_map_key_hash(contract: str, token_id: Optional[str]):
     ty = MichelsonType.match({'prim': 'pair',
                               'args': [
