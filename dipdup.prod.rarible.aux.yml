@@ -312,12 +312,12 @@ hooks:
     atomic: False
 
 jobs:
-#  process_transaction_hash:
-#    hook: process_transaction_hash
-#    interval: 60 # seconds
-#    args:
-#      iterations: 10
-#      batch: 100
+  process_transaction_hash:
+    hook: process_transaction_hash
+    interval: 60 # seconds
+    args:
+      iterations: 10
+      batch: 100
 
 advanced:
   rollback_depth: 2
