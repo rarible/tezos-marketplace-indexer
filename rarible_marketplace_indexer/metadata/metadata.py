@@ -610,7 +610,8 @@ async def get_token_metadata(ctx: DipDupContext, asset_id: str):
                     token_metadata = token_info
                 else:
                     if metadata_url is not None:
-                        token_metadata = await fetch_metadata(ctx, metadata_url)
+                        if "%05%01%00%00%00" not in metadata_url:
+                            token_metadata = await fetch_metadata(ctx, metadata_url)
         return token_metadata
     # if is_token_metadata_valid(token_metadata):
     #     return token_metadata
