@@ -141,5 +141,5 @@ async def process_token_metadata(
             done = True
         for meta in unsynced_tokens_metadata:
             pending_tasks.append(create_task(process_metadata_for_token(ctx, meta)))
-        await gather(*pending_tasks)
+    await gather(*pending_tasks)
     logger.info("Token metadata job finished")
