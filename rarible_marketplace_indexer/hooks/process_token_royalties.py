@@ -72,5 +72,5 @@ async def process_token_royalties(
         for royalties in unsynced_royalties:
             pending_tasks.append(create_task(process_royalties_for_token(ctx, royalties)))
         offset += 100
-    await gather(*pending_tasks)
+        await gather(*pending_tasks)
     logger.info("Royalties job finished")
