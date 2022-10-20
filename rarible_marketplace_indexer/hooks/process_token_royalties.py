@@ -61,7 +61,7 @@ async def process_token_royalties(
 
     done = False
     offset = 0
-    ignore_list = ctx.config.custom.get("token_metadata_ignore_list")
+    ignore_list = ctx.config.custom.get("token_metadata_ignore_list") or []
     while not done:
         unsynced_royalties: List[Royalties] = await Royalties.filter(
             royalties_synced=False,

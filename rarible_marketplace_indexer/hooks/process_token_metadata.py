@@ -129,7 +129,7 @@ async def process_token_metadata(
 
     done = False
     offset = 0
-    ignore_list = ctx.config.custom.get("token_metadata_ignore_list")
+    ignore_list = ctx.config.custom.get("token_metadata_ignore_list") or []
     while not done:
         unsynced_tokens_metadata: List[TokenMetadata] = (
             await TokenMetadata.filter(
