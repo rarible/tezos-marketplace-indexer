@@ -96,6 +96,9 @@ hooks:
   process_collection_metadata:
     callback: process_collection_metadata
     atomic: False
+  process_token_royalties:
+    callback: process_token_royalties
+    atomic: False
 
 jobs:
   process_token_metadata:
@@ -103,6 +106,9 @@ jobs:
     crontab: "* * * * *"
   process_collection_metadata:
     hook: process_collection_metadata
+    crontab: "* * * * *"
+  process_token_royalties:
+    hook: process_token_royalties
     crontab: "* * * * *"
 
 advanced:
