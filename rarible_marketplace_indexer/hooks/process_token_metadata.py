@@ -47,15 +47,15 @@ async def process_metadata_for_token(ctx: HookContext, token_meta: TokenMetadata
             # token = await Token.get(id=token_meta.id)
             # event = RaribleApiTokenFactory.build_meta_update(token)
             # await producer_send(event)
-            logger.info(
-                f"Successfully saved metadata for {token_meta.contract}:{token_meta.token_id} "
-                f"(retries {token_meta.metadata_retries})"
-            )
         except Exception as ex:
             logger.warning(f"Could not save token metadata for {token_meta.contract}:{token_meta.token_id}: {ex}")
             token_meta.metadata_retries = token_meta.metadata_retries + 1
             token_meta.metadata_synced = False
     await token_meta.save()
+    logger.info(
+        f"Successfully saved metadata for {token_meta.contract}:{token_meta.token_id} "
+        f"(retries {token_meta.metadata_retries})"
+    )
 
 
 async def boostrap_token_metadata(meta: TokenMetadata):

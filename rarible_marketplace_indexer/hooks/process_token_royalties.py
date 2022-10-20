@@ -1,3 +1,4 @@
+import datetime
 import logging
 from asyncio import create_task
 from asyncio import gather
@@ -18,6 +19,7 @@ logger.setLevel("INFO")
 
 
 async def process_royalties_for_token(ctx: HookContext, token_royalties: Royalties):
+    start_time = datetime.datetime.now()
     royalties = await fetch_royalties(ctx, token_royalties.contract, token_royalties.token_id)
     if royalties is None:
         token_royalties.royalties_retries = token_royalties.royalties_retries + 1
@@ -31,10 +33,6 @@ async def process_royalties_for_token(ctx: HookContext, token_royalties: Royalti
             token_royalties.parts = get_json_parts(royalties)
             token_royalties.royalties_synced = True
             token_royalties.royalties_retries = token_royalties.royalties_retries
-            logger.info(
-                f"Successfully saved royalties for {token_royalties.contract}:{token_royalties.token_id} "
-                f"(retries {token_royalties.royalties_retries})"
-            )
             token = await Token.get(id=Token.get_id(contract=token_royalties.contract,
                                                     token_id=token_royalties.token_id))
             token.creator = royalties[0].part_account
@@ -44,7 +42,10 @@ async def process_royalties_for_token(ctx: HookContext, token_royalties: Royalti
             token_royalties.royalties_retries = token_royalties.royalties_retries + 1
             token_royalties.royalties_synced = False
     await token_royalties.save()
-
+    logger.info(
+        f"Successfully saved royalties for {token_royalties.contract}:{token_royalties.token_id} "
+        f"(retries {token_royalties.royalties_retries}) (duration {datetime.datetime.now() - start_time})"
+    )
 
 async def process_token_royalties(
     ctx: HookContext,
