@@ -32,8 +32,6 @@ logger.setLevel("INFO")
 
 async def process_metadata_for_token(ctx: HookContext, token_meta: TokenMetadata):
     metadata = await process_metadata(ctx, IndexEnum.NFT, f"{token_meta.contract}:{token_meta.token_id}")
-    logger.info(f"Successfully fetched metadata for {token_meta.contract}:{token_meta.token_id} (retries {token_meta.metadata_retries})")
-
     log = ""
     if metadata is None:
         token_meta.metadata_retries = token_meta.metadata_retries + 1

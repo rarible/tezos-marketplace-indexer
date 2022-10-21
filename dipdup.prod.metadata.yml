@@ -22,7 +22,7 @@ datasources:
       batch_size: 1000
   ipfs:
     kind: ipfs
-    url: http://ipfs-gw1.ext.rarible.com:8080/ipfs
+    url: https://ipfs.io/ipfs
     http:
       retry_count: 1
       retry_sleep: 0
@@ -100,9 +100,6 @@ hooks:
 jobs:
   process_token_metadata:
     hook: process_token_metadata
-    crontab: "* * * * *"
-  process_collection_metadata:
-    hook: process_collection_metadata
     crontab: "* * * * *"
 
 advanced:
