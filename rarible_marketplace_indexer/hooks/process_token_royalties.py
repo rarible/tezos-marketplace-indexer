@@ -54,6 +54,7 @@ async def process_token_royalties(
 ) -> None:
     logging.getLogger("dipdup.kafka").disabled = True
     logging.getLogger('apscheduler.scheduler').disabled = True
+    logging.getLogger('dipdup.http').disabled = True
     logger.info("Running royalties job")
 
     done = False

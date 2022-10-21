@@ -629,6 +629,8 @@ async def get_token_metadata(ctx: DipDupContext, asset_id: str):
         else:
             token_metadata = await ctx.get_metadata_datasource('metadata').get_token_metadata(contract, int(token_id))
             if token_metadata is None:
+                logging.getLogger('token_metadata').warning(f"Could not fetch metadata for token from dipdup{asset_id}")
+
                 metadata_url_response = await get_key_for_big_map(ctx, contract, "token_metadata",
                                                                   get_token_id_big_map_key_hash(token_id))
                 if metadata_url_response is not None:
@@ -640,6 +642,8 @@ async def get_token_metadata(ctx: DipDupContext, asset_id: str):
                     else:
                         if metadata_url is not None:
                             if metadata_url != "":
+                                logging.getLogger('token_metadata').info(
+                                    f"Fetching from ipfs metadata for {asset_id}")
                                 token_metadata = await fetch_metadata(ctx, metadata_url)
         return token_metadata
     # if is_token_metadata_valid(token_metadata):
