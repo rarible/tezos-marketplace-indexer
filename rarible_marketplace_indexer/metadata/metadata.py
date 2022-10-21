@@ -547,6 +547,14 @@ async def fetch_metadata(ctx: DipDupContext, metadata_url: str):
             except aiohttp.client_exceptions.ClientResponseError as error:
                 logger.warning(f"Could not parse metadata: {error}")
                 return None
+        elif url.startswith("ifps://"):
+            ipfs_hash = url.split("ifps://")[1]
+            try:
+                metadata = await ctx.get_ipfs_datasource("ipfs").get(ipfs_hash)
+                return metadata
+            except aiohttp.client_exceptions.ClientResponseError as error:
+                logger.warning(f"Could not parse metadata: {error}")
+                return None
         else:
             if url != "":
                 try:
