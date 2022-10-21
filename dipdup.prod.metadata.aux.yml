@@ -42,9 +42,9 @@ datasources:
     http:
       retry_count: 1
       retry_sleep: 0
-      connection_limit: 100
-      connection_timeout: 60
-      batch_size: 10000
+      connection_limit: 1000
+      connection_timeout: 1
+      batch_size: 1000
 
 contracts:
   tzprofile_old:
