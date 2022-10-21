@@ -534,6 +534,8 @@ async def fetch_metadata(ctx: DipDupContext, metadata_url: str):
         elif url.startswith("ipfs://"):
             ipfs_hash = url.split("ipfs://")[1]
             try:
+                if ipfs_hash == "undefined":
+                    return None
                 metadata = await ctx.get_ipfs_datasource("ipfs").get(ipfs_hash)
                 return metadata
             except aiohttp.client_exceptions.ClientResponseError as error:

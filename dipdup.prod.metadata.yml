@@ -24,7 +24,7 @@ datasources:
     kind: ipfs
     url: http://ipfs-gw1.ext.rarible.com:8080/ipfs
     http:
-      retry_count: 5
+      retry_count: 1
       retry_sleep: 5
       connection_limit: 100
       connection_timeout: 60
@@ -96,9 +96,6 @@ hooks:
   process_collection_metadata:
     callback: process_collection_metadata
     atomic: False
-  process_token_royalties:
-    callback: process_token_royalties
-    atomic: False
 
 jobs:
   process_token_metadata:
@@ -106,9 +103,6 @@ jobs:
     crontab: "* * * * *"
   process_collection_metadata:
     hook: process_collection_metadata
-    crontab: "* * * * *"
-  process_token_royalties:
-    hook: process_token_royalties
     crontab: "* * * * *"
 
 advanced:
@@ -147,7 +141,7 @@ custom:
     bidou_24x24_color: "KT1VikAWA8wQHLZgHoAGL7Z9kCjgbCEnvWA3"
     dogami: "KT1NVvPsNDChrLRH5K2cy6Sc9r1uuUwdiZQd"
     dogami_gap: "KT1CAbPGHUWvkSA9bxMPkqSgabgsjtmRYEda"
-  token_metadata_ignore_list:
+  token_ignore_list:
     - KT1GBZmSxmnKJXGMdMLbugPfLyUPmuLSMwKS
     - KT19hzFPbMW9cYgUhLNghytkWEymMKsPrdfX
     - KT1BtmMAnmTGHAA9ZV8xPzuwZu4ibL7f5qb3
@@ -157,3 +151,4 @@ custom:
     - KT1KVfQzyjxoKx2WjcVAatknW3YsR37cCA6s
     - KT1Up463qVJqtW5KF7dQZz5SsWMiS32GtBrw
     - KT1SnRKkheSvY6jfvvuVufqWPiAhiyaPhn65
+    - KT1VBe538e2ucXhdWdoaFnLpyCiTkvsPkyZm
