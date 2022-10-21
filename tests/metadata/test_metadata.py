@@ -62,7 +62,7 @@ class MetadataTest(IsolatedAsyncioTestCase):
         async with AsyncExitStack() as stack:
             dipdup = await create_test_dipdup(config, stack)
             ctx = dipdup._ctx
-            metadata = await process_metadata(ctx, IndexEnum.NFT, "KT1RCzrLhBpdKXkyasKGpDTCcdbBTipUk77x:5492")
+            metadata = await process_metadata(ctx, IndexEnum.NFT, "KT1MEDjzZwfp17DVEigjdAhiqMKxCWpMdnjh:19")
             self.assertIsNotNone(metadata)
             self.assertEqual("Bear 5492", metadata.get("name"))
 

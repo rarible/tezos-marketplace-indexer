@@ -59,12 +59,10 @@ async def process_token_royalties(
 
     done = False
     offset = 0
-    ignore_list = ctx.config.custom.get("token_ignore_list") or []
     while not done:
         unsynced_royalties: List[Royalties] = await Royalties.filter(
             royalties_synced=False,
-            royalties_retries__lt=5,
-            contract__not_in=ignore_list
+            royalties_retries__lt=5
         ).limit(100).offset(offset).order_by("-db_updated_at")
 
         if len(unsynced_royalties) == 0:
