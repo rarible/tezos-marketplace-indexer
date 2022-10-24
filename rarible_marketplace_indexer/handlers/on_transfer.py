@@ -2,7 +2,6 @@ import logging
 from datetime import datetime
 
 import tortoise
-
 from dipdup.context import HandlerContext
 from dipdup.enums import TokenStandard
 from dipdup.models import TokenTransferData
@@ -58,7 +57,7 @@ async def on_transfer(ctx: HandlerContext, token_transfer: TokenTransferData) ->
                         minted=token_transfer.amount,
                         supply=token_transfer.amount,
                         updated=token_transfer.timestamp,
-                        db_updated_at=datetime.now().strftime(date_pattern)
+                        db_updated_at=datetime.now().strftime(date_pattern),
                     )
                     token_metadata = await TokenMetadata.get_or_none(id=token_id)
                     if token_metadata is None:
@@ -70,9 +69,9 @@ async def on_transfer(ctx: HandlerContext, token_transfer: TokenTransferData) ->
                                 metadata=None,
                                 metadata_synced=False,
                                 metadata_retries=0,
-                                db_updated_at=datetime.now().strftime(date_pattern)
+                                db_updated_at=datetime.now().strftime(date_pattern),
                             )
-                        except tortoise.exceptions.IntegrityError as ex:
+                        except tortoise.exceptions.IntegrityError:
                             logger.debug("Token metadata already exists")
                     royalties = await Royalties.get_or_none(id=token_id)
                     if royalties is None:
@@ -83,7 +82,7 @@ async def on_transfer(ctx: HandlerContext, token_transfer: TokenTransferData) ->
                             parts=[],
                             royalties_synced=False,
                             royalties_retries=0,
-                            db_updated_at=datetime.now().strftime(date_pattern)
+                            db_updated_at=datetime.now().strftime(date_pattern),
                         )
                 else:
                     minted.minted += token_transfer.amount
