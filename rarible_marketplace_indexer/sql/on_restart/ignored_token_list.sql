@@ -11,7 +11,8 @@ where contract in ('KT1GBZmSxmnKJXGMdMLbugPfLyUPmuLSMwKS',
                    'KT1SnRKkheSvY6jfvvuVufqWPiAhiyaPhn65',
                    'KT1VBe538e2ucXhdWdoaFnLpyCiTkvsPkyZm',
                    'KT1NXC6Yj9uGiYMbkwTaoRjqwzFLEG57ki5c',
-                   'KT1TybJgA4Tm2Lv2ZKj4kwjGTLoACywKbmhg');
+                   'KT1TybJgA4Tm2Lv2ZKj4kwjGTLoACywKbmhg',
+                   'KT1Tt7bLkYnJnug7irtYEDK4qCq5twyZCEAV');
 update royalties
 set royalties_retries = 5
 where contract in ('KT1GBZmSxmnKJXGMdMLbugPfLyUPmuLSMwKS',
@@ -25,4 +26,5 @@ where contract in ('KT1GBZmSxmnKJXGMdMLbugPfLyUPmuLSMwKS',
                    'KT1SnRKkheSvY6jfvvuVufqWPiAhiyaPhn65',
                    'KT1VBe538e2ucXhdWdoaFnLpyCiTkvsPkyZm',
                    'KT1NXC6Yj9uGiYMbkwTaoRjqwzFLEG57ki5c',
-                   'KT1TybJgA4Tm2Lv2ZKj4kwjGTLoACywKbmhg');
+                   'KT1TybJgA4Tm2Lv2ZKj4kwjGTLoACywKbmhg',
+                   'KT1Tt7bLkYnJnug7irtYEDK4qCq5twyZCEAV');
