@@ -248,11 +248,11 @@ class Token(Model):
 
     _custom_generated_pk = True
 
-    id = fields.UUIDField(pk=True, generated=False, required=True, null=False)
+    id = fields.UUIDField(pk=True, generated=False, required=True, null=False, index=True)
     tzkt_id = fields.BigIntField()
     contract = AccountAddressField(null=False)
     token_id = fields.TextField(null=False)
-    creator = AccountAddressField(null=True)
+    creator = AccountAddressField(null=True, index=True)
     minted_at = fields.DatetimeField(null=False)
     minted = AssetValueField()
     supply = AssetValueField()
