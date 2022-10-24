@@ -159,6 +159,7 @@ class Order(Model):
     take_price = AssetValueField(null=True)
     origin_fees = fields.JSONField()
     payouts = fields.JSONField()
+    is_bid = fields.BooleanField(default=False, null=False)
 
     def __init__(self, **kwargs: Any) -> None:
         try:

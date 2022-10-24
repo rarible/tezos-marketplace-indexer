@@ -107,7 +107,7 @@ class AbstractOrderListEvent(EventInterface):
                 take_token_id=dto.take.token_id,
                 take_value=dto.take.value * dto.make.value,
                 origin_fees=get_json_parts(dto.origin_fees),
-                payouts=get_json_parts(dto.payouts),
+                payouts=get_json_parts(dto.payouts)
             )
         else:
             order.last_updated_at = transaction.data.timestamp
@@ -534,6 +534,7 @@ class AbstractPutBidEvent(EventInterface):
             status=OrderStatusEnum.ACTIVE,
             make_asset_class=dto.make.asset_class,
             take_asset_class=dto.take.asset_class,
+            is_bid=True
         )
 
         if order is None:
@@ -559,6 +560,7 @@ class AbstractPutBidEvent(EventInterface):
                 take_price=dto.make.value,
                 origin_fees=get_json_parts(dto.origin_fees),
                 payouts=get_json_parts(dto.payouts),
+                is_bid=True
             )
         else:
             order.last_updated_at = transaction.data.timestamp
@@ -623,6 +625,7 @@ class AbstractPutFloorBidEvent(EventInterface):
             status=OrderStatusEnum.ACTIVE,
             make_asset_class=dto.make.asset_class,
             take_asset_class=dto.take.asset_class,
+            is_bid=True
         )
 
         if order is None:
@@ -648,6 +651,7 @@ class AbstractPutFloorBidEvent(EventInterface):
                 take_price=dto.make.value,
                 origin_fees=get_json_parts(dto.origin_fees),
                 payouts=get_json_parts(dto.payouts),
+                is_bid=True
             )
         else:
             order.last_updated_at = transaction.data.timestamp
