@@ -69,10 +69,10 @@ async def process_collection_events(
                                 )
 
                             logger.info(f"Proccessed collection {address}")
+        if index is None:
+            await IndexingStatus.create(index=IndexEnum.COLLECTION, last_level=level)
+        else:
+            index.last_level = level
+            await index.save()
         if len(originations) < 100:
             last_id = None
-    if index is None:
-        await IndexingStatus.create(index=IndexEnum.COLLECTION, last_level=level)
-    else:
-        index.last_level = level
-        await index.save()

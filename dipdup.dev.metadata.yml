@@ -12,7 +12,7 @@ datasources:
     network: ghostnet
   ipfs:
     kind: ipfs
-    url: https://ipfs.io/ipfs
+    url: https://nftstorage.link/ipfs # this should makes tests faster because QA upload images there
 
 hooks:
   process_token_metadata:

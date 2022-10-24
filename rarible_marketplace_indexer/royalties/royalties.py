@@ -5,12 +5,12 @@ from typing import Any
 from typing import Dict
 
 from dipdup.context import DipDupContext
-
 from rarible_marketplace_indexer.metadata.metadata import get_token_metadata
 from rarible_marketplace_indexer.models import ActivityTypeEnum, TokenMetadata, Token
 from rarible_marketplace_indexer.models import TokenTransfer
 from rarible_marketplace_indexer.types.rarible_exchange.parameter.sell import Part
-from rarible_marketplace_indexer.utils.rarible_utils import get_bidou_data
+from rarible_marketplace_indexer.utils.rarible_utils import get_bidou_data, get_token_id_big_map_key_hash, \
+    get_royalties_manager_big_map_key_hash
 from rarible_marketplace_indexer.utils.rarible_utils import get_key_for_big_map
 
 logger = logging.getLogger("royalties")
@@ -34,9 +34,8 @@ async def get_objkt_royalties(contract: str, token_id: str, data: dict[str, Any]
 
 async def get_hen_royalties(ctx: DipDupContext, contract, token_id: str):
     try:
-        response = await get_key_for_big_map(ctx, contract, "royalties", token_id)
-        royalties_map = response.json()
-        royalties: dict[str, Any] = royalties_map.get("value")
+        response = await get_key_for_big_map(ctx, contract, "royalties", get_token_id_big_map_key_hash(token_id))
+        royalties: dict[str, Any] = response.get("value")
         return [Part(part_account=royalties.get("issuer"), part_value=int(royalties.get("royalties")) * 10)]
     except Exception as ex:
         logger.debug(f"Could not fetch HEN royalties for {contract}:{token_id}: {ex}")
@@ -45,9 +44,8 @@ async def get_hen_royalties(ctx: DipDupContext, contract, token_id: str):
 
 async def get_kalamint_royalties(ctx: DipDupContext, contract: str, token_id: str):
     try:
-        response = await get_key_for_big_map(ctx, contract, "tokens", token_id)
-        royalties_map = response.json()
-        royalties: dict[str, Any] = royalties_map.get("value")
+        response = await get_key_for_big_map(ctx, contract, "tokens", get_token_id_big_map_key_hash(token_id))
+        royalties: dict[str, Any] = response.get("value")
         return [Part(part_account=royalties.get("creator"), part_value=int(royalties.get("creator_royalty")) * 100)]
     except Exception as ex:
         logger.debug(f"Could not fetch KALAMINT royalties for {contract}:{token_id}: {ex}")
@@ -56,12 +54,11 @@ async def get_kalamint_royalties(ctx: DipDupContext, contract: str, token_id: st
 
 async def get_fxhash_v1_royalties(ctx: DipDupContext, fxhash_v1: str, fxhash_v1_manager: str, token_id: str):
     try:
-        key_response = await get_key_for_big_map(ctx, fxhash_v1, "token_data", token_id)
-        royalties_key = key_response.json()
-        royalties = royalties_key.get("value")
-        author_response = await get_key_for_big_map(ctx, fxhash_v1_manager, "ledger", royalties.get("issuer_id"))
-        author_map = author_response.json()
-        author = author_map.get("value")
+        key_response = await get_key_for_big_map(ctx, fxhash_v1, "token_data", get_token_id_big_map_key_hash(token_id))
+        royalties = key_response.get("value")
+        author_response = await get_key_for_big_map(ctx, fxhash_v1_manager, "ledger", get_token_id_big_map_key_hash(
+            royalties.get("issuer_id")))
+        author = author_response.get("value")
         return [Part(part_account=author.get("author"), part_value=int(royalties.get("royalties")) * 10)]
     except Exception as ex:
         logger.debug(f"Could not fetch FXHASH V1 royalties for {fxhash_v1}:{token_id}: {ex}")
@@ -71,9 +68,8 @@ async def get_fxhash_v1_royalties(ctx: DipDupContext, fxhash_v1: str, fxhash_v1_
 
 async def get_fxhash_v2_royalties(ctx: DipDupContext, contract: str, token_id: str):
     try:
-        response = await get_key_for_big_map(ctx, contract, "token_data", token_id)
-        royalties_raw = response.json()
-        royalties_data: dict[str, Any] = royalties_raw.get("value")
+        response = await get_key_for_big_map(ctx, contract, "token_data", get_token_id_big_map_key_hash(token_id))
+        royalties_data: dict[str, Any] = response.get("value")
         amount = royalties_data.get("royalties")
         splits: [dict[str, Any]] = royalties_data.get("royalties_split")
         royalties: [Part] = []
@@ -89,9 +85,8 @@ async def get_fxhash_v2_royalties(ctx: DipDupContext, contract: str, token_id: s
 
 async def get_versum_royalties(ctx: DipDupContext, contract: str, token_id: str):
     try:
-        response = await get_key_for_big_map(ctx, contract, "token_extra_data", token_id)
-        royalties_map = response.json()
-        royalties: dict[str, Any] = royalties_map.get("value")
+        response = await get_key_for_big_map(ctx, contract, "token_extra_data", get_token_id_big_map_key_hash(token_id))
+        royalties: dict[str, Any] = response.get("value")
         return [Part(part_account=royalties.get("minter"), part_value=int(royalties.get("royalty")) * 10)]
     except Exception as ex:
         logger.debug(f"Could not fetch VERSUM royalties for {contract}:{token_id}: {ex}")
@@ -114,9 +109,8 @@ async def get_bidou_royalties(ctx: DipDupContext, contract: str, token_id: str, 
 
 async def get_rarible_royalties(ctx: DipDupContext, contract: str, token_id: str):
     try:
-        response = await get_key_for_big_map(ctx, contract, "royalties", token_id)
-        royalties_map = response.json()
-        royalties_list: [dict[str, Any]] = royalties_map.get("value")
+        response = await get_key_for_big_map(ctx, contract, "royalties", get_token_id_big_map_key_hash(token_id))
+        royalties_list: [dict[str, Any]] = response.get("value")
         royalties: [Part] = []
         for royalty in royalties_list:
             royalties.append(Part(part_account=royalty.get("partAccount"), part_value=int(royalty.get("partValue"))))
@@ -155,16 +149,17 @@ async def get_royalties_from_royalties_manager(
     royalties: [Part] = []
     royalties_map: [dict[str, Any]] | None = None
     try:
-        token_key_value = '{"address":"' + contract + '","nat":"' + token_id + '"}'
-        response_with_token_id = await get_key_for_big_map(ctx, royalties_manager, "royalties", token_key_value)
-        royalties_map = response_with_token_id.json().get("value")
+        response_with_token_id = await get_key_for_big_map(ctx, royalties_manager, "royalties",
+                                                           get_royalties_manager_big_map_key_hash(contract, token_id))
+        royalties_map = response_with_token_id.get("value")
     except Exception as ex:
         logger.debug(f"Could not fetch Royalties Manager royalties (with token id) for {contract}:{token_id}: {ex}")
     if royalties_map is None:
         try:
-            token_key_value = '{"address":"' + contract + '","nat":null}'
-            response_without_token_id = await get_key_for_big_map(ctx, royalties_manager, "royalties", token_key_value)
-            royalties_map = response_without_token_id.json().get("value")
+            response_without_token_id = await get_key_for_big_map(ctx, royalties_manager, "royalties",
+                                                                  get_royalties_manager_big_map_key_hash(contract,
+                                                                                                         None))
+            royalties_map = response_without_token_id.get("value")
         except Exception as ex:
             logger.debug(
                 f"Could not fetch Royalties Manager royalties (without token id) for {contract}:{token_id}: {ex}"
@@ -212,7 +207,8 @@ async def fetch_royalties(ctx: DipDupContext, contract: str, token_id: str) -> [
     elif contract == known_addresses.get("versum"):
         logger.debug(f"Token {contract}:{token_id} royalties pattern is VERSUM")
         return await get_versum_royalties(ctx, contract, token_id)
-    elif contract in [known_addresses.get("bidou_8x8"), known_addresses.get("bidou_24x24")]:
+    elif contract in [known_addresses.get("bidou_8x8"), known_addresses.get("bidou_24x24"), known_addresses.get(
+            "bidou_24x24_color")]:
         logger.debug("Token $contract:$tokenId royalties pattern is 8Bidou")
         return await get_bidou_royalties(ctx, contract, token_id, bidou_royalties)
 
@@ -228,9 +224,11 @@ async def fetch_royalties(ctx: DipDupContext, contract: str, token_id: str) -> [
         logger.debug(f"Token {contract}:{token_id} royalties pattern is KALAMINT (private collection)")
         return royalties
 
-    token_metadata = TokenMetadata.get_or_none(id=Token.get_id(contract, token_id))
-    if token_metadata is None:
+    token_metadata = await TokenMetadata.get_or_none(id=Token.get_id(contract, token_id))
+    if token_metadata is None or token_metadata is not None and token_metadata.metadata is None:
         token_metadata = await get_token_metadata(ctx, f"{contract}:{token_id}")
+    else:
+        token_metadata = token_metadata.metadata
     if token_metadata is not None:
         try:
             if type(token_metadata) is bytes:
@@ -266,13 +264,13 @@ async def fetch_royalties(ctx: DipDupContext, contract: str, token_id: str) -> [
     if len(royalties) > 0:
         return royalties
 
-    mint: TokenTransfer = (
-        await TokenTransfer.filter(contract=contract, token_id=token_id, type=ActivityTypeEnum.TOKEN_MINT)
-        .order_by("date")
-        .first()
-    )
-    if mint is not None:
-        royalties = [Part(part_account=mint.to_address, part_value=0)]
-    else:
-        royalties = []
+    # mint: TokenTransfer = (
+    #     await TokenTransfer.filter(contract=contract, token_id=token_id, type=ActivityTypeEnum.TOKEN_MINT)
+    #     .order_by("date")
+    #     .first()
+    # )
+    # if mint is not None:
+    #     royalties = [Part(part_account=mint.to_address, part_value=0)]
+    # else:
+    royalties = []
     return royalties

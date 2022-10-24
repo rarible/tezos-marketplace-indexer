@@ -1,4 +1,20 @@
 spec_version: 1.2
+package: rarible_marketplace_indexer
+
+database:
+  kind: postgres
+  host: tmp-pg1.rarible.int
+  port: ${POSTGRES_PORT:-5432}
+  user: ${POSTGRES_USER:-dipdup}
+  password: ${POSTGRES_PASS:-changeme}
+  database: ${POSTGRES_DB:-dipdup}
+
+hasura:
+  url: http://aux-hasura:8080
+  admin_secret: ${HASURA_GRAPHQL_ADMIN_SECRET:-changeme}
+  select_limit: ${HASURA_SELECT_LIMIT:-1000}
+  allow_aggregations: false
+  rest: true
 
 datasources:
   tzkt:
@@ -22,13 +38,13 @@ datasources:
       batch_size: 1000
   ipfs:
     kind: ipfs
-    url: https://ipfs.io/ipfs
+    url: http://ipfs-gw1.ext.rarible.com:8080/ipfs
     http:
       retry_count: 1
       retry_sleep: 0
-      connection_limit: 100
-      connection_timeout: 60
-      batch_size: 10000
+      connection_limit: 1000
+      connection_timeout: 1
+      batch_size: 1000
 
 contracts:
   tzprofile_old:
@@ -101,6 +117,9 @@ jobs:
   process_token_metadata:
     hook: process_token_metadata
     crontab: "* * * * *"
+  process_collection_metadata:
+    hook: process_collection_metadata
+    crontab: "* * * * *"
 
 advanced:
   rollback_depth: 2
@@ -115,7 +134,7 @@ advanced:
     schema_modified: ignore
 
 custom:
-  enabled: ${KAFKA_ENABLED:-false}
+  enabled: false
   kafka_address: ${KAFKA_ADDRESS:-kafka:9092}
   client_id: dipdup-rarible-${APPLICATION_ENVIRONMENT:-mainnet}-producer
   kafka_security_protocol: ${KAFKA_SECURITY_PROTOCOL:-SASL_PLAINTEXT}

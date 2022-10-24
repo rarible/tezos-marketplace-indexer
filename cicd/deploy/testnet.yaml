@@ -1,6 +1,13 @@
 hasura:
   service:
     nodePort: 30439
+  resources:
+    limits:
+      cpu: 300m
+      memory: 512Mi
+    requests:
+      cpu: 100m
+      memory: 256Mi
 
 tezos-marketplace-indexer-rarible:
   replicas: 1
@@ -24,6 +31,14 @@ tezos-marketplace-indexer-metadata:
       memory: 768Mi
     requests:
       memory: 512Mi
+
+aux-hasura:
+  enabled: false
+  replicas: 0
+
+aux-tezos-marketplace-indexer-rarible:
+  enabled: false
+  replicas: 0
 
 tzkt:
   replicas: 0

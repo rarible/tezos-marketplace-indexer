@@ -1,4 +1,20 @@
 spec_version: 1.2
+package: rarible_marketplace_indexer
+
+database:
+  kind: postgres
+  host: tmp-pg1.rarible.int
+  port: ${POSTGRES_PORT:-5432}
+  user: ${POSTGRES_USER:-dipdup}
+  password: ${POSTGRES_PASS:-changeme}
+  database: ${POSTGRES_DB:-dipdup}
+
+hasura:
+  url: http://aux-hasura:8080
+  admin_secret: ${HASURA_GRAPHQL_ADMIN_SECRET:-changeme}
+  select_limit: ${HASURA_SELECT_LIMIT:-1000}
+  allow_aggregations: false
+  rest: true
 
 datasources:
   tzkt:
@@ -22,7 +38,7 @@ datasources:
       batch_size: 1000
   ipfs:
     kind: ipfs
-    url: https://ipfs.io/ipfs
+    url: http://ipfs-gw1.ext.rarible.com:8080/ipfs
     http:
       retry_count: 1
       retry_sleep: 0
@@ -30,76 +46,14 @@ datasources:
       connection_timeout: 60
       batch_size: 10000
 
-contracts:
-  tzprofile_old:
-    address: KT1KsmdYxuJHCMqLRX1PH7JJeXvXaMeicEa7
-    typename: tzprofile
-  tzprofile:
-    address: KT1G6jaUQkRcxJcnrNLjCTn7xgD686PM2mEd
-    typename: tzprofile
-  tezos_domains_registry:
-    address: KT1GBZmSxmnKJXGMdMLbugPfLyUPmuLSMwKS
-    typename: tezos_domains_registry
-
-templates:
-  tzprofiles:
-    kind: operation
-    datasource: tzkt
-    contracts:
-      - <contract>
-    types:
-      - transaction
-      - origination
-    handlers:
-      - callback: on_tzprofile_origination
-        pattern:
-          - type: origination
-            originated_contract: <contract>
-      - callback: on_tzprofile_update
-        pattern:
-          - destination: <contract>
-            entrypoint: default
-  tezos_domains_big_map:
-    kind: big_map
-    datasource: <datasource>
-    skip_history: once
-    handlers:
-      - callback: on_tezos_domains_update_records
-        contract: <name_registry>
-        path: store.records
-
-indexes:
-#  tzprofiles_originations:
-#    kind: operation
-#    datasource: tzkt
-#    types:
-#      - origination
-#    handlers:
-#       - callback: on_tzprofile_factory_origination
-#         pattern:
-#           - type: origination
-#             similar_to: tzprofile
-#       - callback: on_tzprofile_factory_origination
-#         pattern:
-#           - type: origination
-#             similar_to: tzprofile_old
-#  tezos_domains_big_map_mainnet:
-#    template: tezos_domains_big_map
-#    values:
-#      datasource: tzkt
-#      name_registry: tezos_domains_registry
-
 hooks:
-  process_token_metadata:
-    callback: process_token_metadata
-    atomic: False
-  process_collection_metadata:
-    callback: process_collection_metadata
+  process_token_royalties:
+    callback: process_token_royalties
     atomic: False
 
 jobs:
-  process_token_metadata:
-    hook: process_token_metadata
+  process_token_royalties:
+    hook: process_token_royalties
     crontab: "* * * * *"
 
 advanced:

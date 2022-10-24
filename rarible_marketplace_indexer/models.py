@@ -183,7 +183,7 @@ class IndexingStatus(Model):
     class Meta:
         table = 'indexing_status'
 
-    index = fields.CharEnumField(IndexEnum, index=True, pk=True, required=True)
+    index = fields.CharEnumField(IndexEnum, index=True, pk=True, required=True, max_length=20)
     last_level = fields.TextField()
 
 
@@ -290,7 +290,7 @@ class Collection(Model):
     minters = fields.JSONField(required=True)
     standard = fields.CharField(3, required=True)
     symbol = fields.CharField(20, null=True)
-    db_updated_at = fields.DatetimeField(required=True)
+    db_updated_at = fields.DatetimeField(required=True, index=True)
 
     def full_id(self):
         return f"{self.contract}"
@@ -300,13 +300,13 @@ class Royalties(Model):
     class Meta:
         table = "royalties"
 
-    id = fields.UUIDField(pk=True, generated=False, required=True)
-    contract = AccountAddressField(null=False)
+    id = fields.UUIDField(pk=True, generated=False, required=True, index=True)
+    contract = AccountAddressField(null=False, index=True)
     token_id = fields.TextField(null=False)
     parts = fields.JSONField(null=False)
-    royalties_synced = fields.BooleanField(required=True)
-    royalties_retries = fields.IntField(required=True)
-    db_updated_at = fields.DatetimeField(required=True)
+    royalties_synced = fields.BooleanField(required=True, index=True)
+    royalties_retries = fields.IntField(required=True, index=True)
+    db_updated_at = fields.DatetimeField(required=True, index=True)
 
     def __init__(self, **kwargs: Any) -> None:
         try:
@@ -320,23 +320,23 @@ class CollectionMetadata(Model):
     class Meta:
         table = "metadata_collection"
 
-    id = AccountAddressField(pk=True, required=True)
+    id = AccountAddressField(pk=True, required=True, index=True)
     metadata = fields.TextField(null=True)
-    metadata_synced = fields.BooleanField(required=True)
-    metadata_retries = fields.IntField(required=True)
-    db_updated_at = fields.DatetimeField(required=True)
+    metadata_synced = fields.BooleanField(required=True, index=True)
+    metadata_retries = fields.IntField(required=True, index=True)
+    db_updated_at = fields.DatetimeField(required=True, index=True)
 
 
 class TokenMetadata(Model):
     class Meta:
         table = "metadata_token"
 
-    id = fields.UUIDField(pk=True, generated=False, required=True, null=False)
-    contract = AccountAddressField(null=False)
+    id = fields.UUIDField(pk=True, generated=False, required=True, null=False, index=True)
+    contract = AccountAddressField(null=False, index=True)
     token_id = fields.TextField(null=False)
     metadata = fields.TextField(null=True)
-    metadata_synced = fields.BooleanField(required=True)
-    metadata_retries = fields.IntField(required=True)
+    metadata_synced = fields.BooleanField(required=True, index=True)
+    metadata_retries = fields.IntField(required=True, index=True)
     db_updated_at = fields.DatetimeField(required=True)
 
     def __init__(self, **kwargs: Any) -> None:
