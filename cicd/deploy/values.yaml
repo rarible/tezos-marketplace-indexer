@@ -182,7 +182,6 @@ aux-tezos-marketplace-indexer-rarible:
     repository: tezos-marketplace-indexer
   command: [
     "dipdup",
-    "-c", "dipdup.yml",
     "-c", 'dipdup.{{ include "app.env" $ }}.rarible.aux.yml',
     "run"
   ]
