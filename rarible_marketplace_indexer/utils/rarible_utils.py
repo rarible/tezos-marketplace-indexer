@@ -49,6 +49,14 @@ from rarible_marketplace_indexer.types.tezos_objects.tezos_object_hash import Or
 date_pattern = "%Y-%m-%dT%H:%M:%SZ"
 
 
+def assert_token_id_length(token_id: str):
+    if len(token_id) > 256:
+        logging.getLogger("dipdup").warning(f"Ignoring too big token id ({len(token_id)} > 256): {token_id}")
+        return False
+    else:
+        return True
+
+
 def get_json_parts(parts: List[Part]):
     json_parts: List[Part] = []
     for part in parts:

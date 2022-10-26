@@ -1,4 +1,5 @@
 spec_version: 1.2
+package: rarible_marketplace_indexer
 
 datasources:
   tzkt:
@@ -29,6 +30,21 @@ datasources:
       connection_limit: 100
       connection_timeout: 5
       batch_size: 10000
+
+database:
+  kind: postgres
+  host: tmp-pg1.rarible.int
+  port: ${POSTGRES_PORT:-5432}
+  user: ${POSTGRES_USER:-dipdup}
+  password: ${POSTGRES_PASS:-changeme}
+  database: ${POSTGRES_DB:-dipdup}
+
+hasura:
+  url: http://aux-hasura:8080
+  admin_secret: ${HASURA_GRAPHQL_ADMIN_SECRET:-changeme}
+  select_limit: ${HASURA_SELECT_LIMIT:-1000}
+  allow_aggregations: false
+  rest: true
 
 contracts:
   rarible_exchange_legacy:

@@ -120,6 +120,8 @@ tezos-marketplace-indexer-royalties:
 #       memory: 2Gi
 
 hasura:
+  updateConfig:
+    order: start-first
   image:
     registry: docker.io
     repository: hasura/graphql-engine
@@ -147,6 +149,8 @@ hasura:
     # HASURA_GRAPHQL_DATABASE_URL:
 
 aux-hasura:
+  updateConfig:
+    order: start-first
   image:
     registry: docker.io
     repository: hasura/graphql-engine
@@ -178,7 +182,6 @@ aux-tezos-marketplace-indexer-rarible:
     repository: tezos-marketplace-indexer
   command: [
     "dipdup",
-    "-c", "dipdup.yml",
     "-c", 'dipdup.{{ include "app.env" $ }}.rarible.aux.yml',
     "run"
   ]
@@ -212,6 +215,8 @@ aux-tezos-marketplace-indexer-rarible:
       memory: 1384Mi
 
 tzkt:
+  updateConfig:
+    order: start-first
   enabled: false
   network: mainnet
   api:
