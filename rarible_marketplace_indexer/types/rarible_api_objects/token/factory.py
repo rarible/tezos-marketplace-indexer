@@ -3,6 +3,7 @@ import uuid
 from rarible_marketplace_indexer.models import Token
 from rarible_marketplace_indexer.types.rarible_api_objects.token.token import RaribleApiToken, RaribleItemMeta
 from rarible_marketplace_indexer.types.rarible_api_objects.token.token import TokenBody
+from rarible_marketplace_indexer.types.rarible_exchange.parameter.sell import Part
 
 
 class RaribleApiTokenFactory:
@@ -12,7 +13,7 @@ class RaribleApiTokenFactory:
         full_id = token.full_id()
         creators = []
         if token.creator is not None:
-            creators.append(token.creator)
+            creators.append(Part(part_account=token.creator, part_value=10000))
         return RaribleApiToken(
             id=random_id,
             event_id=random_id,
