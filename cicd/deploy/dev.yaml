@@ -2,7 +2,7 @@ hasura:
   service:
     nodePort: 30339
 
-tezos-marketplace-indexer-dev: &tezos-marketplace-indexer-dev
+tezos-marketplace-indexer-rarible: &tezos-marketplace-indexer-dev
   environments:
     TZKT_URL: https://api.ghostnet.tzkt.io
     HASURA_URL: http://hasura:8080
