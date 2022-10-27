@@ -10,12 +10,16 @@ hasura:
       memory: 256Mi
 
 tezos-marketplace-indexer-rarible:
+  enabled: false
+  replicas: 0
   environments:
     TZKT_URL: https://api.ghostnet.tzkt.io
     HASURA_URL: http://hasura:8080
     NETWORK: ghostnet
 
 tezos-marketplace-indexer-tezos:
+  enabled: false
+  replicas: 0
   environments:
     TZKT_URL: https://api.ghostnet.tzkt.io
     HASURA_URL: http://hasura:8080
