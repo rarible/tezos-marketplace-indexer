@@ -8,19 +8,12 @@ metadata:
   labels:
     app: aux-tzkt
 spec:
-  {{- if .Values.tzkt.service.nodePort }}
-  type: NodePort
-  {{- else }}
   type: ClusterIP
-  {{- end }}
   ports:
     - port: {{ .Values.tzkt.service.port }}
       name: http
       targetPort: {{ .Values.tzkt.service.port }}
       protocol: TCP
-      {{- if .Values.tzkt.service.nodePort }}
-      nodePort: {{ .Values.tzkt.service.nodePort }}
-      {{- end }}
   selector:
     app: tzkt
 ---
