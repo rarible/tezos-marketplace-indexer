@@ -1,5 +1,4 @@
 hasura:
-  replicas: 1
   service:
     nodePort: 30139
   resources:
@@ -10,7 +9,20 @@ hasura:
       cpu: 100m
       memory: 256Mi
 
+tezos-marketplace-indexer-prod: &tezos-marketplace-indexer-prod
+  environments: 
+    TZKT_URL: https://api.tzkt.io
+    NETWORK: mainnet
+  resources:
+    limits:
+      cpu: '2'
+      memory: 3Gi
+    requests:
+      cpu: 200m
+      memory: 1384Mi
+
 tezos-marketplace-indexer-rarible:
+  <<: *tezos-marketplace-indexer-prod
   image:
     tag: master-3a1f7c-231
   command: [
@@ -18,12 +30,9 @@ tezos-marketplace-indexer-rarible:
     "-c", 'dipdup.{{ include "app.env" $ }}.rarible.yml',
     "run"
     ]
-  replicas: 1
-  environments: 
-    TZKT_URL: https://api.tzkt.io
-    NETWORK: mainnet
 
 tezos-marketplace-indexer-tezos:
+  <<: *tezos-marketplace-indexer-prod
   image:
     tag: master-3a1f7c-231
   command: [
@@ -31,14 +40,9 @@ tezos-marketplace-indexer-tezos:
     "-c", 'dipdup.{{ include "app.env" $ }}.tezos.yml',
     "run"
   ]
-  replicas: 1
-  environments:
-    TZKT_URL: https://api.tzkt.io
-    NETWORK: mainnet
 
 tezos-marketplace-indexer-metadata:
-  enabled: true
-  replicas: 1
+  <<: *tezos-marketplace-indexer-prod
   command: [
     "dipdup",
     "-c", 'dipdup.{{ include "app.env" $ }}.metadata.aux.yml',
@@ -50,17 +54,8 @@ tezos-marketplace-indexer-metadata:
     POSTGRES_HOST: 'tmp-pg1.rarible.int'
     HASURA_URL: 'http://aux-hasura:8080'
     KAFKA_ENABLED: "false"
-  resources:
-    limits:
-      cpu: '2'
-      memory: 3Gi
-    requests:
-      cpu: 200m
-      memory: 1384Mi
 
 tezos-marketplace-indexer-royalties:
-  enabled: true
-  replicas: 1
   environments:
     TZKT_URL: http://aux-tzkt:5000
     NETWORK: mainnet
@@ -76,7 +71,6 @@ tezos-marketplace-indexer-royalties:
       memory: 1384Mi
 
 aux-hasura:
-  replicas: 1
   resources:
     limits:
       cpu: '1'
@@ -86,8 +80,7 @@ aux-hasura:
       memory: 256Mi
 
 aux-tezos-marketplace-indexer-rarible:
-  enabled: true
-  replicas: 1
+  <<: *tezos-marketplace-indexer-prod
   image:
     repository: tezos-marketplace-indexer
   environments:
@@ -95,7 +88,7 @@ aux-tezos-marketplace-indexer-rarible:
     NETWORK: mainnet
 
 tzkt:
-  enabled: true
+  instances: ['tzkt', 'aux-tzkt']
   api:
     resources:
       limits:
@@ -104,13 +97,7 @@ tzkt:
       requests:
         cpu: '2'
         memory: 1384Mi
-    image:
-      repository: fpto/rarible-tzkt-api
-      tag: 1.10.0
   indexer:
-    image:
-      repository: fpto/rarible-tzkt-indexer
-      tag: 1.10.0
     resources:
       limits:
         cpu: 400m
@@ -130,40 +117,4 @@ tzkt:
     ingressClassName: ingress-internal
     backend:
       service: tzkt
-      port: http
-
-aux-tzkt:
-  enabled: true
-  api:
-    resources:
-      limits:
-        cpu: '2'
-        memory: 3Gi
-      requests:
-        cpu: '2'
-        memory: 1384Mi
-    image:
-      repository: fpto/rarible-tzkt-api
-      tag: 1.10.0
-  indexer:
-    image:
-      repository: fpto/rarible-tzkt-indexer
-      tag: 1.10.0
-    resources:
-      limits:
-        cpu: 400m
-        memory: 2Gi
-      requests:
-        cpu: 200m
-        memory: 384Mi
-  network: mainnet
-  environments:
-    TezosNode__Endpoint: https://rpc.tzkt.io/mainnet
-    TokenMetadata__DipDup__Url: https://metadata.dipdup.net/v1/graphql
-  ingress:
-    hostname: 'aux-tezos-tzkt.rarible.int'
-    path: /
-    ingressClassName: ingress-internal
-    backend:
-      service: aux-tzkt
       port: http
