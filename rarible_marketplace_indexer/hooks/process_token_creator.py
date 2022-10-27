@@ -15,9 +15,9 @@ logger.setLevel("INFO")
 
 
 async def process_creator_for_token(ctx: HookContext, token: Token):
-    royalties = await Royalties.get(id=token.id)
+    royalties = await Royalties.get_or_none(id=token.id)
     log = ""
-    if royalties is None and len(royalties.parts) > 0:
+    if royalties is None or (royalties is not None and len(royalties.parts) > 0):
         mint: TokenTransfer = await TokenTransfer.get(contract=token.contract, token_id=token.token_id, type=ActivityTypeEnum.TOKEN_MINT)
         if mint is not None:
             token.creator = mint.to_address
