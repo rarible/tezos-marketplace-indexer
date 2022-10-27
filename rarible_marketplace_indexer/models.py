@@ -207,6 +207,7 @@ class TokenTransfer(Model):
     type = fields.CharEnumField(ActivityTypeEnum)
     tzkt_token_id = fields.BigIntField(null=False)
     tzkt_transaction_id = fields.BigIntField(null=True)
+    tzkt_origination_id = fields.BigIntField(null=True)
     contract = AccountAddressField(null=False)
     token_id = fields.CharField(max_length=256, null=False)
     from_address = AccountAddressField(null=True)
