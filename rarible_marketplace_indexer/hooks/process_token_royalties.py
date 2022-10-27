@@ -36,7 +36,8 @@ async def process_royalties_for_token(ctx: HookContext, token_royalties: Royalti
             await token.save()
             log = f"Successfully saved royalties for {token_royalties.contract}:{token_royalties.token_id} (retries {token_royalties.royalties_retries})"
         except Exception as ex:
-            log = f"Could not save royalties for {token_royalties.contract}:{token_royalties.token_id}: {ex}"
+            log = f"Could not save royalties for {token_royalties.contract}:{token_royalties.token_id} ({royalties}):" \
+                  f" {ex}"
             token_royalties.royalties_retries = token_royalties.royalties_retries + 1
             token_royalties.royalties_synced = False
     await token_royalties.save()
@@ -56,7 +57,7 @@ async def process_token_royalties(
         unsynced_royalties: List[Royalties] = await Royalties.filter(
             royalties_synced=False,
             royalties_retries__lt=5
-        ).limit(100).offset(offset).order_by("-db_updated_at")
+        ).limit(100).offset(offset)
 
         if len(unsynced_royalties) == 0:
             done = True
