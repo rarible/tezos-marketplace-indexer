@@ -158,7 +158,7 @@ aux-tzkt:
         memory: 384Mi
   network: mainnet
   service:
-    nodePort: 30140
+    nodePort: 30141
   environments:
     TezosNode__Endpoint: https://rpc.tzkt.io/mainnet
     TokenMetadata__DipDup__Url: https://metadata.dipdup.net/v1/graphql
