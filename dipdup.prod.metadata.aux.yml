@@ -112,9 +112,6 @@ hooks:
   process_collection_metadata:
     callback: process_collection_metadata
     atomic: False
-  process_token_creator:
-    callback: process_token_creator
-    atomic: False
 
 jobs:
   process_token_metadata:
@@ -122,9 +119,6 @@ jobs:
     crontab: "* * * * *"
   process_collection_metadata:
     hook: process_collection_metadata
-    crontab: "* * * * *"
-  process_token_creator:
-    hook: process_token_creator
     crontab: "* * * * *"
 
 
