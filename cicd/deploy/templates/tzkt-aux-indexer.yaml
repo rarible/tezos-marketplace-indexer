@@ -18,6 +18,7 @@ spec:
       name: http
       targetPort: {{ .Values.tzkt.service.port }}
       protocol: TCP
+      {{- if .Values.tzkt.service.nodePort }}
       nodePort: 30141
       {{- end }}
   selector:
