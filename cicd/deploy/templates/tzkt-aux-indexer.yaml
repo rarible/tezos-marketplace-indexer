@@ -1,5 +1,5 @@
 {{- if .Values.global }}
-{{- if and index .Values.aux-tzkt.enabled .Values.global.deployToKube }}
+{{- if and .Values.aux-tzkt.enabled .Values.global.deployToKube }}
 ---
 apiVersion: v1
 kind: Service
@@ -10,9 +10,9 @@ metadata:
 spec:
   type: ClusterIP
   ports:
-    - port: {{ index .Values.aux-tzkt.service.port }}
+    - port: {{ .Values.aux-tzkt.service.port }}
       name: http
-      targetPort: {{ index .Values.aux-tzkt.service.port }}
+      targetPort: {{ .Values.aux-tzkt.service.port }}
       protocol: TCP
   selector:
     app: tzkt
@@ -38,16 +38,16 @@ spec:
       nodeSelector:
         env: {{ include "app.env" . | quote }}
       containers:
-        - image: "{{ index .Values.aux-tzkt.api.image.repository }}:{{ index .Values.aux-tzkt.api.image.tag }}"
+        - image: "{{ .Values.aux-tzkt.api.image.repository }}:{{ .Values.aux-tzkt.api.image.tag }}"
           name: api
           ports:
-            - containerPort: {{ index .Values.aux-tzkt.service.port }}
+            - containerPort: {{ .Values.aux-tzkt.service.port }}
               name: http
               protocol: TCP
           env:
           - name: Kestrel__Endpoints__Http__Url
-            value: http://0.0.0.0:{{ index .Values.aux-tzkt.service.port }}
-          {{- range $key, $value := index .Values.aux-tzkt.environments }}
+            value: http://0.0.0.0:{{ .Values.aux-tzkt.service.port }}
+          {{- range $key, $value := .Values.aux-tzkt.environments }}
           - name: {{ $key }}
             {{- if $value }}
             value: {{ $value | quote }}
@@ -64,13 +64,13 @@ spec:
               name: aux-tzkt
               optional: true
           resources:
-            {{- toYaml index .Values.aux-tzkt.api.resources | nindent 12 }}
-        - image: "{{ index .Values.aux-tzkt.indexer.image.repository }}:{{ index .Values.aux-tzkt.indexer.image.tag }}"
+            {{- toYaml .Values.aux-tzkt.api.resources | nindent 12 }}
+        - image: "{{ .Values.aux-tzkt.indexer.image.repository }}:{{ .Values.aux-tzkt.indexer.image.tag }}"
           name: indexer
           env:
           - name: TokenMetadata__Enabled
             value: "true"
-          {{- range $key, $value := index .Values.aux-tzkt.environments }}
+          {{- range $key, $value := .Values.aux-tzkt.environments }}
           - name: {{ $key }}
             {{- if $value }}
             value: {{ $value | quote }}
@@ -97,7 +97,7 @@ spec:
               mountPath: /app/appsettings.json
               subPath: appsettings.json
           resources:
-            {{- toYaml index .Values.aux-tzkt.indexer.resources | nindent 12 }}
+            {{- toYaml .Values.aux-tzkt.indexer.resources | nindent 12 }}
       volumes:
         - name: tzkt-config
           configMap:
