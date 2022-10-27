@@ -1,29 +1,28 @@
 {{- if .Values.global }}
-{{- if .Values.tzkt.instances }}
+{{ range $name := .Values.tzkt.instances }}
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: tzkt
+  name: {{ $name }}
   labels:
-    app: tzkt
+    app: {{ $name }}
 spec:
-  {{- if .Values.tzkt.service.nodePort }}
+  {{- if and $.Values.tzkt.service.nodePort (eq $name "tzkt") }}
   type: NodePort
   {{- else }}
   type: ClusterIP
   {{- end }}
   ports:
-    - port: {{ .Values.tzkt.service.port }}
+    - port: {{ $.Values.tzkt.service.port }}
       name: http
-      targetPort: {{ .Values.tzkt.service.port }}
+      targetPort: {{ $.Values.tzkt.service.port }}
       protocol: TCP
-      {{- if .Values.tzkt.service.nodePort }}
-      nodePort: {{ .Values.tzkt.service.nodePort }}
+      {{- if and $.Values.tzkt.service.nodePort (eq $name "tzkt") }}
+      nodePort: {{ $.Values.tzkt.service.nodePort  }}
       {{- end }}
   selector:
-    app: tzkt
-{{ range $name := .Values.tzkt.instances }}
+    app: {{ $name }}
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -110,6 +109,5 @@ spec:
         - name: tzkt-config
           configMap:
             name: tzkt-config
-{{- end }}
 {{- end }}
 {{- end }}
