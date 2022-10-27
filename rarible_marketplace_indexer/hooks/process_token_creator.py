@@ -16,23 +16,23 @@ logger.setLevel("INFO")
 
 async def process_creator_for_token(ctx: HookContext, token: Token):
     royalties = await Royalties.get(id=token.id)
-    #log = ""
+    log = ""
     if royalties is not None and len(royalties.parts) > 0:
-    #     mint: TokenTransfer = await TokenTransfer.get(contract=token.contract, token_id=token.token_id, type=ActivityTypeEnum.TOKEN_MINT)
-    #     if mint is not None:
-    #         token.creator = mint.to_address
-    #         await token.save()
-    #         log = f"Creator not found for {token.contract}:{token.token_id}, using first owner"
-    #     else:
-    #         log = f"Creator not found for {token.contract}:{token.token_id}"
-    # else:
-    #     try:
-        token.creator = royalties.parts[0].get('part_account')
-        await token.save()
-        logger.info(f"Successfully saved creator for {token.contract}:{token.token_id}")
-        # except Exception as ex:
-        #     log = f"Could not save creator for {token.contract}:{token.token_id}: {ex}"
-    #logger.info(log)
+        mint: TokenTransfer = await TokenTransfer.get(contract=token.contract, token_id=token.token_id, type=ActivityTypeEnum.TOKEN_MINT)
+        if mint is not None:
+            token.creator = mint.to_address
+            await token.save()
+            log = f"Creator not found for {token.contract}:{token.token_id}, using first owner"
+        else:
+            log = f"Creator not found for {token.contract}:{token.token_id}"
+    else:
+        try:
+            token.creator = royalties.parts[0].get('part_account')
+            await token.save()
+            log = f"Successfully saved creator for {token.contract}:{token.token_id}"
+        except Exception as ex:
+            log = f"Could not save creator for {token.contract}:{token.token_id}: {ex}"
+    logger.info(log)
 
 async def process_token_creator(
     ctx: HookContext,
@@ -47,7 +47,7 @@ async def process_token_creator(
     while not done:
         unsynced_creators: List[Token] = await Token.filter(
             creator=None,
-        ).limit(100).offset(offset).order_by("-db_updated_at")
+        ).limit(100).offset(offset)
 
         if len(unsynced_creators) == 0:
             done = True

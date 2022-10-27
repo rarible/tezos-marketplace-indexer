@@ -25,12 +25,15 @@ async def process_royalties_for_token(ctx: HookContext, token_royalties: Royalti
         token_royalties.royalties_retries = token_royalties.royalties_retries + 1
         token_royalties.royalties_synced = False
         log = f"Royalties not found for {token_royalties.contract}:{token_royalties.token_id} (retries {token_royalties.royalties_retries})"
-
     else:
         try:
             token_royalties.parts = get_json_parts(royalties)
             token_royalties.royalties_synced = True
             token_royalties.royalties_retries = token_royalties.royalties_retries
+            token = await Token.get(id=Token.get_id(contract=token_royalties.contract,
+                                                    token_id=token_royalties.token_id))
+            token.creator = royalties[0].part_account
+            await token.save()
             log = f"Successfully saved royalties for {token_royalties.contract}:{token_royalties.token_id} (retries {token_royalties.royalties_retries})"
         except Exception as ex:
             log = f"Could not save royalties for {token_royalties.contract}:{token_royalties.token_id}: {ex}"
