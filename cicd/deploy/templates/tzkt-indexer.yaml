@@ -68,7 +68,7 @@ spec:
               name: tezos-marketplace-indexer-stack
               optional: true
           - secretRef:
-              name: tzkt-app
+              name: tzkt
               optional: true
           resources:
             {{- toYaml .Values.tzkt.api.resources | nindent 12 }}
