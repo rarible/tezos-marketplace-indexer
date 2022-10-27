@@ -19,7 +19,7 @@ spec:
       targetPort: {{ .Values.tzkt.service.port }}
       protocol: TCP
       {{- if .Values.tzkt.service.nodePort }}
-      nodePort: 30141
+      nodePort: {{ .Values.tzkt.service.nodePort }}
       {{- end }}
   selector:
     app: tzkt
