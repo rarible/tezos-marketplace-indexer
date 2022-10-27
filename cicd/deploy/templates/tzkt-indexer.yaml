@@ -91,7 +91,7 @@ spec:
               name: tezos-marketplace-indexer-stack
               optional: true
           - secretRef:
-              name: tzkt-app
+              name: tzkt
               optional: true
           command: ["/bin/bash", "-c"]
           args:
