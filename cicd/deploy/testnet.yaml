@@ -41,6 +41,7 @@ aux-tezos-marketplace-indexer-rarible:
   replicas: 0
 
 tzkt:
+  replicas: 0
   enabled: false
   api:
     resources:
