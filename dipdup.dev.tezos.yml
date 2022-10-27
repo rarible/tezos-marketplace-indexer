@@ -197,7 +197,6 @@ indexes:
       - fxhash_v1
     types:
       - transaction
-    first_level: 1832146
     handlers:
       - callback: fxhash_v1_order_list
         pattern:
@@ -222,7 +221,6 @@ indexes:
        - fxhash_v2
      types:
        - transaction
-     first_level: 2280663
      handlers:
        - callback: fxhash_v2_listing_order_list
          pattern:
