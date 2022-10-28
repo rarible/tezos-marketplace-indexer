@@ -54,7 +54,7 @@ class AbstractOrderListEvent(EventInterface):
         logger = logging.getLogger('dipdup.order_list_event')
         dto = cls._get_list_dto(transaction, datasource)
         if assert_token_id_length(str(dto.make.token_id)) is True:
-            if dto.take.token_id is not None and assert_token_id_length(str(dto.take.token_id)):
+            if dto.take.token_id is None or (dto.take.token_id is not None and assert_token_id_length(str(dto.take.token_id))):
 
                 if not dto.start_at:
                     dto.start_at = transaction.data.timestamp
