@@ -50,6 +50,7 @@ async def ownership_balance(contract, token_id, owner) -> None:
             end)
     from token_transfer where contract = $2
                           and token_id = $3
+                          and (to_address = $1 or from_address = $1)
                           -- pg the comparison of NULL with a value will always result in NULL
                           and ((to_address <> from_address) isnull or (to_address <> from_address))
     """, [str(owner), str(contract), str(token_id)])
