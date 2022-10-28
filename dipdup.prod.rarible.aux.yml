@@ -56,6 +56,9 @@ contracts:
   rarible_exchange:
     address: KT1N4Rrm6BU6229drs6scrH3vard1pPngMyA
     typename: rarible_exchange
+  rarible_exchange_old:
+    address:  KT1GbPqXZ3yLUNWa7MdMiksJddD7TskTpuGU
+    typename: rarible_exchange
   versum_v1:
     address: KT1GyRAJNdizF1nojQz62uGYkx8WFRUJm9X5
     typename: versum_v1
@@ -88,6 +91,7 @@ indexes:
     datasource: tzkt
     contracts:
         - rarible_exchange
+        - rarible_exchange_old
     types:
       - transaction
     handlers:
