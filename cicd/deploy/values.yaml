@@ -98,8 +98,8 @@ tzkt:
   instances: []
   api:
     image:
-      repository: fpto/rarible-tzkt-api
-      tag: 1.10.0
+      repository: mystdeim/tzkt-api
+      tag: 1.10.2
     resources:
       limits:
         cpu: 300m
@@ -109,8 +109,8 @@ tzkt:
         memory: 512Mi
   indexer:
     image:
-      repository: fpto/rarible-tzkt-indexer
-      tag: 1.10.0
+      repository: mystdeim/tzkt-indexer
+      tag: 1.10.2
     resources:
       limits:
         cpu: 300m
