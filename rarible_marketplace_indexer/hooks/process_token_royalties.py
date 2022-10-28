@@ -19,14 +19,14 @@ logger.setLevel("INFO")
 
 
 async def process_royalties_for_token(ctx: HookContext, token_royalties: Royalties):
-    royalties = await fetch_royalties(ctx, token_royalties.contract, token_royalties.token_id)
-    log = ""
-    if royalties is None:
-        token_royalties.royalties_retries = token_royalties.royalties_retries + 1
-        token_royalties.royalties_synced = False
-        log = f"Royalties not found for {token_royalties.contract}:{token_royalties.token_id} (retries {token_royalties.royalties_retries})"
-    else:
-        try:
+    try:
+        royalties = await fetch_royalties(ctx, token_royalties.contract, token_royalties.token_id)
+        log = ""
+        if royalties is None:
+            token_royalties.royalties_retries = token_royalties.royalties_retries + 1
+            token_royalties.royalties_synced = False
+            log = f"Royalties not found for {token_royalties.contract}:{token_royalties.token_id} (retries {token_royalties.royalties_retries})"
+        else:
             token_royalties.parts = get_json_parts(royalties)
             token_royalties.royalties_synced = True
             token_royalties.royalties_retries = token_royalties.royalties_retries
@@ -36,13 +36,12 @@ async def process_royalties_for_token(ctx: HookContext, token_royalties: Royalti
             await token.save()
             log = f"Successfully saved royalties for {token_royalties.contract}:{token_royalties.token_id} (" \
                   f"{royalties}) (retries {token_royalties.royalties_retries})"
-        except Exception as ex:
-            log = f"Could not save royalties for {token_royalties.contract}:{token_royalties.token_id} ({royalties}):" \
-                  f" {ex}"
-            token_royalties.royalties_retries = token_royalties.royalties_retries + 1
-            token_royalties.royalties_synced = False
-    await token_royalties.save()
+        await token_royalties.save()
+    except Exception as ex:
+        log = f"Could not save royalties for {token_royalties.contract}:{token_royalties.token_id} ({royalties}):" \
+              f" {ex}"
     logger.info(log)
+
 
 async def process_token_royalties(
     ctx: HookContext,

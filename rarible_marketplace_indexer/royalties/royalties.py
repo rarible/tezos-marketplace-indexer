@@ -269,9 +269,7 @@ async def fetch_royalties(ctx: DipDupContext, contract: str, token_id: str) -> [
         .order_by("date")
         .first()
     )
-    if mint is not None:
-        royalties = [Part(part_account=mint.to_address, part_value=0)]
-    else:
-        logger.warning(f"Empty mint for {contract}:{token_id}: {mint}")
-        royalties = []
+
+    royalties = [Part(part_account=mint.to_address, part_value=0)]
+
     return royalties
