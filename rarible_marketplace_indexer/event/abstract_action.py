@@ -86,6 +86,7 @@ class AbstractOrderListEvent(EventInterface):
                             )
 
                 if order is None:
+                    #TODO: FIXME - need to ignore order because already exists
                     try:
                         order = await Order.create(
                             network=os.getenv("NETWORK"),
