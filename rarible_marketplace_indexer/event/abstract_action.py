@@ -577,7 +577,7 @@ class AbstractPutBidEvent(EventInterface):
                     order.payouts = get_json_parts(order.payouts) + get_json_parts(dto.payouts)
                     await order.save()
 
-                    activity_type = ActivityTypeEnum.MAKE_BID
+                activity_type = ActivityTypeEnum.MAKE_BID
                 if dto.take.token_id is None:
                     activity_type = ActivityTypeEnum.MAKE_FLOOR_BID
 
