@@ -86,29 +86,32 @@ class AbstractOrderListEvent(EventInterface):
                             )
 
                 if order is None:
-                    order = await Order.create(
-                        network=os.getenv("NETWORK"),
-                        platform=cls.platform,
-                        internal_order_id=dto.internal_order_id,
-                        status=OrderStatusEnum.ACTIVE,
-                        start_at=dto.start_at,
-                        end_at=dto.end_at,
-                        salt=transaction.data.counter,
-                        created_at=transaction.data.timestamp,
-                        last_updated_at=transaction.data.timestamp,
-                        maker=dto.maker,
-                        make_asset_class=dto.make.asset_class,
-                        make_contract=dto.make.contract,
-                        make_token_id=dto.make.token_id,
-                        make_value=dto.make.value,
-                        make_price=dto.take.value,
-                        take_asset_class=dto.take.asset_class,
-                        take_contract=dto.take.contract,
-                        take_token_id=dto.take.token_id,
-                        take_value=dto.take.value * dto.make.value,
-                        origin_fees=get_json_parts(dto.origin_fees),
-                        payouts=get_json_parts(dto.payouts),
-                    )
+                    try:
+                        order = await Order.create(
+                            network=os.getenv("NETWORK"),
+                            platform=cls.platform,
+                            internal_order_id=dto.internal_order_id,
+                            status=OrderStatusEnum.ACTIVE,
+                            start_at=dto.start_at,
+                            end_at=dto.end_at,
+                            salt=transaction.data.counter,
+                            created_at=transaction.data.timestamp,
+                            last_updated_at=transaction.data.timestamp,
+                            maker=dto.maker,
+                            make_asset_class=dto.make.asset_class,
+                            make_contract=dto.make.contract,
+                            make_token_id=dto.make.token_id,
+                            make_value=dto.make.value,
+                            make_price=dto.take.value,
+                            take_asset_class=dto.take.asset_class,
+                            take_contract=dto.take.contract,
+                            take_token_id=dto.take.token_id,
+                            take_value=dto.take.value * dto.make.value,
+                            origin_fees=get_json_parts(dto.origin_fees),
+                            payouts=get_json_parts(dto.payouts),
+                        )
+                    except Exception as ex:
+                        logger.warning(f"Fail to save order: {ex}")
                 else:
                     order.last_updated_at = transaction.data.timestamp
                     order.make_value = dto.make.value
