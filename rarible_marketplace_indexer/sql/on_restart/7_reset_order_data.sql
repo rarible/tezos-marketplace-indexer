@@ -22,3 +22,4 @@ delete from indexing_status where index = 'V1_CLEANING';
 delete from indexing_status where index = 'V1_FILL_FIX';
 delete from marketplace_order;
 delete from marketplace_activity;
+delete from legacy_orders;
