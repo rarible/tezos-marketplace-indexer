@@ -394,3 +394,20 @@ class Record(Model):
     id = fields.CharField(max_length=255, pk=True)
     domain: ForeignKeyFieldInstance[Domain] = fields.ForeignKeyField('models.Domain', 'records')
     address = fields.CharField(max_length=36, null=True)
+
+
+class Tasks(Model):
+    class Meta:
+        table = 'tasks'
+
+    _custom_generated_pk = True
+
+    id = fields.BigIntField(pk=True, generated=False, required=True)
+    type = fields.CharField(max_length=256, null=False)
+    param = fields.TextField(null=True)
+    sample = fields.TextField(null=True)
+    version = fields.IntField(null=False)
+    error = fields.TextField(null=True)
+    type = fields.CharField(max_length=50, null=False)
+    created = fields.DatetimeField(null=False)
+    updated = fields.DatetimeField(null=False)
