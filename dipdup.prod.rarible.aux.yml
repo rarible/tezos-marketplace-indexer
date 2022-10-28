@@ -62,15 +62,6 @@ contracts:
   teia_v1:
     address: KT1PHubm9HtyQEJ4BBpMTVomq6mhbfNZ9z5w
     typename: teia_v1
-  hen:
-    address: KT1HbQepzV1nVGg8QVznG7z4RcHseD5kwqBn
-    typename: hen_marketplace
-  objkt_v1:
-    address: KT1FvqJwEDWb1Gwc55Jd1jjTHRVWbYKUUpyq
-    typename: objkt_marketplace
-  objkt_v2:
-    address: KT1WvzYHCNBvDSdwafTHv7nJ1dWmZ8GCYuuC
-    typename: objkt_marketplace_v2
   fxhash_v1:
     address: KT1Xo5B7PNBAeynZPmca4bRh6LQow4og1Zb9
     typename: fxhash_v1
@@ -143,78 +134,6 @@ indexes:
           - destination: rarible_exchange_legacy_data
             type: transaction
             entrypoint: remove
-
-  hen_actions:
-    kind: operation
-    datasource: tzkt
-    contracts:
-      - hen
-    types:
-      - transaction
-    handlers:
-      - callback: hen_order_list
-        pattern:
-          - destination: hen
-            type: transaction
-            entrypoint: swap
-      - callback: hen_order_cancel_list
-        pattern:
-          - destination: hen
-            type: transaction
-            entrypoint: cancel_swap
-      - callback: hen_order_match
-        pattern:
-          - destination: hen
-            type: transaction
-            entrypoint: collect
-
-  objkt_v1_actions:
-    kind: operation
-    datasource: tzkt
-    contracts:
-      - objkt_v1
-    types:
-      - transaction
-    handlers:
-      - callback: objkt_order_list
-        pattern:
-          - destination: objkt_v1
-            type: transaction
-            entrypoint: ask
-      - callback: objkt_order_cancel_list
-        pattern:
-          - destination: objkt_v1
-            type: transaction
-            entrypoint: retract_ask
-      - callback: objkt_order_match
-        pattern:
-          - destination: objkt_v1
-            type: transaction
-            entrypoint: fulfill_ask
-
-  objkt_v2_actions:
-    kind: operation
-    datasource: tzkt
-    contracts:
-      - objkt_v2
-    types:
-      - transaction
-    handlers:
-      - callback: objkt_v2_order_list
-        pattern:
-          - destination: objkt_v2
-            type: transaction
-            entrypoint: ask
-      - callback: objkt_v2_order_cancel_list
-        pattern:
-          - destination: objkt_v2
-            type: transaction
-            entrypoint: retract_ask
-      - callback: objkt_v2_order_match
-        pattern:
-          - destination: objkt_v2
-            type: transaction
-            entrypoint: fulfill_ask
 
   teia_v1_actions:
      kind: operation

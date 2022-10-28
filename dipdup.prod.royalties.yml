@@ -52,9 +52,9 @@ hooks:
     atomic: False
 
 jobs:
-  process_token_royalties:
-    hook: process_token_royalties
-    crontab: "* * * * *"
+#  process_token_royalties:
+#    hook: process_token_royalties
+#    crontab: "* * * * *"
 
 advanced:
   rollback_depth: 2
