@@ -107,6 +107,7 @@ hooks:
     atomic: False
     args:
       id: int
+
 jobs:
   process_transaction_hash:
     hook: process_transaction_hash

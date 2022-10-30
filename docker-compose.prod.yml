@@ -34,9 +34,9 @@ services:
       - KAFKA_ADDRESS=kafka:9092
       - KAFKA_ENABLED=false
       - KAFKA_SECURITY_PROTOCOL=PLAINTEXT
-      - NETWORK=ghostnet
+      - NETWORK=mainnet
       - UNION_API=https://api.rarible.org
-      - APPLICATION_ENVIRONMENT=dev
+      - APPLICATION_ENVIRONMENT=prod
 
   indexer-metadata:
     image: rarible_indexer:dev
@@ -53,9 +53,9 @@ services:
       - KAFKA_ADDRESS=kafka:9092
       - KAFKA_ENABLED=false
       - KAFKA_SECURITY_PROTOCOL=PLAINTEXT
-      - NETWORK=ghostnet
+      - NETWORK=mainnet
       - UNION_API=https://api.rarible.org
-      - APPLICATION_ENVIRONMENT=dev
+      - APPLICATION_ENVIRONMENT=prod
 
   db:
     image: postgres:14
