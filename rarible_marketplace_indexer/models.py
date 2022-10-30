@@ -68,6 +68,13 @@ class IndexEnum(str, Enum):
     V1_FILL_FIX: _StrEnumValue = 'V1_FILL_FIX'
 
 
+class TaskStatus(str, Enum):
+    NEW: _StrEnumValue = 'NEW'
+    RUNNING: _StrEnumValue = 'RUNNING'
+    FINISHED: _StrEnumValue = 'FINISHED'
+    FAILED: _StrEnumValue = 'FAILED'
+
+
 class Activity(Model):
     class Meta:
         table = 'marketplace_activity'
@@ -400,14 +407,12 @@ class Tasks(Model):
     class Meta:
         table = 'tasks'
 
-    _custom_generated_pk = True
-
-    id = fields.BigIntField(pk=True, generated=False, required=True)
-    type = fields.CharField(max_length=256, null=False)
+    id = fields.BigIntField(pk=True, generated=True, required=True)
+    name = fields.CharField(max_length=50, null=False)
     param = fields.TextField(null=True)
     sample = fields.TextField(null=True)
-    version = fields.IntField(null=False)
+    version = fields.IntField(null=False, default="1")
     error = fields.TextField(null=True)
-    type = fields.CharField(max_length=50, null=False)
-    created = fields.DatetimeField(null=False)
-    updated = fields.DatetimeField(null=False)
+    status = fields.CharField(max_length=50, null=False, default="NEW")
+    created = fields.DatetimeField(null=False, auto_now_add=True)
+    updated = fields.DatetimeField(null=False, auto_now=True)
