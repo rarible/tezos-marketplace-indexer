@@ -28,7 +28,6 @@ services:
       - db
       - kafka
     command: [ "dipdup", "-c", "dipdup.yml", "-c", "dipdup.prod.tezos.yml", "run" ]
-    restart: always
     environment:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-changeme}
       - ADMIN_SECRET=${ADMIN_SECRET:-changeme}
@@ -62,7 +61,7 @@ services:
     image: postgres:14
     restart: always
     ports:
-      - "127.0.0.1:5432:5432"
+      - "5432:5432"
     environment:
       - POSTGRES_USER=dipdup
       - POSTGRES_DB=dipdup
@@ -76,7 +75,7 @@ services:
   hasura:
     image: hasura/graphql-engine:v2.2.0
     ports:
-      - "127.0.0.1:49180:8080"
+      - "49180:8080"
     depends_on:
       - db
     restart: always
@@ -119,7 +118,7 @@ services:
       KAFKA_BROKERCONNECT: "kafka:9092"
       JVM_OPTS: "-Xms16M -Xmx48M -Xss180K -XX:-TieredCompilation -XX:+UseStringDeduplication -noverify"
     ports:
-      - "127.0.0.1:9000:9000"
+      - "9001:9000"
 
   prometheus:
     image: prom/prometheus
