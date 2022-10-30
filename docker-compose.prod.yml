@@ -16,46 +16,46 @@ services:
       - KAFKA_ADDRESS=kafka:9092
       - KAFKA_ENABLED=false
       - KAFKA_SECURITY_PROTOCOL=PLAINTEXT
+      - NETWORK=mainnet
+      - UNION_API=https://api.rarible.org
+      - APPLICATION_ENVIRONMENT=prod
+
+  indexer-tezos:
+    image: rarible_indexer:dev
+    ports:
+      - "28081:8080"
+    depends_on:
+      - db
+      - kafka
+    command: [ "dipdup", "-c", "dipdup.yml", "-c", "dipdup.prod.tezos.yml", "run" ]
+    environment:
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-changeme}
+      - ADMIN_SECRET=${ADMIN_SECRET:-changeme}
+      - KAFKA_ADDRESS=kafka:9092
+      - KAFKA_ENABLED=false
+      - KAFKA_SECURITY_PROTOCOL=PLAINTEXT
       - NETWORK=ghostnet
       - UNION_API=https://api.rarible.org
       - APPLICATION_ENVIRONMENT=dev
 
-    indexer-tezos:
-      image: rarible_indexer:dev
-      ports:
-        - "28081:8080"
-      depends_on:
-        - db
-  #      - kafka
-      command: [ "dipdup", "-c", "dipdup.yml", "-c", "dipdup.local-prod.tezos.yml", "run" ]
-      environment:
-        - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-changeme}
-        - ADMIN_SECRET=${ADMIN_SECRET:-changeme}
-        - KAFKA_ADDRESS=kafka:9092
-        - KAFKA_ENABLED=false
-        - KAFKA_SECURITY_PROTOCOL=PLAINTEXT
-        - NETWORK=ghostnet
-        - UNION_API=https://api.rarible.org
-        - APPLICATION_ENVIRONMENT=dev
-
-    indexer-metadata:
-      image: rarible_indexer:dev
-      ports:
-        - "28082:8080"
-      depends_on:
-        - db
-        - kafka
-      command: [ "dipdup", "-c", "dipdup.yml", "-c", "dipdup.local-prod.metadata.yml", "run" ]
-      restart: always
-      environment:
-        - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-changeme}
-        - ADMIN_SECRET=${ADMIN_SECRET:-changeme}
-        - KAFKA_ADDRESS=kafka:9092
-        - KAFKA_ENABLED=false
-        - KAFKA_SECURITY_PROTOCOL=PLAINTEXT
-        - NETWORK=ghostnet
-        - UNION_API=https://api.rarible.org
-        - APPLICATION_ENVIRONMENT=dev
+  indexer-metadata:
+    image: rarible_indexer:dev
+    ports:
+      - "28082:8080"
+    depends_on:
+      - db
+      - kafka
+    command: [ "dipdup", "-c", "dipdup.yml", "-c", "dipdup.prod.metadata.yml", "run" ]
+    restart: always
+    environment:
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-changeme}
+      - ADMIN_SECRET=${ADMIN_SECRET:-changeme}
+      - KAFKA_ADDRESS=kafka:9092
+      - KAFKA_ENABLED=false
+      - KAFKA_SECURITY_PROTOCOL=PLAINTEXT
+      - NETWORK=ghostnet
+      - UNION_API=https://api.rarible.org
+      - APPLICATION_ENVIRONMENT=dev
 
   db:
     image: postgres:14
