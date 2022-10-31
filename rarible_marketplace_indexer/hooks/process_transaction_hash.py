@@ -5,7 +5,7 @@ from dipdup.context import HookContext
 
 from rarible_marketplace_indexer.models import TokenTransfer
 
-logger = logging.getLogger("transaction_hash")
+logger = logging.getLogger("dipdup.process_transaction_hash")
 
 
 async def process_transaction_hash(ctx: HookContext, iterations, batch):
@@ -18,6 +18,7 @@ async def process_transaction_hash(ctx: HookContext, iterations, batch):
             tzkt_origination_id=None
         ).limit(int(batch))
         if len(transfers_without_hash) > 0:
+            logger.info(f'Found {len(transfers_without_hash)} items without hash, first transfer id: {transfers_without_hash[0]}')
             ids = list(map(lambda item: str(item.tzkt_transaction_id), transfers_without_hash))
             tx_map = {x.tzkt_transaction_id: x for x in transfers_without_hash}
             ids_param = ','.join(ids)
