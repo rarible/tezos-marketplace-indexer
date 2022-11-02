@@ -24,9 +24,6 @@ contracts:
   rarible_exchange:
     address: KT1N4Rrm6BU6229drs6scrH3vard1pPngMyA
     typename: rarible_exchange
-  rarible_exchange_old:
-    address:  KT1GbPqXZ3yLUNWa7MdMiksJddD7TskTpuGU
-    typename: rarible_exchange
   rarible_aggregator_tracker:
     address: KT1Gv1tPJ3nU5T6VmFc12M6NKc5i51MYVPjG
     typename: rarible_aggregator_tracker
