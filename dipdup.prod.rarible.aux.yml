@@ -59,6 +59,9 @@ contracts:
   rarible_exchange_old:
     address:  KT1GbPqXZ3yLUNWa7MdMiksJddD7TskTpuGU
     typename: rarible_exchange
+  rarible_aggregator_tracker:
+    address: KT1Gv1tPJ3nU5T6VmFc12M6NKc5i51MYVPjG
+    typename: rarible_aggregator_tracker
   versum_v1:
     address: KT1GyRAJNdizF1nojQz62uGYkx8WFRUJm9X5
     typename: versum_v1
@@ -147,6 +150,14 @@ indexes:
           - destination: rarible_exchange_legacy_data
             type: transaction
             entrypoint: remove
+
+  rarible_aggregator_tracker_events:
+    kind: event
+    datasource: tzkt
+    handlers:
+      - callback: on_rarible_aggregator_event
+        contract: rarible_aggregator_tracker
+        tag: aggregator_event
 
   teia_v1_actions:
      kind: operation
@@ -278,17 +289,17 @@ indexes:
     types:
       - transaction
     handlers:
-      - callback: objkt_order_list
+      - callback: objkt_v1_order_list
         pattern:
           - destination: objkt_v1
             type: transaction
             entrypoint: ask
-      - callback: objkt_order_cancel_list
+      - callback: objkt_v1_order_cancel_list
         pattern:
           - destination: objkt_v1
             type: transaction
             entrypoint: retract_ask
-      - callback: objkt_order_match
+      - callback: objkt_v1_order_match
         pattern:
           - destination: objkt_v1
             type: transaction
