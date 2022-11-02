@@ -3,7 +3,7 @@ package: rarible_marketplace_indexer
 
 database:
   kind: postgres
-  host: ${POSTGRES_HOST:-staging-pg3.rarible.int}
+  host: ${POSTGRES_HOST:-dev-pg2.rarible.int}
   port: ${POSTGRES_PORT:-5432}
   user: ${POSTGRES_USER:-dipdup}
   password: ${POSTGRES_PASS:-changeme}
@@ -38,7 +38,7 @@ datasources:
       batch_size: 1000
   ipfs:
     kind: ipfs
-    url: https://ipfs.io/ipfs
+    url: https://nftstorage.link/ipfs # this should makes tests faster because QA upload images there
     http:
       retry_count: 1
       retry_sleep: 0

@@ -68,6 +68,13 @@ class IndexEnum(str, Enum):
     V1_FILL_FIX: _StrEnumValue = 'V1_FILL_FIX'
 
 
+class TaskStatus(str, Enum):
+    NEW: _StrEnumValue = 'NEW'
+    RUNNING: _StrEnumValue = 'RUNNING'
+    FINISHED: _StrEnumValue = 'FINISHED'
+    FAILED: _StrEnumValue = 'FAILED'
+
+
 class Activity(Model):
     class Meta:
         table = 'marketplace_activity'
@@ -159,6 +166,7 @@ class Order(Model):
     take_price = AssetValueField(null=True)
     origin_fees = fields.JSONField()
     payouts = fields.JSONField()
+    is_bid = fields.BooleanField(default=False, null=False)
 
     def __init__(self, **kwargs: Any) -> None:
         try:
@@ -206,6 +214,7 @@ class TokenTransfer(Model):
     type = fields.CharEnumField(ActivityTypeEnum)
     tzkt_token_id = fields.BigIntField(null=False)
     tzkt_transaction_id = fields.BigIntField(null=True)
+    tzkt_origination_id = fields.BigIntField(null=True)
     contract = AccountAddressField(null=False)
     token_id = fields.CharField(max_length=256, null=False)
     from_address = AccountAddressField(null=True)
@@ -392,3 +401,18 @@ class Record(Model):
     id = fields.CharField(max_length=255, pk=True)
     domain: ForeignKeyFieldInstance[Domain] = fields.ForeignKeyField('models.Domain', 'records')
     address = fields.CharField(max_length=36, null=True)
+
+
+class Tasks(Model):
+    class Meta:
+        table = 'tasks'
+
+    id = fields.BigIntField(pk=True, generated=True, required=True)
+    name = fields.CharField(max_length=50, null=False)
+    param = fields.TextField(null=True)
+    sample = fields.TextField(null=True)
+    version = fields.IntField(null=False, default="1")
+    error = fields.TextField(null=True)
+    status = fields.CharField(max_length=50, null=False, default="NEW")
+    created = fields.DatetimeField(null=False, auto_now_add=True)
+    updated = fields.DatetimeField(null=False, auto_now=True)

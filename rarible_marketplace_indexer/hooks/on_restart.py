@@ -6,7 +6,7 @@ import threading
 from dipdup.context import HookContext
 from prometheus_client import MetricsHandler
 
-from rarible_marketplace_indexer.event.fxhash_v2_action import FxhashV2ListingOrderListEvent
+from rarible_marketplace_indexer.event.fxhash_v2_action import fxhash_nft_addresses
 from rarible_marketplace_indexer.models import IndexEnum
 from rarible_marketplace_indexer.models import IndexingStatus
 from rarible_marketplace_indexer.producer.container import ProducerContainer
@@ -34,10 +34,8 @@ async def on_restart(
         prometheus_http_thread.start()
 
     if ctx.config.indexes.get("fxhash_v2_actions") is not None:
-        FxhashV2ListingOrderListEvent.fxhash_nft_addresses = {
-            "0": ctx.config.custom.get("fxhash_nft_v1"),
-            "1": ctx.config.custom.get("fxhash_nft_v2"),
-        }
+        fxhash_nft_addresses["0"] = ctx.config.custom.get("fxhash_nft_v1")
+        fxhash_nft_addresses["1"] = ctx.config.custom.get("fxhash_nft_v2")
 
     if os.getenv('APPLICATION_ENVIRONMENT') == 'prod' and ctx.config.hooks.get("import_legacy_orders") is not None:
         await ctx.fire_hook("import_legacy_orders")

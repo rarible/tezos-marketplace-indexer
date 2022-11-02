@@ -99,14 +99,25 @@ hooks:
   process_transaction_hash:
     callback: process_transaction_hash
     atomic: False
+  process_tasks:
+    callback: process_tasks
+    atomic: False
+  reset_index:
+    callback: reset_index
+    atomic: False
+    args:
+      id: int
 
 jobs:
   process_transaction_hash:
     hook: process_transaction_hash
-    interval: 60 # seconds
+    interval: 300 # seconds
     args:
       iterations: 10
       batch: 100
+  process_tasks:
+    hook: process_tasks
+    interval: 60 # seconds
 
 advanced:
   rollback_depth: 2

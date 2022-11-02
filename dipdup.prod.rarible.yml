@@ -18,6 +18,9 @@ contracts:
   rarible_exchange_legacy_data:
     address: KT1D2fZiUNo6RPj3zKofH8DqDDgoV7KoyEbb
     typename: rarible_exchange_legacy_data
+  rarible_exchange_old:
+    address: KT1BEZNm3E25rZtXfPPKr5Jxygbi2kL2cCEW
+    typename: rarible_exchange
   rarible_exchange:
     address: KT1N4Rrm6BU6229drs6scrH3vard1pPngMyA
     typename: rarible_exchange
@@ -41,6 +44,7 @@ indexes:
     datasource: tzkt
     contracts:
         - rarible_exchange
+        - rarible_exchange_old
     types:
       - transaction
     handlers:
@@ -49,14 +53,23 @@ indexes:
             - destination: rarible_exchange
               type: transaction
               entrypoint: sell
+            - destination: rarible_exchange_old
+              type: transaction
+              entrypoint: sell
         - callback: rarible_order_cancel_list
           pattern:
             - destination: rarible_exchange
               type: transaction
               entrypoint: cancel_sale
+            - destination: rarible_exchange_old
+              type: transaction
+              entrypoint: cancel_sale
         - callback: rarible_order_match
           pattern:
             - destination: rarible_exchange
+              type: transaction
+              entrypoint: buy
+            - destination: rarible_exchange_old
               type: transaction
               entrypoint: buy
 

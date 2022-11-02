@@ -6,7 +6,9 @@ from typing import Dict
 
 from dipdup.context import DipDupContext
 from rarible_marketplace_indexer.metadata.metadata import get_token_metadata
-from rarible_marketplace_indexer.models import ActivityTypeEnum, TokenMetadata, Token
+from rarible_marketplace_indexer.models import ActivityTypeEnum
+from rarible_marketplace_indexer.models import Token
+from rarible_marketplace_indexer.models import TokenMetadata
 from rarible_marketplace_indexer.models import TokenTransfer
 from rarible_marketplace_indexer.types.rarible_exchange.parameter.sell import Part
 from rarible_marketplace_indexer.utils.rarible_utils import get_bidou_data, get_token_id_big_map_key_hash, \

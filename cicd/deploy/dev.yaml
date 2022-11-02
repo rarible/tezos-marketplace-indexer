@@ -19,9 +19,11 @@ tezos-marketplace-indexer-metadata: *tezos-marketplace-indexer-dev
 
 aux-hasura:
   replicas: 0
+  enabled: false
 
 aux-tezos-marketplace-indexer-rarible:
   replicas: 0
+  enabled: false
 
 tzkt:
   network: ghostnet

@@ -23,6 +23,8 @@ class RaribleApiTokenActivityFactory:
         except TypeError:
             value = AssetValue(0)
 
+        tx = transfer.tzkt_transaction_id or transfer.tzkt_origination_id
+
         return BaseRaribleApiTokenActivity(
             id=str(transfer.id),
             network=None,
@@ -30,7 +32,7 @@ class RaribleApiTokenActivityFactory:
             contract=OriginatedAccountAddress(transfer.contract),
             token_id=transfer.token_id,
             value=value,
-            transaction_id=transfer.tzkt_transaction_id,
+            transaction_id=tx,
             date=transfer.date,
         )
 
