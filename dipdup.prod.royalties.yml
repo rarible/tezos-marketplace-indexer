@@ -47,26 +47,14 @@ datasources:
       batch_size: 10000
 
 hooks:
-  process_token_metadata:
-    callback: process_token_metadata
-    atomic: False
-  process_collection_metadata:
-    callback: process_collection_metadata
-    atomic: False
   process_token_royalties:
     callback: process_token_royalties
     atomic: False
 
 jobs:
-  process_token_metadata:
-    hook: process_token_metadata
+  process_token_royalties:
+    hook: process_token_royalties
     crontab: "* * * * *"
-  process_collection_metadata:
-    hook: process_collection_metadata
-    crontab: "* * * * *"
-  #  process_token_royalties:
-  #    hook: process_token_royalties
-  #    crontab: "* * * * *"
 
 advanced:
   rollback_depth: 2

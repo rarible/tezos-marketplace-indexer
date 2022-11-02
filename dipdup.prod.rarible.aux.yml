@@ -237,6 +237,78 @@ indexes:
              type: transaction
              entrypoint: listing_accept
 
+  hen_actions:
+    kind: operation
+    datasource: tzkt
+    contracts:
+      - hen
+    types:
+      - transaction
+    handlers:
+      - callback: hen_order_list
+        pattern:
+          - destination: hen
+            type: transaction
+            entrypoint: swap
+      - callback: hen_order_cancel_list
+        pattern:
+          - destination: hen
+            type: transaction
+            entrypoint: cancel_swap
+      - callback: hen_order_match
+        pattern:
+          - destination: hen
+            type: transaction
+            entrypoint: collect
+
+  objkt_v1_actions:
+    kind: operation
+    datasource: tzkt
+    contracts:
+      - objkt_v1
+    types:
+      - transaction
+    handlers:
+      - callback: objkt_order_list
+        pattern:
+          - destination: objkt_v1
+            type: transaction
+            entrypoint: ask
+      - callback: objkt_order_cancel_list
+        pattern:
+          - destination: objkt_v1
+            type: transaction
+            entrypoint: retract_ask
+      - callback: objkt_order_match
+        pattern:
+          - destination: objkt_v1
+            type: transaction
+            entrypoint: fulfill_ask
+
+  objkt_v2_actions:
+    kind: operation
+    datasource: tzkt
+    contracts:
+      - objkt_v2
+    types:
+      - transaction
+    handlers:
+      - callback: objkt_v2_order_list
+        pattern:
+          - destination: objkt_v2
+            type: transaction
+            entrypoint: ask
+      - callback: objkt_v2_order_cancel_list
+        pattern:
+          - destination: objkt_v2
+            type: transaction
+            entrypoint: retract_ask
+      - callback: objkt_v2_order_match
+        pattern:
+          - destination: objkt_v2
+            type: transaction
+            entrypoint: fulfill_ask
+
 hooks:
   process_collection_events:
     callback: process_collection_events

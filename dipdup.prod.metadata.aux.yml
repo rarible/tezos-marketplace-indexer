@@ -113,93 +113,23 @@ indexes:
 #    values:
 #      datasource: tzkt
 #      name_registry: tezos_domains_registry
-  hen_actions:
-    kind: operation
-    datasource: tzkt
-    contracts:
-      - hen
-    types:
-      - transaction
-    handlers:
-      - callback: hen_order_list
-        pattern:
-          - destination: hen
-            type: transaction
-            entrypoint: swap
-      - callback: hen_order_cancel_list
-        pattern:
-          - destination: hen
-            type: transaction
-            entrypoint: cancel_swap
-      - callback: hen_order_match
-        pattern:
-          - destination: hen
-            type: transaction
-            entrypoint: collect
 
-  objkt_v1_actions:
-    kind: operation
-    datasource: tzkt
-    contracts:
-      - objkt_v1
-    types:
-      - transaction
-    handlers:
-      - callback: objkt_order_list
-        pattern:
-          - destination: objkt_v1
-            type: transaction
-            entrypoint: ask
-      - callback: objkt_order_cancel_list
-        pattern:
-          - destination: objkt_v1
-            type: transaction
-            entrypoint: retract_ask
-      - callback: objkt_order_match
-        pattern:
-          - destination: objkt_v1
-            type: transaction
-            entrypoint: fulfill_ask
 
-  objkt_v2_actions:
-    kind: operation
-    datasource: tzkt
-    contracts:
-      - objkt_v2
-    types:
-      - transaction
-    handlers:
-      - callback: objkt_v2_order_list
-        pattern:
-          - destination: objkt_v2
-            type: transaction
-            entrypoint: ask
-      - callback: objkt_v2_order_cancel_list
-        pattern:
-          - destination: objkt_v2
-            type: transaction
-            entrypoint: retract_ask
-      - callback: objkt_v2_order_match
-        pattern:
-          - destination: objkt_v2
-            type: transaction
-            entrypoint: fulfill_ask
+hooks:
+  process_token_metadata:
+    callback: process_token_metadata
+    atomic: False
+  process_collection_metadata:
+    callback: process_collection_metadata
+    atomic: False
 
-#hooks:
-#  process_token_metadata:
-#    callback: process_token_metadata
-#    atomic: False
-#  process_collection_metadata:
-#    callback: process_collection_metadata
-#    atomic: False
-#
-#jobs:
-#  process_token_metadata:
-#    hook: process_token_metadata
-#    crontab: "* * * * *"
-#  process_collection_metadata:
-#    hook: process_collection_metadata
-#    crontab: "* * * * *"
+jobs:
+  process_token_metadata:
+    hook: process_token_metadata
+    crontab: "* * * * *"
+  process_collection_metadata:
+    hook: process_collection_metadata
+    crontab: "* * * * *"
 
 
 advanced:
