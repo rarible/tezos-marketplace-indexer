@@ -56,15 +56,6 @@ contracts:
   tezos_domains_registry:
     address: KT1GBZmSxmnKJXGMdMLbugPfLyUPmuLSMwKS
     typename: tezos_domains_registry
-  hen:
-    address: KT1HbQepzV1nVGg8QVznG7z4RcHseD5kwqBn
-    typename: hen_marketplace
-  objkt_v1:
-    address: KT1FvqJwEDWb1Gwc55Jd1jjTHRVWbYKUUpyq
-    typename: objkt_marketplace
-  objkt_v2:
-    address: KT1WvzYHCNBvDSdwafTHv7nJ1dWmZ8GCYuuC
-    typename: objkt_marketplace_v2
 
 templates:
   tzprofiles:
