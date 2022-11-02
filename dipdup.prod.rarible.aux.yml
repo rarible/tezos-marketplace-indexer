@@ -289,17 +289,17 @@ indexes:
     types:
       - transaction
     handlers:
-      - callback: objkt_order_list
+      - callback: objkt_v1_order_list
         pattern:
           - destination: objkt_v1
             type: transaction
             entrypoint: ask
-      - callback: objkt_order_cancel_list
+      - callback: objkt_v1_order_cancel_list
         pattern:
           - destination: objkt_v1
             type: transaction
             entrypoint: retract_ask
-      - callback: objkt_order_match
+      - callback: objkt_v1_order_match
         pattern:
           - destination: objkt_v1
             type: transaction
