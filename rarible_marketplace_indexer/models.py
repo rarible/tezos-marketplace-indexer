@@ -347,6 +347,16 @@ class TokenMetadata(Model):
         super().__init__(**kwargs)
 
 
+class AggregatorEvent(Model):
+    class Meta:
+        table = "aggregator_event"
+
+    id = fields.BigIntField(pk=True, generated=False, required=True, index=True)
+    tracker = fields.CharField(max_length=256, null=False, index=True)
+    level = fields.IntField(required=True, index=True)
+    operation_hash = OperationHashField()
+
+
 class TZProfile(Model):
     class Meta:
         table = "tzprofiles"
