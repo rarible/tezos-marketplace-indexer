@@ -14,6 +14,9 @@ contracts:
   rarible_bids:
     address: KT1MwKGYWWbXtfYdnQfwspwz5ZGfqGwiJuQF
     typename: rarible_bids
+  rarible_aggregator_tracker:
+    address: KT1DajvCNVScudRm3kCHPfUjsRCtmPnm375s
+    typename: rarible_aggregator_tracker
 
 indexes:
   rarible_exchange_actions:
@@ -78,6 +81,14 @@ indexes:
           - destination: rarible_bids
             type: transaction
             entrypoint: cancel_floor_bid
+
+  rarible_aggregator_tracker_events:
+    kind: event
+    datasource: tzkt
+    handlers:
+      - callback: on_rarible_aggregator_event
+        contract: rarible_aggregator_tracker
+        tag: aggregator_event
 
   token_transfers:
     kind: token_transfer
