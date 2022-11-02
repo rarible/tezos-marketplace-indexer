@@ -78,18 +78,18 @@ indexes:
           - destination: objkt_v1
             type: transaction
             entrypoint: fulfill_ask
-      - callback: objkt_v1_put_bid
-        pattern:
-         - destination: objkt_v1
-           entrypoint: bid
-      - callback: objkt_v1_cancel_bid
-        pattern:
-         - destination: objkt_v1
-           entrypoint: retract_bid
-      - callback: objkt_v1_accept_bid
-        pattern:
-         - destination: objkt_v1
-           entrypoint: fulfill_bid
+#      - callback: objkt_v1_put_bid
+#        pattern:
+#         - destination: objkt_v1
+#           entrypoint: bid
+#      - callback: objkt_v1_cancel_bid
+#        pattern:
+#         - destination: objkt_v1
+#           entrypoint: retract_bid
+#      - callback: objkt_v1_accept_bid
+#        pattern:
+#         - destination: objkt_v1
+#           entrypoint: fulfill_bid
 
   objkt_v2_actions:
     kind: operation
@@ -114,18 +114,18 @@ indexes:
           - destination: objkt_v2
             type: transaction
             entrypoint: fulfill_ask
-      - callback: objkt_v2_put_bid
-        pattern:
-         - destination: objkt_v2
-           entrypoint: offer
-      - callback: objkt_v2_cancel_bid
-        pattern:
-         - destination: objkt_v2
-           entrypoint: retract_offer
-      - callback: objkt_v2_accept_bid
-        pattern:
-         - destination: objkt_v2
-           entrypoint: fulfill_offer
+#      - callback: objkt_v2_put_bid
+#        pattern:
+#         - destination: objkt_v2
+#           entrypoint: offer
+#      - callback: objkt_v2_cancel_bid
+#        pattern:
+#         - destination: objkt_v2
+#           entrypoint: retract_offer
+#      - callback: objkt_v2_accept_bid
+#        pattern:
+#         - destination: objkt_v2
+#           entrypoint: fulfill_offer
 
   teia_v1_actions:
      kind: operation
@@ -174,21 +174,21 @@ indexes:
           - type: transaction
             destination: versum_v1
             entrypoint: collect_swap
-      - callback: versum_v1_put_bid
-        pattern:
-          - type: transaction
-            destination: versum_v1
-            entrypoint: make_offer
-      - callback: versum_v1_cancel_bid
-        pattern:
-          - type: transaction
-            destination: versum_v1
-            entrypoint: cancel_offer
-      - callback: versum_v1_accept_bid
-        pattern:
-          - type: transaction
-            destination: versum_v1
-            entrypoint: accept_offer
+#      - callback: versum_v1_put_bid
+#        pattern:
+#          - type: transaction
+#            destination: versum_v1
+#            entrypoint: make_offer
+#      - callback: versum_v1_cancel_bid
+#        pattern:
+#          - type: transaction
+#            destination: versum_v1
+#            entrypoint: cancel_offer
+#      - callback: versum_v1_accept_bid
+#        pattern:
+#          - type: transaction
+#            destination: versum_v1
+#            entrypoint: accept_offer
 
   fxhash_v1_actions:
     kind: operation
@@ -239,18 +239,18 @@ indexes:
            - destination: fxhash_v2
              type: transaction
              entrypoint: listing_accept
-       - callback: fxhash_v2_put_bid
-         pattern:
-           - destination: fxhash_v2
-             entrypoint: offer
-       - callback: fxhash_v2_cancel_bid
-         pattern:
-           - destination: fxhash_v2
-             entrypoint: offer_cancel
-       - callback: fxhash_v2_accept_bid
-         pattern:
-           - destination: fxhash_v2
-             entrypoint: offer_accept
+#       - callback: fxhash_v2_put_bid
+#         pattern:
+#           - destination: fxhash_v2
+#             entrypoint: offer
+#       - callback: fxhash_v2_cancel_bid
+#         pattern:
+#           - destination: fxhash_v2
+#             entrypoint: offer_cancel
+#       - callback: fxhash_v2_accept_bid
+#         pattern:
+#           - destination: fxhash_v2
+#             entrypoint: offer_accept
 
 advanced:
   rollback_depth: 2
