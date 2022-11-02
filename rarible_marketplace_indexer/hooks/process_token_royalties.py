@@ -8,7 +8,7 @@ from typing import List
 
 from dipdup.context import HookContext
 
-from rarible_marketplace_indexer.models import Royalties
+from rarible_marketplace_indexer.models import Royalties, Token
 from rarible_marketplace_indexer.royalties.royalties import fetch_royalties
 from rarible_marketplace_indexer.utils.rarible_utils import get_json_parts
 
