@@ -19,7 +19,7 @@ async def import_origination_transfers(ctx: HookContext):
         transactions = await tzkt.request(
             method='get', url=f"v1/tokens/transfers?originationId.null=false&token.standard=fa2&sort.asc=id&select=id,timestamp,token,to,from,amount,originationId{cond}"
         )
-        logger.info(f"Got transfers {len(transactions)}")
+        logger.info(f"Got transfers {len(transactions)} for last_id={last_id}")
         for tx in transactions:
             token_transfer = await TokenTransfer.get_or_none(id=tx['id'])
             if token_transfer is None:

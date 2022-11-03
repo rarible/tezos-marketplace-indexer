@@ -341,6 +341,9 @@ hooks:
   process_transaction_hash:
     callback: process_transaction_hash
     atomic: False
+  import_origination_transfers:
+    callback: import_origination_transfers
+    atomic: False
 
 jobs:
 #  process_transaction_hash:
