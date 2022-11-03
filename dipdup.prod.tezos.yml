@@ -254,7 +254,7 @@ indexes:
 
 advanced:
   rollback_depth: 2
-  early_realtime: True
+  early_realtime: False
   skip_version_check: False
   reindex:
     manual: wipe
