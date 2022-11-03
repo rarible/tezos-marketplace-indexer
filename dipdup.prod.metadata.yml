@@ -104,7 +104,7 @@ jobs:
 
 advanced:
   rollback_depth: 2
-  early_realtime: True
+  early_realtime: False
   metadata_interface: True
   merge_subscriptions: True
   reindex:

@@ -10,7 +10,7 @@ hasura:
       memory: 256Mi
 
 tezos-marketplace-indexer-prod: &tezos-marketplace-indexer-prod
-  environments: 
+  environments:
     TZKT_URL: https://api.tzkt.io
     NETWORK: mainnet
   resources:
@@ -42,6 +42,8 @@ tezos-marketplace-indexer-tezos:
   ]
 
 tezos-marketplace-indexer-metadata:
+  replicas: 0
+  enabled: false
   <<: *tezos-marketplace-indexer-prod
   command: [
     "dipdup",
@@ -56,6 +58,8 @@ tezos-marketplace-indexer-metadata:
     KAFKA_ENABLED: "false"
 
 tezos-marketplace-indexer-royalties:
+  replicas: 0
+  enabled: false
   environments:
     TZKT_URL: http://aux-tzkt:5000
     NETWORK: mainnet
