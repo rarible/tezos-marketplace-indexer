@@ -10,6 +10,9 @@
 -- delete from marketplace_order where platform = 'RARIBLE_V2';
 -- delete from marketplace_activity where platform = 'RARIBLE_V2';
 
+delete from marketplace_order where platform = 'TEIA_V1';
+delete from marketplace_activity where platform = 'TEIA_V1';
+
 -- delete from dipdup_index where name = 'fxhash_v1_actions';
 -- delete from dipdup_index where name = 'fxhash_v2_actions';
 -- delete from dipdup_index where name = 'hen_actions';
@@ -19,7 +22,7 @@
 -- delete from dipdup_index where name = 'rarible_exchange_actions';
 -- delete from dipdup_index where name = 'rarible_exchange_legacy_actions';
 -- delete from dipdup_index where name = 'rarible_exchange_legacy_data_actions';
--- delete from dipdup_index where name = 'teia_v1_actions';
+delete from dipdup_index where name = 'teia_v1_actions';
 -- delete from dipdup_index where name = 'versum';
 -- delete from indexing_status where index = 'LEGACY_ORDERS';
 -- delete from indexing_status where index = 'V1_CLEANING';
