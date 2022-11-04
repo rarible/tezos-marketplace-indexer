@@ -21,6 +21,6 @@ class RaribleApiCollectionFactory:
                 "name": event.__dict__.get("name"),
                 "minters": event.__dict__.get("minters"),
                 "standard": event.__dict__.get("standard"),
-                "symbol": event.__dict__.get("symbol")
-            }
+                "symbol": event.__dict__.get("symbol"),
+            },
         )

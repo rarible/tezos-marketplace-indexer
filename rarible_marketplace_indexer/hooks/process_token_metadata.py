@@ -1,4 +1,3 @@
-import asyncio
 import json
 import logging
 import os
@@ -10,16 +9,16 @@ from typing import Deque
 from typing import List
 
 import tortoise
-
 from dipdup.context import HookContext
-
-from rarible_marketplace_indexer.metadata.metadata import process_metadata
-from rarible_marketplace_indexer.models import IndexEnum, Token
-from rarible_marketplace_indexer.models import IndexingStatus
-from rarible_marketplace_indexer.models import TokenMetadata
-from gql import gql, Client
+from gql import Client
+from gql import gql
 from gql.transport.aiohttp import AIOHTTPTransport
 
+from rarible_marketplace_indexer.metadata.metadata import process_metadata
+from rarible_marketplace_indexer.models import IndexEnum
+from rarible_marketplace_indexer.models import IndexingStatus
+from rarible_marketplace_indexer.models import Token
+from rarible_marketplace_indexer.models import TokenMetadata
 from rarible_marketplace_indexer.producer.helper import producer_send
 from rarible_marketplace_indexer.types.rarible_api_objects.token.factory import RaribleApiTokenFactory
 from rarible_marketplace_indexer.utils.rarible_utils import date_pattern
@@ -36,16 +35,22 @@ async def process_metadata_for_token(ctx: HookContext, token_meta: TokenMetadata
     if metadata is None:
         token_meta.metadata_retries = token_meta.metadata_retries + 1
         token_meta.metadata_synced = False
-        log = f"Metadata not found for {token_meta.contract}:{token_meta.token_id} (retries {token_meta.metadata_retries})"
+        log = (
+            f"Metadata not found for {token_meta.contract}:{token_meta.token_id} "
+            f"(retries {token_meta.metadata_retries})"
+        )
     else:
         try:
             token_meta.metadata = json.dumps(metadata)
             token_meta.metadata_synced = True
             token_meta.metadata_retries = token_meta.metadata_retries
-            # token = await Token.get(id=token_meta.id)
-            # event = RaribleApiTokenFactory.build_meta_update(token)
-            # await producer_send(event)
-            log = f"Successfully saved metadata for {token_meta.contract}:{token_meta.token_id} (retries {token_meta.metadata_retries})"
+            token = await Token.get(id=token_meta.id)
+            event = RaribleApiTokenFactory.build_meta_update(token)
+            await producer_send(event)
+            log = (
+                f"Successfully saved metadata for {token_meta.contract}:{token_meta.token_id} "
+                f"(retries {token_meta.metadata_retries})"
+            )
         except Exception as ex:
             log = f"Could not save token metadata for {token_meta.contract}:{token_meta.token_id}: {ex}"
             token_meta.metadata_retries = token_meta.metadata_retries + 1
@@ -60,7 +65,6 @@ async def boostrap_token_metadata(meta: TokenMetadata):
         await meta.save(force_create=True)
     except tortoise.exceptions.IntegrityError:
         await meta.save(force_update=True)
-
 
 
 async def process_token_metadata(
@@ -91,7 +95,11 @@ async def process_token_metadata(
                             metadata
                           }
                         }
-                """.replace("%network%", os.getenv("NETWORK")).replace("%offset%", str(offset))
+                """.replace(
+                        "%network%", os.getenv("NETWORK")
+                    ).replace(
+                        "%offset%", str(offset)
+                    )
                 )
 
                 result = await client.execute_async(query)
@@ -100,15 +108,21 @@ async def process_token_metadata(
                 if len(data) == 0:
                     done = True
                 for meta in data:
-                    pending_tasks.append(create_task(boostrap_token_metadata(TokenMetadata(
-                        id=Token.get_id(meta.get("contract"), meta.get("token_id")),
-                        contract=meta.get("contract"),
-                        token_id=meta.get("token_id"),
-                        metadata=meta.get("metadata"),
-                        metadata_synced=True,
-                        metadata_retries=0,
-                        db_updated_at=datetime.now().strftime(date_pattern)
-                    ))))
+                    pending_tasks.append(
+                        create_task(
+                            boostrap_token_metadata(
+                                TokenMetadata(
+                                    id=Token.get_id(meta.get("contract"), meta.get("token_id")),
+                                    contract=meta.get("contract"),
+                                    token_id=meta.get("token_id"),
+                                    metadata=meta.get("metadata"),
+                                    metadata_synced=True,
+                                    metadata_retries=0,
+                                    db_updated_at=datetime.now().strftime(date_pattern),
+                                )
+                            )
+                        )
+                    )
                 await gather(*pending_tasks)
                 if index is None:
                     index = await IndexingStatus.create(index=IndexEnum.NFT_METADATA, last_level=f"{offset}")
@@ -127,10 +141,7 @@ async def process_token_metadata(
     offset = 0
     while not done:
         unsynced_tokens_metadata: List[TokenMetadata] = (
-            await TokenMetadata.filter(
-                metadata_synced=False,
-                metadata_retries__lt=5
-            )
+            await TokenMetadata.filter(metadata_synced=False, metadata_retries__lt=5)
             .limit(100)
             .offset(offset)
             .order_by("-db_updated_at")

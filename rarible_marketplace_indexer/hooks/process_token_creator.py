@@ -6,7 +6,11 @@ from typing import Deque
 from typing import List
 
 from dipdup.context import HookContext
-from rarible_marketplace_indexer.models import Royalties, Token, TokenTransfer, ActivityTypeEnum
+
+from rarible_marketplace_indexer.models import ActivityTypeEnum
+from rarible_marketplace_indexer.models import Royalties
+from rarible_marketplace_indexer.models import Token
+from rarible_marketplace_indexer.models import TokenTransfer
 
 pending_tasks = deque()
 royalties_to_update: Deque[Royalties] = deque()
@@ -18,7 +22,9 @@ async def process_creator_for_token(ctx: HookContext, token: Token):
     royalties = await Royalties.get_or_none(id=token.id)
     log = ""
     if royalties is None or (royalties is not None and len(royalties.parts) == 0):
-        mint: TokenTransfer = await TokenTransfer.get(contract=token.contract, token_id=token.token_id, type=ActivityTypeEnum.TOKEN_MINT)
+        mint: TokenTransfer = await TokenTransfer.get(
+            contract=token.contract, token_id=token.token_id, type=ActivityTypeEnum.TOKEN_MINT
+        )
         if mint is not None:
             token.creator = mint.to_address
             await token.save()
@@ -34,6 +40,7 @@ async def process_creator_for_token(ctx: HookContext, token: Token):
             log = f"Could not save creator for {token.contract}:{token.token_id}: {ex}"
     logger.info(log)
 
+
 async def process_token_creator(
     ctx: HookContext,
 ) -> None:
@@ -45,9 +52,13 @@ async def process_token_creator(
     done = False
     offset = 0
     while not done:
-        unsynced_creators: List[Token] = await Token.filter(
-            creator=None,
-        ).limit(100).offset(offset)
+        unsynced_creators: List[Token] = (
+            await Token.filter(
+                creator=None,
+            )
+            .limit(100)
+            .offset(offset)
+        )
 
         if len(unsynced_creators) == 0:
             done = True

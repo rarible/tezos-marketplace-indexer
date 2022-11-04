@@ -9,9 +9,11 @@ import warlock
 from dipdup.context import DipDupContext
 
 from rarible_marketplace_indexer.models import IndexEnum
-from rarible_marketplace_indexer.utils.rarible_utils import get_bidou_data, get_string_id_big_map_key_hash, unpack_str, \
-    get_token_id_big_map_key_hash
+from rarible_marketplace_indexer.utils.rarible_utils import get_bidou_data
 from rarible_marketplace_indexer.utils.rarible_utils import get_key_for_big_map
+from rarible_marketplace_indexer.utils.rarible_utils import get_string_id_big_map_key_hash
+from rarible_marketplace_indexer.utils.rarible_utils import get_token_id_big_map_key_hash
+from rarible_marketplace_indexer.utils.rarible_utils import unpack_str
 
 logger = logging.getLogger('metadata')
 logger.setLevel("INFO")
@@ -130,7 +132,7 @@ collection_metadata_schema = {
                                         {
                                             "title": "michelsonStorageView",
                                             "description": "An off-chain view using Michelson as a scripting "
-                                                           "language to interpret the storage of a contract.",
+                                            "language to interpret the storage of a contract.",
                                             "type": "object",
                                             "properties": {
                                                 "michelsonStorageView": {
@@ -138,24 +140,24 @@ collection_metadata_schema = {
                                                     "properties": {
                                                         "parameter": {
                                                             "description": "The Michelson type of the potential "
-                                                                           "external parameters required by the "
-                                                                           "code of the view.",
+                                                            "external parameters required by the "
+                                                            "code of the view.",
                                                             "$ref": "#/definitions/micheline.tzip-16.expression",
                                                         },
                                                         "returnType": {
                                                             "description": "The type of the result of the view, "
-                                                                           "i.e. the value left on the stack by "
-                                                                           "the code.",
+                                                            "i.e. the value left on the stack by "
+                                                            "the code.",
                                                             "$ref": "#/definitions/micheline.tzip-16.expression",
                                                         },
                                                         "code": {
                                                             "description": "The Michelson code expression implementing "
-                                                                           "the view.",
+                                                            "the view.",
                                                             "$ref": "#/definitions/micheline.tzip-16.expression",
                                                         },
                                                         "annotations": {
                                                             "description": "List of objects documenting the "
-                                                                           "annotations used in the 3 above fields.",
+                                                            "annotations used in the 3 above fields.",
                                                             "type": "array",
                                                             "items": {
                                                                 "type": "object",
@@ -169,9 +171,9 @@ collection_metadata_schema = {
                                                         },
                                                         "version": {
                                                             "description": "A string representing the version of "
-                                                                           "Michelson that the view is meant to work "
-                                                                           "with; versions here should be "
-                                                                           "base58check-encoded protocol hashes.",
+                                                            "Michelson that the view is meant to work "
+                                                            "with; versions here should be "
+                                                            "base58check-encoded protocol hashes.",
                                                             "type": "string",
                                                         },
                                                     },
@@ -185,8 +187,8 @@ collection_metadata_schema = {
                                         {
                                             "title": "restApiQueryView",
                                             "description": "An off-chain view using a REST API described in a separate "
-                                                           "OpenAPI specification. The following parameters form a "
-                                                           "pointer to the localtion in the OpenAPI description.",
+                                            "OpenAPI specification. The following parameters form a "
+                                            "pointer to the localtion in the OpenAPI description.",
                                             "type": "object",
                                             "properties": {
                                                 "restApiQuery": {
@@ -194,7 +196,7 @@ collection_metadata_schema = {
                                                     "properties": {
                                                         "specificationUri": {
                                                             "description": "A URI pointing at the location of the "
-                                                                           "OpenAPI specification.",
+                                                            "OpenAPI specification.",
                                                             "type": "string",
                                                         },
                                                         "baseUri": {
@@ -203,8 +205,8 @@ collection_metadata_schema = {
                                                         },
                                                         "path": {
                                                             "description": "The path component of the "
-                                                                           "URI to look-up in "
-                                                                           "the OpenAPI specification.",
+                                                            "URI to look-up in "
+                                                            "the OpenAPI specification.",
                                                             "type": "string",
                                                         },
                                                         "method": {
@@ -271,7 +273,7 @@ collection_metadata_schema = {
         "unistring": {
             "title": "Universal string representation",
             "description": "Either a plain UTF8 string, or a sequence of bytes for strings "
-                           "that contain invalid byte sequences.",
+            "that contain invalid byte sequences.",
             "oneOf": [
                 {"type": "string"},
                 {
@@ -311,21 +313,21 @@ token_metadata_schema = {
                 "creators": {
                     "type": "array",
                     "description": "The primary person, people, or organization(s) responsible for creating the "
-                                   "intellectual content of the asset.",
+                    "intellectual content of the asset.",
                     "uniqueItems": True,
                     "items": {"type": "string"},
                 },
                 "contributors": {
                     "type": "array",
                     "description": "The person, people, or organization(s) that have made substantial creative "
-                                   "contributions to the asset.",
+                    "contributions to the asset.",
                     "uniqueItems": True,
                     "items": {"type": "string"},
                 },
                 "publishers": {
                     "type": "array",
                     "description": "The person, people, or organization(s) primarily responsible for distributing "
-                                   "or making the asset available to others in its present form.",
+                    "or making the asset available to others in its present form.",
                     "uniqueItems": True,
                     "items": {"type": "string"},
                 },
@@ -359,7 +361,7 @@ token_metadata_schema = {
                 "identifier": {
                     "type": "string",
                     "description": "A string or number used to uniquely identify the asset. "
-                                   "Ex. URL, URN, UUID, ISBN, etc.",
+                    "Ex. URL, URN, UUID, ISBN, etc.",
                 },
                 "rights": {"type": "string", "description": "A statement about the asset rights."},
                 "rightUri": {
@@ -377,8 +379,8 @@ token_metadata_schema = {
                     "type": "string",
                     "format": "uri-reference",
                     "description": "A URI to an image of the asset for wallets and client applications to "
-                                   "have a scaled down image to present to end-users. "
-                                   "Reccomened maximum size of 350x350px.",
+                    "have a scaled down image to present to end-users. "
+                    "Reccomened maximum size of 350x350px.",
                 },
                 "externalUri": {
                     "type": "string",
@@ -388,19 +390,19 @@ token_metadata_schema = {
                 "isTransferable": {
                     "type": "boolean",
                     "description": "All tokens will be transferable by default to allow end-users to send "
-                                   "them to other end-users. However, this field exists to serve in special cases "
-                                   "where owners will not be able to transfer the token.",
+                    "them to other end-users. However, this field exists to serve in special cases "
+                    "where owners will not be able to transfer the token.",
                 },
                 "isBooleanAmount": {
                     "type": "boolean",
                     "description": "Describes whether an account can have an amount of exactly 0 or 1. "
-                                   "(The purpose of this field is for wallets to determine whether or not "
-                                   "to display balance information and an amount field when transferring.)",
+                    "(The purpose of this field is for wallets to determine whether or not "
+                    "to display balance information and an amount field when transferring.)",
                 },
                 "shouldPreferSymbol": {
                     "type": "boolean",
                     "description": "Allows wallets to decide whether or not a symbol should be displayed "
-                                   "in place of a name.",
+                    "in place of a name.",
                 },
                 "ttl": {
                     "type": "integer",
@@ -416,7 +418,7 @@ token_metadata_schema = {
                     "type": "array",
                     "items": {"$ref": "#/definitions/asset"},
                     "description": "Facilitates the description of collections and other types "
-                                   "of resources that contain multiple assets.",
+                    "of resources that contain multiple assets.",
                 },
             },
         },
@@ -577,8 +579,9 @@ async def get_collection_metadata(ctx: DipDupContext, asset_id: str):
                 metadata_url = metadata_url_raw.get("value")
                 contract_metadata = await fetch_metadata(ctx, metadata_url)
             if contract_metadata is None:
-                name_result = await get_key_for_big_map(ctx, asset_id, "metadata", get_string_id_big_map_key_hash(
-                    "name"))
+                name_result = await get_key_for_big_map(
+                    ctx, asset_id, "metadata", get_string_id_big_map_key_hash("name")
+                )
                 if name_result is not None:
                     contract_metadata = {"name": bytes.fromhex(name_result.get("value")).decode("utf-8")}
             if contract_metadata is None:
@@ -586,8 +589,9 @@ async def get_collection_metadata(ctx: DipDupContext, asset_id: str):
                 splitted_onchain_metadata_path = onchain_metadata_path.split(":")
                 if len(splitted_onchain_metadata_path) == 2:
                     onchain_metadata_key = splitted_onchain_metadata_path[1]
-                    onchain_metadata_result = await get_key_for_big_map(ctx, asset_id, "metadata",
-                                                                        get_string_id_big_map_key_hash(onchain_metadata_key))
+                    onchain_metadata_result = await get_key_for_big_map(
+                        ctx, asset_id, "metadata", get_string_id_big_map_key_hash(onchain_metadata_key)
+                    )
                     onchain_metadata_raw = onchain_metadata_result.get("value")
                     if onchain_metadata_raw is not None:
                         contract_metadata = json.loads(bytes.fromhex(onchain_metadata_raw).decode("utf-8"))
@@ -609,8 +613,11 @@ async def get_token_metadata(ctx: DipDupContext, asset_id: str):
             raise Exception(f"Invalid Token ID: {asset_id}")
         contract = parsed_id[0]
         token_id = parsed_id[1]
-        if contract in [known_addresses.get("bidou_8x8"), known_addresses.get("bidou_24x24"), known_addresses.get(
-                "bidou_24x24_color")]:
+        if contract in [
+            known_addresses.get("bidou_8x8"),
+            known_addresses.get("bidou_24x24"),
+            known_addresses.get("bidou_24x24_color"),
+        ]:
             bidou_metadata = await get_bidou_data(ctx, contract, token_id)
             creater = bidou_metadata.get("creater")
             creator = bidou_metadata.get("creator")
@@ -630,8 +637,9 @@ async def get_token_metadata(ctx: DipDupContext, asset_id: str):
         else:
             token_metadata = await ctx.get_metadata_datasource('metadata').get_token_metadata(contract, int(token_id))
             if token_metadata is None:
-                metadata_url_response = await get_key_for_big_map(ctx, contract, "token_metadata",
-                                                                  get_token_id_big_map_key_hash(token_id))
+                metadata_url_response = await get_key_for_big_map(
+                    ctx, contract, "token_metadata", get_token_id_big_map_key_hash(token_id)
+                )
                 if metadata_url_response is not None:
                     metadata_raw = metadata_url_response.get("value")
                     token_info = metadata_raw.get("token_info")
@@ -641,10 +649,9 @@ async def get_token_metadata(ctx: DipDupContext, asset_id: str):
                     else:
                         if metadata_url is not None:
                             if metadata_url != "":
-                                logging.getLogger('token_metadata').info(
-                                    f"Fetching from ipfs metadata for {asset_id}")
+                                logging.getLogger('token_metadata').info(f"Fetching from ipfs metadata for {asset_id}")
                                 try:
-                                     token_metadata = await asyncio.wait_for(fetch_metadata(ctx, metadata_url), 10)
+                                    token_metadata = await asyncio.wait_for(fetch_metadata(ctx, metadata_url), 10)
                                 except Exception as ex:
                                     logging.getLogger('token_metadata').error(f"{asset_id} : {ex}")
                                     token_metadata = None

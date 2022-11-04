@@ -12,7 +12,8 @@ from rarible_marketplace_indexer.models import Royalties
 from rarible_marketplace_indexer.models import Token
 from rarible_marketplace_indexer.models import TokenMetadata
 from rarible_marketplace_indexer.models import TokenTransfer
-from rarible_marketplace_indexer.utils.rarible_utils import date_pattern, assert_token_id_length
+from rarible_marketplace_indexer.utils.rarible_utils import assert_token_id_length
+from rarible_marketplace_indexer.utils.rarible_utils import date_pattern
 
 
 async def on_transfer(ctx: HandlerContext, token_transfer: TokenTransferData) -> None:
@@ -93,7 +94,9 @@ async def on_transfer(ctx: HandlerContext, token_transfer: TokenTransferData) ->
                 if is_burn:
                     activity_type = ActivityTypeEnum.TOKEN_BURN
                 if is_mint and is_burn:
-                    logger.warning(f"Token {token_transfer.contract_address}:{token_transfer.token_id} was minted to burn")
+                    logger.warning(
+                        f"Token {token_transfer.contract_address}:{token_transfer.token_id} was minted to burn"
+                    )
                 else:
                     await TokenTransfer(
                         id=token_transfer.id,

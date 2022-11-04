@@ -7,8 +7,6 @@ from rarible_marketplace_indexer.models import Collection
 from rarible_marketplace_indexer.models import CollectionMetadata
 from rarible_marketplace_indexer.models import IndexEnum
 from rarible_marketplace_indexer.models import IndexingStatus
-from rarible_marketplace_indexer.producer.helper import producer_send
-from rarible_marketplace_indexer.types.rarible_api_objects.collection.factory import RaribleApiCollectionFactory
 from rarible_marketplace_indexer.types.tezos_objects.tezos_object_hash import ImplicitAccountAddress
 from rarible_marketplace_indexer.types.tezos_objects.tezos_object_hash import OriginatedAccountAddress
 from rarible_marketplace_indexer.utils.rarible_utils import date_pattern
@@ -58,14 +56,15 @@ async def process_collection_events(
                                 symbol=None,
                             )
                             collection_metadata = await CollectionMetadata.get_or_none(
-                                id=OriginatedAccountAddress(address))
+                                id=OriginatedAccountAddress(address)
+                            )
                             if collection_metadata is None:
                                 await CollectionMetadata.create(
                                     id=OriginatedAccountAddress(address),
                                     metadata=None,
                                     metadata_synced=False,
                                     metadata_retries=0,
-                                    db_updated_at=datetime.now().strftime(date_pattern)
+                                    db_updated_at=datetime.now().strftime(date_pattern),
                                 )
 
                             logger.info(f"Proccessed collection {address}")

@@ -7,8 +7,9 @@ from tortoise import BaseDBAsyncClient
 from tortoise.signals import post_delete
 from tortoise.signals import post_save
 
-from rarible_marketplace_indexer.models import Activity, Collection
+from rarible_marketplace_indexer.models import Activity
 from rarible_marketplace_indexer.models import ActivityTypeEnum
+from rarible_marketplace_indexer.models import Collection
 from rarible_marketplace_indexer.models import Order
 from rarible_marketplace_indexer.models import Ownership
 from rarible_marketplace_indexer.models import Token

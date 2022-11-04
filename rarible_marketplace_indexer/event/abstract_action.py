@@ -23,7 +23,8 @@ from rarible_marketplace_indexer.models import PlatformEnum
 from rarible_marketplace_indexer.prometheus.rarible_metrics import RaribleMetrics
 from rarible_marketplace_indexer.types.rarible_api_objects.asset.enum import AssetClassEnum
 from rarible_marketplace_indexer.types.tezos_objects.asset_value.asset_value import AssetValue
-from rarible_marketplace_indexer.utils.rarible_utils import get_json_parts, assert_token_id_length
+from rarible_marketplace_indexer.utils.rarible_utils import assert_token_id_length
+from rarible_marketplace_indexer.utils.rarible_utils import get_json_parts
 
 
 class EventInterface(ABC):
@@ -54,7 +55,9 @@ class AbstractOrderListEvent(EventInterface):
         logger = logging.getLogger('dipdup.order_list_event')
         dto = cls._get_list_dto(transaction, datasource)
         if assert_token_id_length(str(dto.make.token_id)) is True:
-            if dto.take.token_id is None or (dto.take.token_id is not None and assert_token_id_length(str(dto.take.token_id))):
+            if dto.take.token_id is None or (
+                dto.take.token_id is not None and assert_token_id_length(str(dto.take.token_id))
+            ):
 
                 if not dto.start_at:
                     dto.start_at = transaction.data.timestamp
@@ -75,7 +78,9 @@ class AbstractOrderListEvent(EventInterface):
                             method='get', url=f"v1/tokens?contract={dto.take.contract}&tokenId={dto.take.token_id}"
                         )
                     else:
-                        ft_result = await datasource.request(method='get', url=f"v1/tokens?contract={dto.take.contract}")
+                        ft_result = await datasource.request(
+                            method='get', url=f"v1/tokens?contract={dto.take.contract}"
+                        )
                     # TODO: We need to double-check code below
                     if ft_result is not None and "metadata" in ft_result[0]:
                         ft = ft_result[0]
@@ -85,7 +90,8 @@ class AbstractOrderListEvent(EventInterface):
                             dto.take.value = dto.take.value / Decimal(math.pow(10, decimals))
                         except Exception:
                             logger.info(
-                                f"Failed to get decimals for FT token {dto.take.contract}:{dto.take.token_id} with meta: {meta}"
+                                f"Failed to get decimals for FT token {dto.take.contract}:{dto.take.token_id} "
+                                f"with meta: {meta}"
                             )
 
                 if order is None:
@@ -110,7 +116,7 @@ class AbstractOrderListEvent(EventInterface):
                         take_token_id=dto.take.token_id,
                         take_value=dto.take.value * dto.make.value,
                         origin_fees=get_json_parts(dto.origin_fees),
-                        payouts=get_json_parts(dto.payouts)
+                        payouts=get_json_parts(dto.payouts),
                     )
                 else:
                     order.last_updated_at = transaction.data.timestamp
@@ -376,7 +382,9 @@ class AbstractLegacyOrderMatchEvent(EventInterface):
     ):
         dto = cls._get_legacy_match_dto(transaction, datasource)
         if assert_token_id_length(str(dto.make.token_id)) is True:
-            if dto.take.token_id is None or (dto.take.token_id is not None and assert_token_id_length(str(dto.take.token_id))):
+            if dto.take.token_id is None or (
+                dto.take.token_id is not None and assert_token_id_length(str(dto.take.token_id))
+            ):
                 order = (
                     await Order.filter(
                         network=os.getenv("NETWORK"),
@@ -527,7 +535,9 @@ class AbstractPutBidEvent(EventInterface):
     ):
         dto = cls._get_bid_dto(transaction, datasource)
         if assert_token_id_length(str(dto.make.token_id)) is True:
-            if dto.take.token_id is None or (dto.take.token_id is not None and assert_token_id_length(str(dto.take.token_id))):
+            if dto.take.token_id is None or (
+                dto.take.token_id is not None and assert_token_id_length(str(dto.take.token_id))
+            ):
                 if not dto.start_at:
                     dto.start_at = transaction.data.timestamp
 
@@ -541,7 +551,7 @@ class AbstractPutBidEvent(EventInterface):
                     status=OrderStatusEnum.ACTIVE,
                     make_asset_class=dto.make.asset_class,
                     take_asset_class=dto.take.asset_class,
-                    is_bid=True
+                    is_bid=True,
                 )
 
                 if order is None:
@@ -567,7 +577,7 @@ class AbstractPutBidEvent(EventInterface):
                         take_price=dto.make.value,
                         origin_fees=get_json_parts(dto.origin_fees),
                         payouts=get_json_parts(dto.payouts),
-                        is_bid=True
+                        is_bid=True,
                     )
                 else:
                     order.last_updated_at = transaction.data.timestamp
@@ -622,7 +632,9 @@ class AbstractPutFloorBidEvent(EventInterface):
     ):
         dto = cls._get_floor_bid_dto(transaction, datasource)
         if assert_token_id_length(str(dto.make.token_id)) is True:
-            if dto.take.token_id is None or (dto.take.token_id is not None and assert_token_id_length(str(dto.take.token_id))):
+            if dto.take.token_id is None or (
+                dto.take.token_id is not None and assert_token_id_length(str(dto.take.token_id))
+            ):
                 if dto.end_at is None:
                     dto.end_at = dto.start_at + timedelta(weeks=1)
 
@@ -633,7 +645,7 @@ class AbstractPutFloorBidEvent(EventInterface):
             status=OrderStatusEnum.ACTIVE,
             make_asset_class=dto.make.asset_class,
             take_asset_class=dto.take.asset_class,
-            is_bid=True
+            is_bid=True,
         )
 
         if order is None:
@@ -659,7 +671,7 @@ class AbstractPutFloorBidEvent(EventInterface):
                 take_price=dto.make.value,
                 origin_fees=get_json_parts(dto.origin_fees),
                 payouts=get_json_parts(dto.payouts),
-                is_bid=True
+                is_bid=True,
             )
         else:
             order.last_updated_at = transaction.data.timestamp
@@ -726,7 +738,7 @@ class AbstractAcceptBidEvent(EventInterface):
                 .order_by('-operation_level')
                 .first()
             )
-            match_activity: ActivityModel = last_list_activity.apply(transaction)
+            match_activity: Activity = last_list_activity.apply(transaction)
 
             if match_activity.take_token_id is None:
                 match_activity.type = ActivityTypeEnum.GET_FLOOR_BID
@@ -780,13 +792,13 @@ class AbstractAcceptFloorBidEvent(EventInterface):
         if assert_token_id_length(str(dto.token_id)) is True:
             last_list_activity = (
                 await Activity.filter(
-                        network=os.getenv("NETWORK"),
-                        platform=cls.platform,
-                        internal_order_id=dto.internal_order_id,
-                        type=ActivityTypeEnum.MAKE_FLOOR_BID,
-                    )
-                    .order_by('-operation_level')
-                    .first()
+                    network=os.getenv("NETWORK"),
+                    platform=cls.platform,
+                    internal_order_id=dto.internal_order_id,
+                    type=ActivityTypeEnum.MAKE_FLOOR_BID,
+                )
+                .order_by('-operation_level')
+                .first()
             )
             match_activity = last_list_activity.apply(transaction)
 
@@ -901,7 +913,7 @@ class AbstractFloorBidCancelEvent(EventInterface):
             .first()
         )
         if last_order_activity is not None:
-            cancel_activity: ActivityModel = last_order_activity.apply(transaction)
+            cancel_activity: Activity = last_order_activity.apply(transaction)
 
             cancel_activity.type = ActivityTypeEnum.ORDER_CANCEL
             await cancel_activity.save()

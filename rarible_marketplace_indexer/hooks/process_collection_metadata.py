@@ -9,13 +9,14 @@ from datetime import datetime
 from typing import List
 
 import tortoise
-from gql import Client, gql
+from dipdup.context import HookContext
+from gql import Client
+from gql import gql
 from gql.transport.aiohttp import AIOHTTPTransport
 
-from dipdup.context import HookContext
-
 from rarible_marketplace_indexer.metadata.metadata import process_metadata
-from rarible_marketplace_indexer.models import CollectionMetadata, Collection
+from rarible_marketplace_indexer.models import Collection
+from rarible_marketplace_indexer.models import CollectionMetadata
 from rarible_marketplace_indexer.models import IndexEnum
 from rarible_marketplace_indexer.models import IndexingStatus
 from rarible_marketplace_indexer.producer.helper import producer_send
@@ -32,9 +33,7 @@ async def process_metadata_for_collection(ctx: HookContext, collection_meta: Col
     if metadata is None:
         collection_meta.metadata_retries = collection_meta.metadata_retries + 1
         collection_meta.metadata_synced = False
-        logger.warning(
-            f"Metadata not found for {collection_meta.id} (retries {collection_meta.metadata_retries})"
-        )
+        logger.warning(f"Metadata not found for {collection_meta.id} (retries {collection_meta.metadata_retries})")
     else:
         try:
             collection_meta.metadata_synced = True
@@ -44,8 +43,7 @@ async def process_metadata_for_collection(ctx: HookContext, collection_meta: Col
             event = RaribleApiCollectionFactory.build(collection)
             await producer_send(event)
             logger.info(
-                f"Successfully saved metadata for {collection_meta.id} "
-                f"(retries {collection_meta.metadata_retries})"
+                f"Successfully saved metadata for {collection_meta.id} " f"(retries {collection_meta.metadata_retries})"
             )
         except Exception as ex:
             logger.warning(f"Could not save collection metadata for {collection_meta.id}: {ex}")
@@ -86,7 +84,11 @@ async def process_collection_metadata(
                         metadata
                       }
                     }
-            """.replace("%network%", os.getenv("NETWORK")).replace("%offset%", str(offset))
+            """.replace(
+                    "%network%", os.getenv("NETWORK")
+                ).replace(
+                    "%offset%", str(offset)
+                )
             )
             offset += 1000
             try:
@@ -97,13 +99,19 @@ async def process_collection_metadata(
             if len(data) == 0:
                 done = True
             for meta in data:
-                pending_tasks.append(create_task(boostrap_collection_metadata(CollectionMetadata(
-                    id=meta.get("contract"),
-                    metadata=meta.get("metadata"),
-                    metadata_synced=True,
-                    metadata_retries=0,
-                    db_updated_at=datetime.now().strftime(date_pattern)
-                ))))
+                pending_tasks.append(
+                    create_task(
+                        boostrap_collection_metadata(
+                            CollectionMetadata(
+                                id=meta.get("contract"),
+                                metadata=meta.get("metadata"),
+                                metadata_synced=True,
+                                metadata_retries=0,
+                                db_updated_at=datetime.now().strftime(date_pattern),
+                            )
+                        )
+                    )
+                )
             await gather(*pending_tasks)
 
         await IndexingStatus.create(index=IndexEnum.COLLECTION_METADATA, last_level="DONE")

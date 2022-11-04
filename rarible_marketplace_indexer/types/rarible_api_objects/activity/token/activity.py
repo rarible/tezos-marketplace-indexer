@@ -1,10 +1,8 @@
-import uuid
 from datetime import datetime
 from typing import Any
 from typing import Literal
 from typing import Optional
 from typing import Union
-from uuid import uuid5
 
 from pydantic import Field
 

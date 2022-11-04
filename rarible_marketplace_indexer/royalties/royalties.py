@@ -5,15 +5,17 @@ from typing import Any
 from typing import Dict
 
 from dipdup.context import DipDupContext
+
 from rarible_marketplace_indexer.metadata.metadata import get_token_metadata
 from rarible_marketplace_indexer.models import ActivityTypeEnum
 from rarible_marketplace_indexer.models import Token
 from rarible_marketplace_indexer.models import TokenMetadata
 from rarible_marketplace_indexer.models import TokenTransfer
 from rarible_marketplace_indexer.types.rarible_exchange.parameter.sell import Part
-from rarible_marketplace_indexer.utils.rarible_utils import get_bidou_data, get_token_id_big_map_key_hash, \
-    get_royalties_manager_big_map_key_hash
+from rarible_marketplace_indexer.utils.rarible_utils import get_bidou_data
 from rarible_marketplace_indexer.utils.rarible_utils import get_key_for_big_map
+from rarible_marketplace_indexer.utils.rarible_utils import get_royalties_manager_big_map_key_hash
+from rarible_marketplace_indexer.utils.rarible_utils import get_token_id_big_map_key_hash
 
 logger = logging.getLogger("royalties")
 logger.setLevel("INFO")
@@ -58,8 +60,9 @@ async def get_fxhash_v1_royalties(ctx: DipDupContext, fxhash_v1: str, fxhash_v1_
     try:
         key_response = await get_key_for_big_map(ctx, fxhash_v1, "token_data", get_token_id_big_map_key_hash(token_id))
         royalties = key_response.get("value")
-        author_response = await get_key_for_big_map(ctx, fxhash_v1_manager, "ledger", get_token_id_big_map_key_hash(
-            royalties.get("issuer_id")))
+        author_response = await get_key_for_big_map(
+            ctx, fxhash_v1_manager, "ledger", get_token_id_big_map_key_hash(royalties.get("issuer_id"))
+        )
         author = author_response.get("value")
         return [Part(part_account=author.get("author"), part_value=int(royalties.get("royalties")) * 10)]
     except Exception as ex:
@@ -151,16 +154,17 @@ async def get_royalties_from_royalties_manager(
     royalties: [Part] = []
     royalties_map: [dict[str, Any]] | None = None
     try:
-        response_with_token_id = await get_key_for_big_map(ctx, royalties_manager, "royalties",
-                                                           get_royalties_manager_big_map_key_hash(contract, token_id))
+        response_with_token_id = await get_key_for_big_map(
+            ctx, royalties_manager, "royalties", get_royalties_manager_big_map_key_hash(contract, token_id)
+        )
         royalties_map = response_with_token_id.get("value")
     except Exception as ex:
         logger.debug(f"Could not fetch Royalties Manager royalties (with token id) for {contract}:{token_id}: {ex}")
     if royalties_map is None:
         try:
-            response_without_token_id = await get_key_for_big_map(ctx, royalties_manager, "royalties",
-                                                                  get_royalties_manager_big_map_key_hash(contract,
-                                                                                                         None))
+            response_without_token_id = await get_key_for_big_map(
+                ctx, royalties_manager, "royalties", get_royalties_manager_big_map_key_hash(contract, None)
+            )
             royalties_map = response_without_token_id.get("value")
         except Exception as ex:
             logger.debug(
@@ -209,8 +213,11 @@ async def fetch_royalties(ctx: DipDupContext, contract: str, token_id: str) -> [
     elif contract == known_addresses.get("versum"):
         logger.debug(f"Token {contract}:{token_id} royalties pattern is VERSUM")
         return await get_versum_royalties(ctx, contract, token_id)
-    elif contract in [known_addresses.get("bidou_8x8"), known_addresses.get("bidou_24x24"), known_addresses.get(
-            "bidou_24x24_color")]:
+    elif contract in [
+        known_addresses.get("bidou_8x8"),
+        known_addresses.get("bidou_24x24"),
+        known_addresses.get("bidou_24x24_color"),
+    ]:
         logger.debug("Token $contract:$tokenId royalties pattern is 8Bidou")
         return await get_bidou_royalties(ctx, contract, token_id, bidou_royalties)
 

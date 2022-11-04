@@ -29,8 +29,10 @@ async def create_test_dipdup(config: DipDupConfig, stack: AsyncExitStack) -> Dip
     await dipdup._set_up_datasources(stack)
     return dipdup
 
+
 # We can't run this test on the jenkins due to ipfs requests will be failed
-if not 'linux' in sys.platform:
+if 'linux' not in sys.platform:
+
     class MetadataTest(IsolatedAsyncioTestCase):
         async def test_token_metadata_dogami(self) -> None:
             async with AsyncExitStack() as stack:
@@ -51,7 +53,9 @@ if not 'linux' in sys.platform:
             async with AsyncExitStack() as stack:
                 dipdup = await create_test_dipdup(config, stack)
                 ctx = dipdup._ctx
-                metadata_bidou_8x8 = await process_metadata(ctx, IndexEnum.NFT, "KT1MxDwChiDwd6WBVs24g1NjERUoK622ZEFp:100")
+                metadata_bidou_8x8 = await process_metadata(
+                    ctx, IndexEnum.NFT, "KT1MxDwChiDwd6WBVs24g1NjERUoK622ZEFp:100"
+                )
                 metadata_bidou_24x24 = await process_metadata(
                     ctx, IndexEnum.NFT, "KT1TR1ErEQPTdtaJ7hbvKTJSa1tsGnHGZTpf:100"
                 )
@@ -96,7 +100,9 @@ if not 'linux' in sys.platform:
             async with AsyncExitStack() as stack:
                 dipdup = await create_test_dipdup(config, stack)
                 ctx = dipdup._ctx
-                metadata_dogami = await process_metadata(ctx, IndexEnum.COLLECTION, "KT1NVvPsNDChrLRH5K2cy6Sc9r1uuUwdiZQd")
+                metadata_dogami = await process_metadata(
+                    ctx, IndexEnum.COLLECTION, "KT1NVvPsNDChrLRH5K2cy6Sc9r1uuUwdiZQd"
+                )
                 self.assertIsNotNone(metadata_dogami)
                 self.assertEqual("DOGAMI", metadata_dogami.get("name"))
 
@@ -104,6 +110,8 @@ if not 'linux' in sys.platform:
             async with AsyncExitStack() as stack:
                 dipdup = await create_test_dipdup(config, stack)
                 ctx = dipdup._ctx
-                metadata_onchain = await process_metadata(ctx, IndexEnum.COLLECTION, "KT1WvzYHCNBvDSdwafTHv7nJ1dWmZ8GCYuuC")
+                metadata_onchain = await process_metadata(
+                    ctx, IndexEnum.COLLECTION, "KT1WvzYHCNBvDSdwafTHv7nJ1dWmZ8GCYuuC"
+                )
                 self.assertIsNotNone(metadata_onchain)
                 self.assertEqual("objkt.com Marketplace", metadata_onchain.get("name"))

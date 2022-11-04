@@ -3,7 +3,6 @@ import logging
 import os
 import random
 import string
-import urllib
 import uuid
 from datetime import datetime
 from typing import Dict
@@ -95,7 +94,7 @@ class RaribleUtils:
     @classmethod
     def _get_contract(cls, asset_bytes: bytes, offset: int) -> OriginatedAccountAddress:
         header = bytes.fromhex('025a79')
-        return OriginatedAccountAddress(b58encode_check(header + asset_bytes[offset: offset + 20]).decode())
+        return OriginatedAccountAddress(b58encode_check(header + asset_bytes[offset : offset + 20]).decode())
 
     @classmethod
     def _get_token_id(cls, asset_bytes: bytes) -> int:
@@ -166,12 +165,12 @@ class RaribleUtils:
 
     @staticmethod
     def get_order_hash(
-            contract: OriginatedAccountAddress,
-            token_id: int,
-            seller: ImplicitAccountAddress,
-            platform: PlatformEnum,
-            asset_class: str = None,
-            asset: str = None,
+        contract: OriginatedAccountAddress,
+        token_id: int,
+        seller: ImplicitAccountAddress,
+        platform: PlatformEnum,
+        asset_class: str = None,
+        asset: str = None,
     ) -> str:
         return uuid5(
             namespace=uuid.NAMESPACE_OID,
@@ -180,12 +179,12 @@ class RaribleUtils:
 
     @staticmethod
     def get_bid_hash(
-            contract: OriginatedAccountAddress,
-            token_id: int,
-            bidder: ImplicitAccountAddress,
-            platform: PlatformEnum,
-            asset_class: str = None,
-            asset: str = None,
+        contract: OriginatedAccountAddress,
+        token_id: int,
+        bidder: ImplicitAccountAddress,
+        platform: PlatformEnum,
+        asset_class: str = None,
+        asset: str = None,
     ) -> str:
         return uuid5(
             namespace=uuid.NAMESPACE_OID,
@@ -194,11 +193,11 @@ class RaribleUtils:
 
     @staticmethod
     def get_floor_bid_hash(
-            contract: OriginatedAccountAddress,
-            bidder: ImplicitAccountAddress,
-            platform: PlatformEnum,
-            asset_class: str = None,
-            asset: str = None,
+        contract: OriginatedAccountAddress,
+        bidder: ImplicitAccountAddress,
+        platform: PlatformEnum,
+        asset_class: str = None,
+        asset: str = None,
     ) -> str:
         return uuid5(
             namespace=uuid.NAMESPACE_OID,
@@ -482,50 +481,28 @@ def unpack_str(value: str):
 
 
 def get_royalties_manager_big_map_key_hash(contract: str, token_id: Optional[str]):
-    ty = MichelsonType.match({'prim': 'pair',
-                              'args': [
-                                  {'prim': 'address'},
-                                  {
-                                      'prim': 'option',
-                                      'args': [
-                                          {'prim': 'nat'}
-                                      ]
-                                  }
-                              ]
-                              }
-                             )
+    ty = MichelsonType.match(
+        {'prim': 'pair', 'args': [{'prim': 'address'}, {'prim': 'option', 'args': [{'prim': 'nat'}]}]}
+    )
     if token_id is None:
-        key = ty.from_micheline_value({'prim': 'Pair',
-                                  'args': [
-                                      {'string': contract},
-                                      {
-                                          'prim': 'None'
-                                      }
-                                  ]
-                                  }).pack(legacy=True)
+        key = ty.from_micheline_value({'prim': 'Pair', 'args': [{'string': contract}, {'prim': 'None'}]}).pack(
+            legacy=True
+        )
         return forge_script_expr(key)
     else:
-        key = ty.from_micheline_value({'prim': 'Pair',
-                                  'args': [
-                                      {'string': contract},
-                                      {
-                                          'prim': 'Some',
-                                          'args': [
-                                              {'int': token_id}
-                                          ]
-                                      }
-                                  ]
-                                  }).pack(legacy=True)
+        key = ty.from_micheline_value(
+            {'prim': 'Pair', 'args': [{'string': contract}, {'prim': 'Some', 'args': [{'int': token_id}]}]}
+        ).pack(legacy=True)
         return forge_script_expr(key)
 
 
 async def get_key_for_big_map(ctx: DipDupContext, contract: str, name: str, key: str) -> Optional[Response]:
     try:
         return await ctx.get_tzkt_datasource("tzkt").request(
-            method='get',
-            url=f'/v1/contracts/{contract}/bigmaps/{name}/keys/{key}'
+            method='get', url=f'/v1/contracts/{contract}/bigmaps/{name}/keys/{key}'
         )
-    except:
+    except Exception as ex:
+        logging.getLogger("get_key_for_big_map").error(ex)
         return None
 
 
