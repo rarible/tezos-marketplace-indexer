@@ -40,9 +40,9 @@ async def process_metadata_for_collection(ctx: HookContext, collection_meta: Col
             collection_meta.metadata_synced = True
             collection_meta.metadata_retries = collection_meta.metadata_retries
             collection_meta.metadata = json.dumps(metadata)
-            # collection = await Collection.get(id=collection_meta.id)
-            # event = RaribleApiCollectionFactory.build(collection)
-            # await producer_send(event)
+            collection = await Collection.get(id=collection_meta.id)
+            event = RaribleApiCollectionFactory.build(collection)
+            await producer_send(event)
             logger.info(
                 f"Successfully saved metadata for {collection_meta.id} "
                 f"(retries {collection_meta.metadata_retries})"
