@@ -42,8 +42,8 @@ tezos-marketplace-indexer-tezos:
   ]
 
 tezos-marketplace-indexer-metadata:
-  replicas: 0
-  enabled: false
+  replicas: 1
+  enabled: true
   <<: *tezos-marketplace-indexer-prod
   command: [
     "dipdup",
