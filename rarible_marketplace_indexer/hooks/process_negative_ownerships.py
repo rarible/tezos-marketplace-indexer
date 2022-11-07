@@ -19,10 +19,13 @@ async def process_negative_ownerships(ctx: HookContext, batch):
     if len(ownerships) > 0:
         logger.info(f'Found {len(ownerships)} with negative balance')
         for ownership in ownerships:
-            logger.info(f'Processing ownership id={ownership.full_id()}')
-            await validate_transfers(ctx, str(ownership.contract), str(ownership.token_id), str(ownership.owner), True)
-            await validate_transfers(ctx, str(ownership.contract), str(ownership.token_id), str(ownership.owner), False)
-            await process(str(ownership.contract), str(ownership.token_id), str(ownership.owner), datetime.now())
+            try:
+                logger.info(f'Processing ownership id={ownership.full_id()}')
+                await validate_transfers(ctx, str(ownership.contract), str(ownership.token_id), str(ownership.owner), True)
+                await validate_transfers(ctx, str(ownership.contract), str(ownership.token_id), str(ownership.owner), False)
+                await process(str(ownership.contract), str(ownership.token_id), str(ownership.owner), datetime.now())
+            except Exception as ex:
+                logger.error(f'Error during getting transfres for ownership={ownership.full_id()}, {ex}')
 
 
 async def validate_transfers(ctx: HookContext, contract, token_id, owner, received):
