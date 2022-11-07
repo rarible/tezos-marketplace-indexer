@@ -366,7 +366,7 @@ jobs:
     hook: process_negative_ownerships
     interval: 600
     args:
-      batch: 10
+      batch: 5
 
 advanced:
   rollback_depth: 2
