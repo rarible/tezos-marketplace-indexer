@@ -5,4 +5,4 @@ create index concurrently if not exists token_transfer_contract_token_id_type ON
 -- create index concurrently if not exists metadata_retries_synced on metadata_token (metadata_synced, metadata_retries);
 --
 create index concurrently if not exists marketplace_activity_operation_timestamp on marketplace_activity (operation_timestamp);
-create index concurrently if not exists token_transfer_date on tezos.public.token_transfer (date);
+create index concurrently if not exists token_transfer_date on token_transfer (date);
