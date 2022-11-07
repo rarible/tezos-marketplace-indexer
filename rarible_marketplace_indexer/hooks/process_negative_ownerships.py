@@ -21,17 +21,25 @@ async def process_negative_ownerships(ctx: HookContext, batch):
         for ownership in ownerships:
             try:
                 logger.info(f'Processing ownership id={ownership.full_id()}')
-                await validate_transfers(ctx, str(ownership.contract), str(ownership.token_id), str(ownership.owner), True)
-                await validate_transfers(ctx, str(ownership.contract), str(ownership.token_id), str(ownership.owner), False)
-                await process(str(ownership.contract), str(ownership.token_id), str(ownership.owner), datetime.now())
+                dt1 = await validate_transfers(ctx, str(ownership.contract), str(ownership.token_id), str(ownership.owner), True)
+                dt2 = await validate_transfers(ctx, str(ownership.contract), str(ownership.token_id), str(ownership.owner), False)
+                if dt1 is not None or dt2 is not None:
+                    if dt1 is None and dt2 is not None:
+                        dt = dt2
+                    elif dt1 is not None and dt2 is None:
+                        dt = dt1
+                    else:
+                        dt = max(dt1, dt2)
+                    await process(str(ownership.contract), str(ownership.token_id), str(ownership.owner), dt)
             except Exception as ex:
-                logger.error(f'Error during getting transfres for ownership={ownership.full_id()}, {ex}')
+                logger.error(f'Error during getting transfers for ownership={ownership.full_id()}, {ex}')
 
 
 async def validate_transfers(ctx: HookContext, contract, token_id, owner, received):
     tzkt = ctx.get_tzkt_datasource('tzkt')
     last_id = None
     direction = 'to' if received else 'from'
+    dt = None
     while True:
         cond = '' if last_id is None else f"&id.lt={last_id}"
         transactions = await tzkt.request(
@@ -79,8 +87,12 @@ async def validate_transfers(ctx: HookContext, contract, token_id, owner, receiv
                         )
                         await token_transfer.save()
                         logger.info(f'Save transfer with id={token_transfer.id}')
+            if dt is None:
+                dt = token_transfer.date
+            else:
+                dt = max(dt, token_transfer.date)
         if len(transactions) > 0:
             last_id = transactions[-1]['id']
         else:
             break
-
+    return dt
