@@ -28,8 +28,6 @@ class ProducerContainer:
 
     @classmethod
     def create_instance(cls, config: Dict[str, Any], logger: Logger) -> None:
-        logger.warning(f"Kafka enabled={config['enabled']}, [{config['enabled'] != 'false'}]")
-        logger.warning(f"Kafka settings={config}")
         if config['enabled'] != 'false':
             addresses = config['kafka_address'].split(',')
             logger.info(f"Connecting to internal kafka: {addresses}")
