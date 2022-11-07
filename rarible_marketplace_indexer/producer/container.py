@@ -27,7 +27,7 @@ class ProducerContainer:
     @classmethod
     def create_instance(cls, config: Dict[str, Any], logger: Logger) -> None:
         if config['enabled'] != 'false':
-            if config['kafka_security_protocol'] == 'SASL_PLAINTEXT':
+            if config['kafka_security_protocol'] == 'PLAINTEXT':
                 addresses = [config['kafka_address']]
                 logger.info(f"Connecting to kafka using {config['kafka_security_protocol']}: addresses {addresses}")
                 producer = AIOKafkaProducer(
