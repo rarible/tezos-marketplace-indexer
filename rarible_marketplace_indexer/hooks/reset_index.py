@@ -5,8 +5,8 @@ import traceback
 from dipdup.context import HookContext
 from tortoise import Tortoise
 
+from rarible_marketplace_indexer.enums import TaskStatus
 from rarible_marketplace_indexer.models import Tasks
-from rarible_marketplace_indexer.models import TaskStatus
 
 logger = logging.getLogger("dipdup.reset_index")
 

@@ -8,9 +8,11 @@ from typing import Union
 
 from aiokafka import AIOKafkaProducer
 
+from rarible_marketplace_indexer.producer.helper import get_kafka_key
 from rarible_marketplace_indexer.producer.null_kafka_producer import NullKafkaProducer
 from rarible_marketplace_indexer.producer.serializer import kafka_key_serializer
 from rarible_marketplace_indexer.producer.serializer import kafka_value_serializer
+from rarible_marketplace_indexer.types.rarible_api_objects import AbstractRaribleApiObject
 
 AIOKafkaProducerInterface = Union[AIOKafkaProducer, NullKafkaProducer]
 
@@ -42,3 +44,8 @@ class ProducerContainer:
             producer = NullKafkaProducer()
 
         cls.__instance = producer
+
+
+async def producer_send(api_object: AbstractRaribleApiObject):
+    producer = ProducerContainer.get_instance()
+    await producer.send(topic=api_object.kafka_topic, key=get_kafka_key(api_object), value=api_object)
