@@ -374,7 +374,7 @@ advanced:
     schema_modified: ignore
 
 custom:
-  enabled: ${KAFKA_ENABLED:-false}
+  enabled: true
   kafka_address: ${KAFKA_ADDRESS:-kafka:9092}
   client_id: dipdup-rarible-${APPLICATION_ENVIRONMENT:-mainnet}-producer
   kafka_security_protocol: ${KAFKA_SECURITY_PROTOCOL:-SASL_PLAINTEXT}
