@@ -22,8 +22,8 @@ tezos-marketplace-indexer-prod: &tezos-marketplace-indexer-prod
       memory: 1384Mi
 
 tezos-marketplace-indexer-rarible:
-  enabled: true
-  replicas: 1
+  enabled: false
+  replicas: 0
   <<: *tezos-marketplace-indexer-prod
   image:
     tag: master-3a1f7c-231
@@ -34,8 +34,8 @@ tezos-marketplace-indexer-rarible:
     ]
 
 tezos-marketplace-indexer-tezos:
-  enabled: true
-  replicas: 1
+  enabled: false
+  replicas: 0
   <<: *tezos-marketplace-indexer-prod
   image:
     tag: master-3a1f7c-231
