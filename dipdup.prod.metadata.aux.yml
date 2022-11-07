@@ -38,12 +38,12 @@ datasources:
       batch_size: 1000
   ipfs:
     kind: ipfs
-    url: http://ipfs-gw1.ext.rarible.com:8080/ipfs
+    url: https://cloudflare-ipfs.com/ipfs
     http:
-      retry_count: 1
-      retry_sleep: 0
+      retry_count: 5
+      retry_sleep: 5
       connection_limit: 1000
-      connection_timeout: 1
+      connection_timeout: 60
       batch_size: 1000
 
 contracts:
