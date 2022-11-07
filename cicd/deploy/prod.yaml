@@ -96,6 +96,7 @@ aux-tezos-marketplace-indexer-rarible:
     NETWORK: mainnet
     HASURA_URL: 'http://hasura:8080'
     KAFKA_ENABLED: "true"
+    POSTGRES_HOST: 'tmp-pg1.rarible.int'
 
 tzkt:
   instances: ['tzkt', 'aux-tzkt']
