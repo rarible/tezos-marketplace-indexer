@@ -22,6 +22,8 @@ tezos-marketplace-indexer-prod: &tezos-marketplace-indexer-prod
       memory: 1384Mi
 
 tezos-marketplace-indexer-rarible:
+  enabled: false
+  replicas: 0
   <<: *tezos-marketplace-indexer-prod
   image:
     tag: master-3a1f7c-231
@@ -32,6 +34,8 @@ tezos-marketplace-indexer-rarible:
     ]
 
 tezos-marketplace-indexer-tezos:
+  enabled: false
+  replicas: 0
   <<: *tezos-marketplace-indexer-prod
   image:
     tag: master-3a1f7c-231
@@ -51,11 +55,11 @@ tezos-marketplace-indexer-metadata:
     "run"
   ]
   environments:
-    TZKT_URL: http://aux-tzkt:5000
+    TZKT_URL: http://tzkt:5000
     NETWORK: mainnet
     POSTGRES_HOST: 'tmp-pg1.rarible.int'
-    HASURA_URL: 'http://aux-hasura:8080'
-    KAFKA_ENABLED: "false"
+    HASURA_URL: 'http://hasura:8080'
+    KAFKA_ENABLED: "true"
 
 tezos-marketplace-indexer-royalties:
   replicas: 0
@@ -64,7 +68,7 @@ tezos-marketplace-indexer-royalties:
     TZKT_URL: http://aux-tzkt:5000
     NETWORK: mainnet
     POSTGRES_HOST: 'tmp-pg1.rarible.int'
-    HASURA_URL: 'http://aux-hasura:8080'
+    HASURA_URL: 'http://hasura:8080'
     KAFKA_ENABLED: "false"
   resources:
     limits:
@@ -77,20 +81,21 @@ tezos-marketplace-indexer-royalties:
 aux-hasura:
   resources:
     limits:
-      cpu: '1'
-      memory: 1Gi
+      cpu: '2'
+      memory: 2Gi
     requests:
-      cpu: 100m
-      memory: 256Mi
+      cpu: 400m
+      memory: 512Mi
 
 aux-tezos-marketplace-indexer-rarible:
   <<: *tezos-marketplace-indexer-prod
   image:
     repository: tezos-marketplace-indexer
   environments:
-    TZKT_URL: http://aux-tzkt:5000
+    TZKT_URL: http://tzkt:5000
     NETWORK: mainnet
-    KAFKA_ENABLED: "false"
+    HASURA_URL: 'http://hasura:8080'
+    KAFKA_ENABLED: "true"
 
 tzkt:
   instances: ['tzkt', 'aux-tzkt']
