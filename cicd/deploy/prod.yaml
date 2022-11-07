@@ -58,7 +58,7 @@ tezos-marketplace-indexer-metadata:
     TZKT_URL: http://tzkt:5000
     NETWORK: mainnet
     POSTGRES_HOST: 'tmp-pg1.rarible.int'
-    HASURA_URL: 'http://hasura:8080'
+    HASURA_URL: 'http://aux-hasura:8080'
     KAFKA_ENABLED: 'true'
 
 tezos-marketplace-indexer-royalties:
@@ -68,7 +68,7 @@ tezos-marketplace-indexer-royalties:
     TZKT_URL: http://aux-tzkt:5000
     NETWORK: mainnet
     POSTGRES_HOST: 'tmp-pg1.rarible.int'
-    HASURA_URL: 'http://hasura:8080'
+    HASURA_URL: 'http://aux-hasura:8080'
     KAFKA_ENABLED: "false"
   resources:
     limits:
@@ -94,7 +94,7 @@ aux-tezos-marketplace-indexer-rarible:
   environments:
     TZKT_URL: https://api.tzkt.io
     NETWORK: mainnet
-    HASURA_URL: 'http://hasura:8080'
+    HASURA_URL: 'http://aux-hasura:8080'
     KAFKA_ENABLED: 'true'
     POSTGRES_HOST: 'tmp-pg1.rarible.int'
 
