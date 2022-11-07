@@ -16,6 +16,7 @@ from rarible_marketplace_indexer.prometheus.rarible_metrics import RaribleMetric
 async def on_restart(
     ctx: HookContext,
 ) -> None:
+    ctx.logger.setLevel("INFO")
     logging.getLogger('dipdup').setLevel('INFO')
     logging.getLogger('aiokafka').setLevel('INFO')
     logging.getLogger('db_client').setLevel('INFO')
