@@ -92,7 +92,7 @@ aux-tezos-marketplace-indexer-rarible:
   image:
     repository: tezos-marketplace-indexer
   environments:
-    TZKT_URL: http://tzkt:5000
+    TZKT_URL: https://api.tzkt.io
     NETWORK: mainnet
     HASURA_URL: 'http://hasura:8080'
     KAFKA_ENABLED: "true"
