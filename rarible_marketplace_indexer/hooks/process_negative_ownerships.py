@@ -55,13 +55,19 @@ async def validate_transfers(ctx: HookContext, contract, token_id, owner, receiv
                     logger.warning(f"Token {contract}:{tx['token']['tokenId']} was minted to burn")
                 else:
                     if assert_token_id_length(str(tx['token']['id'])):
+                        transaction_id = None
+                        if 'transactionId' in tx:
+                            transaction_id = tx['transactionId']
+                        origination_id = None
+                        if 'originationId' in tx:
+                            origination_id = tx['originationId']
                         token_transfer = await TokenTransfer(
                             id=tx['id'],
                             type=activity_type,
                             date=tx['timestamp'],
                             tzkt_token_id=tx['token']['id'],
-                            tzkt_transaction_id=tx['transactionId'],
-                            tzkt_origination_id=tx['originationId'],
+                            tzkt_transaction_id=transaction_id,
+                            tzkt_origination_id=origination_id,
                             contract=contract,
                             token_id=tx['token']['tokenId'],
                             from_address=from_address,
