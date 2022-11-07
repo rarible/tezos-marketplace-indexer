@@ -26,30 +26,17 @@ class ProducerContainer:
 
     @classmethod
     def create_instance(cls, config: Dict[str, Any], logger: Logger) -> None:
+        logger.info(f"Kafka enabled={config['enabled']}")
         if config['enabled'] != 'false':
-            if config['kafka_security_protocol'] == 'PLAINTEXT':
-                addresses = [config['kafka_address']]
-                logger.info(f"Connecting to kafka using {config['kafka_security_protocol']}: addresses {addresses}")
-                producer = AIOKafkaProducer(
-                    bootstrap_servers=addresses,
-                    client_id=config['client_id'],
-                    security_protocol=config['kafka_security_protocol'],
-                    sasl_mechanism=config['sasl']['mechanism'],
-                    sasl_plain_username=config['sasl']['username'],
-                    sasl_plain_password=config['sasl']['password'],
-                    value_serializer=kafka_value_serializer,
-                    key_serializer=kafka_key_serializer,
-                )
-            else:
-                addresses = config['kafka_address'].split(',')
-                logger.info(f"Connecting to internal kafka: {addresses}")
-                producer = AIOKafkaProducer(
-                    bootstrap_servers=addresses,
-                    client_id=config['client_id'],
-                    sasl_mechanism=config['sasl']['mechanism'],
-                    value_serializer=kafka_value_serializer,
-                    key_serializer=kafka_key_serializer,
-                )
+            addresses = config['kafka_address'].split(',')
+            logger.info(f"Connecting to internal kafka: {addresses}")
+            producer = AIOKafkaProducer(
+                bootstrap_servers=addresses,
+                client_id=config['client_id'],
+                sasl_mechanism=config['sasl']['mechanism'],
+                value_serializer=kafka_value_serializer,
+                key_serializer=kafka_key_serializer,
+            )
         else:
             producer = NullKafkaProducer()
 
