@@ -19,7 +19,7 @@ from rarible_marketplace_indexer.models import IndexEnum
 from rarible_marketplace_indexer.models import IndexingStatus
 from rarible_marketplace_indexer.models import Token
 from rarible_marketplace_indexer.models import TokenMetadata
-from rarible_marketplace_indexer.producer.helper import producer_send
+from rarible_marketplace_indexer.producer.container import producer_send
 from rarible_marketplace_indexer.types.rarible_api_objects.token.factory import RaribleApiTokenFactory
 from rarible_marketplace_indexer.utils.rarible_utils import date_pattern
 
