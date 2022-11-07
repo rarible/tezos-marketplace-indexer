@@ -1,3 +1,4 @@
+import logging
 from typing import List
 from typing import Optional
 from typing import Type
@@ -33,6 +34,8 @@ async def signal_order_post_save(
     update_fields: List[str],
 ) -> None:
     from rarible_marketplace_indexer.types.rarible_api_objects.order.factory import RaribleApiOrderFactory
+    logging.getLogger("test_kafka").setLevel("INFO")
+    logging.getLogger("test_kafka_order").info(f"test event send {RaribleApiOrderFactory.build(instance)}")
 
     await producer_send(RaribleApiOrderFactory.build(instance))
 
@@ -46,7 +49,6 @@ async def signal_collection_post_save(
     update_fields: List[str],
 ) -> None:
     from rarible_marketplace_indexer.types.rarible_api_objects.collection.factory import RaribleApiCollectionFactory
-
     await producer_send(RaribleApiCollectionFactory.build(instance))
 
 
@@ -61,6 +63,7 @@ async def signal_activity_post_save(
     from rarible_marketplace_indexer.types.rarible_api_objects.activity.order.factory import (
         RaribleApiOrderActivityFactory,
     )
+    logging.getLogger("test_kafka_activity").info(f"test event send {RaribleApiOrderActivityFactory.build(instance)}")
 
     await producer_send(RaribleApiOrderActivityFactory.build(instance))
 
