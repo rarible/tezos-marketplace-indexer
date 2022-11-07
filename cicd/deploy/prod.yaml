@@ -97,6 +97,11 @@ aux-tezos-marketplace-indexer-rarible:
     HASURA_URL: 'http://hasura:8080'
     KAFKA_ENABLED: 'true'
     POSTGRES_HOST: 'tmp-pg1.rarible.int'
+  command: [
+    "dipdup", "-c", "dipdup.yml",
+    "-c", 'dipdup.{{ include "app.env" $ }}.rarible.aux.yml',
+    "run"
+  ]
 
 tzkt:
   instances: ['tzkt', 'aux-tzkt']
