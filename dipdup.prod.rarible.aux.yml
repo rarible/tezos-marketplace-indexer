@@ -24,10 +24,10 @@ datasources:
     kind: ipfs
     url: https://ipfs.io/ipfs
     http:
-      retry_count: 1
-      retry_sleep: 1
+      retry_count: 5
+      retry_sleep: 5
       connection_limit: 100
-      connection_timeout: 5
+      connection_timeout: 60
       batch_size: 10000
 
 database:
@@ -399,3 +399,8 @@ custom:
     bidou_24x24: "KT1TR1ErEQPTdtaJ7hbvKTJSa1tsGnHGZTpf"
     dogami: "KT1NVvPsNDChrLRH5K2cy6Sc9r1uuUwdiZQd"
     dogami_gap: "KT1CAbPGHUWvkSA9bxMPkqSgabgsjtmRYEda"
+
+prometheus:
+  host: 0.0.0.0
+  port: 9191
+  update_interval: 5
