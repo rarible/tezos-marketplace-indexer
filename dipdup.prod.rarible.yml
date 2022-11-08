@@ -292,9 +292,6 @@ hooks:
   import_legacy_orders:
     callback: import_legacy_orders
     atomic: False
-  process_transaction_hash:
-    callback: process_transaction_hash
-    atomic: False
   process_tasks:
     callback: process_tasks
     atomic: False

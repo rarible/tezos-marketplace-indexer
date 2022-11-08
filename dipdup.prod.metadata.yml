@@ -67,6 +67,9 @@ hooks:
   process_collection_metadata:
     callback: process_collection_metadata
     atomic: False
+  process_transaction_hash:
+    callback: process_transaction_hash
+    atomic: False
 
 jobs:
   process_token_metadata:
