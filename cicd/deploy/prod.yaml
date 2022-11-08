@@ -19,7 +19,7 @@ tezos-marketplace-indexer-prod: &tezos-marketplace-indexer-prod
       memory: 3Gi
     requests:
       cpu: 200m
-      memory: 1384Mi
+      memory: 512Mi
 
 tezos-marketplace-indexer-rarible:
   enabled: true
@@ -38,7 +38,7 @@ tezos-marketplace-indexer-metadata:
   enabled: true
   <<: *tezos-marketplace-indexer-prod
   environments:
-    TZKT_URL: http://aux-tzkt:5000
+    TZKT_URL: https://api.tzkt.io
     NETWORK: mainnet
 
 tezos-marketplace-indexer-royalties:
@@ -53,6 +53,14 @@ tezos-marketplace-indexer-royalties:
     requests:
       cpu: '1'
       memory: 1384Mi
+
+tezos-marketplace-indexer-ophash:
+  replicas: 1
+  enabled: true
+  <<: *tezos-marketplace-indexer-prod
+  environments:
+    TZKT_URL: http://aux-tzkt:5000
+    NETWORK: mainnet
 
 tzkt:
   instances: ['aux-tzkt']

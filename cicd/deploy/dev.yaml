@@ -19,6 +19,10 @@ tezos-marketplace-indexer-metadata: *tezos-marketplace-indexer-dev
 
 tezos-marketplace-indexer-royalties: *tezos-marketplace-indexer-dev
 
+tezos-marketplace-indexer-ophash:
+  enabled: false
+  replicas: 0
+
 tzkt:
   network: ghostnet
   service:

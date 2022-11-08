@@ -40,6 +40,10 @@ tezos-marketplace-indexer-royalties:
   <<: *tezos-marketplace-indexer-template
   command: [ "./entrypoint.sh", '{{ include "app.env" $ }}', "royalties", "false"]
 
+tezos-marketplace-indexer-ophash:
+  <<: *tezos-marketplace-indexer-template
+  command: [ "./entrypoint.sh", '{{ include "app.env" $ }}', "ophash", "false"]
+
 hasura:
   updateConfig:
     order: start-first
