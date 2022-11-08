@@ -79,6 +79,8 @@ tezos-marketplace-indexer-royalties:
       memory: 1384Mi
 
 aux-hasura:
+  enabled: false
+  replicas: 0
   resources:
     limits:
       cpu: '1'
@@ -104,7 +106,7 @@ aux-tezos-marketplace-indexer-rarible:
   ]
 
 tzkt:
-  instances: ['tzkt', 'aux-tzkt']
+  instances: ['aux-tzkt']
   api:
     resources:
       limits:
