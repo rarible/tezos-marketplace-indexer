@@ -27,7 +27,7 @@ async def import_origination_transfers(ctx: HookContext):
             token_transfer = await TokenTransfer.get_or_none(id=tx['id'])
             if token_transfer is None:
 
-                is_mint = 'from' in tx
+                is_mint = 'from' not in tx
                 is_burn = 'to' not in tx or tx['to'] in null_addresses
 
                 activity_type = ActivityTypeEnum.TOKEN_TRANSFER
