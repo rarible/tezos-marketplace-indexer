@@ -62,8 +62,8 @@ tezos-marketplace-indexer-metadata:
     KAFKA_ENABLED: 'true'
 
 tezos-marketplace-indexer-royalties:
-  replicas: 0
-  enabled: false
+  replicas: 1
+  enabled: true
   environments:
     TZKT_URL: http://aux-tzkt:5000
     NETWORK: mainnet
