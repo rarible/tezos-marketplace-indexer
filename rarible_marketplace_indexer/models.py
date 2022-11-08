@@ -440,8 +440,9 @@ async def signal_ownership_post_save(
 ) -> None:
     from rarible_marketplace_indexer.types.rarible_api_objects.ownership.factory import RaribleApiOwnershipFactory
 
-    event = RaribleApiOwnershipFactory.build_update(instance)
-    await producer_send(event)
+    if instance.balance > 0:
+        event = RaribleApiOwnershipFactory.build_update(instance)
+        await producer_send(event)
 
 
 @post_delete(Ownership)

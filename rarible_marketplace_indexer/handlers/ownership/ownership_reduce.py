@@ -28,17 +28,15 @@ async def ownership_balance(contract, token_id, owner) -> None:
     amount = result[1][0]['sum']
     if amount is not None:
         if amount < 0:
-            logger.error(f"Amount({amount}) mustn't be negative for ownership: {contract}:{token_id}:{owner}")
-        return amount
-    else:
-        return 0
+            logger.warning(f"Amount({amount}) mustn't be negative for ownership: {contract}:{token_id}:{owner}")
+    return amount
 
 
 async def process(contract, token_id, owner, timestamp) -> None:
     amount = await ownership_balance(contract, token_id, owner)
     ownership_id = Ownership.get_id(contract, token_id, owner)
     ownership = await Ownership.get_or_none(id=ownership_id)
-    if amount > 0:
+    if amount != 0:
         if ownership is not None:
             ownership.balance = amount
             ownership.updated = timestamp

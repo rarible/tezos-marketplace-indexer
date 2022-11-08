@@ -348,6 +348,9 @@ hooks:
     atomic: False
     args:
       id: int
+  process_negative_ownerships:
+    callback: process_negative_ownerships
+    atomic: False
 
 jobs:
 #  process_transaction_hash:
@@ -359,6 +362,11 @@ jobs:
   process_tasks:
     hook: process_tasks
     interval: 60 # seconds
+  process_negative_ownerships:
+    hook: process_negative_ownerships
+    interval: 600
+    args:
+      batch: 5
 
 advanced:
   rollback_depth: 2
