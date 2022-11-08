@@ -22,8 +22,8 @@ tezos-marketplace-indexer-prod: &tezos-marketplace-indexer-prod
       memory: 1384Mi
 
 tezos-marketplace-indexer-rarible:
-  enabled: false
-  replicas: 0
+  enabled: true
+  replicas: 1
   <<: *tezos-marketplace-indexer-prod
   resources:
     limits:
