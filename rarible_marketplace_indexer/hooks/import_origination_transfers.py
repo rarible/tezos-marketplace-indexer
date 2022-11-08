@@ -37,9 +37,12 @@ async def import_origination_transfers(ctx: HookContext):
             if is_mint:
                 activity_type = ActivityTypeEnum.TOKEN_MINT
                 to_address = tx['to']['address']
-            if is_burn:
+            elif is_burn:
                 activity_type = ActivityTypeEnum.TOKEN_BURN
                 from_address = tx['from']['address']
+            else:
+                from_address = tx['from']['address']
+                to_address = tx['to']['address']
 
             if is_mint and is_burn:
                 logger.warning(f"Token {contract}:{tx['token']['tokenId']} was minted to burn")
