@@ -49,8 +49,8 @@ async def validate_transfers(ctx: HookContext, contract, token_id, owner, receiv
         logger.info(f'Getting transactions from tzkt {request}')
         transactions = await tzkt.request(method='get', url=request)
         for tx in transactions:
-            token_transfer = await TokenTransfer.get_or_none(id=tx['id'])
-            is_mint = 'from' not in tx
+            token_transfer = await TokenTransfer.get_or_none(id=int(tx['id']))
+            is_mint = 'from' not in tx or tx['from'] is None
             is_burn = 'to' not in tx or tx['to'] in NULL_ADDRESSES
 
             activity_type = ActivityTypeEnum.TOKEN_TRANSFER
@@ -69,7 +69,7 @@ async def validate_transfers(ctx: HookContext, contract, token_id, owner, receiv
             else:
                 if assert_token_id_length(str(tx['token']['id'])):
                     if token_transfer is None:
-                        token_transfer = TokenTransfer()
+                        token_transfer = TokenTransfer(id=int(tx['id']))
                     transaction_id = None
                     if 'transactionId' in tx:
                         transaction_id = tx['transactionId']
