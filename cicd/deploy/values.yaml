@@ -32,11 +32,6 @@ tezos-marketplace-indexer-rarible:
   <<: *tezos-marketplace-indexer-template
   command: [ "./entrypoint.sh", '{{ include "app.env" $ }}', "rarible", "false"]
 
-
-tezos-marketplace-indexer-tezos:
-  <<: *tezos-marketplace-indexer-template
-  command: [ "./entrypoint.sh", '{{ include "app.env" $ }}', "tezos", "false"]
-
 tezos-marketplace-indexer-metadata:
   <<: *tezos-marketplace-indexer-template
   command: [ "./entrypoint.sh", '{{ include "app.env" $ }}', "metadata", "false"]
@@ -45,7 +40,7 @@ tezos-marketplace-indexer-royalties:
   <<: *tezos-marketplace-indexer-template
   command: [ "./entrypoint.sh", '{{ include "app.env" $ }}', "royalties", "false"]
 
-hasura: &hasura
+hasura:
   updateConfig:
     order: start-first
   image:
@@ -80,17 +75,6 @@ hasura: &hasura
     # provided via secrets
     # HASURA_GRAPHQL_ADMIN_SECRET:
     # HASURA_GRAPHQL_DATABASE_URL:
-
-aux-hasura: *hasura
-
-aux-tezos-marketplace-indexer-rarible:
-  <<: *tezos-marketplace-indexer-template
-  enabled: false
-  command: [
-    "dipdup",
-    "-c", 'dipdup.{{ include "app.env" $ }}.rarible.aux.yml',
-    "run"
-  ]
 
 tzkt:
   updateConfig:

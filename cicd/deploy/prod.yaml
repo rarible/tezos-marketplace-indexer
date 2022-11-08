@@ -25,85 +25,34 @@ tezos-marketplace-indexer-rarible:
   enabled: false
   replicas: 0
   <<: *tezos-marketplace-indexer-prod
-  image:
-    tag: master-3a1f7c-231
-  command: [
-    "dipdup", "-c", "dipdup.yml",
-    "-c", 'dipdup.{{ include "app.env" $ }}.rarible.yml',
-    "run"
-    ]
-
-tezos-marketplace-indexer-tezos:
-  enabled: false
-  replicas: 0
-  <<: *tezos-marketplace-indexer-prod
-  image:
-    tag: master-3a1f7c-231
-  command: [
-    "dipdup", "-c", "dipdup.yml",
-    "-c", 'dipdup.{{ include "app.env" $ }}.tezos.yml',
-    "run"
-  ]
+  resources:
+    limits:
+      cpu: '2'
+      memory: 3Gi
+    requests:
+      cpu: '1'
+      memory: 1384Mi
 
 tezos-marketplace-indexer-metadata:
   replicas: 1
   enabled: true
   <<: *tezos-marketplace-indexer-prod
-  command: [
-    "dipdup",
-    "-c", 'dipdup.{{ include "app.env" $ }}.metadata.aux.yml',
-    "run"
-  ]
   environments:
-    TZKT_URL: http://aux-tzkt:5000
+    TZKT_URL: https://api.tzkt.io
     NETWORK: mainnet
-    POSTGRES_HOST: 'pg1.rarible.int'
-    HASURA_URL: 'http://hasura:8080'
-    KAFKA_ENABLED: 'true'
 
 tezos-marketplace-indexer-royalties:
   replicas: 1
   enabled: true
   environments:
     TZKT_URL: http://aux-tzkt:5000
-    NETWORK: mainnet
-    POSTGRES_HOST: 'pg1.rarible.int'
-    HASURA_URL: 'http://hasura:8080'
-    KAFKA_ENABLED: "false"
   resources:
     limits:
       cpu: '2'
       memory: 3Gi
     requests:
-      cpu: '2'
-      memory: 1384Mi
-
-aux-hasura:
-  enabled: false
-  replicas: 0
-  resources:
-    limits:
       cpu: '1'
-      memory: 1Gi
-    requests:
-      cpu: 100m
-      memory: 256Mi
-
-aux-tezos-marketplace-indexer-rarible:
-  <<: *tezos-marketplace-indexer-prod
-  image:
-    repository: tezos-marketplace-indexer
-  environments:
-    TZKT_URL: https://api.tzkt.io
-    NETWORK: mainnet
-    HASURA_URL: 'http://hasura:8080'
-    KAFKA_ENABLED: 'true'
-    POSTGRES_HOST: 'pg1.rarible.int'
-  command: [
-    "dipdup", "-c", "dipdup.yml",
-    "-c", 'dipdup.{{ include "app.env" $ }}.rarible.aux.yml',
-    "run"
-  ]
+      memory: 1384Mi
 
 tzkt:
   instances: ['aux-tzkt']
@@ -113,7 +62,7 @@ tzkt:
         cpu: '2'
         memory: 3Gi
       requests:
-        cpu: '2'
+        cpu: '1'
         memory: 1384Mi
   indexer:
     resources:

@@ -15,3 +15,33 @@ hasura:
   select_limit: ${HASURA_SELECT_LIMIT:-1000}
   allow_aggregations: true
   rest: true
+
+datasources:
+  tzkt:
+    kind: tzkt
+    url: ${TZKT_URL:-https://api.tzkt.io}
+    http:
+      retry_count: 5
+      retry_sleep: 5
+      connection_limit: 1000
+      connection_timeout: 60
+      batch_size: 1000
+  metadata:
+    kind: metadata
+    url: https://metadata.dipdup.net
+    network: mainnet
+    http:
+      retry_count: 5
+      retry_sleep: 5
+      connection_limit: 1000
+      connection_timeout: 60
+      batch_size: 1000
+  ipfs:
+    kind: ipfs
+    url: https://cloudflare-ipfs.com/ipfs
+    http:
+      retry_count: 5
+      retry_sleep: 5
+      connection_limit: 1000
+      connection_timeout: 60
+      batch_size: 1000

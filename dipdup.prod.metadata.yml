@@ -1,35 +1,5 @@
 spec_version: 1.2
 
-datasources:
-  tzkt:
-    kind: tzkt
-    url: ${TZKT_URL:-https://api.tzkt.io}
-    http:
-      retry_count: 5
-      retry_sleep: 5
-      connection_limit: 1000
-      connection_timeout: 60
-      batch_size: 1000
-  metadata:
-    kind: metadata
-    url: https://metadata.dipdup.net
-    network: mainnet
-    http:
-      retry_count: 5
-      retry_sleep: 5
-      connection_limit: 1000
-      connection_timeout: 60
-      batch_size: 1000
-  ipfs:
-    kind: ipfs
-    url: https://ipfs.io/ipfs
-    http:
-      retry_count: 1
-      retry_sleep: 0
-      connection_limit: 100
-      connection_timeout: 60
-      batch_size: 10000
-
 contracts:
   tzprofile_old:
     address: KT1KsmdYxuJHCMqLRX1PH7JJeXvXaMeicEa7
@@ -89,6 +59,7 @@ indexes:
 #      datasource: tzkt
 #      name_registry: tezos_domains_registry
 
+
 hooks:
   process_token_metadata:
     callback: process_token_metadata
@@ -101,6 +72,10 @@ jobs:
   process_token_metadata:
     hook: process_token_metadata
     crontab: "* * * * *"
+  process_collection_metadata:
+    hook: process_collection_metadata
+    crontab: "* * * * *"
+
 
 advanced:
   rollback_depth: 2
