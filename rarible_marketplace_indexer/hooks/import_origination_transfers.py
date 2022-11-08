@@ -46,7 +46,7 @@ async def import_origination_transfers(ctx: HookContext):
             else:
                 if assert_token_id_length(str(tx['token']['id'])):
                     if token_transfer is None:
-                        token_transfer = TokenTransfer(id=tx['id'])
+                        token_transfer = TokenTransfer(id=int(tx['id']))
                     transaction_id = None
                     if 'transactionId' in tx:
                         transaction_id = tx['transactionId']
