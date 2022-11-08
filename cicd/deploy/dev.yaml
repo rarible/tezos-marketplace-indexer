@@ -9,21 +9,15 @@ tezos-marketplace-indexer-rarible: &tezos-marketplace-indexer-dev
     NETWORK: ghostnet
   resources:
     limits:
+      cpu: '1'
       memory: 768Mi
     requests:
+      cpu: 200m
       memory: 512Mi
-
-tezos-marketplace-indexer-tezos: *tezos-marketplace-indexer-dev
 
 tezos-marketplace-indexer-metadata: *tezos-marketplace-indexer-dev
 
-aux-hasura:
-  replicas: 0
-  enabled: false
-
-aux-tezos-marketplace-indexer-rarible:
-  replicas: 0
-  enabled: false
+tezos-marketplace-indexer-royalties: *tezos-marketplace-indexer-dev
 
 tzkt:
   network: ghostnet

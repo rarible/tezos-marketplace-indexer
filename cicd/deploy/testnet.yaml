@@ -16,11 +16,7 @@ tezos-marketplace-indexer-tezos: *tezos-marketplace-indexer-testnet
 
 tezos-marketplace-indexer-metadata: *tezos-marketplace-indexer-testnet
 
-aux-hasura:
-  replicas: 0
-
-aux-tezos-marketplace-indexer-rarible:
-  replicas: 0
+tezos-marketplace-indexer-royalties: *tezos-marketplace-indexer-testnet
 
 tzkt:
   network: ghostnet
