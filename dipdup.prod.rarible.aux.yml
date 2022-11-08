@@ -348,9 +348,6 @@ hooks:
     atomic: False
     args:
       id: int
-  import_origination_transfers:
-    callback: import_origination_transfers
-    atomic: False
   process_negative_ownerships:
     callback: process_negative_ownerships
     atomic: False
