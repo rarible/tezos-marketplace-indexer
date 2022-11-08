@@ -18,9 +18,9 @@ async def process_negative_ownerships(ctx: HookContext, batch):
     ownerships = await Ownership.filter(balance__lt=0).limit(int(batch))
     if len(ownerships) > 0:
         logger.info(f'Found {len(ownerships)} with negative balance')
-        for ownership in ownerships:
-            try:
-                logger.info(f'Processing ownership id={ownership.full_id()}')
+        try:
+            for ownership in ownerships:
+                logger.info(f'Processing negative ownership id={ownership.full_id()}')
                 dt1 = await validate_transfers(ctx, str(ownership.contract), str(ownership.token_id), str(ownership.owner), True)
                 dt2 = await validate_transfers(ctx, str(ownership.contract), str(ownership.token_id), str(ownership.owner), False)
                 if dt1 is not None or dt2 is not None:
@@ -31,8 +31,9 @@ async def process_negative_ownerships(ctx: HookContext, batch):
                     else:
                         dt = max(dt1, dt2)
                     await process(str(ownership.contract), str(ownership.token_id), str(ownership.owner), dt)
-            except Exception as ex:
-                logger.error(f'Error during getting transfers for ownership={ownership.full_id()}, {ex}')
+            logger.info(f'Finishing processing negative ownerships')
+        except Exception as ex:
+            logger.error(f'Error during getting transfers for ownership={ownership.full_id()}, {ex}')
 
 
 async def validate_transfers(ctx: HookContext, contract, token_id, owner, received):
@@ -42,9 +43,9 @@ async def validate_transfers(ctx: HookContext, contract, token_id, owner, receiv
     dt = None
     while True:
         cond = '' if last_id is None else f"&id.lt={last_id}"
-        transactions = await tzkt.request(
-            method='get', url=f"v1/tokens/transfers?token.contract={contract}&token.tokenId={token_id}&{direction}={owner}&sort.desc=id{cond}"
-        )
+        request = f"v1/tokens/transfers?token.contract={contract}&token.tokenId={token_id}&{direction}={owner}&sort.desc=id{cond}"
+        logger.info(f'Getting transactions from tzkt {request}')
+        transactions = await tzkt.request(method='get', url=request)
         for tx in transactions:
             token_transfer = await TokenTransfer.get_or_none(id=tx['id'])
             if token_transfer is None:
