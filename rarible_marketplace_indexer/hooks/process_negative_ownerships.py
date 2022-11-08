@@ -50,7 +50,7 @@ async def validate_transfers(ctx: HookContext, contract, token_id, owner, receiv
         transactions = await tzkt.request(method='get', url=request)
         for tx in transactions:
             token_transfer = await TokenTransfer.get_or_none(id=tx['id'])
-            is_mint = 'from' not in tx
+            is_mint = 'from' not in tx or tx['from'] is None
             is_burn = 'to' not in tx or tx['to'] in NULL_ADDRESSES
 
             activity_type = ActivityTypeEnum.TOKEN_TRANSFER
