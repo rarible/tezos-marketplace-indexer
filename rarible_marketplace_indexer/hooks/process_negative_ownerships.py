@@ -1,5 +1,6 @@
 import logging
-from datetime import datetime
+import traceback
+import datetime
 
 from dipdup.context import HookContext
 
@@ -31,9 +32,10 @@ async def process_negative_ownerships(ctx: HookContext, batch):
                     else:
                         dt = max(dt1, dt2)
                     await process(str(ownership.contract), str(ownership.token_id), str(ownership.owner), dt)
-            logger.info(f'Finishing processing negative ownerships')
         except Exception as ex:
-            logger.error(f'Error during getting transfers for ownership={ownership.full_id()}, {ex}')
+            trace = traceback.format_exc()
+            logger.error(f'Error during getting transfers for ownership={ownership.full_id()}, {ex}, {trace}')
+    logger.info(f'Finishing processing negative ownerships')
 
 
 async def validate_transfers(ctx: HookContext, contract, token_id, owner, received):
@@ -48,46 +50,47 @@ async def validate_transfers(ctx: HookContext, contract, token_id, owner, receiv
         transactions = await tzkt.request(method='get', url=request)
         for tx in transactions:
             token_transfer = await TokenTransfer.get_or_none(id=tx['id'])
-            if token_transfer is None:
+            is_mint = 'from' not in tx
+            is_burn = 'to' not in tx or tx['to'] in NULL_ADDRESSES
 
-                is_mint = 'from' in tx
-                is_burn = 'to' not in tx or tx['to'] in NULL_ADDRESSES
+            activity_type = ActivityTypeEnum.TOKEN_TRANSFER
+            contract = tx['token']['contract']['address']
+            from_address = None
+            to_address = None
+            if is_mint:
+                activity_type = ActivityTypeEnum.TOKEN_MINT
+                to_address = tx['to']['address']
+            if is_burn:
+                activity_type = ActivityTypeEnum.TOKEN_BURN
+                from_address = tx['from']['address']
 
-                activity_type = ActivityTypeEnum.TOKEN_TRANSFER
-                contract = tx['token']['contract']['address']
-                from_address = None
-                to_address = None
-                if is_mint:
-                    activity_type = ActivityTypeEnum.TOKEN_MINT
-                    to_address = tx['to']['address']
-                if is_burn:
-                    activity_type = ActivityTypeEnum.TOKEN_BURN
-                    from_address = tx['from']['address']
-                if is_mint and is_burn:
-                    logger.warning(f"Token {contract}:{tx['token']['tokenId']} was minted to burn")
-                else:
-                    if assert_token_id_length(str(tx['token']['id'])):
-                        transaction_id = None
-                        if 'transactionId' in tx:
-                            transaction_id = tx['transactionId']
-                        origination_id = None
-                        if 'originationId' in tx:
-                            origination_id = tx['originationId']
-                        token_transfer = await TokenTransfer(
-                            id=tx['id'],
-                            type=activity_type,
-                            date=tx['timestamp'],
-                            tzkt_token_id=tx['token']['id'],
-                            tzkt_transaction_id=transaction_id,
-                            tzkt_origination_id=origination_id,
-                            contract=contract,
-                            token_id=tx['token']['tokenId'],
-                            from_address=from_address,
-                            to_address=to_address,
-                            amount=int(tx['amount']),
-                        )
-                        await token_transfer.save()
-                        logger.info(f'Save transfer with id={token_transfer.id}')
+            if is_mint and is_burn:
+                logger.warning(f"Token {contract}:{tx['token']['tokenId']} was minted to burn")
+            else:
+                if assert_token_id_length(str(tx['token']['id'])):
+                    if token_transfer is None:
+                        token_transfer = TokenTransfer()
+                    transaction_id = None
+                    if 'transactionId' in tx:
+                        transaction_id = tx['transactionId']
+                    origination_id = None
+                    if 'originationId' in tx:
+                        origination_id = tx['originationId']
+                    parsed_time = datetime.datetime.strptime(tx['timestamp'], "%Y-%m-%dT%H:%M:%S%z")
+
+                    token_transfer.type = activity_type
+                    token_transfer.date = parsed_time
+                    token_transfer.tzkt_token_id = tx['token']['id']
+                    token_transfer.tzkt_transaction_id = transaction_id
+                    token_transfer.tzkt_origination_id = origination_id
+                    token_transfer.contract = contract
+                    token_transfer.token_id = tx['token']['tokenId']
+                    token_transfer.from_address = from_address
+                    token_transfer.to_address = to_address
+                    token_transfer.amount = int(tx['amount'])
+
+                    await token_transfer.save()
+                    logger.info(f'Save transfer with id={token_transfer.id}')
             if dt is None:
                 dt = token_transfer.date
             else:
