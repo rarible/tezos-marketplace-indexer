@@ -583,8 +583,8 @@ class AbstractPutBidEvent(EventInterface):
                     order.last_updated_at = transaction.data.timestamp
                     order.make_value = dto.make.value
                     order.take_value = dto.take.value
-                    order.origin_fees = get_json_parts(order.origin_fees) + get_json_parts(dto.origin_fees)
-                    order.payouts = get_json_parts(order.payouts) + get_json_parts(dto.payouts)
+                    order.origin_fees = get_json_parts(dto.origin_fees)
+                    order.payouts = get_json_parts(dto.payouts)
                     await order.save()
 
                 activity_type = ActivityTypeEnum.MAKE_BID
@@ -677,8 +677,8 @@ class AbstractPutFloorBidEvent(EventInterface):
             order.last_updated_at = transaction.data.timestamp
             order.make_value = dto.make.value
             order.take_value = dto.take.value
-            order.origin_fees = get_json_parts(order.origin_fees) + get_json_parts(dto.origin_fees)
-            order.payouts = get_json_parts(order.payouts) + get_json_parts(dto.payouts)
+            order.origin_fees = get_json_parts(dto.origin_fees)
+            order.payouts = get_json_parts(dto.payouts)
             await order.save()
 
         await Activity.create(
