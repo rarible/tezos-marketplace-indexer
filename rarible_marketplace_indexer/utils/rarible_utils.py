@@ -46,7 +46,10 @@ def assert_token_id_length(token_id: str):
 def get_json_parts(parts: List[Part]):
     json_parts: List[Part] = []
     for part in parts:
-        json_parts.append({'part_account': part.part_account, 'part_value': part.part_value})
+        if type(part) is dict:
+            json_parts.append({'part_account': part.get("part_account"), 'part_value': part.get("part_value")})
+        else:
+            json_parts.append({'part_account': part.part_account, 'part_value': part.part_value})
     return json_parts
 
 

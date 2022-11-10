@@ -8,21 +8,7 @@ from typing import List
 from pydantic import BaseModel
 from pydantic import Extra
 
-
-class AbOriginFee(BaseModel):
-    class Config:
-        extra = Extra.forbid
-
-    part_account: str
-    part_value: str
-
-
-class AbPayout(BaseModel):
-    class Config:
-        extra = Extra.forbid
-
-    part_account: str
-    part_value: str
+from rarible_marketplace_indexer.types.rarible_exchange.parameter.sell import Part
 
 
 class AcceptBidParameter(BaseModel):
@@ -34,5 +20,5 @@ class AcceptBidParameter(BaseModel):
     ab_bidder: str
     ab_bid_type: str
     ab_bid_asset: str
-    ab_origin_fees: List[AbOriginFee]
-    ab_payouts: List[AbPayout]
+    ab_origin_fees: List[Part]
+    ab_payouts: List[Part]
