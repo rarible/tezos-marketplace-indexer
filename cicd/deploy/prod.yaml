@@ -54,13 +54,13 @@ tezos-marketplace-indexer-royalties:
       cpu: '1'
       memory: 1384Mi
 
-tezos-marketplace-indexer-ophash:
-  replicas: 1
-  enabled: true
-  <<: *tezos-marketplace-indexer-prod
-  environments:
-    TZKT_URL: http://aux-tzkt:5000
-    NETWORK: mainnet
+#tezos-marketplace-indexer-ophash:
+#  replicas: 1
+#  enabled: true
+#  <<: *tezos-marketplace-indexer-prod
+#  environments:
+#    TZKT_URL: http://aux-tzkt:5000
+#    NETWORK: mainnet
 
 tzkt:
   instances: ['aux-tzkt']
