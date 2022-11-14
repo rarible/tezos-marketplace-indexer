@@ -2,4 +2,4 @@
 
 def pipelineConfig = [:]
 
-serviceCI(pipelineConfig)
+pipelineAppCI(pipelineConfig)
