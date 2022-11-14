@@ -303,6 +303,9 @@ hooks:
   process_negative_ownerships:
     callback: process_negative_ownerships
     atomic: False
+  recalculate_ownerships_by_item:
+    callback: recalculate_ownerships_by_item
+    atomic: False
 
 jobs:
   process_tasks:
@@ -313,9 +316,6 @@ jobs:
     interval: 600
     args:
       batch: 5
-  recalculate_ownerships_by_item:
-    callback: recalculate_ownerships_by_item
-    atomic: False
 
 advanced:
   rollback_depth: 2
