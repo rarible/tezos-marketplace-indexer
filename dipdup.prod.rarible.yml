@@ -306,6 +306,9 @@ hooks:
   recalculate_ownerships_by_item:
     callback: recalculate_ownerships_by_item
     atomic: False
+  recalculate_ownerships:
+    callback: recalculate_ownerships
+    atomic: False
 
 jobs:
   process_tasks:
