@@ -29,7 +29,9 @@ async def ownership_balance(contract, token_id, owner) -> None:
     if amount is not None:
         if amount < 0:
             logger.warning(f"Amount({amount}) mustn't be negative for ownership: {contract}:{token_id}:{owner}")
-    return amount
+        return amount
+    else:
+        return 0
 
 
 async def process(contract, token_id, owner, timestamp) -> None:
