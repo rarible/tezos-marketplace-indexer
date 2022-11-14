@@ -12,7 +12,7 @@ logger = logging.getLogger("dipdup.recalculate_ownerships")
 
 async def recalculate_ownerships(ctx: HookContext, id: int) -> None:
     task = await Tasks.get_or_none(id=id)
-    batch = 1000
+    batch = int(ctx.config.hooks.get('recalculate_ownerships').args.get("batch"))
     try:
         task.status = TaskStatus.RUNNING
         await task.save()

@@ -309,6 +309,8 @@ hooks:
   recalculate_ownerships:
     callback: recalculate_ownerships
     atomic: False
+    args:
+      batch: 2500
 
 jobs:
   process_tasks:
