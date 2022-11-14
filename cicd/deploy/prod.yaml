@@ -55,8 +55,8 @@ tezos-marketplace-indexer-royalties:
       memory: 1384Mi
 
 tezos-marketplace-indexer-ophash:
-  replicas: 0
-  enabled: false
+  replicas: 1
+  enabled: true
   <<: *tezos-marketplace-indexer-prod
   environments:
     TZKT_URL: http://aux-tzkt:5000
