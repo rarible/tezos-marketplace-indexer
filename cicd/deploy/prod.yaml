@@ -25,8 +25,6 @@ tezos-marketplace-indexer-rarible:
   enabled: true
   replicas: 1
   <<: *tezos-marketplace-indexer-prod
-  environments:
-    TZKT_URL: http://aux-tzkt:5000
   resources:
     limits:
       cpu: '2'
