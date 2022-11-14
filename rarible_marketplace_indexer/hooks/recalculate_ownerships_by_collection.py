@@ -8,18 +8,17 @@ from rarible_marketplace_indexer.enums import TaskStatus
 from rarible_marketplace_indexer.handlers.ownership.ownership_reduce import process
 from rarible_marketplace_indexer.models import Tasks, Ownership
 
-logger = logging.getLogger("dipdup.recalculate_ownerships_by_item")
+logger = logging.getLogger("dipdup.recalculate_ownerships_by_collection")
 
 
-async def recalculate_ownerships_by_item(ctx: HookContext, id: int) -> None:
+async def recalculate_ownerships_by_collection(ctx: HookContext, id: int) -> None:
     task = await Tasks.get_or_none(id=id)
     try:
         task.status = TaskStatus.RUNNING
         await task.save()
         param = json.loads(task.param)
         contract = param['contract']
-        token_id = param['token_id']
-        ownerships = await Ownership.filter(contract=contract, token_id=token_id)
+        ownerships = await Ownership.filter(contract=contract)
         for ownership in ownerships:
             logger.info(f"Updating ownership: {ownership.full_id()}")
             await process(ownership.contract, ownership.token_id, ownership.owner, ownership.updated)
