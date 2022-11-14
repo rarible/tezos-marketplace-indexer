@@ -12,6 +12,8 @@ from rarible_marketplace_indexer.models import IndexingStatus
 from rarible_marketplace_indexer.producer.container import ProducerContainer
 from rarible_marketplace_indexer.prometheus.rarible_metrics import RaribleMetrics
 
+logger = logging.getLogger("dipdup.on_restart")
+
 
 async def on_restart(
     ctx: HookContext,
@@ -60,3 +62,7 @@ async def on_restart(
 
     if ctx.config.hooks.get('import_origination_transfers') is not None:
         await ctx.fire_hook('import_origination_transfers')
+
+    if ctx.config.hooks.get('fill_db_updated_at') is not None:
+        batch = ctx.config.hooks.get('fill_db_updated_at').args.get("batch")
+        await ctx.fire_hook('fill_db_updated_at', batch=batch)

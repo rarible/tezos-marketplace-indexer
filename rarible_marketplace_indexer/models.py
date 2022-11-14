@@ -46,6 +46,8 @@ class Activity(Model):
     operation_counter = fields.IntField()
     operation_nonce = fields.IntField(null=True)
 
+    db_updated_at = fields.DatetimeField(auto_now=True, null=True)
+
     def __init__(self, **kwargs: Any) -> None:
         try:
             kwargs['id'] = self.get_id(**kwargs)
@@ -164,6 +166,7 @@ class TokenTransfer(Model):
     amount = AssetValueField()
     hash = OperationHashField(null=True)
     date = fields.DatetimeField(null=False)
+    db_updated_at = fields.DatetimeField(auto_now=True, null=True)
 
 
 class Ownership(Model):
