@@ -313,6 +313,9 @@ jobs:
     interval: 600
     args:
       batch: 5
+  recalculate_ownerships_by_item:
+    callback: recalculate_ownerships_by_item
+    atomic: False
 
 advanced:
   rollback_depth: 2
