@@ -20,8 +20,9 @@ async def recalculate_ownerships_by_collection(ctx: HookContext, id: int) -> Non
         contract = param['contract']
         ownerships = await Ownership.filter(contract=contract)
         for ownership in ownerships:
-            logger.info(f"Updating ownership: {ownership.full_id()}")
+            logger.info(f"Updating ownership {ownership.full_id()}")
             await process(ownership.contract, ownership.token_id, ownership.owner, ownership.updated)
+        logger.info(f"Updated {len(ownerships)} ownerships for {contract}")
         logger.info(f"Task={task.name} finished")
         task.status = TaskStatus.FINISHED
     except Exception as err:
