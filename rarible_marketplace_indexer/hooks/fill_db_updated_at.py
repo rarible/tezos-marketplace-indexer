@@ -8,7 +8,8 @@ from rarible_marketplace_indexer.models import TokenTransfer, Activity
 logger = logging.getLogger("dipdup.fill_db_updated_at")
 
 
-async def fill_db_updated_at(ctx: HookContext, batch: int):
+async def fill_db_updated_at(ctx: HookContext):
+    batch = 10000
     logger.info(f'Starting fill updated_at with batch={batch}...')
     conn = Tortoise.get_connection("default")
 
