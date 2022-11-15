@@ -67,6 +67,11 @@ hooks:
   process_collection_metadata:
     callback: process_collection_metadata
     atomic: False
+  fill_db_updated_at:
+    callback: fill_db_updated_at
+    atomic: False
+    args:
+      batch: 10000
 
 jobs:
   process_token_metadata:
