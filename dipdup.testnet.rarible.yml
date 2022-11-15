@@ -77,31 +77,31 @@ indexes:
           - destination: rarible_bids
             type: transaction
             entrypoint: put_bid
-      - callback: rarible_put_floor_bid
-        pattern:
-          - destination: rarible_bids
-            type: transaction
-            entrypoint: put_floor_bid
+#      - callback: rarible_put_floor_bid
+#        pattern:
+#          - destination: rarible_bids
+#            type: transaction
+#            entrypoint: put_floor_bid
       - callback: rarible_accept_bid
         pattern:
           - destination: rarible_bids
             type: transaction
             entrypoint: accept_bid
-      - callback: rarible_accept_floor_bid
-        pattern:
-          - destination: rarible_bids
-            type: transaction
-            entrypoint: accept_floor_bid
+#      - callback: rarible_accept_floor_bid
+#        pattern:
+#          - destination: rarible_bids
+#            type: transaction
+#            entrypoint: accept_floor_bid
       - callback: rarible_cancel_bid
         pattern:
           - destination: rarible_bids
             type: transaction
             entrypoint: cancel_bid
-      - callback: rarible_cancel_floor_bid
-        pattern:
-          - destination: rarible_bids
-            type: transaction
-            entrypoint: cancel_floor_bid
+#      - callback: rarible_cancel_floor_bid
+#        pattern:
+#          - destination: rarible_bids
+#            type: transaction
+#            entrypoint: cancel_floor_bid
 
   hen_actions:
     kind: operation
