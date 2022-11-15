@@ -62,7 +62,3 @@ async def on_restart(
 
     if ctx.config.hooks.get('import_origination_transfers') is not None:
         await ctx.fire_hook('import_origination_transfers')
-
-    if ctx.config.hooks.get('fill_db_updated_at') is not None:
-        batch = ctx.config.hooks.get('fill_db_updated_at').args.get("batch")
-        await ctx.fire_hook('fill_db_updated_at', batch=batch)
