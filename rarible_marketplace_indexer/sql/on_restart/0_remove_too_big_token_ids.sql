@@ -11,4 +11,5 @@
 --
 --
 --
---
+-- remove frozen tasks
+update tasks set status = 'CANCELED' where status = 'RUNNING' and sample is null;
