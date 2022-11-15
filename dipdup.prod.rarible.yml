@@ -313,7 +313,7 @@ hooks:
     callback: recalculate_ownerships
     atomic: False
     args:
-      batch: 1000
+      batch: 500
 
 jobs:
   process_tasks:
