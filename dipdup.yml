@@ -22,10 +22,12 @@ datasources:
     url: ${TZKT_URL:-https://api.tzkt.io}
     http:
       retry_count: 5
-      retry_sleep: 5
-      connection_limit: 1000
-      connection_timeout: 60
-      batch_size: 1000
+      retry_sleep: 1
+      retry_multiplier: 1.2
+      ratelimit_rate: 100
+      ratelimit_period: 60
+      connection_limit: 25
+      batch_size: 10000
   metadata:
     kind: metadata
     url: https://metadata.dipdup.net
