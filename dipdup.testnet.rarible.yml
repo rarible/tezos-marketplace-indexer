@@ -358,6 +358,11 @@ hooks:
     atomic: False
     args:
       id: int
+  fill_db_updated_at:
+    callback: fill_db_updated_at
+    atomic: False
+    args:
+      batch: 10000
 
 jobs:
   process_transaction_hash:
@@ -369,6 +374,9 @@ jobs:
   process_tasks:
     hook: process_tasks
     interval: 60 # seconds
+  fill_db_updated_at:
+    hook: fill_db_updated_at
+    interval: 30 # seconds
 
 advanced:
   rollback_depth: 2

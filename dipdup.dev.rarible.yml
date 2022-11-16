@@ -321,7 +321,7 @@ indexes:
          pattern:
            - destination: fxhash_v2
              entrypoint: offer_accept
-             
+
   rarible_aggregator_tracker_events:
     kind: event
     datasource: tzkt
@@ -350,6 +350,11 @@ hooks:
   process_transaction_hash:
     callback: process_transaction_hash
     atomic: False
+  fill_db_updated_at:
+    callback: fill_db_updated_at
+    atomic: False
+    args:
+      batch: 10000
 
 jobs:
   process_transaction_hash:
@@ -358,6 +363,9 @@ jobs:
     args:
       iterations: 10
       batch: 100
+  fill_db_updated_at:
+    hook: fill_db_updated_at
+    interval: 30 # seconds
 
 advanced:
   rollback_depth: 2

@@ -1,11 +1,11 @@
-import logging
 import uuid
+import datetime
 from typing import Any, List
 from uuid import uuid5
 
 from tortoise import ForeignKeyFieldInstance
 from tortoise import fields
-from tortoise.signals import post_save, post_delete
+from tortoise.signals import post_save, post_delete, pre_save
 
 from dipdup.models import Model
 from dipdup.models import Transaction
@@ -46,7 +46,7 @@ class Activity(Model):
     operation_counter = fields.IntField()
     operation_nonce = fields.IntField(null=True)
 
-    db_updated_at = fields.DatetimeField(auto_now=True, null=True)
+    db_updated_at = fields.DatetimeField(null=True)
 
     def __init__(self, **kwargs: Any) -> None:
         try:
@@ -166,7 +166,7 @@ class TokenTransfer(Model):
     amount = AssetValueField()
     hash = OperationHashField(null=True)
     date = fields.DatetimeField(null=False)
-    db_updated_at = fields.DatetimeField(auto_now=True, null=True)
+    db_updated_at = fields.DatetimeField(null=True)
 
 
 class Ownership(Model):
@@ -397,6 +397,13 @@ async def signal_collection_post_save(
     await producer_send(RaribleApiCollectionFactory.build(instance))
 
 
+@pre_save(Activity)
+async def signal_activity_transfer_pre_save(sender, instance: Activity, *args, **kwargs) -> None:
+    # we need to truncate microsecond for proper continuation working
+    now = datetime.datetime.now(datetime.timezone.utc)
+    instance.db_updated_at = now.replace(microsecond=round(now.microsecond, -3))
+
+
 @post_save(Activity)
 async def signal_activity_post_save(
     sender: Activity,
@@ -410,6 +417,13 @@ async def signal_activity_post_save(
     )
 
     await producer_send(RaribleApiOrderActivityFactory.build(instance))
+
+
+@pre_save(TokenTransfer)
+async def signal_token_transfer_pre_save(sender, instance: TokenTransfer, *args, **kwargs) -> None:
+    # we need to truncate microsecond for proper continuation working
+    now = datetime.datetime.now(datetime.timezone.utc)
+    instance.db_updated_at = now.replace(microsecond=round(now.microsecond, -3))
 
 
 @post_save(TokenTransfer)
