@@ -490,4 +490,4 @@ async def signal_token_post_save(
 def get_truncated_now():
     now = datetime.datetime.now(datetime.timezone.utc)
     milliseconds = now.microsecond % 1000 * 1000
-    now.replace(microsecond=milliseconds)
+    return now.replace(microsecond=milliseconds)
