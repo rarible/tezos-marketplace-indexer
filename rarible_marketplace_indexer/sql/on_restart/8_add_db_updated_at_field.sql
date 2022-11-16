@@ -19,6 +19,3 @@
 --     END;
 -- $$;
 -- create index concurrently if not exists marketplace_activity_db_updated_at on marketplace_activity (db_updated_at);
-
-update token_transfer set db_updated_at = null;
-update marketplace_activity set db_updated_at = null;

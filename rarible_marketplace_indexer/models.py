@@ -400,8 +400,7 @@ async def signal_collection_post_save(
 @pre_save(Activity)
 async def signal_activity_transfer_pre_save(sender, instance: Activity, *args, **kwargs) -> None:
     # we need to truncate microsecond for proper continuation working
-    now = datetime.datetime.now(datetime.timezone.utc)
-    instance.db_updated_at = now.replace(microsecond=round(now.microsecond, -3))
+    instance.db_updated_at = get_truncated_now()
 
 
 @post_save(Activity)
@@ -422,8 +421,7 @@ async def signal_activity_post_save(
 @pre_save(TokenTransfer)
 async def signal_token_transfer_pre_save(sender, instance: TokenTransfer, *args, **kwargs) -> None:
     # we need to truncate microsecond for proper continuation working
-    now = datetime.datetime.now(datetime.timezone.utc)
-    instance.db_updated_at = now.replace(microsecond=round(now.microsecond, -3))
+    instance.db_updated_at = get_truncated_now()
 
 
 @post_save(TokenTransfer)
@@ -487,3 +485,9 @@ async def signal_token_post_save(
     else:
         event = RaribleApiTokenFactory.build_update(instance)
     await producer_send(event)
+
+
+def get_truncated_now():
+    now = datetime.datetime.now(datetime.timezone.utc)
+    milliseconds = now.microsecond % 1000 * 1000
+    now.replace(microsecond=milliseconds)
