@@ -350,6 +350,9 @@ hooks:
   process_transaction_hash:
     callback: process_transaction_hash
     atomic: False
+  process_tasks:
+    callback: process_tasks
+    atomic: False
   fill_db_updated_at:
     callback: fill_db_updated_at
     atomic: False
