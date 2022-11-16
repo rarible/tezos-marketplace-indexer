@@ -363,6 +363,11 @@ hooks:
     atomic: False
     args:
       batch: 10000
+  fix_db_updated_at:
+    callback: fix_db_updated_at
+    atomic: False
+    args:
+      batch: 10000
 
 jobs:
   process_transaction_hash:
