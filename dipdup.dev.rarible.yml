@@ -362,6 +362,9 @@ hooks:
       batch: 10000
 
 jobs:
+  process_tasks:
+    hook: process_tasks
+    interval: 60 # seconds
   process_transaction_hash:
     hook: process_transaction_hash
     interval: 60 # seconds
