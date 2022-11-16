@@ -80,9 +80,6 @@ jobs:
   process_collection_metadata:
     hook: process_collection_metadata
     crontab: "* * * * *"
-  fill_db_updated_at:
-    hook: fill_db_updated_at
-    crontab: "* * * * *"
 
 advanced:
   rollback_depth: 2
