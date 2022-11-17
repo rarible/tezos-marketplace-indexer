@@ -292,38 +292,8 @@ hooks:
   import_legacy_orders:
     callback: import_legacy_orders
     atomic: False
-  process_tasks:
-    callback: process_tasks
-    atomic: False
-  reset_index:
-    callback: reset_index
-    atomic: False
-    args:
-      id: int
-  process_negative_ownerships:
-    callback: process_negative_ownerships
-    atomic: False
-  recalculate_ownerships_by_item:
-    callback: recalculate_ownerships_by_item
-    atomic: False
-  recalculate_ownerships_by_collection:
-    callback: recalculate_ownerships_by_collection
-    atomic: False
-  recalculate_ownerships:
-    callback: recalculate_ownerships
-    atomic: False
-    args:
-      batch: 1000
-  fix_db_updated_at:
-    callback: fix_db_updated_at
-    atomic: False
-    args:
-      batch: 10000
 
 jobs:
-  process_tasks:
-    hook: process_tasks
-    interval: 60 # seconds
   process_negative_ownerships:
     hook: process_negative_ownerships
     interval: 60
