@@ -293,13 +293,6 @@ hooks:
     callback: import_legacy_orders
     atomic: False
 
-jobs:
-  process_negative_ownerships:
-    hook: process_negative_ownerships
-    interval: 60
-    args:
-      batch: 2
-
 advanced:
   rollback_depth: 2
   early_realtime: False
