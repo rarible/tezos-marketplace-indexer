@@ -72,11 +72,6 @@ hooks:
     atomic: False
     args:
       batch: 10000
-  fix_db_updated_at:
-    callback: fix_db_updated_at
-    atomic: False
-    args:
-      batch: 10000
 
 jobs:
   process_token_metadata:
@@ -85,9 +80,9 @@ jobs:
   process_collection_metadata:
     hook: process_collection_metadata
     crontab: "* * * * *"
-#  fill_db_updated_at:
-#    hook: fill_db_updated_at
-#    crontab: "* * * * *"
+  fill_db_updated_at:
+    hook: fill_db_updated_at
+    crontab: "* * * * *"
 
 advanced:
   rollback_depth: 2
