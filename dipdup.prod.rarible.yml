@@ -113,175 +113,175 @@ indexes:
         contract: rarible_aggregator_tracker
         tag: aggregator_event
 
-#  teia_v1_actions:
-#     kind: operation
-#     datasource: tzkt
-#     contracts:
-#       - teia_v1
-#     types:
-#       - transaction
-#     handlers:
-#       - callback: teia_v1_list_order
-#         pattern:
-#           - destination: teia_v1
-#             type: transaction
-#             entrypoint: swap
-#       - callback: teia_v1_cancel_order
-#         pattern:
-#           - destination: teia_v1
-#             type: transaction
-#             entrypoint: cancel_swap
-#       - callback: teia_v1_match_order
-#         pattern:
-#           - destination: teia_v1
-#             type: transaction
-#             entrypoint: collect
-#
-#  versum:
-#    kind: operation
-#    datasource: tzkt
-#    contracts:
-#      - versum_v1
-#    types:
-#      - transaction
-#    handlers:
-#      - callback: versum_v1_order_list
-#        pattern:
-#          - type: transaction
-#            destination: versum_v1
-#            entrypoint: create_swap
-#      - callback: versum_v1_order_cancel
-#        pattern:
-#          - type: transaction
-#            destination: versum_v1
-#            entrypoint: cancel_swap
-#      - callback: versum_v1_order_match
-#        pattern:
-#          - type: transaction
-#            destination: versum_v1
-#            entrypoint: collect_swap
-#
-#  fxhash_v1_actions:
-#    kind: operation
-#    datasource: tzkt
-#    contracts:
-#      - fxhash_v1
-#    types:
-#      - transaction
-#    first_level: 1832146
-#    handlers:
-#      - callback: fxhash_v1_order_list
-#        pattern:
-#          - destination: fxhash_v1
-#            type: transaction
-#            entrypoint: offer
-#      - callback: fxhash_v1_order_cancel
-#        pattern:
-#          - destination: fxhash_v1
-#            type: transaction
-#            entrypoint: cancel_offer
-#      - callback: fxhash_v1_order_match
-#        pattern:
-#          - destination: fxhash_v1
-#            type: transaction
-#            entrypoint: collect
-#
-#  fxhash_v2_actions:
-#     kind: operation
-#     datasource: tzkt
-#     contracts:
-#       - fxhash_v2
-#     types:
-#       - transaction
-#     first_level: 2280663
-#     handlers:
-#       - callback: fxhash_v2_listing_order_list
-#         pattern:
-#           - destination: fxhash_v2
-#             type: transaction
-#             entrypoint: listing
-#       - callback: fxhash_v2_listing_order_cancel
-#         pattern:
-#           - destination: fxhash_v2
-#             type: transaction
-#             entrypoint: listing_cancel
-#       - callback: fxhash_v2_listing_order_match
-#         pattern:
-#           - destination: fxhash_v2
-#             type: transaction
-#             entrypoint: listing_accept
-#
-#  hen_actions:
-#    kind: operation
-#    datasource: tzkt
-#    contracts:
-#      - hen
-#    types:
-#      - transaction
-#    handlers:
-#      - callback: hen_order_list
-#        pattern:
-#          - destination: hen
-#            type: transaction
-#            entrypoint: swap
-#      - callback: hen_order_cancel_list
-#        pattern:
-#          - destination: hen
-#            type: transaction
-#            entrypoint: cancel_swap
-#      - callback: hen_order_match
-#        pattern:
-#          - destination: hen
-#            type: transaction
-#            entrypoint: collect
-#
-#  objkt_v1_actions:
-#    kind: operation
-#    datasource: tzkt
-#    contracts:
-#      - objkt_v1
-#    types:
-#      - transaction
-#    handlers:
-#      - callback: objkt_v1_order_list
-#        pattern:
-#          - destination: objkt_v1
-#            type: transaction
-#            entrypoint: ask
-#      - callback: objkt_v1_order_cancel_list
-#        pattern:
-#          - destination: objkt_v1
-#            type: transaction
-#            entrypoint: retract_ask
-#      - callback: objkt_v1_order_match
-#        pattern:
-#          - destination: objkt_v1
-#            type: transaction
-#            entrypoint: fulfill_ask
-#
-#  objkt_v2_actions:
-#    kind: operation
-#    datasource: tzkt
-#    contracts:
-#      - objkt_v2
-#    types:
-#      - transaction
-#    handlers:
-#      - callback: objkt_v2_order_list
-#        pattern:
-#          - destination: objkt_v2
-#            type: transaction
-#            entrypoint: ask
-#      - callback: objkt_v2_order_cancel_list
-#        pattern:
-#          - destination: objkt_v2
-#            type: transaction
-#            entrypoint: retract_ask
-#      - callback: objkt_v2_order_match
-#        pattern:
-#          - destination: objkt_v2
-#            type: transaction
-#            entrypoint: fulfill_ask
+  teia_v1_actions:
+     kind: operation
+     datasource: tzkt
+     contracts:
+       - teia_v1
+     types:
+       - transaction
+     handlers:
+       - callback: teia_v1_list_order
+         pattern:
+           - destination: teia_v1
+             type: transaction
+             entrypoint: swap
+       - callback: teia_v1_cancel_order
+         pattern:
+           - destination: teia_v1
+             type: transaction
+             entrypoint: cancel_swap
+       - callback: teia_v1_match_order
+         pattern:
+           - destination: teia_v1
+             type: transaction
+             entrypoint: collect
+
+  versum:
+    kind: operation
+    datasource: tzkt
+    contracts:
+      - versum_v1
+    types:
+      - transaction
+    handlers:
+      - callback: versum_v1_order_list
+        pattern:
+          - type: transaction
+            destination: versum_v1
+            entrypoint: create_swap
+      - callback: versum_v1_order_cancel
+        pattern:
+          - type: transaction
+            destination: versum_v1
+            entrypoint: cancel_swap
+      - callback: versum_v1_order_match
+        pattern:
+          - type: transaction
+            destination: versum_v1
+            entrypoint: collect_swap
+
+  fxhash_v1_actions:
+    kind: operation
+    datasource: tzkt
+    contracts:
+      - fxhash_v1
+    types:
+      - transaction
+    first_level: 1832146
+    handlers:
+      - callback: fxhash_v1_order_list
+        pattern:
+          - destination: fxhash_v1
+            type: transaction
+            entrypoint: offer
+      - callback: fxhash_v1_order_cancel
+        pattern:
+          - destination: fxhash_v1
+            type: transaction
+            entrypoint: cancel_offer
+      - callback: fxhash_v1_order_match
+        pattern:
+          - destination: fxhash_v1
+            type: transaction
+            entrypoint: collect
+
+  fxhash_v2_actions:
+     kind: operation
+     datasource: tzkt
+     contracts:
+       - fxhash_v2
+     types:
+       - transaction
+     first_level: 2280663
+     handlers:
+       - callback: fxhash_v2_listing_order_list
+         pattern:
+           - destination: fxhash_v2
+             type: transaction
+             entrypoint: listing
+       - callback: fxhash_v2_listing_order_cancel
+         pattern:
+           - destination: fxhash_v2
+             type: transaction
+             entrypoint: listing_cancel
+       - callback: fxhash_v2_listing_order_match
+         pattern:
+           - destination: fxhash_v2
+             type: transaction
+             entrypoint: listing_accept
+
+  hen_actions:
+    kind: operation
+    datasource: tzkt
+    contracts:
+      - hen
+    types:
+      - transaction
+    handlers:
+      - callback: hen_order_list
+        pattern:
+          - destination: hen
+            type: transaction
+            entrypoint: swap
+      - callback: hen_order_cancel_list
+        pattern:
+          - destination: hen
+            type: transaction
+            entrypoint: cancel_swap
+      - callback: hen_order_match
+        pattern:
+          - destination: hen
+            type: transaction
+            entrypoint: collect
+
+  objkt_v1_actions:
+    kind: operation
+    datasource: tzkt
+    contracts:
+      - objkt_v1
+    types:
+      - transaction
+    handlers:
+      - callback: objkt_v1_order_list
+        pattern:
+          - destination: objkt_v1
+            type: transaction
+            entrypoint: ask
+      - callback: objkt_v1_order_cancel_list
+        pattern:
+          - destination: objkt_v1
+            type: transaction
+            entrypoint: retract_ask
+      - callback: objkt_v1_order_match
+        pattern:
+          - destination: objkt_v1
+            type: transaction
+            entrypoint: fulfill_ask
+
+  objkt_v2_actions:
+    kind: operation
+    datasource: tzkt
+    contracts:
+      - objkt_v2
+    types:
+      - transaction
+    handlers:
+      - callback: objkt_v2_order_list
+        pattern:
+          - destination: objkt_v2
+            type: transaction
+            entrypoint: ask
+      - callback: objkt_v2_order_cancel_list
+        pattern:
+          - destination: objkt_v2
+            type: transaction
+            entrypoint: retract_ask
+      - callback: objkt_v2_order_match
+        pattern:
+          - destination: objkt_v2
+            type: transaction
+            entrypoint: fulfill_ask
 
 hooks:
   process_collection_events:
