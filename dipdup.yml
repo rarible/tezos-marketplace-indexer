@@ -13,8 +13,8 @@ hasura:
   url: ${HASURA_URL:-http://hasura:8080}
   admin_secret: ${HASURA_GRAPHQL_ADMIN_SECRET:-changeme}
   select_limit: ${HASURA_SELECT_LIMIT:-1000}
-  allow_aggregations: false
-  rest: true
+  allow_aggregations: False
+  rest: False
 
 datasources:
   tzkt:
