@@ -8,6 +8,8 @@ hasura:
     requests:
       cpu: 400m
       memory: 512Mi
+  environments:
+    HASURA_GRAPHQL_CORS_DOMAIN: https://*.rarible.com
 
 tezos-marketplace-indexer-prod: &tezos-marketplace-indexer-prod
   environments:
