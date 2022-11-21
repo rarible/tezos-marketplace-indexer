@@ -83,6 +83,8 @@ hasura:
   readinessProbe: 
     httpGet:
       path: /healthz
+  updateConfig:
+    order: start-first
   environments:
     HASURA_GRAPHQL_ENABLE_CONSOLE: "true"
     HASURA_GRAPHQL_DEV_MODE: "true"
