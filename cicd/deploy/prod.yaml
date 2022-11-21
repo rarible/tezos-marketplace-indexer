@@ -10,6 +10,8 @@ hasura:
       memory: 512Mi
   environments:
     HASURA_GRAPHQL_CORS_DOMAIN: https://*.rarible.com
+    HASURA_GRAPHQL_EVENTS_FETCH_BATCH_SIZE: 100
+    HASURA_GRAPHQL_LIVE_QUERIES_MULTIPLEXED_BATCH_SIZE: 100
 
 tezos-marketplace-indexer-prod: &tezos-marketplace-indexer-prod
   environments:
