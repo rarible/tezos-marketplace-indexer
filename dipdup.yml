@@ -12,7 +12,7 @@ database:
 hasura:
   url: ${HASURA_URL:-http://hasura:8080}
   admin_secret: ${HASURA_GRAPHQL_ADMIN_SECRET:-changeme}
-  select_limit: ${HASURA_SELECT_LIMIT:-1000}
+  select_limit: ${HASURA_SELECT_LIMIT:-100}
   allow_aggregations: False
   rest: False
 
