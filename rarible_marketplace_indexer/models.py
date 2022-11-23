@@ -35,11 +35,12 @@ class Activity(Model):
     make_contract = AccountAddressField(null=True)
     make_token_id = fields.CharField(max_length=256, null=True)
     make_value = AssetValueField()
+    make_price = AssetValueField(null=True)
     take_asset_class = fields.CharEnumField(AssetClassEnum, null=True)
     take_contract = AccountAddressField(null=True)
     take_token_id = fields.CharField(max_length=256, null=True)
     take_value = AssetValueField(null=True)
-
+    take_price = AssetValueField(null=True)
     operation_level = fields.IntField()
     operation_timestamp = fields.DatetimeField()
     operation_hash = OperationHashField()

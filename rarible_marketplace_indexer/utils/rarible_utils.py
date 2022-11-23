@@ -349,6 +349,7 @@ async def import_legacy_order(order: dict):
             make_contract=make.contract,
             make_token_id=make.token_id,
             make_value=make.value,
+            make_price=take.value,
             take_asset_class=take.asset_class,
             take_contract=take.contract,
             take_token_id=take.token_id,
