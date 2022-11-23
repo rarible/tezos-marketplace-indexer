@@ -36,7 +36,7 @@ activity_api_object = RaribleApiOrderMatchActivity(
         asset_type=XtzAssetType(),
         asset_value=Xtz(3),
     ),
-    make_price=AssetValue(9),
+    price=AssetValue(9),
     buyer=ImplicitAccountAddress('tz29tCQDFw8KwaMaBuroze6Sv2qd47nnP5Hv'),
     seller=ImplicitAccountAddress('tz1bn9ud4BmNGSCTWT86gB23ynR7tuWk8gAk'),
 )

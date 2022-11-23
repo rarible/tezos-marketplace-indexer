@@ -21,8 +21,7 @@
       },
       "assetValue": "9"
    },
-   "makePrice": "9",
-   "takePrice": null,
+   "price": "9",
    "buyer": "tz1QjzQd8AuAbLKLa9Jp7bYp3gPrrTsHxDSe",
    "seller": "tz1Ms3JA2ZUSBNKqVABoGpeg3gv2e685XWvf"
 }

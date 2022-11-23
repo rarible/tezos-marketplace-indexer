@@ -34,8 +34,7 @@ class RaribleApiOrderListActivity(AbstractRaribleApiOrderActivity):
     maker: ImplicitAccountAddress
     make: AbstractAsset
     take: Optional[AbstractAsset]
-    make_price: Optional[AssetValue]
-    take_price: Optional[AssetValue]
+    price: AssetValue
 
 
 class RaribleApiOrderMatchActivity(AbstractRaribleApiOrderActivity):
@@ -48,8 +47,7 @@ class RaribleApiOrderMatchActivity(AbstractRaribleApiOrderActivity):
     payment: Optional[AbstractAsset]
     buyer: ImplicitAccountAddress
     seller: ImplicitAccountAddress
-    make_price: Optional[AssetValue]
-    take_price: Optional[AssetValue]
+    price: AssetValue
 
 
 class RaribleApiOrderCancelActivity(AbstractRaribleApiOrderActivity):
