@@ -79,7 +79,9 @@ hasura:
     # provided via secrets
     # HASURA_GRAPHQL_ADMIN_SECRET:
     # HASURA_GRAPHQL_DATABASE_URL:
-
+    HASURA_GRAPHQL_PG_TIMEOUT: 30
+    HASURA_GRAPHQL_PG_CONN_LIFETIME: 30
+    HASURA_GRAPHQL_PG_CONNECTIONS: 100
 tzkt:
   updateConfig:
     order: start-first
