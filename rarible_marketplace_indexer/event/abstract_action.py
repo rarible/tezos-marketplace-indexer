@@ -569,12 +569,12 @@ class AbstractPutBidEvent(EventInterface):
                         make_asset_class=dto.make.asset_class,
                         make_contract=dto.make.contract,
                         make_token_id=dto.make.token_id,
-                        make_value=dto.make.value * dto.take.value,
+                        make_value=dto.make.value,
                         take_asset_class=dto.take.asset_class,
                         take_contract=dto.take.contract,
                         take_token_id=dto.take.token_id,
                         take_value=dto.take.value,
-                        take_price=dto.make.value,
+                        take_price=dto.make.value / dto.take.value,
                         origin_fees=get_json_parts(dto.origin_fees),
                         payouts=get_json_parts(dto.payouts),
                         is_bid=True,
@@ -583,6 +583,7 @@ class AbstractPutBidEvent(EventInterface):
                     order.last_updated_at = transaction.data.timestamp
                     order.make_value = dto.make.value
                     order.take_value = dto.take.value
+                    order.take_price = dto.make.value / dto.take.value
                     order.origin_fees = get_json_parts(dto.origin_fees)
                     order.payouts = get_json_parts(dto.payouts)
                     await order.save()
@@ -663,12 +664,12 @@ class AbstractPutFloorBidEvent(EventInterface):
                 make_asset_class=dto.make.asset_class,
                 make_contract=dto.make.contract,
                 make_token_id=dto.make.token_id,
-                make_value=dto.make.value * dto.take.value,
+                make_value=dto.make.value,
                 take_asset_class=dto.take.asset_class,
                 take_contract=dto.take.contract,
                 take_token_id=dto.take.token_id,
                 take_value=dto.take.value,
-                take_price=dto.make.value,
+                take_price=dto.make.value / dto.take.value,
                 origin_fees=get_json_parts(dto.origin_fees),
                 payouts=get_json_parts(dto.payouts),
                 is_bid=True,
@@ -677,6 +678,7 @@ class AbstractPutFloorBidEvent(EventInterface):
             order.last_updated_at = transaction.data.timestamp
             order.make_value = dto.make.value
             order.take_value = dto.take.value
+            order.take_price = dto.make.value / dto.take.value
             order.origin_fees = get_json_parts(dto.origin_fees)
             order.payouts = get_json_parts(dto.payouts)
             await order.save()

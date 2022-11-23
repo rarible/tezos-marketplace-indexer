@@ -21,6 +21,7 @@ class RaribleApiOrderFactory:
         return RaribleApiOrder(
             id=order.id,
             network=order.network,
+            internal_order_id=order.internal_order_id,
             fill=order.fill,
             platform=order.platform,
             status=order.status,
