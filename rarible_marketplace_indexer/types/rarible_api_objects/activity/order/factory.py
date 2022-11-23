@@ -23,6 +23,8 @@ class RaribleApiOrderActivityFactory:
             maker=ImplicitAccountAddress(activity.maker),
             make=Asset.make_from_model(activity),
             take=Asset.take_from_model(activity),
+            make_price=activity.make_price,
+            take_price=activity.take_price,
             source=activity.platform,
             date=activity.operation_timestamp,
         )
@@ -38,6 +40,8 @@ class RaribleApiOrderActivityFactory:
             payment=Asset.take_from_model(activity),
             buyer=ImplicitAccountAddress(activity.taker),
             seller=ImplicitAccountAddress(activity.maker),
+            make_price=activity.make_price,
+            take_price=activity.take_price,
             source=activity.platform,
             hash=activity.operation_hash,
             date=activity.operation_timestamp,

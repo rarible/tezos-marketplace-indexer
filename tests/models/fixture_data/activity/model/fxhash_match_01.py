@@ -7,6 +7,7 @@ from rarible_marketplace_indexer.models import Activity
 from rarible_marketplace_indexer.models import ActivityTypeEnum
 from rarible_marketplace_indexer.models import PlatformEnum
 from rarible_marketplace_indexer.types.rarible_api_objects.asset.enum import AssetClassEnum
+from rarible_marketplace_indexer.types.tezos_objects.asset_value.asset_value import AssetValue
 from rarible_marketplace_indexer.types.tezos_objects.asset_value.xtz_value import Xtz
 from rarible_marketplace_indexer.types.tezos_objects.tezos_object_hash import ImplicitAccountAddress
 from rarible_marketplace_indexer.types.tezos_objects.tezos_object_hash import OperationHash
@@ -24,10 +25,12 @@ activity_model = Activity(
     make_contract=OriginatedAccountAddress('KT1KEa8z6vWXDJrVqtMrAeDVzsvxat3kHaCE'),
     make_token_id=128493,
     make_value=1,
+    make_price=AssetValue(9),
     take_asset_class=AssetClassEnum.XTZ,
     take_contract=None,
     take_token_id=None,
     take_value=Xtz(9),
+    take_price=None,
     operation_level=1926242,
     operation_timestamp=datetime(2021, 12, 7, 21, 23, 10, tzinfo=UTC),
     operation_hash=OperationHash('onqH9Z8T54frxN3j9HfoZRdkJKFGeKaJ6yz8ZkCGRSgH7u185Tt'),
