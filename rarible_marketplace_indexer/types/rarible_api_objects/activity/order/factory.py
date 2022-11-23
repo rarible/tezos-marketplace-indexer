@@ -23,8 +23,7 @@ class RaribleApiOrderActivityFactory:
             maker=ImplicitAccountAddress(activity.maker),
             make=Asset.make_from_model(activity),
             take=Asset.take_from_model(activity),
-            make_price=activity.make_price,
-            take_price=activity.take_price,
+            price=activity.make_price if activity.make_price is not None else activity.take_price,
             source=activity.platform,
             date=activity.operation_timestamp,
         )
