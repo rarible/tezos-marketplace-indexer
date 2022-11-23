@@ -3,6 +3,7 @@
     "network": "mainnet",
     "platform": "HEN",
     "fill": "9",
+    "internalOrderId": "1354",
     "status": "ACTIVE",
     "startAt": "2021-08-09T13:07:30+00:00",
     "endAt": null,
@@ -27,6 +28,8 @@
         },
         "assetValue": "1"
     },
+    "makePrice": "1",
+    "takePrice": null,
     "originFees": [
         {
             "part_account": "tz1Mxsc66En4HsVHr6rppYZW82ZpLhpupToC",

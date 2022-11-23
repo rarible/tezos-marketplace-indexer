@@ -35,6 +35,8 @@ order_model = Order(
     take_contract=None,
     take_token_id=None,
     take_value=Xtz(35),
+    make_price=AssetValue(1),
+    take_price=None,
     origin_fees=[],
     payouts=[],
 )

@@ -18,6 +18,7 @@ from rarible_marketplace_indexer.types.tezos_objects.tezos_object_hash import Or
 order_api_object = RaribleApiOrder(
     id=UUID('a2beb69a-a505-5a6c-a75a-83e66ac477af'),
     fill=0,
+    internal_order_id='38889',
     platform=PlatformEnum.FXHASH_V1,
     network='mainnet',
     status=OrderStatusEnum.ACTIVE,
@@ -41,6 +42,8 @@ order_api_object = RaribleApiOrder(
         asset_type=XtzAssetType(),
         asset_value=Xtz(35),
     ),
+    make_price=AssetValue(1),
+    take_price=None,
     origin_fees=[],
     payouts=[],
 )

@@ -35,6 +35,8 @@ class RaribleApiOrderFactory:
             taker=order.taker,
             make=Asset.make_from_model(order),
             take=Asset.take_from_model(order),
+            make_price=order.make_price,
+            take_price=order.take_price,
             origin_fees=RaribleApiOrderFactory.get_parts(order.origin_fees),
             payouts=RaribleApiOrderFactory.get_parts(order.payouts),
             salt=order.salt,
