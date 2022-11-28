@@ -60,5 +60,8 @@ async def on_restart(
     if ctx.config.custom.get("reset_new_persistence") == "True":
         await ctx.execute_sql('reset_token_transfers')
 
+    if ctx.config.custom.get("reset_order_data") == "True":
+        await ctx.execute_sql('reset_order_data')
+
     if ctx.config.hooks.get('import_origination_transfers') is not None:
         await ctx.fire_hook('import_origination_transfers')

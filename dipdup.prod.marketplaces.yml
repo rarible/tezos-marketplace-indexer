@@ -63,7 +63,7 @@ indexes:
              type: transaction
              entrypoint: collect
 
-  versum:
+  versum_v1_actions:
     kind: operation
     datasource: tzkt
     contracts:
@@ -233,8 +233,9 @@ custom:
   run_fix_jobs: True
   first_collection_level: 1212040
   reset_new_persistence: False
-  fxhash_nft_v1: KT1BEc3m6yxN856Y4zfArpDqQ1uZZ1HkDTRh
-  fxhash_nft_v2: KT1WSwXCWPPAxAy4ibPmFyCm4NhmSJT9UuxQ
+  reset_order_data: True
+  fxhash_nft_v1: KT1KEa8z6vWXDJrVqtMrAeDVzsvxat3kHaCE
+  fxhash_nft_v2: KT1U6EHmNxJTkvaWJ4ThczG4FSDaHC21ssvi
   royalties:
     hen: "KT1RJ6PbjHpwc3M5rw5s2Nbmefwbuwbdxton"
     hen_royalties: "KT1Hkg5qeNhfwpKW4fXvq7HGZB9z2EnmCCA9"
