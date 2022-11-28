@@ -147,7 +147,7 @@ custom:
   run_fix_jobs: True
   first_collection_level: 1212040
   reset_new_persistence: False
-  reset_order_data: True
+  reset_order_data: False
   fxhash_nft_v1: KT1KEa8z6vWXDJrVqtMrAeDVzsvxat3kHaCE
   fxhash_nft_v2: KT1U6EHmNxJTkvaWJ4ThczG4FSDaHC21ssvi
   royalties:
