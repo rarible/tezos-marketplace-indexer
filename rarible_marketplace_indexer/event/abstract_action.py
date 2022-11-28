@@ -204,29 +204,30 @@ class AbstractOrderCancelEvent(EventInterface):
                 cancel_activity.type = ActivityTypeEnum.ORDER_CANCEL
                 await cancel_activity.save()
 
-        order = (
-            await Order.filter(
-                network=os.getenv("NETWORK"),
-                platform=cls.platform,
-                internal_order_id=dto.internal_order_id,
-                status=OrderStatusEnum.ACTIVE,
-                make_asset_class=last_order_activity.make_asset_class,
-                take_asset_class=last_order_activity.take_asset_class,
+        if last_order_activity is not None:
+            order = (
+                await Order.filter(
+                    network=os.getenv("NETWORK"),
+                    platform=cls.platform,
+                    internal_order_id=dto.internal_order_id,
+                    status=OrderStatusEnum.ACTIVE,
+                    make_asset_class=last_order_activity.make_asset_class,
+                    take_asset_class=last_order_activity.take_asset_class,
+                )
+                .order_by('-id')
+                .first()
             )
-            .order_by('-id')
-            .first()
-        )
 
-        if order is not None:
-            order.status = OrderStatusEnum.CANCELLED
-            order.cancelled = True
-            order.ended_at = transaction.data.timestamp
-            order.last_updated_at = transaction.data.timestamp
+            if order is not None:
+                order.status = OrderStatusEnum.CANCELLED
+                order.cancelled = True
+                order.ended_at = transaction.data.timestamp
+                order.last_updated_at = transaction.data.timestamp
 
-            await order.save()
+                await order.save()
 
-        if RaribleMetrics.enabled is True:
-            RaribleMetrics.set_order_activity(cls.platform, ActivityTypeEnum.ORDER_CANCEL, 1)
+            if RaribleMetrics.enabled is True:
+                RaribleMetrics.set_order_activity(cls.platform, ActivityTypeEnum.ORDER_CANCEL, 1)
 
 
 class AbstractLegacyOrderCancelEvent(EventInterface):
@@ -332,38 +333,38 @@ class AbstractOrderMatchEvent(EventInterface):
                 .order_by('-operation_level')
                 .first()
             )
-
-            order = (
-                await Order.filter(
-                    network=os.getenv("NETWORK"),
-                    platform=cls.platform,
-                    internal_order_id=dto.internal_order_id,
-                    status=OrderStatusEnum.ACTIVE,
-                    make_asset_class=last_list_activity.make_asset_class,
-                    take_asset_class=last_list_activity.take_asset_class,
-                )
-                .order_by('-id')
-                .first()
-            )
-
-            if order is not None:
-                order.last_updated_at = transaction.data.timestamp
-                order = cls._process_order_match(order, dto)
-                await order.save()
-
             if last_list_activity is not None:
-                match_activity = last_list_activity.apply(transaction)
+                order = (
+                    await Order.filter(
+                        network=os.getenv("NETWORK"),
+                        platform=cls.platform,
+                        internal_order_id=dto.internal_order_id,
+                        status=OrderStatusEnum.ACTIVE,
+                        make_asset_class=last_list_activity.make_asset_class,
+                        take_asset_class=last_list_activity.take_asset_class,
+                    )
+                    .order_by('-id')
+                    .first()
+                )
 
-                match_activity.type = ActivityTypeEnum.ORDER_MATCH
-                match_activity.taker = transaction.data.sender_address
+                if order is not None:
+                    order.last_updated_at = transaction.data.timestamp
+                    order = cls._process_order_match(order, dto)
+                    await order.save()
 
-                match_activity.make_value = dto.match_amount
-                match_activity.take_value = AssetValue(order.make_price * dto.match_amount)
+                if last_list_activity is not None:
+                    match_activity = last_list_activity.apply(transaction)
 
-                await match_activity.save()
+                    match_activity.type = ActivityTypeEnum.ORDER_MATCH
+                    match_activity.taker = transaction.data.sender_address
 
-            if RaribleMetrics.enabled is True:
-                RaribleMetrics.set_order_activity(cls.platform, ActivityTypeEnum.ORDER_MATCH, 1)
+                    match_activity.make_value = dto.match_amount
+                    match_activity.take_value = AssetValue(order.make_price * dto.match_amount)
+
+                    await match_activity.save()
+
+                if RaribleMetrics.enabled is True:
+                    RaribleMetrics.set_order_activity(cls.platform, ActivityTypeEnum.ORDER_MATCH, 1)
 
 
 class AbstractLegacyOrderMatchEvent(EventInterface):

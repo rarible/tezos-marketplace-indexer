@@ -57,7 +57,6 @@ indexes:
     datasource: tzkt
     contracts:
         - rarible_exchange
-        - rarible_exchange_old
     types:
       - transaction
     handlers:
