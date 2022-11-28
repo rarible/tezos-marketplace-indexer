@@ -15,6 +15,10 @@ tezos-marketplace-indexer-rarible: &tezos-marketplace-indexer-dev
       cpu: 200m
       memory: 512Mi
 
+tezos-marketplace-indexer-marketplaces:
+  enabled: false
+  replicas: 0
+
 tezos-marketplace-indexer-metadata: *tezos-marketplace-indexer-dev
 
 tezos-marketplace-indexer-royalties: *tezos-marketplace-indexer-dev

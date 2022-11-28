@@ -32,6 +32,10 @@ tezos-marketplace-indexer-rarible:
   <<: *tezos-marketplace-indexer-template
   command: [ "./entrypoint.sh", '{{ include "app.env" $ }}', "rarible", "false"]
 
+tezos-marketplace-indexer-marketplaces:
+  <<: *tezos-marketplace-indexer-template
+  command: [ "./entrypoint.sh", '{{ include "app.env" $ }}', "marketplaces", "false"]
+
 tezos-marketplace-indexer-metadata:
   <<: *tezos-marketplace-indexer-template
   command: [ "./entrypoint.sh", '{{ include "app.env" $ }}', "metadata", "false"]

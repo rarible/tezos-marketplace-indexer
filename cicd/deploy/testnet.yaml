@@ -12,6 +12,10 @@ tezos-marketplace-indexer-rarible: &tezos-marketplace-indexer-testnet
     requests:
       memory: 512Mi
 
+tezos-marketplace-indexer-marketplaces:
+  enabled: false
+  replicas: 0
+
 tezos-marketplace-indexer-tezos: *tezos-marketplace-indexer-testnet
 
 tezos-marketplace-indexer-metadata: *tezos-marketplace-indexer-testnet
