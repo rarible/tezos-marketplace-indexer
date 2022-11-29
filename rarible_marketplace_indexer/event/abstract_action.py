@@ -66,9 +66,9 @@ class AbstractOrderListEvent(EventInterface):
                     internal_order_id=dto.internal_order_id,
                     network=os.getenv("NETWORK"),
                     platform=cls.platform,
-                    status=OrderStatusEnum.ACTIVE,
                     make_asset_class=dto.make.asset_class,
                     take_asset_class=dto.take.asset_class,
+                    created_at=transaction.data.timestamp
                 )
 
                 if dto.take.asset_class == AssetClassEnum.FUNGIBLE_TOKEN:
@@ -199,10 +199,22 @@ class AbstractOrderCancelEvent(EventInterface):
         )
         if last_order_activity is not None:
             if last_order_activity.type is not ActivityTypeEnum.ORDER_CANCEL:
-                cancel_activity = last_order_activity.apply(transaction)
+                last_cancel_activity = (
+                    await Activity.filter(
+                        network=os.getenv("NETWORK"),
+                        platform=cls.platform,
+                        internal_order_id=dto.internal_order_id,
+                        type=ActivityTypeEnum.ORDER_CANCEL,
+                        operation_hash=transaction.data.hash
+                    )
+                    .order_by('-operation_level')
+                    .first()
+                )
+                if last_cancel_activity is None:
+                    cancel_activity = last_order_activity.apply(transaction)
 
-                cancel_activity.type = ActivityTypeEnum.ORDER_CANCEL
-                await cancel_activity.save()
+                    cancel_activity.type = ActivityTypeEnum.ORDER_CANCEL
+                    await cancel_activity.save()
 
         if last_order_activity is not None:
             order = (
@@ -280,6 +292,7 @@ class AbstractLegacyOrderCancelEvent(EventInterface):
                         platform=cls.platform,
                         order_id=order.id,
                         type=ActivityTypeEnum.ORDER_CANCEL,
+                        operation_hash=transaction.data.hash
                     )
                     .order_by('-operation_timestamp')
                     .first()
@@ -339,7 +352,6 @@ class AbstractOrderMatchEvent(EventInterface):
                         network=os.getenv("NETWORK"),
                         platform=cls.platform,
                         internal_order_id=dto.internal_order_id,
-                        status=OrderStatusEnum.ACTIVE,
                         make_asset_class=last_list_activity.make_asset_class,
                         take_asset_class=last_list_activity.take_asset_class,
                     )
@@ -353,15 +365,27 @@ class AbstractOrderMatchEvent(EventInterface):
                     await order.save()
 
                 if last_list_activity is not None:
-                    match_activity = last_list_activity.apply(transaction)
+                    last_match_activity = (
+                        await Activity.filter(
+                            network=os.getenv("NETWORK"),
+                            platform=cls.platform,
+                            internal_order_id=dto.internal_order_id,
+                            type=ActivityTypeEnum.ORDER_MATCH,
+                            operation_hash=transaction.data.hash
+                        )
+                        .order_by('-operation_level')
+                        .first()
+                    )
+                    if last_match_activity is None:
+                        match_activity = last_list_activity.apply(transaction)
 
-                    match_activity.type = ActivityTypeEnum.ORDER_MATCH
-                    match_activity.taker = transaction.data.sender_address
+                        match_activity.type = ActivityTypeEnum.ORDER_MATCH
+                        match_activity.taker = transaction.data.sender_address
 
-                    match_activity.make_value = dto.match_amount
-                    match_activity.take_value = AssetValue(order.make_price * dto.match_amount)
+                        match_activity.make_value = dto.match_amount
+                        match_activity.take_value = AssetValue(order.make_price * dto.match_amount)
 
-                    await match_activity.save()
+                        await match_activity.save()
 
                 if RaribleMetrics.enabled is True:
                     RaribleMetrics.set_order_activity(cls.platform, ActivityTypeEnum.ORDER_MATCH, 1)
@@ -485,6 +509,7 @@ class AbstractLegacyOrderMatchEvent(EventInterface):
                             network=os.getenv("NETWORK"),
                             platform=cls.platform,
                             id=match_activity.id,
+                            operation_hash=transaction.data.hash
                         )
                         .order_by('-operation_timestamp')
                         .first()
