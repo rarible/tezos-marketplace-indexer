@@ -12,7 +12,7 @@ contracts:
     address: KT1NcKyhPnomH9PKGeDfvMiGH2PDgKCd5YuM
     typename: rarible_exchange
   rarible_bids:
-    address: KT1MwKGYWWbXtfYdnQfwspwz5ZGfqGwiJuQF
+    address: KT1NupBq4WbZ5q9Sh2kezJtmHtMhiBycn9zx
     typename: rarible_bids
   rarible_aggregator_tracker:
     address: KT1DajvCNVScudRm3kCHPfUjsRCtmPnm375s
