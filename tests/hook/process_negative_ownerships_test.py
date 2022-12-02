@@ -8,7 +8,7 @@ from dipdup.config import SqliteDatabaseConfig
 from dipdup.dipdup import DipDup
 from tortoise import connections
 
-from rarible_marketplace_indexer.hooks.process_negative_ownerships import validate_transfers
+from rarible_marketplace_indexer.hooks.process_negative_ownerships import resaving_transfers
 
 config_path = join(dirname(__file__), 'rarible_config.yml')
 config = DipDupConfig.load([config_path])
@@ -50,5 +50,5 @@ async def create_test_dipdup(config: DipDupConfig, stack: AsyncExitStack) -> Dip
 #         async with AsyncExitStack() as stack:
 #             dipdup = await create_test_dipdup(config, stack)
 #             ctx = dipdup._ctx
-#             await validate_transfers(ctx, 'KT1U6EHmNxJTkvaWJ4ThczG4FSDaHC21ssvi', '1275752', 'tz1RT94jREafiHzgtmkKbiVnDynriUYEi62D', True)
+#             await resaving_transfers(ctx, 'KT1U6EHmNxJTkvaWJ4ThczG4FSDaHC21ssvi', '1275752', 'tz1RT94jREafiHzgtmkKbiVnDynriUYEi62D', True)
 
