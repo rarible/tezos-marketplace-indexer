@@ -115,6 +115,7 @@ jobs:
     interval: 120
     args:
       batch: 2
+      remove: True
 #  fill_db_updated_at:
 #    hook: fill_db_updated_at
 #    crontab: "* * * * *"
