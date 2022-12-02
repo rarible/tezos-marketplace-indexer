@@ -13,8 +13,8 @@ logger = logging.getLogger("dipdup.process_negative_ownerships")
 NULL_ADDRESSES = [None, "tz1burnburnburnburnburnburnburjAYjjX", "tz1Ke2h7sDdakHJQh8WX4Z372du1KChsksyU"]
 
 
-async def process_negative_ownerships(ctx: HookContext, batch):
-    logger.info(f'Starting process_negative_ownerships')
+async def process_negative_ownerships(ctx: HookContext, batch, remove):
+    logger.info(f'Starting process_negative_ownerships with batch={batch}, remove={remove}')
 
     ownerships = await Ownership.filter(balance__lt=0).limit(int(batch))
     if len(ownerships) > 0:
@@ -22,8 +22,16 @@ async def process_negative_ownerships(ctx: HookContext, batch):
         try:
             for ownership in ownerships:
                 logger.info(f'Processing negative ownership id={ownership.full_id()}')
-                dt1 = await validate_transfers(ctx, str(ownership.contract), str(ownership.token_id), str(ownership.owner), True)
-                dt2 = await validate_transfers(ctx, str(ownership.contract), str(ownership.token_id), str(ownership.owner), False)
+
+                # remove existed token_transfers
+                if remove == 'True':
+                    await TokenTransfer.filter(contract=ownership.contract, token_id=ownership.token_id, to_address=ownership.owner).delete()
+                    await TokenTransfer.filter(contract=ownership.contract, token_id=ownership.token_id, from_address=ownership.owner).delete()
+                    logger.info(f'Removed transfers belong to ownership id={ownership.full_id()}')
+
+                # getting tz from tzkt
+                dt1 = await resaving_transfers(ctx, str(ownership.contract), str(ownership.token_id), str(ownership.owner), True)
+                dt2 = await resaving_transfers(ctx, str(ownership.contract), str(ownership.token_id), str(ownership.owner), False)
                 if dt1 is not None or dt2 is not None:
                     if dt1 is None and dt2 is not None:
                         dt = dt2
@@ -38,7 +46,7 @@ async def process_negative_ownerships(ctx: HookContext, batch):
     logger.info(f'Finishing processing negative ownerships')
 
 
-async def validate_transfers(ctx: HookContext, contract, token_id, owner, received):
+async def resaving_transfers(ctx: HookContext, contract, token_id, owner, received):
     tzkt = ctx.get_tzkt_datasource('tzkt')
     last_id = None
     direction = 'to' if received else 'from'
