@@ -8,10 +8,10 @@ from rarible_marketplace_indexer.enums import TaskStatus
 from rarible_marketplace_indexer.handlers.ownership.ownership_reduce import process
 from rarible_marketplace_indexer.models import Tasks, TokenTransfer
 
-logger = logging.getLogger("dipdup.recalculate_ownerships_by_item")
+logger = logging.getLogger("dipdup.recalculate_ownerships_by_id")
 
 
-async def recalculate_ownerships_by_item(ctx: HookContext, id: int) -> None:
+async def recalculate_ownerships_by_id(ctx: HookContext, id: int) -> None:
     task = await Tasks.get_or_none(id=id)
     try:
         task.status = TaskStatus.RUNNING
