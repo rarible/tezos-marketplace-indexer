@@ -81,6 +81,9 @@ hooks:
   recalculate_ownerships_by_item:
     callback: recalculate_ownerships_by_item
     atomic: False
+  recalculate_ownerships_by_owner:
+    callback: recalculate_ownerships_by_owner
+    atomic: False
   recalculate_ownerships_by_collection:
     callback: recalculate_ownerships_by_collection
     atomic: False
