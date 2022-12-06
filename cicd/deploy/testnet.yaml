@@ -1,8 +1,12 @@
 hasura:
+  enabled: false
+  replicas: 0
   service:
     nodePort: 30439
 
 tezos-marketplace-indexer-rarible: &tezos-marketplace-indexer-testnet
+  enabled: false
+  replicas: 0
   environments:
     TZKT_URL: https://api.ghostnet.tzkt.io
     NETWORK: ghostnet
