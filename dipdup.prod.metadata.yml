@@ -99,7 +99,7 @@ hooks:
     callback: recalculate_ownerships_by_transfers
     atomic: False
     args:
-      batch: 5000
+      batch: 1000
   fix_db_updated_at:
     callback: fix_db_updated_at
     atomic: False
