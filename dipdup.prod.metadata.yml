@@ -114,7 +114,7 @@ hooks:
 jobs:
   process_tasks:
     hook: process_tasks
-    interval: 60 # seconds
+    interval: 100 # seconds
   process_token_metadata:
     hook: process_token_metadata
     crontab: "* * * * *"
