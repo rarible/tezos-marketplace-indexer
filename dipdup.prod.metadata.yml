@@ -95,6 +95,11 @@ hooks:
     atomic: False
     args:
       batch: 1000
+  recalculate_ownerships_by_transfers:
+    callback: recalculate_ownerships_by_transfers
+    atomic: False
+    args:
+      batch: 5000
   fix_db_updated_at:
     callback: fix_db_updated_at
     atomic: False
