@@ -1,4 +1,5 @@
-
+from asyncio import create_task
+from asyncio import gather
 import logging
 import traceback
 
@@ -50,9 +51,11 @@ async def recalculate_ownerships_by_transfers(ctx: HookContext, id: int) -> None
                     ownership = f"{tx['contract']}:{tx['token_id']}:{tx['to_address']}"
                     if ownership not in ownerships or ownerships[ownership] < tx['date']:
                         ownerships[ownership] = tx['date']
+            tasks = []
             for key, value in ownerships.items():
                 contract, token_id, owner = key.split(':')
-                await process(contract, token_id, owner, value)
+                tasks.append(create_task(process(contract, token_id, owner, value)))
+            await gather(*tasks)
             task.sample = sample(result[1][-1])  # last item
             logger.info(f"Found {result[0]} tx -> {len(ownerships)} ownerships, sample: {task.sample}")
         else:
