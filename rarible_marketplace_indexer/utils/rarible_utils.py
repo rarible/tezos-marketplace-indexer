@@ -408,7 +408,7 @@ async def get_key_for_big_map(ctx: DipDupContext, contract: str, name: str, key:
             method='get', url=f'/v1/contracts/{contract}/bigmaps/{name}/keys/{key}'
         )
     except Exception as ex:
-        logging.getLogger("get_key_for_big_map").error(ex)
+        #logging.getLogger("get_key_for_big_map").error(ex)
         return None
 
 
