@@ -19,10 +19,15 @@ async def reset_royalty_flag(ctx: HookContext, id: int) -> None:
         await task.save()
 
         conn = Tortoise.get_connection("default")
-        await conn.execute_query(
+        result = await conn.execute_query(
         """
-        update royalties set royalties_synced = false where royalties_synced = true and parts @> '[{"part_value":"0"}]'
+        WITH rows AS (
+            update royalties set royalties_synced = false where royalties_synced = true and parts @> '[{"part_value":"0"}]'
+            RETURNING 1
+        )
+        SELECT count(*) FROM rows;
         """)
+        logger.info(f"Reset {result[1][0]['count']} royalties")
 
         logger.info(f"Task={task.name} finished")
         task.status = TaskStatus.FINISHED
