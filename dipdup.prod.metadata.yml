@@ -81,14 +81,25 @@ hooks:
   recalculate_ownerships_by_item:
     callback: recalculate_ownerships_by_item
     atomic: False
+  recalculate_ownerships_by_owner:
+    callback: recalculate_ownerships_by_owner
+    atomic: False
   recalculate_ownerships_by_collection:
     callback: recalculate_ownerships_by_collection
+    atomic: False
+  recalculate_ownerships_by_id:
+    callback: recalculate_ownerships_by_id
     atomic: False
   recalculate_ownerships:
     callback: recalculate_ownerships
     atomic: False
     args:
       batch: 1000
+  recalculate_ownerships_by_transfers:
+    callback: recalculate_ownerships_by_transfers
+    atomic: False
+    args:
+      batch: 1500
   fix_db_updated_at:
     callback: fix_db_updated_at
     atomic: False
