@@ -56,7 +56,7 @@ tezos-marketplace-indexer-royalties:
   replicas: 1
   enabled: true
   environments:
-    TZKT_URL: https://api.tzkt.io
+    TZKT_URL: http://aux-tzkt:5000
   resources:
     limits:
       cpu: '2'
