@@ -425,6 +425,12 @@ async def signal_token_transfer_pre_save(sender, instance: TokenTransfer, *args,
     instance.db_updated_at = get_truncated_now()
 
 
+@pre_save(Royalties)
+async def signal_royalties_pre_save(sender, instance: Activity, *args, **kwargs) -> None:
+    # we need to truncate microsecond for proper continuation working
+    instance.db_updated_at = get_truncated_now()
+
+
 @post_save(TokenTransfer)
 async def signal_token_transfer_post_save(
     sender: TokenTransfer,
