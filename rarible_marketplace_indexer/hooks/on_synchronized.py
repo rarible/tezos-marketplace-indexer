@@ -15,5 +15,3 @@ async def on_synchronized(
         if ctx.config.custom.get("run_fix_jobs") is True:
             asyncio.ensure_future(cancel_obsolete_v1_orders())
             asyncio.ensure_future(fix_v1_fill_value())
-
-
