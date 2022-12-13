@@ -42,7 +42,6 @@ templates:
   objkt_v2_actions_template:
     kind: operation
     datasource: tzkt
-    first_level: 2962592
     contracts:
       - <contract>
     types:
@@ -65,10 +64,6 @@ templates:
             entrypoint: fulfill_ask
 
 indexes:
-  objkt_v2_actions:
-    template: objkt_v2_actions_template
-    values:
-      contract: objkt_v2
 
 hooks:
   reprocess_transactions:
@@ -76,6 +71,7 @@ hooks:
     atomic: False
     args:
       index_name: objkt_v2_actions
+      contract: objkt_v2
       first_level: 2962592
       last_level: 2962692
 

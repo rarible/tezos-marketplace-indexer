@@ -16,9 +16,4 @@ async def on_synchronized(
             asyncio.ensure_future(cancel_obsolete_v1_orders())
             asyncio.ensure_future(fix_v1_fill_value())
 
-    await ctx.fire_hook(
-        'reprocess_transactions',
-        index_name=ctx.config.hooks.get("reprocess_transactions").args.get("index_name"),
-        first_level=ctx.config.hooks.get("reprocess_transactions").args.get("first_level"),
-        last_level=ctx.config.hooks.get("reprocess_transactions").args.get("last_level")
-    )
+
