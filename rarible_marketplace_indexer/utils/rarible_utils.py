@@ -328,7 +328,6 @@ async def import_legacy_order(order: dict):
 
     last_order_activity = (
         await Activity.filter(
-            network=os.getenv("NETWORK"),
             platform=PlatformEnum.RARIBLE_V1,
             internal_order_id=internal_order_id,
             operation_timestamp=datetime.strptime(order["createdAt"], date_pattern),
