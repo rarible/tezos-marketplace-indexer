@@ -1,0 +1,118 @@
+spec_version: 1.2
+
+contracts:
+  rarible_exchange_legacy:
+    address: KT198mqFKkiWerXLmMCw69YB1i6yzYtmGVrC
+    typename: rarible_exchange_legacy
+  rarible_exchange_legacy_data:
+    address: KT1D2fZiUNo6RPj3zKofH8DqDDgoV7KoyEbb
+    typename: rarible_exchange_legacy_data
+  rarible_exchange:
+    address: KT1N4Rrm6BU6229drs6scrH3vard1pPngMyA
+    typename: rarible_exchange
+  rarible_exchange_old:
+    address:  KT1GbPqXZ3yLUNWa7MdMiksJddD7TskTpuGU
+    typename: rarible_exchange
+  rarible_aggregator_tracker:
+    address: KT1Gv1tPJ3nU5T6VmFc12M6NKc5i51MYVPjG
+    typename: rarible_aggregator_tracker
+  versum_v1:
+    address: KT1GyRAJNdizF1nojQz62uGYkx8WFRUJm9X5
+    typename: versum_v1
+  teia_v1:
+    address: KT1PHubm9HtyQEJ4BBpMTVomq6mhbfNZ9z5w
+    typename: teia_v1
+  fxhash_v1:
+    address: KT1Xo5B7PNBAeynZPmca4bRh6LQow4og1Zb9
+    typename: fxhash_v1
+  fxhash_v2:
+    address: KT1GbyoDi7H1sfXmimXpptZJuCdHMh66WS9u
+    typename: fxhash_v2
+  hen:
+    address: KT1HbQepzV1nVGg8QVznG7z4RcHseD5kwqBn
+    typename: hen_marketplace
+  objkt_v1:
+    address: KT1FvqJwEDWb1Gwc55Jd1jjTHRVWbYKUUpyq
+    typename: objkt_marketplace
+  objkt_v2:
+    address: KT1WvzYHCNBvDSdwafTHv7nJ1dWmZ8GCYuuC
+    typename: objkt_marketplace_v2
+
+templates:
+  objkt_v2_actions_template:
+    kind: operation
+    datasource: tzkt
+    contracts:
+      - <contract>
+    types:
+      - transaction
+    handlers:
+      - callback: objkt_v2_order_list
+        pattern:
+          - destination: objkt_v2
+            type: transaction
+            entrypoint: ask
+      - callback: objkt_v2_order_cancel_list
+        pattern:
+          - destination: objkt_v2
+            type: transaction
+            entrypoint: retract_ask
+      - callback: objkt_v2_order_match
+        pattern:
+          - destination: objkt_v2
+            type: transaction
+            entrypoint: fulfill_ask
+
+indexes:
+
+hooks:
+  reprocess_transactions:
+    callback: reprocess_transactions
+    atomic: False
+    args:
+      index_name: objkt_v2_actions
+      contract: objkt_v2
+      first_level: 2962592
+      last_level: 2962692
+
+advanced:
+  rollback_depth: 2
+  early_realtime: False
+  skip_version_check: False
+  metadata_interface: True
+  reindex:
+    manual: wipe
+    migration: exception
+    rollback: ignore
+    config_modified: ignore
+    schema_modified: ignore
+
+custom:
+  enabled: ${KAFKA_ENABLED:-false}
+  kafka_address: ${KAFKA_ADDRESS:-kafka:9092}
+  client_id: dipdup-rarible-${APPLICATION_ENVIRONMENT:-mainnet}-producer
+  kafka_security_protocol: ${KAFKA_SECURITY_PROTOCOL:-SASL_PLAINTEXT}
+  sasl:
+    mechanism: ${KAFKA_SASL_MECHANISM:-PLAIN}
+    username: ${KAFKA_USERNAME:-rarible}
+    password: ${KAFKA_PASSWORD:-changeme}
+  run_fix_jobs: True
+  first_collection_level: 1212040
+  reset_new_persistence: False
+  reset_order_data: False
+  fxhash_nft_v1: KT1KEa8z6vWXDJrVqtMrAeDVzsvxat3kHaCE
+  fxhash_nft_v2: KT1U6EHmNxJTkvaWJ4ThczG4FSDaHC21ssvi
+  royalties:
+    hen: "KT1RJ6PbjHpwc3M5rw5s2Nbmefwbuwbdxton"
+    hen_royalties: "KT1Hkg5qeNhfwpKW4fXvq7HGZB9z2EnmCCA9"
+    kalamint: "KT1EpGgjQs73QfFJs9z7m1Mxm5MTnpC2tqse"
+    fxhash_v1: "KT1KEa8z6vWXDJrVqtMrAeDVzsvxat3kHaCE"
+    fxhash_v1_manager: "KT1XCoGnfupWk7Sp8536EfrxcP73LmT68Nyr"
+    fxhash_v2: "KT1U6EHmNxJTkvaWJ4ThczG4FSDaHC21ssvi"
+    versum: "KT1LjmAdYQCLBjwv4S2oFkEzyHVkomAf5MrW"
+    royalties_manager: "KT1HNNrmCk1fpqveRDz8Fvww2GM4gPzmA7fo"
+    bidou_8x8: "KT1MxDwChiDwd6WBVs24g1NjERUoK622ZEFp"
+    bidou_24x24: "KT1TR1ErEQPTdtaJ7hbvKTJSa1tsGnHGZTpf"
+    dogami: "KT1NVvPsNDChrLRH5K2cy6Sc9r1uuUwdiZQd"
+    dogami_gap: "KT1CAbPGHUWvkSA9bxMPkqSgabgsjtmRYEda"
+
