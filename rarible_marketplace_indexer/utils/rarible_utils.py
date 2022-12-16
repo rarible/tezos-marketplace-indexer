@@ -43,6 +43,14 @@ def assert_token_id_length(token_id: str):
         return True
 
 
+def assert_value_length(value: str):
+    if len(value) > 100:
+        logging.getLogger("dipdup").warning(f"Ignoring too big value ({len(value)} > 100): {value}")
+        return False
+    else:
+        return True
+
+
 def get_json_parts(parts: List[Part]):
     json_parts: List[Part] = []
     for part in parts:

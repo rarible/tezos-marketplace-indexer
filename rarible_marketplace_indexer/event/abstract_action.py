@@ -23,7 +23,7 @@ from rarible_marketplace_indexer.models import PlatformEnum
 from rarible_marketplace_indexer.prometheus.rarible_metrics import RaribleMetrics
 from rarible_marketplace_indexer.types.rarible_api_objects.asset.enum import AssetClassEnum
 from rarible_marketplace_indexer.types.tezos_objects.asset_value.asset_value import AssetValue
-from rarible_marketplace_indexer.utils.rarible_utils import assert_token_id_length
+from rarible_marketplace_indexer.utils.rarible_utils import assert_token_id_length, assert_value_length
 from rarible_marketplace_indexer.utils.rarible_utils import get_json_parts
 
 
@@ -54,7 +54,9 @@ class AbstractOrderListEvent(EventInterface):
     ):
         logger = logging.getLogger('dipdup.order_list_event')
         dto = cls._get_list_dto(transaction, datasource)
-        if assert_token_id_length(str(dto.make.token_id)) is True:
+        if assert_token_id_length(str(dto.make.token_id)) is True \
+                and assert_value_length(str(dto.take.value))\
+                and assert_value_length(str(dto.make.value)):
             if dto.take.token_id is None or (
                 dto.take.token_id is not None and assert_token_id_length(str(dto.take.token_id))
             ):
@@ -398,7 +400,9 @@ class AbstractLegacyOrderMatchEvent(EventInterface):
         datasource: TzktDatasource,
     ):
         dto = cls._get_legacy_match_dto(transaction, datasource)
-        if assert_token_id_length(str(dto.make.token_id)) is True:
+        if assert_token_id_length(str(dto.make.token_id)) is True \
+                and assert_value_length(str(dto.take.value)) \
+                and assert_value_length(str(dto.make.value)):
             if dto.take.token_id is None or (
                 dto.take.token_id is not None and assert_token_id_length(str(dto.take.token_id))
             ):
@@ -549,7 +553,9 @@ class AbstractPutBidEvent(EventInterface):
         datasource: TzktDatasource,
     ):
         dto = cls._get_bid_dto(transaction, datasource)
-        if assert_token_id_length(str(dto.make.token_id)) is True:
+        if assert_token_id_length(str(dto.make.token_id)) is True \
+                and assert_value_length(str(dto.take.value)) \
+                and assert_value_length(str(dto.make.value)):
             if dto.take.token_id is None or (
                 dto.take.token_id is not None and assert_token_id_length(str(dto.take.token_id))
             ):
@@ -647,7 +653,9 @@ class AbstractPutFloorBidEvent(EventInterface):
         datasource: TzktDatasource,
     ):
         dto = cls._get_floor_bid_dto(transaction, datasource)
-        if assert_token_id_length(str(dto.make.token_id)) is True:
+        if assert_token_id_length(str(dto.make.token_id)) is True \
+                and assert_value_length(str(dto.take.value)) \
+                and assert_value_length(str(dto.make.value)):
             if dto.take.token_id is None or (
                 dto.take.token_id is not None and assert_token_id_length(str(dto.take.token_id))
             ):
