@@ -47,7 +47,7 @@ tezos-marketplace-indexer-marketplaces:
 tezos-marketplace-indexer-metadata:
   image:
     repository: tezos-marketplace-indexer
-    tag: 1.39-cb153f-103
+    tag: 1.39-d70ac0-102
   replicas: 1
   enabled: true
   <<: *tezos-marketplace-indexer-prod
@@ -58,7 +58,7 @@ tezos-marketplace-indexer-metadata:
 tezos-marketplace-indexer-royalties:
   image:
     repository: tezos-marketplace-indexer
-    tag: 1.39-cb153f-103
+    tag: 1.39-d70ac0-102
   replicas: 1
   enabled: true
   environments:
@@ -74,7 +74,7 @@ tezos-marketplace-indexer-royalties:
 tezos-marketplace-indexer-ophash:
   image:
     repository: tezos-marketplace-indexer
-    tag: 1.39-cb153f-103
+    tag: 1.39-d70ac0-102
   replicas: 1
   enabled: true
   <<: *tezos-marketplace-indexer-prod
