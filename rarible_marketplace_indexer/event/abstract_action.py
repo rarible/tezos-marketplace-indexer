@@ -55,8 +55,8 @@ class AbstractOrderListEvent(EventInterface):
         logger = logging.getLogger('dipdup.order_list_event')
         dto = cls._get_list_dto(transaction, datasource)
         if assert_token_id_length(str(dto.make.token_id)) is True \
-                and assert_value_length(str(dto.take.value))\
-                and assert_value_length(str(dto.make.value)):
+                and assert_value_length(str(dto.take.value)) is True\
+                and assert_value_length(str(dto.make.value)) is True:
             if dto.take.token_id is None or (
                 dto.take.token_id is not None and assert_token_id_length(str(dto.take.token_id))
             ):
@@ -401,8 +401,8 @@ class AbstractLegacyOrderMatchEvent(EventInterface):
     ):
         dto = cls._get_legacy_match_dto(transaction, datasource)
         if assert_token_id_length(str(dto.make.token_id)) is True \
-                and assert_value_length(str(dto.take.value)) \
-                and assert_value_length(str(dto.make.value)):
+                and assert_value_length(str(dto.take.value)) is True\
+                and assert_value_length(str(dto.make.value)) is True:
             if dto.take.token_id is None or (
                 dto.take.token_id is not None and assert_token_id_length(str(dto.take.token_id))
             ):
@@ -554,8 +554,8 @@ class AbstractPutBidEvent(EventInterface):
     ):
         dto = cls._get_bid_dto(transaction, datasource)
         if assert_token_id_length(str(dto.make.token_id)) is True \
-                and assert_value_length(str(dto.take.value)) \
-                and assert_value_length(str(dto.make.value)):
+                and assert_value_length(str(dto.take.value)) is True\
+                and assert_value_length(str(dto.make.value)) is True:
             if dto.take.token_id is None or (
                 dto.take.token_id is not None and assert_token_id_length(str(dto.take.token_id))
             ):
@@ -654,8 +654,8 @@ class AbstractPutFloorBidEvent(EventInterface):
     ):
         dto = cls._get_floor_bid_dto(transaction, datasource)
         if assert_token_id_length(str(dto.make.token_id)) is True \
-                and assert_value_length(str(dto.take.value)) \
-                and assert_value_length(str(dto.make.value)):
+                and assert_value_length(str(dto.take.value)) is True\
+                and assert_value_length(str(dto.make.value)) is True:
             if dto.take.token_id is None or (
                 dto.take.token_id is not None and assert_token_id_length(str(dto.take.token_id))
             ):
