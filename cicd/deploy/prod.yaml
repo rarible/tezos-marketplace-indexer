@@ -45,9 +45,6 @@ tezos-marketplace-indexer-marketplaces:
     NETWORK: mainnet
 
 tezos-marketplace-indexer-metadata:
-  image:
-    repository: tezos-marketplace-indexer
-    tag: 1.39-d70ac0-102
   replicas: 1
   enabled: true
   <<: *tezos-marketplace-indexer-prod
@@ -56,9 +53,6 @@ tezos-marketplace-indexer-metadata:
     NETWORK: mainnet
 
 tezos-marketplace-indexer-royalties:
-  image:
-    repository: tezos-marketplace-indexer
-    tag: 1.39-d70ac0-102
   replicas: 1
   enabled: true
   environments:
@@ -72,9 +66,6 @@ tezos-marketplace-indexer-royalties:
       memory: 1384Mi
 
 tezos-marketplace-indexer-ophash:
-  image:
-    repository: tezos-marketplace-indexer
-    tag: 1.39-d70ac0-102
   replicas: 1
   enabled: true
   <<: *tezos-marketplace-indexer-prod
