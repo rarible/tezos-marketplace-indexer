@@ -9,12 +9,8 @@ async def on_rarible_aggregator_event(
     ctx: HandlerContext,
     event: Event[AggregatorEventPayload],
 ) -> None:
-    tzkt_event_data = await ctx.get_tzkt_datasource('tzkt').request(
-        method='get', url='/v1/contracts/events?id=' + str(event.data.id)
-    )
-    tx_id = tzkt_event_data[0].get("transactionId")
-    tx_operation_hash = await ctx.get_tzkt_datasource('tzkt').request(
-        method='get', url='/v1/operations/transactions?select=hash&id=' + str(tx_id)
+    tx_operation_hash = await ctx.datasource.request(
+        method='get', url='v1/operations/transactions?select=hash&id=' + str(event.data.transaction_id)
     )
     stored_event = await AggregatorEvent.get_or_none(id=event.data.id)
     if stored_event is None:

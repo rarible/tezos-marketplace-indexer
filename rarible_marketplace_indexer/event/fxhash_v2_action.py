@@ -87,7 +87,7 @@ class FxhashV2PutBidEvent(AbstractPutBidEvent):
     FxhashListTransaction = Transaction[OfferParameter, FxhashV2Storage]
 
     @staticmethod
-    def _get_bid_dto(
+    async def _get_bid_dto(
         transaction: FxhashListTransaction,
         datasource: TzktDatasource,
     ) -> ListDto:

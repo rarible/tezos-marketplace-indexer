@@ -1,10 +1,12 @@
 import json
 import logging
+import math
 import os
 import random
 import string
 import uuid
 from datetime import datetime
+from decimal import Decimal
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -18,6 +20,7 @@ from pytezos.michelson.forge import forge_script_expr
 from requests import Response
 
 from dipdup.context import DipDupContext
+from dipdup.datasources import datasource
 from rarible_marketplace_indexer.enums import PlatformEnum, TransactionTypeEnum, OrderStatusEnum, ActivityTypeEnum
 from rarible_marketplace_indexer.event.dto import MakeDto
 from rarible_marketplace_indexer.event.dto import TakeDto
@@ -74,6 +77,35 @@ def reconcile_item(contract, token_id):
         logger.info(f"{contract}:{token_id} need reconcile: Error {response.status_code} - {response.reason}")
     else:
         logger.info(f"{contract}:{token_id} synced properly after legacy cancel")
+
+
+async def process_decimal_value(datasource, contract, token_id, asset_class, asset_value):
+    logger = logging.getLogger('process_decimal_value')
+    if asset_class == AssetClassEnum.FUNGIBLE_TOKEN:
+        ft_result = None
+        if token_id is not None:
+            ft_result = await datasource.request(
+                method='get', url=f"v1/tokens?contract={contract}&tokenId={token_id}"
+            )
+        else:
+            ft_result = await datasource.request(
+                method='get', url=f"v1/tokens?contract={contract}"
+            )
+        # TODO: We need to double-check code below
+        if ft_result is not None and "metadata" in ft_result[0]:
+            ft = ft_result[0]
+            meta = ft["metadata"]
+            try:
+                decimals = int(meta["decimals"])
+                asset_value = asset_value / Decimal(math.pow(10, decimals))
+            except Exception:
+                logger.info(
+                    f"Failed to get decimals for FT token {contract}:{token_id} "
+                    f"with meta: {meta}"
+                )
+    elif asset_class == AssetClassEnum.XTZ:
+        asset_value = Xtz.from_u_tezos(asset_value)
+    return asset_value
 
 
 class RaribleUtils:
