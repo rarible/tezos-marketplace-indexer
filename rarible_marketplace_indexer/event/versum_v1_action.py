@@ -86,7 +86,7 @@ class VersumV1PutBidEvent(AbstractPutBidEvent):
     VersumListTransaction = Transaction[MakeOfferParameter, VersumV1Storage]
 
     @staticmethod
-    def _get_bid_dto(
+    async def _get_bid_dto(
         transaction: VersumListTransaction,
         datasource: TzktDatasource,
     ) -> ListDto:

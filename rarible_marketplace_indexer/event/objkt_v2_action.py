@@ -86,7 +86,7 @@ class ObjktV2PutBidEvent(AbstractPutBidEvent):
     ObjktListTransaction = Transaction[OfferParameter, ObjktMarketplaceV2Storage]
 
     @staticmethod
-    def _get_bid_dto(
+    async def _get_bid_dto(
         transaction: ObjktListTransaction,
         datasource: TzktDatasource,
     ) -> ListDto:

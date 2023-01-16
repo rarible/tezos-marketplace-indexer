@@ -539,7 +539,7 @@ class AbstractLegacyOrderMatchEvent(EventInterface):
 class AbstractPutBidEvent(EventInterface):
     @staticmethod
     @abstractmethod
-    def _get_bid_dto(
+    async def _get_bid_dto(
         transaction: Transaction,
         datasource: TzktDatasource,
     ) -> ListDto:
@@ -552,7 +552,7 @@ class AbstractPutBidEvent(EventInterface):
         transaction: Transaction,
         datasource: TzktDatasource,
     ):
-        dto = cls._get_bid_dto(transaction, datasource)
+        dto = await cls._get_bid_dto(transaction, datasource)
         if assert_token_id_length(str(dto.make.token_id)) is True \
                 and assert_value_length(str(dto.take.value)) is True\
                 and assert_value_length(str(dto.make.value)) is True:
@@ -639,7 +639,7 @@ class AbstractPutBidEvent(EventInterface):
 class AbstractPutFloorBidEvent(EventInterface):
     @staticmethod
     @abstractmethod
-    def _get_floor_bid_dto(
+    async def _get_floor_bid_dto(
         transaction: Transaction,
         datasource: TzktDatasource,
     ) -> ListDto:
@@ -652,7 +652,7 @@ class AbstractPutFloorBidEvent(EventInterface):
         transaction: Transaction,
         datasource: TzktDatasource,
     ):
-        dto = cls._get_floor_bid_dto(transaction, datasource)
+        dto = await cls._get_floor_bid_dto(transaction, datasource)
         if assert_token_id_length(str(dto.make.token_id)) is True \
                 and assert_value_length(str(dto.take.value)) is True\
                 and assert_value_length(str(dto.make.value)) is True:
