@@ -4,6 +4,7 @@ import math
 import os
 import random
 import string
+import traceback
 import uuid
 from datetime import datetime
 from decimal import Decimal
@@ -449,7 +450,9 @@ async def get_key_for_big_map(ctx: DipDupContext, contract: str, name: str, key:
     except Exception as ex:
         # for local debugging
         # logging.getLogger("get_key_for_big_map").error(ex)
-        # traceback.print_exc()
+        tb = traceback.format_exc()
+        logging.getLogger("get_key_for_big_map").error(ex)
+        logging.getLogger("get_key_for_big_map").error(tb)
         return None
 
 
