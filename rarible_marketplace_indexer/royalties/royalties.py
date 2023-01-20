@@ -42,7 +42,7 @@ async def get_hen_royalties(ctx: DipDupContext, contract, token_id: str):
         royalties: dict[str, Any] = response.get("value")
         return [Part(part_account=royalties.get("issuer"), part_value=int(royalties.get("royalties")) * 10)]
     except Exception as ex:
-        logger.debug(f"Could not fetch HEN royalties for {contract}:{token_id}: {ex}")
+        logger.error(f"Could not fetch HEN royalties for {contract}:{token_id}: {ex}")
         return []
 
 
