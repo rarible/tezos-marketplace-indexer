@@ -444,7 +444,7 @@ def get_royalties_manager_big_map_key_hash(contract: str, token_id: Optional[str
 
 async def get_key_for_big_map(ctx: DipDupContext, contract: str, name: str, key: str) -> Optional[Response]:
     try:
-        url = f'/v1/contracts/{contract}/bigmaps/{name}/keys/{key}'
+        url = f'v1/contracts/{contract}/bigmaps/{name}/keys/{key}'
         datasource = ctx.get_tzkt_datasource("tzkt")
         return await datasource.request(
             method='get', url=url
@@ -453,7 +453,6 @@ async def get_key_for_big_map(ctx: DipDupContext, contract: str, name: str, key:
         # for local debugging
         # logging.getLogger("get_key_for_big_map").error(ex)
         tb = traceback.format_exc()
-        logging.getLogger("get_key_for_big_map").error(ex)
         logging.getLogger("get_key_for_big_map").error(f'Error request with {datasource.url}/{url}')
         return None
 
