@@ -444,10 +444,12 @@ def get_royalties_manager_big_map_key_hash(contract: str, token_id: Optional[str
 async def get_key_for_big_map(ctx: DipDupContext, contract: str, name: str, key: str) -> Optional[Response]:
     try:
         return await ctx.get_tzkt_datasource("tzkt").request(
-            method='get', url=f'/v1/contracts/{contract}/bigmaps/{name}/keys/{key}'
+            method='get', url=f'v1/contracts/{contract}/bigmaps/{name}/keys/{key}'
         )
     except Exception as ex:
-        #logging.getLogger("get_key_for_big_map").error(ex)
+        # for local debugging
+        # logging.getLogger("get_key_for_big_map").error(ex)
+        # traceback.print_exc()
         return None
 
 

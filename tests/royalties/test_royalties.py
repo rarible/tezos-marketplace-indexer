@@ -20,13 +20,9 @@ async def create_test_dipdup(config: DipDupConfig, stack: AsyncExitStack) -> Dip
     dipdup = DipDup(config)
     await dipdup._create_datasources()
     await dipdup._set_up_database(stack)
-    await dipdup._set_up_hooks(set())
-    await dipdup._initialize_schema()
-    await dipdup._set_up_database(stack)
     await dipdup._set_up_transactions(stack)
     await dipdup._set_up_datasources(stack)
     return dipdup
-
 
 class RoyaltiesTest(IsolatedAsyncioTestCase):
     async def test_royalties_hen(self) -> None:
