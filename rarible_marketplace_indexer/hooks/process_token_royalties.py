@@ -45,7 +45,7 @@ async def process_royalties_for_token(ctx: HookContext, token_royalties: Royalti
         await token_royalties.save()
     except Exception as ex:
         log = (
-            f"Could not save royalties for {token_royalties.contract}:{token_royalties.token_id}):"
+            f"Could not save royalties {royalties} for {token_royalties.contract}:{token_royalties.token_id}):"
             f" {ex}"
         )
     logger.info(log)
