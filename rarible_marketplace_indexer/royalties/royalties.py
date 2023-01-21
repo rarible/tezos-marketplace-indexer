@@ -1,3 +1,4 @@
+import ast
 import json
 import logging
 import math
@@ -244,7 +245,11 @@ async def fetch_royalties(ctx: DipDupContext, contract: str, token_id: str) -> [
                 parsed_data = json.loads(str(token_metadata))
                 token_metadata = parsed_data
             if type(token_metadata) is str:
-                token_metadata = json.loads(token_metadata)
+                try:
+                    token_metadata = json.loads(token_metadata)
+                except Exception as ex:
+                    # It's needed if we use single quote
+                    token_metadata = ast.literal_eval(token_metadata)
             token_metadata_royalties = token_metadata.get("royalties")
             if type(token_metadata_royalties) is str:
                 metadata_royalties = json.loads(token_metadata_royalties)
