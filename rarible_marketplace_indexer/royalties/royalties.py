@@ -282,6 +282,10 @@ async def fetch_royalties(ctx: DipDupContext, contract: str, token_id: str) -> [
         .first()
     )
 
+    # This could happend in case of mint to burn
+    if mint is None:
+        return None
+
     royalties = [Part(part_account=mint.to_address, part_value=0)]
 
     return royalties
