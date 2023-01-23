@@ -10,7 +10,7 @@ from rarible_marketplace_indexer.models import Tasks, Royalties
 logger = logging.getLogger("dipdup.reset_royalty_by_contract")
 
 
-async def reset_royalty_by_id(ctx: HookContext, id: int) -> None:
+async def reset_royalty_by_contract(ctx: HookContext, id: int) -> None:
     task = await Tasks.get_or_none(id=id)
     try:
         task.status = TaskStatus.RUNNING
