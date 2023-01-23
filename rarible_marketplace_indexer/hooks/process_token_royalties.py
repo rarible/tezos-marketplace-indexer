@@ -33,11 +33,16 @@ async def process_royalties_for_token(ctx: HookContext, token_royalties: Royalti
             token_royalties.parts = get_json_parts(royalties)
             token_royalties.royalties_synced = True
             token_royalties.royalties_retries = token_royalties.royalties_retries
-            token = await Token.get(
-                id=Token.get_id(contract=token_royalties.contract, token_id=token_royalties.token_id)
+
+            # saving creator if it's empty
+            token = await Token.get_or_none(
+                id=Token.get_id(contract=token_royalties.contract, token_id=token_royalties.token_id),
+                creator=None
             )
-            token.creator = royalties[0].part_account
-            await token.save()
+            if token is not None:
+                token.creator = royalties[0].part_account
+                await token.save()
+
             log = (
                 f"Successfully saved royalties for {token_royalties.contract}:{token_royalties.token_id} ("
                 f"{royalties}) (retries {token_royalties.royalties_retries})"

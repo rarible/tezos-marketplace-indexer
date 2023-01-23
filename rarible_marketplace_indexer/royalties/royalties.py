@@ -150,7 +150,7 @@ async def get_sweet_io_royalties(contract: str, token_id: str, data: dict[str, A
 
 
 async def get_royalties_from_royalties_manager(
-    ctx: DipDupContext, royalties_manager: str, contract: str, token_id: str
+        ctx: DipDupContext, royalties_manager: str, contract: str, token_id: str
 ):
     royalties: [Part] = []
     royalties_map: [dict[str, Any]] | None = None
@@ -250,6 +250,7 @@ async def fetch_royalties(ctx: DipDupContext, contract: str, token_id: str) -> [
                 except Exception as ex:
                     # It's needed if we use single quote
                     token_metadata = ast.literal_eval(token_metadata)
+            await save_creator(ctx, contract, token_id, token_metadata)
             token_metadata_royalties = token_metadata.get("royalties")
             if type(token_metadata_royalties) is str:
                 metadata_royalties = json.loads(token_metadata_royalties)
@@ -294,3 +295,36 @@ async def fetch_royalties(ctx: DipDupContext, contract: str, token_id: str) -> [
     royalties = [Part(part_account=mint.to_address, part_value=0)]
 
     return royalties
+
+
+# It's a special case, when creators are stored in separated structure
+async def save_creator(ctx, contract, token_id, token_metadata):
+    creators = token_metadata.get("creators")
+    if creators is not None and type(creators) is list:
+        datasource = ctx.get_http_datasource('objkt')
+        body = '''
+                query MyQuery {
+                  token_creator(
+                    where: {token: {fa_contract: {_eq: "$contract"}, token_id: {_eq: "$id"}}}
+                  ) {
+                    creator_address
+                    token {
+                      token_id
+                      fa_contract
+                    }
+                    token_pk
+                  }
+                }
+            '''.replace('$contract', contract).replace('$id', token_id)
+        try:
+            response = await datasource.request(
+                method='post', url='v3/graphql', json={"query": body}
+            )
+            token = await Token.get_or_none(id=Token.get_id(contract=contract, token_id=token_id))
+            if token is not None:
+                address = response['data']['token_creator'][0]['creator_address']
+                token.creator = address
+                await token.save()
+                logger.log(f"Saved creator {address} for {contract}:{token_id} token")
+        except Exception as ex:
+            logger.debug(f"Could get creator for {contract}:{token_id}: {ex}")

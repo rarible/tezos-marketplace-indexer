@@ -56,7 +56,7 @@ if 'linux' not in sys.platform:
 
                 oid = f"{contract}:{token_id}"
                 id = uuid5(namespace=uuid.NAMESPACE_OID, name=oid)
-                token = await Token.create(
+                await Token.create(
                     id=id,
                     tzkt_id=1,
                     contract=contract,
@@ -87,12 +87,17 @@ if 'linux' not in sys.platform:
                 )
                 await process_royalties_for_token(ctx, royalty)
 
+                # royalties
                 saved = await Royalties.get_or_none(id=id)
                 r0 = saved.parts
 
                 self.assertEqual(1, len(r0))
                 self.assertEqual("tz2DWt3yaJA9kuZRnV7cvTWsiXEabpwe6ASA", r0[0]['part_account'])
                 self.assertEqual("1000", r0[0]['part_value'])
+
+                # creator
+                token = await Token.get_or_none(id=id)
+                self.assertEqual('tz2RqGbjw67kHkFdCWkysjMkZVsNewg6pRhR', token.creator)
 
         async def test_royalties_kalamint_public(self) -> None:
             async with AsyncExitStack() as stack:

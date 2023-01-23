@@ -103,6 +103,9 @@ hooks:
   reset_royalty_by_id:
     callback: reset_royalty_by_id
     atomic: False
+  reset_royalty_by_contract:
+    callback: reset_royalty_by_contract
+    atomic: False
   reset_royalty_flag:
     callback: reset_royalty_flag
     atomic: False

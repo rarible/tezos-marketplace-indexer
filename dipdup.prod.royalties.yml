@@ -30,6 +30,9 @@ datasources:
       connection_limit: 100
       connection_timeout: 60
       batch_size: 10000
+  objkt:
+    kind: http
+    url: https://data.objkt.com
 
 hooks:
   process_token_royalties:

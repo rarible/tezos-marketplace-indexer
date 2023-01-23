@@ -18,6 +18,7 @@ logger = logging.getLogger("token_creator")
 logger.setLevel("INFO")
 
 
+# deprecated
 async def process_creator_for_token(ctx: HookContext, token: Token):
     royalties = await Royalties.get_or_none(id=token.id)
     log = ""
@@ -41,6 +42,7 @@ async def process_creator_for_token(ctx: HookContext, token: Token):
     logger.info(log)
 
 
+# deprecated
 async def process_token_creator(
     ctx: HookContext,
 ) -> None:
