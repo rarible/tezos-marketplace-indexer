@@ -74,6 +74,8 @@ tezos-marketplace-indexer-ophash:
     NETWORK: mainnet
 
 tzkt:
+  enabled: false
+  replicas: 0
   instances: ['aux-tzkt']
   api:
     resources:
