@@ -114,6 +114,9 @@ hooks:
     atomic: False
     args:
       batch: 10000
+  remove_reverted_transfers:
+    callback: remove_reverted_transfers
+    atomic: False
 #  fill_db_updated_at:
 #    callback: fill_db_updated_at
 #    atomic: False
