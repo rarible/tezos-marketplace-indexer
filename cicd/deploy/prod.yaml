@@ -73,36 +73,3 @@ tezos-marketplace-indexer-ophash:
     TZKT_URL: https://api.tzkt.io
     NETWORK: mainnet
 
-tzkt:
-  enabled: false
-  replicas: 0
-  instances: ['aux-tzkt']
-  api:
-    resources:
-      limits:
-        cpu: '2'
-        memory: 3Gi
-      requests:
-        cpu: '1'
-        memory: 1384Mi
-  indexer:
-    resources:
-      limits:
-        cpu: 400m
-        memory: 2Gi
-      requests:
-        cpu: 200m
-        memory: 384Mi
-  network: mainnet
-  service:
-    nodePort: 30140
-  environments:
-    TezosNode__Endpoint: https://rpc.tzkt.io/mainnet
-    TokenMetadata__DipDup__Url: https://metadata.dipdup.net/v1/graphql
-  ingress:
-    hostname: 'tezos-tzkt.rarible.int'
-    path: /
-    ingressClassName: ingress-internal
-    backend:
-      service: tzkt
-      port: http
