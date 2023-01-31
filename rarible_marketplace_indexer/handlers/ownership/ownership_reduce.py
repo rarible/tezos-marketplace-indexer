@@ -4,8 +4,11 @@ from dipdup.models import TokenTransferData
 from tortoise import Tortoise
 
 from rarible_marketplace_indexer.models import Ownership
+from rarible_marketplace_indexer.producer.container import producer_send
+from rarible_marketplace_indexer.types.rarible_api_objects.ownership.factory import RaribleApiOwnershipFactory
 
 logger = logging.getLogger('dipdup.ownership_reduce')
+NULL_ADDRESSES = [None, "tz1burnburnburnburnburnburnburjAYjjX", "tz1Ke2h7sDdakHJQh8WX4Z372du1KChsksyU"]
 
 
 async def ownership_balance(contract, token_id, owner) -> None:
@@ -42,6 +45,7 @@ async def process(contract, token_id, owner, timestamp) -> None:
         if ownership is not None:
             ownership.balance = amount
             ownership.updated = timestamp
+            await ownership.save()
         else:
             ownership = Ownership(
                 id=ownership_id,
@@ -52,7 +56,12 @@ async def process(contract, token_id, owner, timestamp) -> None:
                 updated=timestamp,
                 created=timestamp,
             )
-        await ownership.save()
+            if owner in NULL_ADDRESSES:
+                # send delete event without saving ownership
+                event = RaribleApiOwnershipFactory.build_delete(ownership)
+                await producer_send(event)
+            else:
+                await ownership.save()
     if amount == 0 and ownership is not None:
         await ownership.delete()
 

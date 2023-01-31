@@ -18,7 +18,8 @@ async def recalculate_ownerships_by_owner(ctx: HookContext, id: int) -> None:
         await task.save()
         param = json.loads(task.param)
         owner = param['owner']
-        ownerships = await Ownership.filter(owner=owner)
+        limit = param.get('limit', '1000')
+        ownerships = await Ownership.filter(owner=owner).limit(int(limit))
         for ownership in ownerships:
             logger.info(f"Updating ownership: {ownership.full_id()}")
             await process(ownership.contract, ownership.token_id, ownership.owner, ownership.updated)
