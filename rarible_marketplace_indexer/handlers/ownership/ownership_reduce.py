@@ -45,7 +45,11 @@ async def process(contract, token_id, owner, timestamp) -> None:
         if ownership is not None:
             ownership.balance = amount
             ownership.updated = timestamp
-            await ownership.save()
+
+            if owner in NULL_ADDRESSES:
+                await ownership.delete()
+            else:
+                await ownership.save()
         else:
             ownership = Ownership(
                 id=ownership_id,
