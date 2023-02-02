@@ -49,6 +49,7 @@ tezos-marketplace-indexer-ophash:
   command: [ "./entrypoint.sh", '{{ include "app.env" $ }}', "ophash", "false"]
 
 hasura:
+  replicas: 2
   updateConfig:
     order: start-first
   image:
