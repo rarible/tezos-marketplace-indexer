@@ -1,5 +1,6 @@
 import logging
 import traceback
+import uuid
 
 from dipdup.context import HookContext
 
@@ -17,7 +18,9 @@ async def send_orders(ctx: HookContext, id: int) -> None:
         task.status = TaskStatus.RUNNING
         await task.save()
         platform = task.param
-        request = Order.filter(platform=platform, id__lt=id, status='ACTIVE') if task.sample is not None else Order.filter(platform=platform, status='ACTIVE')
+        continuation = task.sample
+        continuation = is_valid_uuid(continuation)
+        request = Order.filter(platform=platform, id__lt=continuation, status='ACTIVE') if continuation is not None else Order.filter(platform=platform, status='ACTIVE')
         orders = await request.order_by('-id').limit(1000)
         if len(orders) > 0:
             for order in orders:
@@ -36,3 +39,11 @@ async def send_orders(ctx: HookContext, id: int) -> None:
         logger.error(f"Task={task.name} trace: {str}")
     task.version += 1
     await task.save()
+
+
+def is_valid_uuid(val):
+    try:
+        uuid.UUID(str(val))
+        return val
+    except ValueError:
+        return None
