@@ -117,6 +117,9 @@ hooks:
   remove_reverted_transfers:
     callback: remove_reverted_transfers
     atomic: False
+  send_orders:
+    callback: send_orders
+    atomic: False
 #  fill_db_updated_at:
 #    callback: fill_db_updated_at
 #    atomic: False
