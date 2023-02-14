@@ -17,14 +17,14 @@ async def send_orders(ctx: HookContext, id: int) -> None:
         task.status = TaskStatus.RUNNING
         await task.save()
         platform = task.param
-        request = Order.filter(platform=platform, internal_order_id__lt=id) if task.sample is not None else Order.filter(platform=platform)
-        orders = await request.order_by('-internal_order_id').limit(1000)
+        request = Order.filter(platform=platform, id__lt=id, status='ACTIVE') if task.sample is not None else Order.filter(platform=platform, status='ACTIVE')
+        orders = await request.order_by('-id').limit(1000)
         if len(orders) > 0:
             for order in orders:
                 event = RaribleApiOrderFactory.build(order)
                 await producer_send(event)
-            task.sample = orders[-1].internal_order_id
-            logger.info(f"Task={task.name} sent {len(orders)} orders, set sample={task.sample}")
+            task.sample = orders[-1].id
+            logger.info(f"Task={task.name} sent {len(orders)} {platform} orders, set sample={task.sample}")
         else:
             logger.info(f"Task={task.name} finished")
             task.status = TaskStatus.FINISHED
