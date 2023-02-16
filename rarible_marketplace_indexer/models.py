@@ -1,3 +1,4 @@
+import asyncio
 import uuid
 import datetime
 from typing import Any, List
@@ -383,6 +384,7 @@ async def signal_order_post_save(
     update_fields: List[str],
 ) -> None:
     from rarible_marketplace_indexer.types.rarible_api_objects.order.factory import RaribleApiOrderFactory
+    await asyncio.sleep(5) # workaround: get time for db to save tx
     await producer_send(RaribleApiOrderFactory.build(instance))
 
 
