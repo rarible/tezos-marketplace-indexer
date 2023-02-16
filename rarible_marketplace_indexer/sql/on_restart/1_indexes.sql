@@ -9,3 +9,4 @@ create index concurrently if not exists marketplace_activity_type_operation_time
 create index concurrently if not exists token_transfer_date on token_transfer (date);
 create index concurrently if not exists marketplace_activity_request_by_item on marketplace_activity (make_contract, make_token_id);
 create index concurrently if not exists ownership_owner on ownership (owner);
+create index concurrently if not exists idx_marketplace_order_make_contract on marketplace_order (make_contract, make_token_id);
