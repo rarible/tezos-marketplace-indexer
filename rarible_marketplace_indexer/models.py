@@ -386,7 +386,7 @@ async def signal_order_post_save(
     from rarible_marketplace_indexer.types.rarible_api_objects.order.factory import RaribleApiOrderFactory
     # workaround: get time for db to save tx
     if not instance.platform in [PlatformEnum.RARIBLE_V1, PlatformEnum.RARIBLE_V2]:
-        await asyncio.sleep(70)
+        await asyncio.sleep(125)
     else:
         await asyncio.sleep(10)
     await producer_send(RaribleApiOrderFactory.build(instance))
