@@ -18,5 +18,4 @@ select t.*, concat_ws(', ', t.contract, t.token_id) as item_id, o.owner from own
     join token t on o.contract = t.contract and o.token_id = t.token_id
     order by t.updated desc, t.id desc;
 
-create or replace view order_activities as
-select * from marketplace_activity;
+DROP VIEW IF EXISTS order_activities;
