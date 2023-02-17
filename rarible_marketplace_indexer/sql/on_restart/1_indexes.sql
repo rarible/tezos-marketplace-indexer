@@ -14,3 +14,4 @@ create index concurrently if not exists ownership_owner on ownership (owner);
 
 drop index concurrently if exists idx_marketplace_order_make_contract;
 create index concurrently if not exists idx_marketplace_order_make_contract_graphql on marketplace_order (make_token_id, make_contract);
+create index concurrently if not exists idx_marketplace_order_take_contract_graphql on marketplace_order (take_token_id, take_contract);
