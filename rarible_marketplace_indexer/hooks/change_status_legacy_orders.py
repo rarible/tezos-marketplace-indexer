@@ -24,6 +24,7 @@ async def change_status_legacy_orders(ctx: HookContext, batch):
             if row['id'] is not None:
                 order = await Order.get(id=row['id'])
                 order.status = OrderStatusEnum.CANCELLED
+                order.cancelled = True
                 logger.info(f'Change status for {order.id} order')
                 await order.save()
     else:
