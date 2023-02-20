@@ -120,6 +120,9 @@ hooks:
   send_orders:
     callback: send_orders
     atomic: False
+  change_status_legacy_orders:
+    callback: change_status_legacy_orders
+    atomic: False
 #  fill_db_updated_at:
 #    callback: fill_db_updated_at
 #    atomic: False
@@ -142,6 +145,11 @@ jobs:
     args:
       batch: 2
       remove: True
+  change_status_legacy_orders:
+    hook: change_status_legacy_orders
+    interval: 120
+    args:
+      batch: 10
 #  fill_db_updated_at:
 #    hook: fill_db_updated_at
 #    crontab: "* * * * *"
