@@ -145,11 +145,11 @@ jobs:
     args:
       batch: 2
       remove: True
-  change_status_legacy_orders:
-    hook: change_status_legacy_orders
-    interval: 300
-    args:
-      batch: 100
+#  change_status_legacy_orders:
+#    hook: change_status_legacy_orders
+#    interval: 300
+#    args:
+#      batch: 100
 #  fill_db_updated_at:
 #    hook: fill_db_updated_at
 #    crontab: "* * * * *"
