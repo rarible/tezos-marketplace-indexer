@@ -210,7 +210,7 @@ indexes:
             entrypoint: fulfill_ask
 
 advanced:
-  rollback_depth: 2
+  rollback_depth: 0
   early_realtime: False
   skip_version_check: False
   metadata_interface: True
