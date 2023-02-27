@@ -47,13 +47,9 @@ async def process_originations(ctx, current_level, last_id):
                 contract = await tzkt.request(
                     method='get', url=f"v1/contracts/{origination['originatedContract']['address']}"
                 )
-                current_level = origination['level']
-                last_id = origination['id']
                 if "tzips" in contract and 'fa2' in contract['tzips']:
                     if "alias" in contract:
                         origination['alias'] = contract['alias']
-                    else:
-                        origination['alias'] = ""
                     address = origination['originatedContract']['address']
                     collection = await Collection.get_or_none(id=OriginatedAccountAddress(address))
                     origin_minters = minters(origination)
@@ -83,7 +79,10 @@ async def process_originations(ctx, current_level, last_id):
                             collection.minters = origin_minters
                             await collection.save()
                             logger.info(f"Saved minters to {address}")
-    return current_level, last_id, len(originations)
+        current_level = origination['level']
+        last_id = origination['id']
+    total = len(originations)
+    return current_level, last_id, total
 
 def minters(origination):
     if 'initiator' in origination:

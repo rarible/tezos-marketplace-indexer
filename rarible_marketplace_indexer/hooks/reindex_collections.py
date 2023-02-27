@@ -20,8 +20,9 @@ async def reindex_collections(ctx: HookContext, id: int) -> None:
         last_id = 0
         total = 0
         for step in range(batch):
+            logger.info(f"Request current_level={current_level}, last_id={last_id}")
             current_level, last_id, total = await process_originations(ctx, current_level, last_id)
-            if total < 100:
+            if total == 0:
                 break
         if total > 0:
             task.sample = current_level
