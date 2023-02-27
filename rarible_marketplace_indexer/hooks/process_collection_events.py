@@ -81,7 +81,7 @@ async def process_originations(ctx, current_level, last_id):
                     else:
                         if collection.minters != origin_minters:
                             collection.minters = origin_minters
-                            collection.save()
+                            await collection.save()
                             logger.info(f"Saved minters to {address}")
     return current_level, last_id, len(originations)
 
