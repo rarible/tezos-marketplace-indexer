@@ -127,7 +127,7 @@ hooks:
     callback: reindex_collections
     atomic: False
     args:
-      batch: 2
+      batch: 5
 #  fill_db_updated_at:
 #    callback: fill_db_updated_at
 #    atomic: False

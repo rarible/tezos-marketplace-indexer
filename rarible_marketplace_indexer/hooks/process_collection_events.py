@@ -93,9 +93,9 @@ def minters(origination):
 def name(origination):
     if 'alias' in origination:
         return origination['alias']
-    elif 'alias' in origination['contractManager']:
+    elif 'contractManager' in origination and 'alias' in origination['contractManager']:
         return origination['contractManager']['alias']
-    elif 'alias' in origination['originatedContract']:
+    elif 'originatedContract' in origination and 'alias' in origination['originatedContract']:
         return origination['originatedContract']['alias']
     else:
         return ""

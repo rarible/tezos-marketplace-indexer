@@ -4,14 +4,15 @@ import traceback
 from dipdup.context import HookContext
 
 from rarible_marketplace_indexer.enums import TaskStatus
-from rarible_marketplace_indexer.hooks.process_collection_events import process_originations
-from rarible_marketplace_indexer.models import Tasks
+from rarible_marketplace_indexer.models import Tasks, Collection
+from rarible_marketplace_indexer.types.tezos_objects.tezos_object_hash import OriginatedAccountAddress
 
 logger = logging.getLogger("dipdup.reindex_collections")
 
 
 async def reindex_collections(ctx: HookContext, id: int) -> None:
     task = await Tasks.get_or_none(id=id)
+    tzkt = ctx.get_tzkt_datasource('tzkt')
     batch = int(ctx.config.hooks.get('reindex_collections').args.get("batch"))
     try:
         task.status = TaskStatus.RUNNING
@@ -21,7 +22,23 @@ async def reindex_collections(ctx: HookContext, id: int) -> None:
         total = 0
         for step in range(batch):
             logger.info(f"Request current_level={current_level}, last_id={last_id}")
-            current_level, last_id, total = await process_originations(ctx, current_level, last_id)
+            cr_filter = f"&id.gt={last_id}"
+            originations = await tzkt.request(
+                method='get', url=f"v1/operations/originations?limit=100&sort.id=asc&level.ge={current_level}{cr_filter}"
+            )
+            for origination in originations:
+                if origination.get("originatedContract") is not None:
+                    address = origination['originatedContract']['address']
+                    collection = await Collection.get_or_none(id=OriginatedAccountAddress(address))
+                    origin_minters = minters(origination)
+                    if collection is not None:
+                        if collection.minters != origin_minters:
+                            collection.minters = origin_minters
+                            await collection.save()
+                            logger.info(f"Saved minters to {address}")
+                current_level = origination['level']
+                last_id = origination['id']
+            total = len(originations)
             if total == 0:
                 break
         if total > 0:
@@ -37,3 +54,10 @@ async def reindex_collections(ctx: HookContext, id: int) -> None:
         logger.error(f"Task={task.name} trace: {str}")
     task.version += 1
     await task.save()
+
+
+def minters(origination):
+    if 'initiator' in origination:
+        return [origination['initiator']['address']]
+    else:
+        return [origination['sender']['address']]
