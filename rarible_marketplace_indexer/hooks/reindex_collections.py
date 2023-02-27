@@ -21,7 +21,7 @@ async def reindex_collections(ctx: HookContext, id: int) -> None:
         total = 0
         for step in range(batch):
             current_level, last_id, total = await process_originations(ctx, current_level, last_id)
-            if total < 1000:
+            if total < 100:
                 break
         if total > 0:
             task.sample = current_level

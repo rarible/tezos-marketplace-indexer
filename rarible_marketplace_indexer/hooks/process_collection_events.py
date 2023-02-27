@@ -31,7 +31,7 @@ async def process_collection_events(
         else:
             index.last_level = current_level
             await index.save()
-        if total < 1000:
+        if total < 100:
             last_id = None
 
 async def process_originations(ctx, current_level, last_id):
@@ -39,7 +39,7 @@ async def process_originations(ctx, current_level, last_id):
     cr_filter = f"&id.gt={last_id}"
     logger.info(f"Get originations: from {current_level}{cr_filter}")
     originations = await tzkt.request(
-        method='get', url=f"v1/operations/originations?limit=1000&sort.id=asc&level.ge={current_level}{cr_filter}"
+        method='get', url=f"v1/operations/originations?limit=100&sort.id=asc&level.ge={current_level}{cr_filter}"
     )
     for origination in originations:
         if origination.get("originatedContract") is not None:
