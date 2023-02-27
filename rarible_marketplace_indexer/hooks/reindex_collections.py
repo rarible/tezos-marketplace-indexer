@@ -24,7 +24,7 @@ async def reindex_collections(ctx: HookContext, id: int) -> None:
             logger.info(f"Request current_level={current_level}, last_id={last_id}")
             cr_filter = f"&id.gt={last_id}"
             originations = await tzkt.request(
-                method='get', url=f"v1/operations/originations?limit=100&sort.id=asc&level.ge={current_level}{cr_filter}"
+                method='get', url=f"v1/operations/originations?limit=1000&sort.id=asc&level.ge={current_level}{cr_filter}"
             )
             for origination in originations:
                 if origination.get("originatedContract") is not None:
