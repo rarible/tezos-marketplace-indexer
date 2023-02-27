@@ -123,6 +123,11 @@ hooks:
   change_status_legacy_orders:
     callback: change_status_legacy_orders
     atomic: False
+  reindex_collections:
+    callback: reindex_collections
+    atomic: False
+    args:
+      batch: 10
 #  fill_db_updated_at:
 #    callback: fill_db_updated_at
 #    atomic: False
