@@ -30,12 +30,12 @@ async def reindex_collections(ctx: HookContext, id: int) -> None:
                 if origination.get("originatedContract") is not None:
                     address = origination['originatedContract']['address']
                     collection = await Collection.get_or_none(id=OriginatedAccountAddress(address))
-                    origin_minters = minters(origination)
+                    creator = origin_creator(origination)
                     if collection is not None:
-                        if collection.minters != origin_minters:
-                            collection.minters = origin_minters
+                        if collection.owner != creator:
+                            collection.owner = creator
                             await collection.save()
-                            logger.info(f"Saved minters to {address}")
+                            logger.info(f"Saved owner to {address}")
                 current_level = origination['level']
                 last_id = origination['id']
             total = len(originations)
@@ -55,9 +55,8 @@ async def reindex_collections(ctx: HookContext, id: int) -> None:
     task.version += 1
     await task.save()
 
-
-def minters(origination):
+def origin_creator(origination):
     if 'initiator' in origination:
-        return [origination['initiator']['address']]
+        return origination['initiator']['address']
     else:
-        return [origination['sender']['address']]
+        return origination['sender']['address']

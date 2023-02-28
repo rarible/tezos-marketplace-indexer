@@ -52,14 +52,14 @@ async def process_originations(ctx, current_level, last_id):
                         origination['alias'] = contract['alias']
                     address = origination['originatedContract']['address']
                     collection = await Collection.get_or_none(id=OriginatedAccountAddress(address))
-                    origin_minters = minters(origination)
+                    creator = origin_creator(origination)
                     if collection is None:
                         await Collection.create(
                             id=OriginatedAccountAddress(address),
-                            owner=ImplicitAccountAddress(origination['sender']['address']),
+                            owner=ImplicitAccountAddress(creator),
                             db_updated_at=datetime.now().strftime(date_pattern),
                             name=name(origination),
-                            minters=origin_minters,
+                            minters=[creator],
                             standard='fa2',
                             symbol=None,
                         )
@@ -74,21 +74,16 @@ async def process_originations(ctx, current_level, last_id):
                                 metadata_retries=0,
                                 db_updated_at=datetime.now().strftime(date_pattern),
                             )
-                    else:
-                        if collection.minters != origin_minters:
-                            collection.minters = origin_minters
-                            await collection.save()
-                            logger.info(f"Saved minters to {address}")
         current_level = origination['level']
         last_id = origination['id']
     total = len(originations)
     return current_level, last_id, total
 
-def minters(origination):
+def origin_creator(origination):
     if 'initiator' in origination:
-        return [origination['initiator']['address']]
+        return origination['initiator']['address']
     else:
-        return [origination['sender']['address']]
+        return origination['sender']['address']
 
 def name(origination):
     if 'alias' in origination:
