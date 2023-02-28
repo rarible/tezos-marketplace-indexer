@@ -128,6 +128,9 @@ hooks:
     atomic: False
     args:
       batch: 5
+  send_collections:
+    callback: send_collections
+    atomic: False
 #  fill_db_updated_at:
 #    callback: fill_db_updated_at
 #    atomic: False
