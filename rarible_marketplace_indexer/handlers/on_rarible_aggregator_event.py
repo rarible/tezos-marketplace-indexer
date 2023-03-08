@@ -19,4 +19,5 @@ async def on_rarible_aggregator_event(
             tracker=event.payload.__root__,
             level=event.data.level,
             operation_hash=tx_operation_hash[0],
+            operation_timestamp=event.data.timestamp
         )
