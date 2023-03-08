@@ -16,4 +16,5 @@ drop index concurrently if exists idx_marketplace_order_make_contract;
 create index concurrently if not exists idx_marketplace_order_make_contract_graphql on marketplace_order (make_token_id, make_contract);
 create index concurrently if not exists idx_marketplace_order_take_contract_graphql on marketplace_order (take_token_id, take_contract);
 
+ALTER TABLE aggregator_event ADD COLUMN IF NOT EXISTS operation_timestamp timestamptz;
 create index concurrently if not exists idx_aggregator_event_timestamp on aggregator_event (operation_timestamp);
