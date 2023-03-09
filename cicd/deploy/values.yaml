@@ -95,6 +95,11 @@ hasura:
     # provided via secrets
     # HASURA_GRAPHQL_ADMIN_SECRET:
     # HASURA_GRAPHQL_DATABASE_URL:
+  resources:
+    limits:
+      memory: 512Mi
+    requests:
+      memory: 384Mi
  
 tzkt: 
   enabled: false
