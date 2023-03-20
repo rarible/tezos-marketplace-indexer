@@ -96,6 +96,9 @@ class AbstractOrderListEvent(EventInterface):
                             )
 
                 if order is None:
+                    if len(dto.make.contract) < 36:
+                        logger.warning(f"Contract length < 36: {dto.make.contract}")
+
                     order = await Order.create(
                         network=os.getenv("NETWORK"),
                         platform=cls.platform,
