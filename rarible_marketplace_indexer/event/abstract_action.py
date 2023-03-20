@@ -97,31 +97,31 @@ class AbstractOrderListEvent(EventInterface):
 
                 if order is None:
                     if len(dto.make.contract) < 36:
-                        logger.warning(f"Contract length < 36 (tx={transaction}): {dto}")
-
-                    order = await Order.create(
-                        network=os.getenv("NETWORK"),
-                        platform=cls.platform,
-                        internal_order_id=dto.internal_order_id,
-                        status=OrderStatusEnum.ACTIVE,
-                        start_at=dto.start_at,
-                        end_at=dto.end_at,
-                        salt=transaction.data.counter,
-                        created_at=transaction.data.timestamp,
-                        last_updated_at=transaction.data.timestamp,
-                        maker=dto.maker,
-                        make_asset_class=dto.make.asset_class,
-                        make_contract=dto.make.contract,
-                        make_token_id=dto.make.token_id,
-                        make_value=dto.make.value,
-                        make_price=dto.take.value,
-                        take_asset_class=dto.take.asset_class,
-                        take_contract=dto.take.contract,
-                        take_token_id=dto.take.token_id,
-                        take_value=dto.take.value * dto.make.value,
-                        origin_fees=get_json_parts(dto.origin_fees),
-                        payouts=get_json_parts(dto.payouts),
-                    )
+                        logger.warning(f"Contract length < 36 (skipped tx={transaction})")
+                    else:
+                        order = await Order.create(
+                            network=os.getenv("NETWORK"),
+                            platform=cls.platform,
+                            internal_order_id=dto.internal_order_id,
+                            status=OrderStatusEnum.ACTIVE,
+                            start_at=dto.start_at,
+                            end_at=dto.end_at,
+                            salt=transaction.data.counter,
+                            created_at=transaction.data.timestamp,
+                            last_updated_at=transaction.data.timestamp,
+                            maker=dto.maker,
+                            make_asset_class=dto.make.asset_class,
+                            make_contract=dto.make.contract,
+                            make_token_id=dto.make.token_id,
+                            make_value=dto.make.value,
+                            make_price=dto.take.value,
+                            take_asset_class=dto.take.asset_class,
+                            take_contract=dto.take.contract,
+                            take_token_id=dto.take.token_id,
+                            take_value=dto.take.value * dto.make.value,
+                            origin_fees=get_json_parts(dto.origin_fees),
+                            payouts=get_json_parts(dto.payouts),
+                        )
                 else:
                     order.last_updated_at = transaction.data.timestamp
                     order.make_value = dto.make.value
@@ -144,7 +144,7 @@ class AbstractOrderListEvent(EventInterface):
                     .first()
                 )
 
-                if list_activity is None:
+                if list_activity is None and order is not None:
                     await Activity.create(
                         type=ActivityTypeEnum.ORDER_LIST,
                         network=os.getenv("NETWORK"),
@@ -168,7 +168,7 @@ class AbstractOrderListEvent(EventInterface):
                         operation_nonce=transaction.data.nonce,
                     )
 
-                if RaribleMetrics.enabled is True:
+                if RaribleMetrics.enabled is True and order is not None:
                     RaribleMetrics.set_order_activity(cls.platform, ActivityTypeEnum.ORDER_LIST, 1)
 
 
