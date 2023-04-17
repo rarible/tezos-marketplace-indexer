@@ -3,7 +3,7 @@ aiokafka==0.7.2
 aiosqlite==0.17.0
 base58==2.1.1
 certifi==2022.6.15
-dipdup==6.4.1
+dipdup==6.5.4
 email-validator==1.2.1
 flake8==4.0.1
 flakeheaven==3.0.0
