@@ -33,6 +33,12 @@ datasources:
   objkt:
     kind: http
     url: https://data.objkt.com
+    http:
+      retry_count: 1
+      retry_sleep: 1
+      connection_limit: 1000
+      connection_timeout: 60
+      batch_size: 1000
 
 hooks:
   process_token_royalties:
