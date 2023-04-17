@@ -1,10 +1,10 @@
-aiohttp==3.8.1
+aiohttp==3.8.4
 aiokafka==0.7.2
 aiosqlite==0.17.0
 base58==2.1.1
 certifi==2022.6.15
-dipdup==6.5.4
-email-validator==1.2.1
+dipdup @ git+https://github.com/dipdup-io/dipdup.git@dcffaf272cd8e5112bb2f8772b762462972b8f19
+email-validator==1.2
 flake8==4.0.1
 flakeheaven==3.0.0
 prance==0.21.8.0
