@@ -37,9 +37,10 @@ async def on_restart(
         prometheus_http_thread.start()
 
     if ctx.config.indexes.get("fxhash_v2_actions") is not None:
-        fxhash_nft_addresses["0"] = ctx.config.custom.get("fxhash_nft_v0")
-        fxhash_nft_addresses["1"] = ctx.config.custom.get("fxhash_nft_v1")
-        fxhash_nft_addresses["2"] = ctx.config.custom.get("fxhash_nft_v2")
+        for i in range(3):
+            address = ctx.config.custom.get(f"fxhash_nft_v{i}")
+            if address is not None:
+                fxhash_nft_addresses[str(i)] = address
 
     if os.getenv('APPLICATION_ENVIRONMENT') == 'prod' and ctx.config.hooks.get("import_legacy_orders") is not None:
         await ctx.fire_hook("import_legacy_orders")
