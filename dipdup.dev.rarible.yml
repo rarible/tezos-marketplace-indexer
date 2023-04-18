@@ -401,5 +401,5 @@ custom:
     enabled: true
   run_fix_jobs: False
   first_collection_level: 0
-  fxhash_nft_v1: KT1VEXkw6rw6pJDP9APGsMneFafArijmM96j
-  fxhash_nft_v2: KT1WSwXCWPPAxAy4ibPmFyCm4NhmSJT9UuxQ
+  fxhash_nft_v0: KT1VEXkw6rw6pJDP9APGsMneFafArijmM96j
+  fxhash_nft_v1: KT1WSwXCWPPAxAy4ibPmFyCm4NhmSJT9UuxQ
