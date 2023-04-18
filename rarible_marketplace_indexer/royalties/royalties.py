@@ -208,7 +208,7 @@ async def fetch_royalties(ctx: DipDupContext, contract: str, token_id: str) -> [
     elif contract == known_addresses.get("fxhash_v1"):
         logger.debug(f"Token {contract}:{token_id} royalties pattern is FXHASH_V1")
         return await get_fxhash_v1_royalties(ctx, contract, known_addresses.get("fxhash_v1_manager"), token_id)
-    elif contract == known_addresses.get("fxhash_v2"):
+    elif contract == known_addresses.get("fxhash_v2") or contract == known_addresses.get("fxhash_v2_2"):
         logger.debug(f"Token {contract}:{token_id} royalties pattern is FXHASH_V2")
         return await get_fxhash_v2_royalties(ctx, contract, token_id)
     elif contract == known_addresses.get("versum"):

@@ -226,3 +226,12 @@ if 'linux' not in sys.platform:
                 self.assertEqual(1, len(r))
                 self.assertEqual("tz1a9QWs5PdGwpaJ37PMqaYwzufbseDm1KWv", r[0].part_account)
                 self.assertEqual("1500", r[0].part_value)
+
+        async def test_fxhash_specific(self) -> None:
+            async with AsyncExitStack() as stack:
+                dipdup = await create_test_dipdup(config, stack)
+                ctx = dipdup._ctx
+                r = await fetch_royalties(ctx, "KT1EfsNuqwLAWDd3o4pvfUx1CAh5GMdTrRvr", "5664")
+                self.assertEqual(1, len(r))
+                self.assertEqual("tz1T55y8BEuXQrCzBaPqayugNNGFwxy27WJt", r[0].part_account)
+                self.assertEqual("1500", r[0].part_value)
