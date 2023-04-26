@@ -4,7 +4,7 @@ hasura:
   resources:
     limits:
       cpu: '2'
-      memory: 2Gi
+      memory: 512Mi
     requests:
       cpu: 400m
       memory: 512Mi
