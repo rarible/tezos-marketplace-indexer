@@ -6,7 +6,6 @@ import threading
 from dipdup.context import HookContext
 from prometheus_client import MetricsHandler
 
-from rarible_marketplace_indexer.consumer.container import consume_ownerships
 from rarible_marketplace_indexer.event.fxhash_v2_action import fxhash_nft_addresses
 from rarible_marketplace_indexer.models import IndexEnum
 from rarible_marketplace_indexer.models import IndexingStatus
@@ -78,5 +77,5 @@ async def on_restart(
             last_level=ctx.config.hooks.get("reprocess_transactions").args.get("last_level")
         )
 
-    if ctx.config.custom.get('consume_ownerships') == "True":
-        await consume_ownerships(ctx, ctx.config.custom, os.getenv('APPLICATION_ENVIRONMENT'))
+    if ctx.config.hooks.get('consume_ownerships'):
+        await ctx.fire_hook('consume_ownerships')

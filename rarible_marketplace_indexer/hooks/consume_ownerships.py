@@ -1,20 +1,19 @@
-from __future__ import annotations
-
 import json
 import logging
+import os
 from decimal import Decimal
 from logging import Logger
-from typing import Any
-from typing import Dict
 
 from aiokafka import AIOKafkaConsumer
 from dipdup.context import HookContext
 
 from rarible_marketplace_indexer.models import Order
 
-logger: Logger = logging.getLogger('dipdup.kafka.consumer')
+logger: Logger = logging.getLogger('consume_ownerships')
 
-async def consume_ownerships(ctx: HookContext, config: Dict[str, Any], env_name: str):
+async def consume_ownerships(ctx: HookContext):
+    config = ctx.config.custom
+    env_name = os.getenv('APPLICATION_ENVIRONMENT')
     addresses = config['kafka_address'].split(',')
     logger.info(f"Connecting to internal kafka: {addresses}")
     topic = f'protocol.{env_name}.tezos.indexer.ownership'
