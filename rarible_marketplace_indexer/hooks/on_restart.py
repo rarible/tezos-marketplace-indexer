@@ -78,4 +78,4 @@ async def on_restart(
         )
 
     if ctx.config.hooks.get('consume_ownerships'):
-        await ctx.fire_hook('consume_ownerships')
+        await ctx.fire_hook('consume_ownerships', wait=False)
