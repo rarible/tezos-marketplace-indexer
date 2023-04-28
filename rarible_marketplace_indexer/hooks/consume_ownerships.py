@@ -9,7 +9,7 @@ from dipdup.context import HookContext
 
 from rarible_marketplace_indexer.models import Order
 
-logger: Logger = logging.getLogger('consume_ownerships')
+logger: Logger = logging.getLogger('dipdup.consume_ownerships')
 
 async def consume_ownerships(ctx: HookContext):
     config = ctx.config.custom
