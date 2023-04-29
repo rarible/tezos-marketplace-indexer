@@ -17,12 +17,13 @@ async def consume_ownerships(ctx: HookContext):
     addresses = config['kafka_address'].split(',')
     logger.info(f"Connecting to internal kafka: {addresses}")
     topic = f'protocol.{env_name}.tezos.indexer.ownership'
-    group = f'{env_name}.protocol.tezos.indexer.rarible'
+    group = f'{env_name}.protocol.tezos.rarible'
     logger.info(f"Listen topic={topic}, group={group}")
     consumer = AIOKafkaConsumer(
         topic,
         bootstrap_servers=addresses,
         value_deserializer=lambda m: json.loads(m.decode('utf-8')),
+        auto_offset_reset="earliest", # If committed offset not found, start from beginning
         group_id=group)
     await consumer.start()
     try:
