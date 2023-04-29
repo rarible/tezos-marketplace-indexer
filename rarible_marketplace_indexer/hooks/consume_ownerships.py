@@ -7,7 +7,7 @@ from logging import Logger
 from aiokafka import AIOKafkaConsumer
 from dipdup.context import HookContext
 
-from rarible_marketplace_indexer.models import Order
+from rarible_marketplace_indexer.models import Order, Activity
 
 logger: Logger = logging.getLogger('dipdup.consume_ownerships')
 
@@ -23,7 +23,6 @@ async def consume_ownerships(ctx: HookContext):
         topic,
         bootstrap_servers=addresses,
         value_deserializer=lambda m: json.loads(m.decode('utf-8')),
-        auto_offset_reset="earliest",
         group_id=group)
     await consumer.start()
     try:
@@ -36,15 +35,25 @@ async def consume_ownerships(ctx: HookContext):
                 make_contract=contract,
                 make_token_id=token_id,
                 platform='RARIBLE_V2',
-                status='ACTIVE'
+                status__in=['ACTIVE','INACTIVE']
             )
             for order in orders:
                 if payload['type'] == 'DELETE':
                     order.make_value = 0
-                elif payload['type'] == 'UPDATE':
+                elif payload['type'] == 'UPDATE' and order.status == 'ACTIVE':
                     order.make_value = min(order.make_value, Decimal(payload['ownership']['balance']))
+                elif payload['type'] == 'UPDATE' and order.status == 'INACTIVE':
+                    logger.info(f"Reactivate order id={order.id}")
+                    activity = await Activity.filter(
+                        order_id=order.id,
+                        type='LIST'
+                    ).order_by('-db_updated_at').first()
+                    if activity is not None:
+                        order.make_value = min(activity.make_value, Decimal(payload['ownership']['balance']))
                 if order.make_value == 0:
                     order.status = 'INACTIVE'
+                else:
+                    order.status = 'ACTIVE'
                 logger.info(f"Order id={order.id}: make_value={order.make_value}, status={order.status}")
                 await order.save()
             # except Exception as ex:
