@@ -56,7 +56,7 @@ async def consume_ownerships(ctx: HookContext):
                     order.status = 'INACTIVE'
                 else:
                     order.status = 'ACTIVE'
-                logger.info(f"Order id={order.id}({order.platform}): make_value={old_make}->{order.make_value}, status={order.status}")
+                logger.info(f"Order id={order.id} ({order.platform}): make_value={old_make}->{order.make_value}, status={order.status}")
                 await order.save()
             # except Exception as ex:
             #     logger.error(f"Error while consuming ownership {msg.value}: {ex}")
