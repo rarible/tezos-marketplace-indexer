@@ -131,6 +131,9 @@ hooks:
   send_collections:
     callback: send_collections
     atomic: False
+  recalculate_order_make:
+    callback: recalculate_order_make
+    atomic: False
 #  fill_db_updated_at:
 #    callback: fill_db_updated_at
 #    atomic: False
