@@ -34,7 +34,7 @@ async def consume_ownerships(ctx: HookContext):
                 maker=owner,
                 make_contract=contract,
                 make_token_id=token_id,
-                platform='RARIBLE_V2',
+                # platform='RARIBLE_V2',
                 status__in=['ACTIVE','INACTIVE']
             )
             for order in orders:
