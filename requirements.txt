@@ -3,7 +3,7 @@ aiokafka==0.7.2
 aiosqlite==0.17.0
 base58==2.1.1
 certifi==2022.6.15
-dipdup @ git+https://github.com/mystdeim/dipdup@1074a9ae49a940b047cbcb58731a25680d099277
+dipdup==6.5.6
 email-validator==1.2
 flake8==4.0.1
 flakeheaven==3.0.0
