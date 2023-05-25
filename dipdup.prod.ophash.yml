@@ -1,6 +1,9 @@
 spec_version: 1.2
 
 hooks:
+  consume_ownerships:
+    callback: consume_ownerships
+    atomic: False
   process_transaction_hash:
     callback: process_transaction_hash
     atomic: False

@@ -113,9 +113,6 @@ indexes:
         tag: aggregator_event
 
 hooks:
-  consume_ownerships:
-    callback: consume_ownerships
-    atomic: False
   process_collection_events:
     callback: process_collection_events
     atomic: False
