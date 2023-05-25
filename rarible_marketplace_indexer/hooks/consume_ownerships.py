@@ -1,5 +1,6 @@
 import json
 import logging
+import time
 import os
 from decimal import Decimal
 from logging import Logger
@@ -30,14 +31,15 @@ async def consume_ownerships(ctx: HookContext):
     try:
         async for msg in consumer:
             try:
+                t = time.process_time()
                 payload = msg.value
                 contract, token_id, owner = payload['ownershipId'].split(':')
                 orders = await Order.filter(
                     maker=owner,
+                    status__in=['ACTIVE', 'INACTIVE'],
                     make_contract=contract,
-                    make_token_id=token_id,
+                    make_token_id=token_id
                     # platform='RARIBLE_V2',
-                    status__in=['ACTIVE', 'INACTIVE']
                 )
                 for order in orders:
                     old_make = order.make_value
@@ -57,9 +59,10 @@ async def consume_ownerships(ctx: HookContext):
                         order.status = 'INACTIVE'
                     else:
                         order.status = 'ACTIVE'
+                    elapsed_time = time.process_time() - t
                     if old_make != order.make_value:
                         logger.info(
-                            f"Order id={order.id} ({order.platform}): make_value={old_make}->{order.make_value}, status={order.status}")
+                            f"Order id={order.id} ({order.platform}): make_value={old_make}->{order.make_value}, status={order.status}, time={elapsed_time}s")
                         await order.save()
             except Exception as ex:
                 logger.error(f"Error while consuming ownership {msg.value}: {ex}")
