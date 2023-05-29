@@ -7,3 +7,5 @@
 --         END;
 --     END;
 -- $$
+
+ALTER TABLE marketplace_order ADD COLUMN IF NOT EXISTS make_stock numeric(300,100);
