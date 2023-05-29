@@ -22,17 +22,17 @@ async def recalculate_order_make(ctx: HookContext, id: int) -> None:
         orders = await request.order_by('-id').limit(1000)
         if len(orders) > 0:
             for order in orders:
-                old_make = order.make_value
+                old_make_stock = order.make_stock
                 ownership_id = Ownership.get_id(order.make_contract, order.make_token_id, order.maker)
                 ownership = await Ownership.get_or_none(id=ownership_id)
                 if ownership is None:
-                    order.make_value = 0
+                    order.make_stock = 0
                 else:
-                    order.make_value = min(ownership.balance, order.make_value)
-                if order.make_value == 0:
+                    order.make_stock = min(ownership.balance, order.make_value)
+                if order.make_stock == 0:
                     order.status = 'INACTIVE'
-                if old_make != order.make_value:
-                    logger.info(f"Order changed id={order.id} ({order.platform}): make_value={old_make}->{order.make_value}, status={order.status}")
+                if old_make_stock != order.make_stock:
+                    logger.info(f"Order changed id={order.id} ({order.platform}): make_stock={old_make_stock}->{order.make_stock}, status={order.status}")
                     await order.save()
             task.sample = orders[-1].id
             logger.info(f"Task={task.name} sent {len(orders)} {platform} orders, set sample={task.sample}")

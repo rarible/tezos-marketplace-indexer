@@ -88,6 +88,7 @@ class Order(Model):
     id = fields.UUIDField(pk=True, generated=False, required=True)
     network = fields.CharField(max_length=16, index=True)
     fill = AssetValueField(default=0)
+    make_stock = AssetValueField()
     platform = fields.CharEnumField(PlatformEnum, index=True)
     internal_order_id = fields.CharField(max_length=32, index=True)
     status = fields.CharEnumField(OrderStatusEnum, index=True)

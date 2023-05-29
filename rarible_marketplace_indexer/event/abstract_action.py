@@ -114,6 +114,7 @@ class AbstractOrderListEvent(EventInterface):
                             make_contract=dto.make.contract,
                             make_token_id=dto.make.token_id,
                             make_value=dto.make.value,
+                            make_stock=dto.make.value,
                             make_price=dto.take.value,
                             take_asset_class=dto.take.asset_class,
                             take_contract=dto.take.contract,
@@ -125,6 +126,7 @@ class AbstractOrderListEvent(EventInterface):
                 else:
                     order.last_updated_at = transaction.data.timestamp
                     order.make_value = dto.make.value
+                    order.make_stock = dto.make.value
                     order.make_price = dto.take.value
                     order.take_value = dto.take.value * dto.make.value
                     order.origin_fees = get_json_parts(dto.origin_fees)
@@ -453,6 +455,7 @@ class AbstractLegacyOrderMatchEvent(EventInterface):
                         make_contract=dto.make.contract,
                         make_token_id=dto.make.token_id,
                         make_value=dto.make.value,
+                        make_stock=dto.make.value,
                         make_price=dto.take.value / dto.make.value,
                         take_asset_class=dto.take.asset_class,
                         take_contract=dto.take.contract,
@@ -463,6 +466,7 @@ class AbstractLegacyOrderMatchEvent(EventInterface):
                     )
                 else:
                     order.make_value = dto.make.value
+                    order.make_stock = dto.make.value
                     order.take_value = dto.take.value
                     order.make_price = dto.take.value / dto.make.value
                     order.origin_fees = get_json_parts(dto.origin_fees)
@@ -522,6 +526,7 @@ class AbstractLegacyOrderMatchEvent(EventInterface):
                         make_contract=dto.make.contract,
                         make_token_id=dto.make.token_id,
                         make_value=dto.match_amount,
+                        make_stock=dto.match_amount,
                         make_price=dto.take.value / dto.make.value,
                         take_asset_class=dto.take.asset_class,
                         take_contract=dto.take.contract,
@@ -593,6 +598,7 @@ class AbstractPutBidEvent(EventInterface):
                         make_contract=dto.make.contract,
                         make_token_id=dto.make.token_id,
                         make_value=dto.make.value,
+                        make_stock=dto.make.value,
                         take_asset_class=dto.take.asset_class,
                         take_contract=dto.take.contract,
                         take_token_id=dto.take.token_id,
@@ -605,6 +611,7 @@ class AbstractPutBidEvent(EventInterface):
                 else:
                     order.last_updated_at = transaction.data.timestamp
                     order.make_value = dto.make.value
+                    order.make_stock = dto.make.value
                     order.take_value = dto.take.value
                     order.take_price = dto.make.value / dto.take.value
                     order.origin_fees = get_json_parts(dto.origin_fees)
@@ -690,6 +697,7 @@ class AbstractPutFloorBidEvent(EventInterface):
                 make_contract=dto.make.contract,
                 make_token_id=dto.make.token_id,
                 make_value=dto.make.value,
+                make_stock=dto.make.value,
                 take_asset_class=dto.take.asset_class,
                 take_contract=dto.take.contract,
                 take_token_id=dto.take.token_id,
@@ -702,6 +710,7 @@ class AbstractPutFloorBidEvent(EventInterface):
         else:
             order.last_updated_at = transaction.data.timestamp
             order.make_value = dto.make.value
+            order.make_stock = dto.make.value
             order.take_value = dto.take.value
             order.take_price = dto.make.value / dto.take.value
             order.origin_fees = get_json_parts(dto.origin_fees)

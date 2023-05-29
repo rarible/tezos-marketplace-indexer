@@ -42,27 +42,24 @@ async def consume_ownerships(ctx: HookContext):
                     # platform='RARIBLE_V2',
                 )
                 for order in orders:
-                    old_make = order.make_value
+                    old_make_stock = order.make_stock
                     if payload['type'] == 'DELETE':
-                        order.make_value = 0
-                    elif payload['type'] == 'UPDATE' and order.status == 'ACTIVE':
-                        order.make_value = min(order.make_value, Decimal(payload['ownership']['balance']))
-                    elif payload['type'] == 'UPDATE' and order.status == 'INACTIVE':
-                        logger.info(f"Reactivate order id={order.id}")
-                        activity = await Activity.filter(
-                            order_id=order.id,
-                            type='LIST'
-                        ).order_by('-db_updated_at').first()
-                        if activity is not None:
-                            order.make_value = min(activity.make_value, Decimal(payload['ownership']['balance']))
-                    if order.make_value == 0:
+                        order.make_stock = 0
+                    elif payload['type'] == 'UPDATE':
+                        order.make_stock = min(order.make_value, Decimal(payload['ownership']['balance']))
+
+                    if order.make_stock == 0:
                         order.status = 'INACTIVE'
+                    elif order.make_stock < 0:
+                        logger.warning(f"Make stock can't be negative order id={order.id}")
+                        order.make_stock = 0
                     else:
                         order.status = 'ACTIVE'
+
                     elapsed_time = time.process_time() - t
-                    if old_make != order.make_value:
+                    if old_make_stock != order.make_stock:
                         logger.info(
-                            f"Order id={order.id} ({order.platform}): make_value={old_make}->{order.make_value}, status={order.status}, time={elapsed_time}s")
+                            f"Order id={order.id} ({order.platform}): make_stock={old_make_stock}->{order.make_stock}, status={order.status}, time={elapsed_time}s")
                         await order.save()
             except Exception as ex:
                 logger.error(f"Error while consuming ownership {msg.value}: {ex}")
