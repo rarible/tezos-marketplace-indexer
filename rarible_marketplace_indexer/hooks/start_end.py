@@ -1,6 +1,7 @@
 import logging
 import traceback
-from datetime import datetime, time
+import time
+from datetime import datetime
 
 from dipdup.context import HookContext
 
