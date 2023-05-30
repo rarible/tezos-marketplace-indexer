@@ -134,6 +134,9 @@ hooks:
   recalculate_order_make:
     callback: recalculate_order_make
     atomic: False
+  start_end:
+    callback: start_end
+    atomic: False
 #  fill_db_updated_at:
 #    callback: fill_db_updated_at
 #    atomic: False
@@ -156,6 +159,11 @@ jobs:
     args:
       batch: 2
       remove: True
+  start_end:
+    hook: start_end
+    interval: 120
+    args:
+      batch: 100
 #  change_status_legacy_orders:
 #    hook: change_status_legacy_orders
 #    interval: 300

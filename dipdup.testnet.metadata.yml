@@ -24,6 +24,9 @@ hooks:
   process_token_royalties:
     callback: process_token_royalties
     atomic: False
+  start_end:
+    callback: start_end
+    atomic: False
 
 jobs:
   process_token_metadata:
@@ -35,6 +38,11 @@ jobs:
   process_token_royalties:
     hook: process_token_royalties
     crontab: "* * * * *"
+  start_end:
+    hook: start_end
+    interval: 120
+    args:
+      batch: 100
 
 advanced:
   rollback_depth: 2

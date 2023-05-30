@@ -20,3 +20,5 @@ create index concurrently if not exists idx_marketplace_order_take_contract_grap
 ALTER TABLE aggregator_event ADD COLUMN IF NOT EXISTS operation_timestamp timestamptz;
 create index concurrently if not exists idx_aggregator_event_timestamp on aggregator_event (operation_timestamp);
 create index concurrently if not exists idx_marketplace_activity_by_hash on marketplace_activity (operation_hash);
+
+create index if not exists idx_marketplace_order_ended_at_active ON marketplace_order (end_at) where status = 'ACTIVE';
