@@ -27,3 +27,4 @@ async def start_end(ctx: HookContext, batch):
         except Exception as ex:
             trace = traceback.format_exc()
             logger.error(f'Error during getting changing status for order={order.id}, {ex}, {trace}')
+    logger.info(f'Finishing processing orders')
