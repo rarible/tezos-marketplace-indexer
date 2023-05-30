@@ -1,6 +1,6 @@
 import logging
 import traceback
-from datetime import datetime
+from datetime import datetime, time
 
 from dipdup.context import HookContext
 
@@ -12,6 +12,7 @@ logger = logging.getLogger("dipdup.start_end")
 
 async def start_end(ctx: HookContext, batch):
     logger.info(f'Starting start_end checker with batch={batch}')
+    t = time.process_time()
 
     # There are no orders with start > now
     orders = await Order.filter(
@@ -23,8 +24,9 @@ async def start_end(ctx: HookContext, batch):
             for order in orders:
                 order.status = OrderStatusEnum.INACTIVE
                 order.ended_at = datetime.now()
-                order.save()
+                await order.save()
         except Exception as ex:
             trace = traceback.format_exc()
             logger.error(f'Error during getting changing status for order={order.id}, {ex}, {trace}')
-    logger.info(f'Finished start_end checker')
+    elapsed_time = time.process_time() - t
+    logger.info(f'Finished start_end checker in {elapsed_time}s')
