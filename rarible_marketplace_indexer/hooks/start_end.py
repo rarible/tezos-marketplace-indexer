@@ -23,7 +23,8 @@ async def start_end(ctx: HookContext, batch):
         logger.info(f'Found {len(orders)} expired orders')
         try:
             for order in orders:
-                order.status = OrderStatusEnum.INACTIVE
+                order.status = OrderStatusEnum.CANCELLED
+                order.cancelled = True
                 order.ended_at = datetime.now()
                 await order.save()
         except Exception as ex:
