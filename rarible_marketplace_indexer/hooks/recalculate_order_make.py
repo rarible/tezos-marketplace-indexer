@@ -19,7 +19,7 @@ async def recalculate_order_make(ctx: HookContext, id: int) -> None:
         continuation = task.sample
         continuation = is_valid_uuid(continuation)
         request = Order.filter(platform=platform, id__lt=continuation, status='ACTIVE') if continuation is not None else Order.filter(platform=platform, status='ACTIVE')
-        orders = await request.order_by('-id').limit(1000)
+        orders = await request.order_by('-id').limit(10000)
         if len(orders) > 0:
             for order in orders:
                 old_make_stock = order.make_stock
