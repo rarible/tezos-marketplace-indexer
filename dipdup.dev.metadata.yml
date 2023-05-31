@@ -49,6 +49,7 @@ advanced:
 
 custom:
   enabled: ${KAFKA_ENABLED:-false}
+  migration: True
   kafka_address: ${KAFKA_ADDRESS:-kafka:9092}
   client_id: dipdup-rarible-${APPLICATION_ENVIRONMENT:-mainnet}-producer
   kafka_security_protocol: ${KAFKA_SECURITY_PROTOCOL:-SASL_PLAINTEXT}

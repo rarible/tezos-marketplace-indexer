@@ -23,7 +23,11 @@ async def on_restart(
     logging.getLogger('aiokafka').setLevel('INFO')
     logging.getLogger('db_client').setLevel('INFO')
 
-    await ctx.execute_sql('on_restart')
+    if ctx.config.custom.get("migration") is not None:
+        logger.info("Running db migrations")
+        await ctx.execute_sql('migration')
+        logger.info("Migrations have been done")
+
     ProducerContainer.create_instance(ctx.config.custom, ctx.logger)
     await ProducerContainer.get_instance().start()
 
