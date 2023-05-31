@@ -33,6 +33,9 @@ hooks:
   recalculate_order_make:
     callback: recalculate_order_make
     atomic: False
+  recalculate_ownerships_by_item:
+    callback: recalculate_ownerships_by_item
+    atomic: False
 
 jobs:
   process_tasks:
