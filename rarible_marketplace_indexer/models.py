@@ -86,11 +86,11 @@ class Order(Model):
     _custom_generated_pk = True
 
     id = fields.UUIDField(pk=True, generated=False, required=True)
-    network = fields.CharField(max_length=16, index=True)
+    network = fields.CharField(max_length=16)
     fill = AssetValueField(default=0)
     make_stock = AssetValueField()
-    platform = fields.CharEnumField(PlatformEnum, index=True)
-    internal_order_id = fields.CharField(max_length=32, index=True)
+    platform = fields.CharEnumField(PlatformEnum)
+    internal_order_id = fields.CharField(max_length=32)
     status = fields.CharEnumField(OrderStatusEnum, index=True)
     start_at = fields.DatetimeField()
     end_at = fields.DatetimeField(null=True)
