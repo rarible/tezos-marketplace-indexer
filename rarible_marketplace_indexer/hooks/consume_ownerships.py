@@ -46,7 +46,7 @@ async def consume_ownerships(ctx: HookContext):
                     if payload['type'] == 'DELETE':
                         order.make_stock = 0
                     elif payload['type'] == 'UPDATE':
-                        order.make_stock = min(order.make_value, Decimal(payload['ownership']['balance']))
+                        order.make_stock = min(order.make_stock, Decimal(payload['ownership']['balance']))
 
                     if order.make_stock == 0:
                         order.status = 'INACTIVE'
