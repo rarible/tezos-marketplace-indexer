@@ -326,6 +326,10 @@ class AbstractOrderMatchEvent(EventInterface):
             order.status = OrderStatusEnum.FILLED
             order.ended_at = dto.match_timestamp
 
+        order.make_stock -= dto.match_amount
+        if order.make_stock < 0:
+            order.make_stock = 0
+
         return order
 
     @classmethod
@@ -475,10 +479,13 @@ class AbstractLegacyOrderMatchEvent(EventInterface):
                 order.last_updated_at = transaction.data.timestamp
 
                 order.fill += dto.match_amount
-
                 if order.fill == order.make_value:
                     order.status = OrderStatusEnum.FILLED
                     order.ended_at = dto.match_timestamp
+
+                order.make_stock -= dto.match_amount
+                if order.make_stock < 0:
+                    order.make_stock = 0
 
                 await order.save()
 
