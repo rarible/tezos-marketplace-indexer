@@ -15,6 +15,9 @@ datasources:
     url: https://ipfs.io/ipfs
 
 hooks:
+  process_tasks:
+    callback: process_tasks
+    atomic: False
   process_token_metadata:
     callback: process_token_metadata
     atomic: False
@@ -27,8 +30,14 @@ hooks:
   start_end:
     callback: start_end
     atomic: False
+  recalculate_order_make:
+    callback: recalculate_order_make
+    atomic: False
 
 jobs:
+  process_tasks:
+    hook: process_tasks
+    interval: 60 # seconds
   process_token_metadata:
     hook: process_token_metadata
     crontab: "* * * * *"
