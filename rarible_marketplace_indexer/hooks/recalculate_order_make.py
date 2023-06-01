@@ -25,25 +25,26 @@ async def recalculate_order_make(ctx: HookContext, id: int) -> None:
         orders = await request.order_by('-id').limit(5000)
         if len(orders) > 0:
             for order in orders:
-                old_make_stock = order.make_stock
+                if not order.is_bid:
+                    old_make_stock = order.make_stock
 
-                listed, filled, balance = await asyncio.gather(
-                    listing(conn, order),
-                    sold(conn, order),
-                    ownerships(order)
-                )
-                order.make_stock = min(listed - filled, balance)
+                    listed, filled, balance = await asyncio.gather(
+                        listing(conn, order),
+                        sold(conn, order),
+                        ownerships(order)
+                    )
+                    order.make_stock = min(listed - filled, balance)
 
-                if order.make_stock < 0:
-                    order.make_stock = 0
+                    if order.make_stock < 0:
+                        order.make_stock = 0
 
-                if order.make_stock == 0:
-                    order.status = 'INACTIVE'
-                if old_make_stock != order.make_stock:
-                    logger.info(
-                        f"Order changed id={order.id} ({order.platform}): make_stock={old_make_stock}->{order.make_stock}, status={order.status}")
+                    if order.make_stock == 0:
+                        order.status = 'INACTIVE'
+                    if old_make_stock != order.make_stock:
+                        logger.info(
+                            f"Order changed id={order.id} ({order.platform}): make_stock={old_make_stock}->{order.make_stock}, status={order.status}")
 
-                await order.save()
+                    await order.save()
             task.sample = orders[-1].id
             logger.info(f"Task={task.name} sent {len(orders)} {platform} orders, set sample={task.sample}")
         else:
