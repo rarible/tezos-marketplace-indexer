@@ -21,7 +21,10 @@ async def recalculate_order_make(ctx: HookContext, id: int) -> None:
         platform = task.param
         continuation = task.sample
         continuation = is_valid_uuid(continuation)
-        request = Order.filter(platform=platform, id__lt=continuation) if continuation is not None else Order.filter(platform=platform)
+        if platform is None:
+            request = Order.filter(id__lt=continuation) if continuation is not None else Order.filter()
+        else:
+            request = Order.filter(platform=platform, id__lt=continuation) if continuation is not None else Order.filter(platform=platform)
         orders = await request.order_by('-id').limit(5000)
         if len(orders) > 0:
             for order in orders:
@@ -46,7 +49,7 @@ async def recalculate_order_make(ctx: HookContext, id: int) -> None:
 
                     await order.save()
             task.sample = orders[-1].id
-            logger.info(f"Task={task.name} sent {len(orders)} {platform} orders, set sample={task.sample}")
+            logger.info(f"Task={task.name} sent {len(orders)} orders, set sample={task.sample}")
         else:
             logger.info(f"Task={task.name} finished")
             task.status = TaskStatus.FINISHED
