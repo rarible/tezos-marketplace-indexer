@@ -41,8 +41,9 @@ async def recalculate_order_make(ctx: HookContext, id: int) -> None:
                     if order.make_stock < 0:
                         order.make_stock = 0
 
-                    if order.make_stock == 0:
+                    if order.make_stock == 0 and order.status == 'ACTIVE':
                         order.status = 'INACTIVE'
+
                     if old_make_stock != order.make_stock:
                         logger.info(
                             f"Order changed id={order.id} ({order.platform}): make_stock={old_make_stock}->{order.make_stock}, status={order.status}")
