@@ -25,7 +25,7 @@ async def recalculate_order_make(ctx: HookContext, id: int) -> None:
             request = Order.filter(id__lt=continuation) if continuation is not None else Order.filter()
         else:
             request = Order.filter(platform=platform, id__lt=continuation) if continuation is not None else Order.filter(platform=platform)
-        orders = await request.order_by('-id').limit(5000)
+        orders = await request.order_by('-id').limit(2000)
         if len(orders) > 0:
             for order in orders:
                 if not order.is_bid:
