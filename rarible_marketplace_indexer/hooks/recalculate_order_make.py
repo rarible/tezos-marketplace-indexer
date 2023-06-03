@@ -36,6 +36,7 @@ async def recalculate_order_make(ctx: HookContext, id: int) -> None:
                         sold(conn, order),
                         ownerships(order)
                     )
+                    order.make_value = listed
                     order.make_stock = min(listed - filled, balance)
 
                     if order.make_stock < 0:
