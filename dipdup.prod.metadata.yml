@@ -131,8 +131,11 @@ hooks:
   send_collections:
     callback: send_collections
     atomic: False
-  recalculate_order_make:
-    callback: recalculate_order_make
+  recalculate_orders:
+    callback: recalculate_orders
+    atomic: False
+  fix_null_make:
+    callback: fix_null_make
     atomic: False
   start_end:
     callback: start_end
