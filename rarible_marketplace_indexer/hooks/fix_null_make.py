@@ -18,7 +18,7 @@ async def fix_null_make(ctx: HookContext, id: int) -> None:
     try:
         task.status = TaskStatus.RUNNING
         await task.save()
-        request = Order.filter(make_value=None)
+        request = Order.filter(make_value__lte=0)
         orders = await request.limit(10000)
         if len(orders) > 0:
             for order in orders:
