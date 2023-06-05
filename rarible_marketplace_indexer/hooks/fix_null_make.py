@@ -23,7 +23,6 @@ async def fix_null_make(ctx: HookContext, id: int) -> None:
         if len(orders) > 0:
             for order in orders:
                 await order_full_reduce(order, conn)
-            task.sample = orders[-1].id
             logger.info(f"Task={task.name} sent {len(orders)} orders, set sample={task.sample}")
         else:
             logger.info(f"Task={task.name} finished")
