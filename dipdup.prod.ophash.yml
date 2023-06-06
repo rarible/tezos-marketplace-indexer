@@ -11,7 +11,7 @@ hooks:
 jobs:
   process_transaction_hash:
     hook: process_transaction_hash
-    interval: 60 # seconds
+    interval: 600 # seconds
     args:
       iterations: 10
       batch: 100
