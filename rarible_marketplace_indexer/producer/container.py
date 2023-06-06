@@ -48,9 +48,5 @@ class ProducerContainer:
 
 
 async def producer_send(api_object: AbstractRaribleApiObject):
-    t = time.process_time()
     producer = ProducerContainer.get_instance()
-    get_time = time.process_time() - t
     await producer.send(topic=api_object.kafka_topic, key=get_kafka_key(api_object), value=api_object)
-    send_time = time.process_time() - t
-    logger.info(f"Evaluated for get:{get_time}s send:{send_time}s")
