@@ -3,7 +3,6 @@
 create index if not exists token_transfer_contract_token_id_type ON token_transfer (contract, token_id, type); -- for royalty queries
 -- create index concurrently if not exists royalties_retries_synced on royalties (royalties_synced, royalties_retries);
 
-drop index if exists metadata_retries_synced;
 create index if not exists metadata_retries_synced on metadata_token (metadata_synced, metadata_retries);
 --
 create index if not exists marketplace_activity_operation_timestamp on marketplace_activity (operation_timestamp); -- remove later
@@ -13,7 +12,6 @@ create index if not exists marketplace_activity_request_by_item on marketplace_a
 create index if not exists marketplace_activity_request_by_item_graphql on marketplace_activity (make_token_id, make_contract, type);
 create index if not exists idx_marketplace_order_by_maker on marketplace_order (maker, status);
 
-drop index if exists ownership_owner;
 create index if not exists ownership_owner on ownership (owner);
 
 drop index if exists idx_marketplace_order_make_contract;
