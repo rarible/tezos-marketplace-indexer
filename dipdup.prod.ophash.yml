@@ -60,3 +60,8 @@ custom:
     bidou_24x24_color: "KT1VikAWA8wQHLZgHoAGL7Z9kCjgbCEnvWA3"
     dogami: "KT1NVvPsNDChrLRH5K2cy6Sc9r1uuUwdiZQd"
     dogami_gap: "KT1CAbPGHUWvkSA9bxMPkqSgabgsjtmRYEda"
+
+prometheus:
+  host: 0.0.0.0
+  port: 9191
+  update_interval: 30
