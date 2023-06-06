@@ -11,18 +11,10 @@ hooks:
 jobs:
   process_transaction_hash:
     hook: process_transaction_hash
-    interval: 600 # seconds
+    interval: 60 # seconds
     args:
       iterations: 10
       batch: 100
-
-indexes:
-  token_transfers:
-    kind: token_transfer
-    datasource: tzkt
-    first_level: 1212040
-    handlers:
-      - callback: on_transfer
 
 advanced:
   rollback_depth: 0
