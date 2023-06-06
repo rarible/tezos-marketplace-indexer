@@ -17,7 +17,7 @@ jobs:
       batch: 100
 
 advanced:
-  rollback_depth: 2
+  rollback_depth: 0
   early_realtime: False
   metadata_interface: True
   merge_subscriptions: True

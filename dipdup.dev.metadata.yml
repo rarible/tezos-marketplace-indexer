@@ -37,7 +37,7 @@ jobs:
     crontab: "* * * * *"
 
 advanced:
-  rollback_depth: 2
+  rollback_depth: 0
   early_realtime: True
   metadata_interface: True
   reindex:
