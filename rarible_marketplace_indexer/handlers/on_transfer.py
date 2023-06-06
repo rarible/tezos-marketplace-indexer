@@ -1,5 +1,6 @@
 import logging
 from datetime import datetime
+import time
 
 import tortoise
 from dipdup.context import HandlerContext
@@ -15,12 +16,14 @@ from rarible_marketplace_indexer.models import TokenTransfer
 from rarible_marketplace_indexer.utils.rarible_utils import assert_token_id_length
 from rarible_marketplace_indexer.utils.rarible_utils import date_pattern
 
+logger = logging.getLogger('dipdup.on_transfer')
+null_addresses = [None, "tz1burnburnburnburnburnburnburjAYjjX", "tz1Ke2h7sDdakHJQh8WX4Z372du1KChsksyU"]
+
 
 async def on_transfer(ctx: HandlerContext, token_transfer: TokenTransferData) -> None:
-    logger = logging.getLogger('dipdup.on_transfer')
     if assert_token_id_length(str(token_transfer.token_id)):
         if token_transfer.standard == TokenStandard.FA2:
-            null_addresses = [None, "tz1burnburnburnburnburnburnburjAYjjX", "tz1Ke2h7sDdakHJQh8WX4Z372du1KChsksyU"]
+            t = time.process_time()
             transfer = await TokenTransfer.get_or_none(id=token_transfer.id)
             token_id = Token.get_id(token_transfer.contract_address, token_transfer.token_id)
             if transfer is None:
@@ -114,3 +117,6 @@ async def on_transfer(ctx: HandlerContext, token_transfer: TokenTransferData) ->
 
             # always recalculate transfers
             await ownership_transfer(token_transfer)
+
+            elapsed_time = time.process_time() - t
+            logger.info(f"Evaluated for {elapsed_time}s")
