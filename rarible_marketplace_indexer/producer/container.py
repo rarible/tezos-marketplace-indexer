@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import logging
+import time
 from logging import Logger
 from typing import Any
 from typing import Dict
@@ -16,6 +18,7 @@ from rarible_marketplace_indexer.types.rarible_api_objects import AbstractRaribl
 
 AIOKafkaProducerInterface = Union[AIOKafkaProducer, NullKafkaProducer]
 
+logger = logging.getLogger('dipdup.kafka')
 
 class ProducerContainer:
     __instance: Optional[AIOKafkaProducerInterface] = None
@@ -45,5 +48,9 @@ class ProducerContainer:
 
 
 async def producer_send(api_object: AbstractRaribleApiObject):
+    t = time.process_time()
     producer = ProducerContainer.get_instance()
+    get_time = time.process_time() - t
     await producer.send(topic=api_object.kafka_topic, key=get_kafka_key(api_object), value=api_object)
+    send_time = time.process_time() - t
+    logger.info(f"Evaluated for get:{get_time}s send:{send_time}s")
