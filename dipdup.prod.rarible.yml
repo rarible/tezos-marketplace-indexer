@@ -1,12 +1,6 @@
 spec_version: 1.2
 
 contracts:
-  rarible_exchange_legacy:
-    address: KT198mqFKkiWerXLmMCw69YB1i6yzYtmGVrC
-    typename: rarible_exchange_legacy
-  rarible_exchange_legacy_data:
-    address: KT1D2fZiUNo6RPj3zKofH8DqDDgoV7KoyEbb
-    typename: rarible_exchange_legacy_data
   rarible_exchange:
     address: KT1N4Rrm6BU6229drs6scrH3vard1pPngMyA
     typename: rarible_exchange
@@ -76,34 +70,6 @@ indexes:
               type: transaction
               entrypoint: buy
 
-  rarible_exchange_legacy_actions:
-    kind: operation
-    datasource: tzkt
-    contracts:
-      - rarible_exchange_legacy
-    types:
-      - transaction
-    handlers:
-      - callback: rarible_match_orders_legacy
-        pattern:
-          - destination: rarible_exchange_legacy
-            type: transaction
-            entrypoint: match_orders
-
-  rarible_exchange_legacy_data_actions:
-    kind: operation
-    datasource: tzkt
-    contracts:
-      - rarible_exchange_legacy_data
-    types:
-      - transaction
-    handlers:
-      - callback: rarible_cancel_order_legacy
-        pattern:
-          - destination: rarible_exchange_legacy_data
-            type: transaction
-            entrypoint: remove
-
   rarible_aggregator_tracker_events:
     kind: event
     datasource: tzkt
@@ -118,9 +84,6 @@ hooks:
     atomic: False
     args:
       level: int
-#  import_legacy_orders:
-#    callback: import_legacy_orders
-#    atomic: False
 
 advanced:
   rollback_depth: 0
@@ -167,3 +130,5 @@ prometheus:
   host: 0.0.0.0
   port: 9191
   update_interval: 5
+
+logging: verbose
