@@ -118,9 +118,9 @@ hooks:
     atomic: False
     args:
       level: int
-  import_legacy_orders:
-    callback: import_legacy_orders
-    atomic: False
+#  import_legacy_orders:
+#    callback: import_legacy_orders
+#    atomic: False
 
 advanced:
   rollback_depth: 0
@@ -143,7 +143,7 @@ custom:
     mechanism: ${KAFKA_SASL_MECHANISM:-PLAIN}
     username: ${KAFKA_USERNAME:-rarible}
     password: ${KAFKA_PASSWORD:-changeme}
-  run_fix_jobs: True
+  run_fix_jobs: False
   first_collection_level: 1212040
   reset_new_persistence: False
   reset_order_data: False
