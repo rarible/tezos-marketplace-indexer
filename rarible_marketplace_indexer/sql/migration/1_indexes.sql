@@ -12,11 +12,11 @@ create index if not exists marketplace_activity_request_by_item on marketplace_a
 create index if not exists marketplace_activity_request_by_item_graphql on marketplace_activity (make_token_id, make_contract, type);
 create index if not exists idx_marketplace_order_by_maker on marketplace_order (maker, status);
 
-drop index if exists marketplace_activity_db_updated_at;
-create index if not exists marketplace_activity_db_updated_at_id on marketplace_activity (db_updated_at, id);
+drop index if exists marketplace_activity_db_updated_at_id;
+create index if not exists marketplace_activity_db_updated_at_id_desc on marketplace_activity (db_updated_at desc, id desc);
 
-drop index if exists token_transfer_db_updated_at;
-create index if not exists token_transfer_db_updated_at_id on token_transfer (db_updated_at, id);
+drop index if exists token_transfer_db_updated_at_id;
+create index if not exists token_transfer_db_updated_at_id_desc on token_transfer (db_updated_at desc, id desc);
 
 create index if not exists ownership_owner on ownership (owner);
 
