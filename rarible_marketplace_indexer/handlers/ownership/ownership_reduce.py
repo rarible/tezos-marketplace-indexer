@@ -78,3 +78,31 @@ async def ownership_transfer(transfer: TokenTransferData) -> None:
         tasks.append(process(transfer.contract_address, transfer.token_id, transfer.from_address, transfer.timestamp))
     for task in tasks:
         await task
+
+
+async def balance_update_inc(contract, token_id, owner, amount, timestamp):
+    ownership_id = Ownership.get_id(contract, token_id, owner)
+    ownership = await Ownership.get_or_none(id=ownership_id)
+    if ownership is not None:
+        ownership.balance += amount
+        ownership.updated = timestamp
+    else:
+        ownership = Ownership(
+            id=ownership_id,
+            contract=contract,
+            token_id=token_id,
+            owner=owner,
+            balance=amount,
+            updated=timestamp,
+            created=timestamp,
+        )
+
+    if ownership.balance == 0:
+        await ownership.delete()
+    elif owner in NULL_ADDRESSES:
+        event = RaribleApiOwnershipFactory.build_delete(ownership)
+        await producer_send(event)
+    else:
+        ownership.updated = timestamp
+        await ownership.save()
+

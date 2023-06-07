@@ -86,7 +86,7 @@ hooks:
       level: int
 
 advanced:
-  rollback_depth: 0
+  rollback_depth: 2
   early_realtime: False
   skip_version_check: True
   metadata_interface: False
