@@ -14,7 +14,7 @@ jobs:
     interval: 60 # seconds
     args:
       iterations: 10
-      batch: 100
+      batch: 1000
 
 advanced:
   rollback_depth: 0

@@ -15,6 +15,9 @@ create index if not exists idx_marketplace_order_by_maker on marketplace_order (
 drop index if exists marketplace_activity_db_updated_at;
 create index if not exists marketplace_activity_db_updated_at_id on marketplace_activity (db_updated_at, id);
 
+drop index if exists token_transfer_db_updated_at;
+create index if not exists token_transfer_db_updated_at_id on token_transfer (db_updated_at, id);
+
 create index if not exists ownership_owner on ownership (owner);
 
 drop index if exists idx_marketplace_order_make_contract;
