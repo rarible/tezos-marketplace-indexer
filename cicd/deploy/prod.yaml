@@ -36,7 +36,7 @@ tezos-marketplace-indexer-rarible:
       cpu: '1'
       memory: 1384Mi
   environments:
-    KAFKA_ENABLED: false
+    KAFKA_ENABLED: true
     NETWORK: mainnet
 
 tezos-marketplace-indexer-marketplaces:
