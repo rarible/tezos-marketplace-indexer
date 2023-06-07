@@ -33,50 +33,50 @@ contracts:
     typename: objkt_marketplace_v2
 
 indexes:
-  token_transfers:
-    kind: token_transfer
+#  token_transfers:
+#    kind: token_transfer
+#    datasource: tzkt
+#    first_level: 1212040
+#    handlers:
+#      - callback: on_transfer
+
+  originations:
+    kind: head
     datasource: tzkt
-    first_level: 1212040
     handlers:
-      - callback: on_transfer
+      - callback: on_head
 
-#  originations:
-#    kind: head
-#    datasource: tzkt
-#    handlers:
-#      - callback: on_head
+  rarible_exchange_actions:
+    kind: operation
+    datasource: tzkt
+    contracts:
+        - rarible_exchange
+    types:
+      - transaction
+    handlers:
+        - callback: rarible_order_list
+          pattern:
+            - destination: rarible_exchange
+              type: transaction
+              entrypoint: sell
+        - callback: rarible_order_cancel_list
+          pattern:
+            - destination: rarible_exchange
+              type: transaction
+              entrypoint: cancel_sale
+        - callback: rarible_order_match
+          pattern:
+            - destination: rarible_exchange
+              type: transaction
+              entrypoint: buy
 
-#  rarible_exchange_actions:
-#    kind: operation
-#    datasource: tzkt
-#    contracts:
-#        - rarible_exchange
-#    types:
-#      - transaction
-#    handlers:
-#        - callback: rarible_order_list
-#          pattern:
-#            - destination: rarible_exchange
-#              type: transaction
-#              entrypoint: sell
-#        - callback: rarible_order_cancel_list
-#          pattern:
-#            - destination: rarible_exchange
-#              type: transaction
-#              entrypoint: cancel_sale
-#        - callback: rarible_order_match
-#          pattern:
-#            - destination: rarible_exchange
-#              type: transaction
-#              entrypoint: buy
-#
-#  rarible_aggregator_tracker_events:
-#    kind: event
-#    datasource: tzkt
-#    handlers:
-#      - callback: on_rarible_aggregator_event
-#        contract: rarible_aggregator_tracker
-#        tag: aggregator_event
+  rarible_aggregator_tracker_events:
+    kind: event
+    datasource: tzkt
+    handlers:
+      - callback: on_rarible_aggregator_event
+        contract: rarible_aggregator_tracker
+        tag: aggregator_event
 
 hooks:
   process_collection_events:

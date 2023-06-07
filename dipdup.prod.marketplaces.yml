@@ -39,6 +39,12 @@ contracts:
     typename: objkt_marketplace_v2
 
 indexes:
+  token_transfers:
+    kind: token_transfer
+    datasource: tzkt
+    first_level: 1212040
+    handlers:
+      - callback: on_transfer
   teia_v1_actions:
      kind: operation
      datasource: tzkt
