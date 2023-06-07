@@ -2,6 +2,8 @@ import logging
 
 from dipdup.models import TokenTransferData
 from tortoise import Tortoise
+from tortoise.exceptions import OperationalError
+from tortoise.transactions import in_transaction
 
 from rarible_marketplace_indexer.models import Ownership
 from rarible_marketplace_indexer.producer.container import producer_send
@@ -11,8 +13,7 @@ logger = logging.getLogger('dipdup.ownership_reduce')
 NULL_ADDRESSES = [None, "tz1burnburnburnburnburnburnburjAYjjX", "tz1Ke2h7sDdakHJQh8WX4Z372du1KChsksyU"]
 
 
-async def ownership_balance(contract, token_id, owner) -> None:
-    conn = Tortoise.get_connection("default")
+async def ownership_balance(contract, token_id, owner, conn) -> None:
     result = await conn.execute_query(
         """
     select
@@ -38,36 +39,37 @@ async def ownership_balance(contract, token_id, owner) -> None:
 
 
 async def process(contract, token_id, owner, timestamp) -> None:
-    amount = await ownership_balance(contract, token_id, owner)
-    ownership_id = Ownership.get_id(contract, token_id, owner)
-    ownership = await Ownership.get_or_none(id=ownership_id)
-    if amount != 0:
-        if ownership is not None:
-            ownership.balance = amount
-            ownership.updated = timestamp
+    async with in_transaction() as conn:
+        amount = await ownership_balance(contract, token_id, owner, conn)
+        ownership_id = Ownership.get_id(contract, token_id, owner)
+        ownership = await Ownership.get_or_none(id=ownership_id)
+        if amount != 0:
+            if ownership is not None:
+                ownership.balance = amount
+                ownership.updated = timestamp
 
-            if owner in NULL_ADDRESSES:
-                await ownership.delete()
+                if owner in NULL_ADDRESSES:
+                    await ownership.delete()
+                else:
+                    await ownership.save()
             else:
-                await ownership.save()
-        else:
-            ownership = Ownership(
-                id=ownership_id,
-                contract=contract,
-                token_id=token_id,
-                owner=owner,
-                balance=amount,
-                updated=timestamp,
-                created=timestamp,
-            )
-            if owner in NULL_ADDRESSES:
-                # send delete event without saving ownership
-                event = RaribleApiOwnershipFactory.build_delete(ownership)
-                await producer_send(event)
-            else:
-                await ownership.save()
-    if amount == 0 and ownership is not None:
-        await ownership.delete()
+                ownership = Ownership(
+                    id=ownership_id,
+                    contract=contract,
+                    token_id=token_id,
+                    owner=owner,
+                    balance=amount,
+                    updated=timestamp,
+                    created=timestamp,
+                )
+                if owner in NULL_ADDRESSES:
+                    # send delete event without saving ownership
+                    event = RaribleApiOwnershipFactory.build_delete(ownership)
+                    await producer_send(event)
+                else:
+                    await ownership.save()
+        if amount == 0 and ownership is not None:
+            await ownership.delete()
 
 
 async def ownership_transfer(transfer: TokenTransferData) -> None:
@@ -84,7 +86,7 @@ async def balance_update_inc(contract, token_id, owner, amount, timestamp):
     ownership_id = Ownership.get_id(contract, token_id, owner)
     ownership = await Ownership.get_or_none(id=ownership_id)
 
-    if not owner in NULL_ADDRESSES:
+    if owner not in NULL_ADDRESSES:
         if ownership is not None:
             ownership.balance += amount
 
@@ -104,3 +106,25 @@ async def balance_update_inc(contract, token_id, owner, amount, timestamp):
                 created=timestamp,
             )
             await ownership.save()
+
+
+async def ownership_balance_tx(contract, token_id, owner):
+    try:
+        async with in_transaction() as conn:
+            result = await conn.execute_query(
+                """
+            select
+                sum(case when to_address = $1 then amount
+                         when from_address = $1 then -amount
+                         else 0
+                    end)
+            from token_transfer where contract = $2
+                                  and token_id = $3
+                                  and (to_address = $1 or from_address = $1)
+                                  -- pg the comparison of NULL with a value will always result in NULL
+                                  and ((to_address <> from_address) isnull or (to_address <> from_address))
+            """,
+                [str(owner), str(contract), str(token_id)],
+            )
+    except OperationalError:
+        pass
