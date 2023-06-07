@@ -37,6 +37,7 @@ tezos-marketplace-indexer-rarible:
       memory: 1384Mi
   environments:
     KAFKA_ENABLED: false
+    NETWORK: mainnet
 
 tezos-marketplace-indexer-marketplaces:
   replicas: 1

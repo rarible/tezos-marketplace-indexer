@@ -212,8 +212,8 @@ indexes:
 advanced:
   rollback_depth: 0
   early_realtime: False
-  skip_version_check: False
-  metadata_interface: True
+  skip_version_check: True
+  metadata_interface: False
   reindex:
     manual: wipe
     migration: exception

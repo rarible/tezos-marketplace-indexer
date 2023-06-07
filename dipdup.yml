@@ -9,12 +9,12 @@ database:
   password: ${POSTGRES_PASS:-changeme}
   database: ${POSTGRES_DB:-dipdup}
 
-hasura:
-  url: ${HASURA_URL:-http://hasura:8080}
-  admin_secret: ${HASURA_GRAPHQL_ADMIN_SECRET:-changeme}
-  select_limit: ${HASURA_SELECT_LIMIT:-100}
-  allow_aggregations: False
-  rest: False
+#hasura:
+#  url: ${HASURA_URL:-http://hasura:8080}
+#  admin_secret: ${HASURA_GRAPHQL_ADMIN_SECRET:-changeme}
+#  select_limit: ${HASURA_SELECT_LIMIT:-100}
+#  allow_aggregations: False
+#  rest: False
 
 datasources:
   tzkt:
