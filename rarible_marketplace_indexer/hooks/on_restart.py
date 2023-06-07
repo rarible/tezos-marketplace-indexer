@@ -18,10 +18,18 @@ logger = logging.getLogger("dipdup.on_restart")
 async def on_restart(
     ctx: HookContext,
 ) -> None:
-    ctx.logger.setLevel("INFO")
-    logging.getLogger('dipdup').setLevel('INFO')
-    logging.getLogger('aiokafka').setLevel('INFO')
-    logging.getLogger('db_client').setLevel('INFO')
+
+    if ctx.config.custom.get("debug") is not None:
+        ctx.logger.setLevel("DEBUG")
+        logging.getLogger('dipdup').setLevel('DEBUG')
+        logging.getLogger('aiokafka').setLevel('DEBUG')
+        logging.getLogger('db_client').setLevel('DEBUG')
+    else:
+        ctx.logger.setLevel("INFO")
+        logging.getLogger('dipdup').setLevel('INFO')
+        logging.getLogger('aiokafka').setLevel('INFO')
+        logging.getLogger('db_client').setLevel('INFO')
+
 
     if ctx.config.custom.get("migration") is not None:
         logger.info("Running db migrations")
