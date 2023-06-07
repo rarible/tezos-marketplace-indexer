@@ -9,7 +9,7 @@ from rarible_marketplace_indexer.enums import TaskStatus
 from rarible_marketplace_indexer.handlers.order.order_reduce import order_full_reduce
 from rarible_marketplace_indexer.models import Tasks, Order
 
-logger = logging.getLogger("dipdup.recalculate_order_make")
+logger = logging.getLogger("dipdup.recalculate_orders")
 
 
 async def recalculate_orders(ctx: HookContext, id: int) -> None:

@@ -30,9 +30,6 @@ hooks:
   start_end:
     callback: start_end
     atomic: False
-  recalculate_order_make:
-    callback: recalculate_order_make
-    atomic: False
   recalculate_ownerships_by_item:
     callback: recalculate_ownerships_by_item
     atomic: False

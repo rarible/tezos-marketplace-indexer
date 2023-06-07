@@ -1,5 +1,4 @@
 import logging
-import time
 from datetime import datetime
 
 from dipdup.context import HookContext
@@ -20,7 +19,6 @@ async def process_collection_events(
     ctx: HookContext,
     level: int,
 ) -> None:
-    t = time.process_time()
     index = await IndexingStatus.get_or_none(index=IndexEnum.COLLECTION)
     current_level = int(index.last_level) if index is not None else level
     logger.info(f"Processing collections from level {current_level}")
@@ -36,8 +34,6 @@ async def process_collection_events(
         if total < 100:
             last_id = None
 
-    elapsed_time = time.process_time() - t
-    logger.info(f"Evaluated for {elapsed_time}s")
 
 async def process_originations(ctx, current_level, last_id):
     tzkt = ctx.get_tzkt_datasource('tzkt')

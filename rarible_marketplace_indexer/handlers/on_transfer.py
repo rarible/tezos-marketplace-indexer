@@ -1,6 +1,5 @@
 import logging
 from datetime import datetime
-import time
 
 import tortoise
 from dipdup.context import HandlerContext
@@ -23,7 +22,6 @@ null_addresses = [None, "tz1burnburnburnburnburnburnburjAYjjX", "tz1Ke2h7sDdakHJ
 async def on_transfer(ctx: HandlerContext, tf: TokenTransferData) -> None:
     if assert_token_id_length(str(tf.token_id)):
         if tf.standard == TokenStandard.FA2:
-            t = time.process_time()
             transfer = await TokenTransfer.get_or_none(id=tf.id)
             token_id = Token.get_id(tf.contract_address, tf.token_id)
             if transfer is None:
