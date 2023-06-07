@@ -374,14 +374,17 @@ jobs:
 #    interval: 30 # seconds
 
 advanced:
-  rollback_depth: 0
-  early_realtime: True
+  rollback_depth: 2
+  early_realtime: False
+  skip_version_check: True
+  metadata_interface: False
   reindex:
     manual: wipe
     migration: exception
     rollback: ignore
     config_modified: ignore
     schema_modified: ignore
+
 
 custom:
   enabled: ${KAFKA_ENABLED:-false}
