@@ -116,7 +116,7 @@ async def on_transfer(ctx: HandlerContext, token_transfer: TokenTransferData) ->
                     ).save()
 
             # always recalculate transfers
-            await ownership_transfer(token_transfer)
+            # await ownership_transfer(token_transfer)
 
             elapsed_time = time.process_time() - t
             logger.info(f"Evaluated for {elapsed_time}s")

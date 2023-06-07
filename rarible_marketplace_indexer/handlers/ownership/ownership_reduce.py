@@ -29,7 +29,6 @@ async def ownership_balance(contract, token_id, owner) -> None:
         [str(owner), str(contract), str(token_id)],
     )
     amount = result[1][0]['sum']
-    await conn.close()
     if amount is not None:
         if amount < 0:
             logger.warning(f"Amount({amount}) mustn't be negative for ownership: {contract}:{token_id}:{owner}")
