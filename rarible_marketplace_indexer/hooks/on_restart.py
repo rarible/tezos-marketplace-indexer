@@ -19,7 +19,7 @@ async def on_restart(
     ctx: HookContext,
 ) -> None:
 
-    if ctx.config.custom.get("debug") is not None:
+    if ctx.config.custom.get("debug") == "True":
         ctx.logger.setLevel("DEBUG")
         logging.getLogger('dipdup').setLevel('DEBUG')
         logging.getLogger('aiokafka').setLevel('DEBUG')
