@@ -107,7 +107,7 @@ custom:
     username: ${KAFKA_USERNAME:-rarible}
     password: ${KAFKA_PASSWORD:-changeme}
   run_fix_jobs: False
-  debug: True
+  debug: False
   first_collection_level: 1212040
   reset_new_persistence: False
   reset_order_data: False
