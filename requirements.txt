@@ -3,7 +3,7 @@ aiokafka==0.7.2
 aiosqlite==0.17.0
 base58==2.1.1
 certifi==2022.6.15
-dipdup==6.5.6
+dipdup==6.5.7
 email-validator==1.2
 flake8==4.0.1
 flakeheaven==3.0.0
@@ -11,7 +11,7 @@ prance==0.21.8.0
 attrs==21.4.0
 warlock==2.0.1
 tenacity==8.0.1
-didkit==0.3.1
+didkit==0.2.1
 gql==3.4.0
 pytezos==3.9.0
 click==8.1.3
