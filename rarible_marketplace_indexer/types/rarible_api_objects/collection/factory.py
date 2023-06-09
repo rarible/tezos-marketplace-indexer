@@ -1,3 +1,4 @@
+import logging
 import os
 import uuid
 from datetime import datetime
@@ -5,6 +6,8 @@ from uuid import uuid5
 
 from rarible_marketplace_indexer.models import Collection
 from rarible_marketplace_indexer.types.rarible_api_objects.collection.collection import RaribleApiCollection
+
+logger = logging.getLogger("dipdup.RaribleApiCollectionFactory")
 
 
 class RaribleApiCollectionFactory:
@@ -32,5 +35,5 @@ class RaribleApiCollectionFactory:
             if meta is not None:
                 return meta["name"]
         except Exception as err:
-            print(f"Unexpected during getting name from meta {err=}, {type(err)=}")
+            logging.error(f"Unexpected during getting name from meta {err=}, {type(err)=}")
         return None

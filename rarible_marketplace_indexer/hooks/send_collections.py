@@ -1,3 +1,4 @@
+import ast
 import json
 import logging
 import traceback
@@ -25,7 +26,10 @@ async def send_collections(ctx: HookContext, id: int) -> None:
                 meta = await CollectionMetadata.get_or_none(id=collection.id)
                 metadata = None
                 if meta is not None:
-                    metadata = json.loads(meta.metadata)
+                    try:
+                        metadata = ast.literal_eval(meta.metadata)
+                    except Exception as err:
+                        logger.error(f"Unexpected during getting name from meta {err=}, {type(err)=}")
                 event = RaribleApiCollectionFactory.build(collection, metadata)
                 await producer_send(event)
             task.sample = collections[-1].id
