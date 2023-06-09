@@ -1,10 +1,11 @@
+import json
 import logging
 import traceback
 
 from dipdup.context import HookContext
 
 from rarible_marketplace_indexer.enums import TaskStatus
-from rarible_marketplace_indexer.models import Tasks, Collection
+from rarible_marketplace_indexer.models import Tasks, Collection, CollectionMetadata
 from rarible_marketplace_indexer.producer.container import producer_send
 from rarible_marketplace_indexer.types.rarible_api_objects.collection.factory import RaribleApiCollectionFactory
 
@@ -21,7 +22,11 @@ async def send_collections(ctx: HookContext, id: int) -> None:
         collections = await request.order_by('-id').limit(1000)
         if len(collections) > 0:
             for collection in collections:
-                event = RaribleApiCollectionFactory.build(collection)
+                meta = await CollectionMetadata.get_or_none(id=collection.id)
+                metadata = None
+                if meta is not None:
+                    metadata = json.loads(meta.metadata)
+                event = RaribleApiCollectionFactory.build(collection, metadata)
                 await producer_send(event)
             task.sample = collections[-1].id
             logger.info(f"Task={task.name} sent {len(collections)} collection, set sample={task.sample}")
