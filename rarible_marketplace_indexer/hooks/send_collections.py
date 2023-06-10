@@ -19,12 +19,13 @@ async def send_collections(ctx: HookContext, id: int) -> None:
         await task.save()
         continuation = task.sample
         request = Collection.filter(id__lt=continuation) if continuation is not None else Collection.all()
-        collections = await request.order_by('-id').limit(1000)
+        collections = await request.order_by('-id').limit(5000)
         if len(collections) > 0:
             for collection in collections:
                 metadata = await get_collection_meta(collection.id)
-                event = RaribleApiCollectionFactory.build(collection, metadata)
-                await producer_send(event)
+                if metadata is not None:
+                    event = RaribleApiCollectionFactory.build(collection, metadata)
+                    await producer_send(event)
             task.sample = collections[-1].id
             logger.info(f"Task={task.name} sent {len(collections)} collection, set sample={task.sample}")
         else:
