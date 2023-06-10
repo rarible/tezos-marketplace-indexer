@@ -19,7 +19,7 @@ async def send_collections(ctx: HookContext, id: int) -> None:
         await task.save()
         continuation = task.sample
         request = Collection.filter(id__lt=continuation) if continuation is not None else Collection.all()
-        collections = await request.order_by('-id').limit(5000)
+        collections = await request.order_by('-id').limit(1000)
         if len(collections) > 0:
             for collection in collections:
                 metadata = await get_collection_meta(collection.id)

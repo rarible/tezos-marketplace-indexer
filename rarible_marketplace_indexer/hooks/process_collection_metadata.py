@@ -124,7 +124,7 @@ async def process_collection_metadata(
     missing_meta_collections: List[CollectionMetadata] = await CollectionMetadata.filter(
         metadata_synced=False,
         metadata_retries__lt=5,
-    ).limit(250)
+    ).limit(100)
     for collection_meta in missing_meta_collections:
         pending_tasks.append(create_task(process_metadata_for_collection(ctx, collection_meta)))
     await gather(*pending_tasks)
