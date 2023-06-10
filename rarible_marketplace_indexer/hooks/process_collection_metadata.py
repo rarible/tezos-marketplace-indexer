@@ -40,12 +40,15 @@ async def process_metadata_for_collection(ctx: HookContext, collection_meta: Col
             collection_meta.metadata_synced = True
             collection_meta.metadata_retries = collection_meta.metadata_retries
             collection_meta.metadata = json.dumps(metadata)
-            collection = await Collection.get(id=collection_meta.id)
-            event = RaribleApiCollectionFactory.build(collection, metadata)
-            await producer_send(event)
-            logger.info(
-                f"Successfully saved metadata for {collection_meta.id} " f"(retries {collection_meta.metadata_retries})"
-            )
+            collection = await Collection.get_or_none(id=collection_meta.id)
+            if collection is None:
+                logger.warning(f"Collection {collection_meta.id} is not existed, it could be tz profile")
+            else:
+                event = RaribleApiCollectionFactory.build(collection, metadata)
+                await producer_send(event)
+                logger.info(
+                    f"Successfully saved metadata for {collection_meta.id} " f"(retries {collection_meta.metadata_retries})"
+                )
         except Exception as ex:
             trace = traceback.format_exc()
             logger.warning(f"Could not save collection metadata for {collection_meta.id}: {ex}, {trace}")
@@ -121,7 +124,7 @@ async def process_collection_metadata(
     missing_meta_collections: List[CollectionMetadata] = await CollectionMetadata.filter(
         metadata_synced=False,
         metadata_retries__lt=5,
-    ).limit(100)
+    ).limit(250)
     for collection_meta in missing_meta_collections:
         pending_tasks.append(create_task(process_metadata_for_collection(ctx, collection_meta)))
     await gather(*pending_tasks)
