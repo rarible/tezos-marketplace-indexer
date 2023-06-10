@@ -10,7 +10,7 @@ async def get_collection_meta(id):
     metadata = None
     meta = await CollectionMetadata.get_or_none(id=id)
     parser = 'json'
-    if meta is not None:
+    if meta is not None and meta.metadata_synced:
         metadata = try_json(meta.metadata)
         if metadata is None:
             parser = 'single_quoted_json'
