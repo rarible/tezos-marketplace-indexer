@@ -18,7 +18,7 @@ async def get_collection_meta(id):
         if metadata is None:
             parser = 'literal_eval'
             metadata = try_literal_eval(meta.metadata)
-    if meta is not None and metadata is None:
+    if meta is not None and meta.metadata_synced and metadata is None:
         logger.warning(f"Metadata is empty for {id} failed on {parser}")
     return metadata
 
