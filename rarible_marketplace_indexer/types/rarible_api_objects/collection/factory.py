@@ -15,14 +15,15 @@ class RaribleApiCollectionFactory:
     @staticmethod
     def build(event: Collection, meta) -> RaribleApiCollection:
         event_id = uuid5(namespace=uuid.NAMESPACE_OID, name=str(datetime.timestamp(datetime.now())))
+        collection_id = event.__dict__.get("id")
         return RaribleApiCollection(
             id=event_id,
             network=os.getenv("NETWORK"),
             event_id=str(event_id),
             collection={
-                "id": event.__dict__.get("id"),
+                "id": collection_id,
                 "owner": event.__dict__.get("owner"),
-                "name": RaribleApiCollectionFactory.name(meta),
+                "name": RaribleApiCollectionFactory.name(collection_id, meta),
                 "minters": event.__dict__.get("minters"),
                 "standard": event.__dict__.get("standard"),
                 "symbol": event.__dict__.get("symbol"),
@@ -30,10 +31,10 @@ class RaribleApiCollectionFactory:
         )
 
     @staticmethod
-    def name(meta):
+    def name(collection_id, meta):
         try:
             if meta is not None:
                 return meta["name"].strip()
         except Exception as err:
-            logging.error(f"Unexpected during getting name from meta {err=}, {type(err)=}")
+            logging.error(f"Unexpected during getting name for {collection_id} from meta {err=}, {type(err)=}")
         return None
