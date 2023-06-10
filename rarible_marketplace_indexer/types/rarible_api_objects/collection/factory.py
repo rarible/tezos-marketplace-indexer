@@ -33,7 +33,7 @@ class RaribleApiCollectionFactory:
     def name(meta):
         try:
             if meta is not None:
-                return meta["name"]
+                return meta["name"].strip()
         except Exception as err:
             logging.error(f"Unexpected during getting name from meta {err=}, {type(err)=}")
         return None
