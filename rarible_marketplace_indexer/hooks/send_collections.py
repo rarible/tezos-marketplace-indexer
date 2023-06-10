@@ -1,5 +1,3 @@
-import ast
-import json
 import logging
 import traceback
 
@@ -9,6 +7,7 @@ from rarible_marketplace_indexer.enums import TaskStatus
 from rarible_marketplace_indexer.models import Tasks, Collection, CollectionMetadata
 from rarible_marketplace_indexer.producer.container import producer_send
 from rarible_marketplace_indexer.types.rarible_api_objects.collection.factory import RaribleApiCollectionFactory
+from rarible_marketplace_indexer.utils.meta_utils import get_collection_meta
 
 logger = logging.getLogger("dipdup.send_collections")
 
@@ -23,13 +22,7 @@ async def send_collections(ctx: HookContext, id: int) -> None:
         collections = await request.order_by('-id').limit(1000)
         if len(collections) > 0:
             for collection in collections:
-                meta = await CollectionMetadata.get_or_none(id=collection.id)
-                metadata = None
-                if meta is not None:
-                    try:
-                        metadata = ast.literal_eval(meta.metadata)
-                    except Exception as err:
-                        logger.error(f"Unexpected during getting name from meta ({collection.id}) {err=}, {type(err)=}")
+                metadata = await get_collection_meta(collection.id)
                 event = RaribleApiCollectionFactory.build(collection, metadata)
                 await producer_send(event)
             task.sample = collections[-1].id

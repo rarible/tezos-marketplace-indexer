@@ -403,7 +403,9 @@ async def signal_collection_post_save(
     update_fields: List[str],
 ) -> None:
     from rarible_marketplace_indexer.types.rarible_api_objects.collection.factory import RaribleApiCollectionFactory
-    await producer_send(RaribleApiCollectionFactory.build(instance, None))
+    from rarible_marketplace_indexer.utils.meta_utils import get_collection_meta
+    metadata = await get_collection_meta(instance.id)
+    await producer_send(RaribleApiCollectionFactory.build(instance, metadata))
 
 
 @pre_save(Activity)
