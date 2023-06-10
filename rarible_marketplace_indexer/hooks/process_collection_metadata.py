@@ -2,6 +2,7 @@ import asyncio
 import json
 import logging
 import os
+import traceback
 from asyncio import create_task
 from asyncio import gather
 from collections import deque
@@ -46,7 +47,8 @@ async def process_metadata_for_collection(ctx: HookContext, collection_meta: Col
                 f"Successfully saved metadata for {collection_meta.id} " f"(retries {collection_meta.metadata_retries})"
             )
         except Exception as ex:
-            logger.warning(f"Could not save collection metadata for {collection_meta.id}: {ex}")
+            trace = traceback.format_exc()
+            logger.warning(f"Could not save collection metadata for {collection_meta.id}: {ex}, {trace}")
             collection_meta.metadata_retries = collection_meta.metadata_retries + 1
             collection_meta.metadata_synced = False
     await collection_meta.save()
