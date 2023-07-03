@@ -6,7 +6,6 @@ tezos-marketplace-indexer-template: &tezos-marketplace-indexer-template
     APPLICATION_ENVIRONMENT: '{{ include "app.env" $ }}'
     KAFKA_ENABLED: "true"
     KAFKA_SECURITY_PROTOCOL: "PLAINTEXT"
-    UNION_API: 'http://protocol-union-api.{{ include "app.env" $ }}-protocol:8080'
     # provided via secrets
     # POSTGRES_HOST:
     # POSTGRES_DB:

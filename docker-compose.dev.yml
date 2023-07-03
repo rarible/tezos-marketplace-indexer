@@ -17,7 +17,6 @@ services:
       - KAFKA_ENABLED=false
       - KAFKA_SECURITY_PROTOCOL=PLAINTEXT
       - NETWORK=ghostnet
-      - UNION_API=https://dev-api.rarible.org
       - APPLICATION_ENVIRONMENT=dev
 
   indexer-tezos:
@@ -36,7 +35,6 @@ services:
       - KAFKA_ENABLED=false
       - KAFKA_SECURITY_PROTOCOL=PLAINTEXT
       - NETWORK=ghostnet
-      - UNION_API=https://dev-api.rarible.org
       - APPLICATION_ENVIRONMENT=dev
 
   indexer-metadata:
@@ -55,7 +53,6 @@ services:
       - KAFKA_ENABLED=false
       - KAFKA_SECURITY_PROTOCOL=PLAINTEXT
       - NETWORK=ghostnet
-      - UNION_API=https://dev-api.rarible.org
       - APPLICATION_ENVIRONMENT=dev
 
   db:

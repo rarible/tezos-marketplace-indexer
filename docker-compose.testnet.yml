@@ -17,7 +17,6 @@ services:
       - KAFKA_ENABLED=false
       - KAFKA_SECURITY_PROTOCOL=PLAINTEXT
       - NETWORK=ghostnet
-      - UNION_API=https://testnet-api.rarible.org
       - APPLICATION_ENVIRONMENT=testnet
 
   indexer-metadata:
@@ -36,7 +35,6 @@ services:
       - KAFKA_ENABLED=false
       - KAFKA_SECURITY_PROTOCOL=PLAINTEXT
       - NETWORK=ghostnet
-      - UNION_API=https://testnet-api.rarible.org
       - APPLICATION_ENVIRONMENT=testnet
 
   db:

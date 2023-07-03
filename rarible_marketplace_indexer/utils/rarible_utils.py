@@ -69,17 +69,6 @@ def generate_random_unique_ophash(size=50, chars=(string.ascii_lowercase + strin
     return ''.join(random.choice(chars) for _ in range(size))
 
 
-def reconcile_item(contract, token_id):
-    logger = logging.getLogger('dipdup.reconcile')
-    response = requests.post(
-        f"{os.getenv('UNION_API')}/v0.1/refresh/item/TEZOS:{contract}:{token_id}/reconcile?full=true"
-    )
-    if not response.ok:
-        logger.info(f"{contract}:{token_id} need reconcile: Error {response.status_code} - {response.reason}")
-    else:
-        logger.info(f"{contract}:{token_id} synced properly after legacy cancel")
-
-
 async def process_decimal_value(datasource, contract, token_id, asset_class, asset_value):
     logger = logging.getLogger('process_decimal_value')
     if asset_class == AssetClassEnum.FUNGIBLE_TOKEN:
