@@ -13,7 +13,6 @@ from typing import List
 from typing import Optional
 from uuid import uuid5
 
-import requests
 from base58 import b58encode_check
 from pytezos import MichelsonType
 from pytezos import michelson_to_micheline
@@ -21,7 +20,6 @@ from pytezos.michelson.forge import forge_script_expr
 from requests import Response
 
 from dipdup.context import DipDupContext
-from dipdup.datasources import datasource
 from rarible_marketplace_indexer.enums import PlatformEnum, TransactionTypeEnum, OrderStatusEnum, ActivityTypeEnum
 from rarible_marketplace_indexer.event.dto import MakeDto
 from rarible_marketplace_indexer.event.dto import TakeDto
