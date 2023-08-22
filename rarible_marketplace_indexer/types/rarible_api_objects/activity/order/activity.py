@@ -9,6 +9,7 @@ from rarible_marketplace_indexer.models import PlatformEnum
 from rarible_marketplace_indexer.producer.const import KafkaTopic
 from rarible_marketplace_indexer.types.rarible_api_objects import AbstractRaribleApiObject
 from rarible_marketplace_indexer.types.rarible_api_objects.asset.asset import AbstractAsset
+from rarible_marketplace_indexer.types.tezos_objects.asset_value.asset_value import AssetValue
 from rarible_marketplace_indexer.types.tezos_objects.tezos_object_hash import ImplicitAccountAddress
 from rarible_marketplace_indexer.types.tezos_objects.tezos_object_hash import OperationHash
 
@@ -18,6 +19,7 @@ class AbstractRaribleApiOrderActivity(AbstractRaribleApiObject):
     type: str
     order_id: uuid.UUID
     source: PlatformEnum
+    network: str
     hash: OperationHash
     date: datetime
     reverted: bool = False
@@ -32,6 +34,7 @@ class RaribleApiOrderListActivity(AbstractRaribleApiOrderActivity):
     maker: ImplicitAccountAddress
     make: AbstractAsset
     take: Optional[AbstractAsset]
+    price: AssetValue
 
 
 class RaribleApiOrderMatchActivity(AbstractRaribleApiOrderActivity):
@@ -44,6 +47,7 @@ class RaribleApiOrderMatchActivity(AbstractRaribleApiOrderActivity):
     payment: Optional[AbstractAsset]
     buyer: ImplicitAccountAddress
     seller: ImplicitAccountAddress
+    price: AssetValue
 
 
 class RaribleApiOrderCancelActivity(AbstractRaribleApiOrderActivity):

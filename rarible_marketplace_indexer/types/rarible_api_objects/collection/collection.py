@@ -12,7 +12,7 @@ from rarible_marketplace_indexer.types.tezos_objects.tezos_object_hash import Or
 
 
 @dataclass
-class Collection:
+class CollectionEvent:
     id: OriginatedAccountAddress
     owner: Optional[ImplicitAccountAddress]
     name: Optional[str]
@@ -31,7 +31,6 @@ class RaribleApiCollection(AbstractRaribleApiObject):
     _kafka_topic = KafkaTopic.COLLECTION_TOPIC
 
     id: uuid.UUID
-    network: str
     event_id: str
-    collection: Collection
+    collection: dict
     type: str = "UPDATE"

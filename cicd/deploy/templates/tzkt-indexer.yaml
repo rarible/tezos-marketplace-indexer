@@ -1,60 +1,60 @@
 {{- if .Values.global }}
-{{- if and .Values.tzkt.enabled .Values.global.deployToKube }}
+{{ range $name := .Values.tzkt.instances }}
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: tzkt
+  name: {{ $name }}
   labels:
-    app: tzkt
+    app: {{ $name }}
 spec:
-  {{- if .Values.tzkt.service.nodePort }}
+  {{- if and $.Values.tzkt.service.nodePort (eq $name "tzkt") }}
   type: NodePort
   {{- else }}
   type: ClusterIP
   {{- end }}
   ports:
-    - port: {{ .Values.tzkt.service.port }}
+    - port: {{ $.Values.tzkt.service.port }}
       name: http
-      targetPort: {{ .Values.tzkt.service.port }}
+      targetPort: {{ $.Values.tzkt.service.port }}
       protocol: TCP
-      {{- if .Values.tzkt.service.nodePort }}
-      nodePort: {{ .Values.tzkt.service.nodePort }}
+      {{- if and $.Values.tzkt.service.nodePort (eq $name "tzkt") }}
+      nodePort: {{ $.Values.tzkt.service.nodePort  }}
       {{- end }}
   selector:
-    app: tzkt
+    app: {{ $name }}
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: tzkt
+  name: {{ $name }}
   labels:
-    app: tzkt
+    app: {{ $name }}
 spec:
   replicas: 1
   strategy:
     type: Recreate
   selector:
     matchLabels:
-      app: tzkt
+      app: {{ $name }}
   template:
     metadata:
       labels:
-        app: tzkt
+        app: {{ $name }}
     spec:
       nodeSelector: 
-        env: {{ include "app.env" . | quote }}
+        env: {{ include "app.env" $ | quote }}
       containers:
-        - image: "{{ .Values.tzkt.api.image.repository }}:{{ .Values.tzkt.api.image.tag }}"
+        - image: "{{ $.Values.tzkt.api.image.repository }}:{{ $.Values.tzkt.api.image.tag }}"
           name: api
           ports:
-            - containerPort: {{ .Values.tzkt.service.port }}
+            - containerPort: {{ $.Values.tzkt.service.port }}
               name: http
               protocol: TCP
           env:
           - name: Kestrel__Endpoints__Http__Url
-            value: http://0.0.0.0:{{ .Values.tzkt.service.port }}
-          {{- range $key, $value := .Values.tzkt.environments }}
+            value: http://0.0.0.0:{{ $.Values.tzkt.service.port }}
+          {{- range $key, $value := $.Values.tzkt.environments }}
           - name: {{ $key }}
             {{- if $value }}
             value: {{ $value | quote }}
@@ -68,16 +68,16 @@ spec:
               name: tezos-marketplace-indexer-stack
               optional: true
           - secretRef:
-              name: tzkt-app
+              name: {{ $name }}
               optional: true
           resources:
-            {{- toYaml .Values.tzkt.api.resources | nindent 12 }}
-        - image: "{{ .Values.tzkt.indexer.image.repository }}:{{ .Values.tzkt.indexer.image.tag }}"
+            {{- toYaml $.Values.tzkt.api.resources | nindent 12 }}
+        - image: "{{ $.Values.tzkt.indexer.image.repository }}:{{ $.Values.tzkt.indexer.image.tag }}"
           name: indexer
           env:
           - name: TokenMetadata__Enabled
             value: "true"
-          {{- range $key, $value := .Values.tzkt.environments }}
+          {{- range $key, $value := $.Values.tzkt.environments }}
           - name: {{ $key }}
             {{- if $value }}
             value: {{ $value | quote }}
@@ -91,7 +91,7 @@ spec:
               name: tezos-marketplace-indexer-stack
               optional: true
           - secretRef:
-              name: tzkt-app
+              name: {{ $name }}
               optional: true
           command: ["/bin/bash", "-c"]
           args:
@@ -104,7 +104,7 @@ spec:
               mountPath: /app/appsettings.json
               subPath: appsettings.json
           resources:
-            {{- toYaml .Values.tzkt.indexer.resources | nindent 12 }}
+            {{- toYaml $.Values.tzkt.indexer.resources | nindent 12 }}
       volumes:
         - name: tzkt-config
           configMap:

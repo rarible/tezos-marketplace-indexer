@@ -3,6 +3,7 @@
     "network": "mainnet",
     "platform": "FXHASH_V1",
     "fill": "0",
+    "internalOrderId": "38889",
     "status": "ACTIVE",
     "startAt": "2021-12-06T09:39:20+00:00",
     "endAt": null,
@@ -13,6 +14,8 @@
     "lastUpdatedAt": "2021-12-06T09:39:20+00:00",
     "maker": "tz1gfc1S3RQoMeQNnbs61NxomqjKbMQZCLoc",
     "taker": null,
+    "makePrice": "1",
+    "takePrice": null,
     "make": {
         "assetType": {
             "assetClass": "TEZOS_MT",

@@ -1,77 +1,67 @@
+tezos-marketplace-indexer-template: &tezos-marketplace-indexer-template
+  image:
+    repository: tezos-marketplace-indexer
+  command: [ "./entrypoint.sh", '{{ include "app.env" $ }}', "rarible", "false"]
+  environments:
+    APPLICATION_ENVIRONMENT: '{{ include "app.env" $ }}'
+    KAFKA_ENABLED: "true"
+    KAFKA_SECURITY_PROTOCOL: "PLAINTEXT"
+    # provided via secrets
+    # POSTGRES_HOST:
+    # POSTGRES_DB:
+    # POSTGRES_USER:
+    # POSTGRES_PASS:
+    # KAFKA_ADDRESS:
+    # KAFKA_SASL_MECHANISM:
+    # KAFKA_USERNAME:
+    # KAFKA_PASSWORD:
+    HASURA_URL: 'http://hasura:8080'
+    # HASURA_GRAPHQL_ADMIN_SECRET:
+  livenessProbe: false
+  readinessProbe: false
+#  resources:
+#     requests:
+#       cpu: '4'
+#       memory: 2Gi
+#     limits:
+#       cpu: '4'
+#       memory: 2Gi
+
 tezos-marketplace-indexer-rarible:
-  image:
-    repository: tezos-marketplace-indexer
-  command: [
-    "dipdup", "-c", "dipdup.yml",
-    "-c", 'dipdup.{{ include "app.env" $ }}.rarible.yml',
-    "run"
-    ]
-  environments:
-    APPLICATION_ENVIRONMENT: '{{ include "app.env" $ }}'
-    KAFKA_ENABLED: "true"
-    KAFKA_SECURITY_PROTOCOL: "PLAINTEXT"
-    UNION_API: 'http://protocol-union-api.{{ include "app.env" $ }}-protocol:8080'
-    # provided via secrets
-    # POSTGRES_HOST:
-    # POSTGRES_DB:
-    # POSTGRES_USER:
-    # POSTGRES_PASS:
-    # KAFKA_ADDRESS:
-    # KAFKA_SASL_MECHANISM:
-    # KAFKA_USERNAME:
-    # KAFKA_PASSWORD:
-    # HASURA_GRAPHQL_ADMIN_SECRET:
+  <<: *tezos-marketplace-indexer-template
+  command: [ "./entrypoint.sh", '{{ include "app.env" $ }}', "rarible", "false"]
 
-  livenessProbe: false
-  readinessProbe: false
-#  resources:
-#     requests:
-#       cpu: '4'
-#       memory: 2Gi
-#     limits:
-#       cpu: '4'
-#       memory: 2Gi
+tezos-marketplace-indexer-marketplaces:
+  <<: *tezos-marketplace-indexer-template
+  command: [ "./entrypoint.sh", '{{ include "app.env" $ }}', "marketplaces", "false"]
 
+tezos-marketplace-indexer-metadata:
+  <<: *tezos-marketplace-indexer-template
+  command: [ "./entrypoint.sh", '{{ include "app.env" $ }}', "metadata", "false"]
 
-tezos-marketplace-indexer-tezos:
-  image:
-    repository: tezos-marketplace-indexer
-  command: [
-    "dipdup", "-c", "dipdup.yml",
-    "-c", 'dipdup.{{ include "app.env" $ }}.tezos.yml',
-    "run"
-    ]
-  environments:
-    APPLICATION_ENVIRONMENT: '{{ include "app.env" $ }}'
-    KAFKA_ENABLED: "true"
-    KAFKA_SECURITY_PROTOCOL: "PLAINTEXT"
-    UNION_API: 'http://protocol-union-api.{{ include "app.env" $ }}-protocol:8080'
-    # provided via secrets
-    # POSTGRES_HOST:
-    # POSTGRES_DB:
-    # POSTGRES_USER:
-    # POSTGRES_PASS:
-    # KAFKA_ADDRESS:
-    # KAFKA_SASL_MECHANISM:
-    # KAFKA_USERNAME:
-    # KAFKA_PASSWORD:
-    # HASURA_GRAPHQL_ADMIN_SECRET:
+tezos-marketplace-indexer-royalties:
+  <<: *tezos-marketplace-indexer-template
+  command: [ "./entrypoint.sh", '{{ include "app.env" $ }}', "royalties", "false"]
 
-  livenessProbe: false
-  readinessProbe: false
-#  resources:
-#     requests:
-#       cpu: '4'
-#       memory: 2Gi
-#     limits:
-#       cpu: '4'
-#       memory: 2Gi
-  
+tezos-marketplace-indexer-ophash:
+  <<: *tezos-marketplace-indexer-template
+  command: [ "./entrypoint.sh", '{{ include "app.env" $ }}', "ophash", "false"]
+
 hasura:
-  image: 
+  replicas: 2
+  updateConfig:
+    order: start-first
+  image:
     registry: docker.io
     repository: hasura/graphql-engine
-    tag: v2.2.0
+    tag: v2.23.0
+  resources:
+    limits:
+      cpu: 300m
+      memory: 512Mi
+    requests:
+      cpu: 100m
+      memory: 256Mi
   service:
     enabled: true
   podAnnotations:
@@ -80,14 +70,12 @@ hasura:
   livenessProbe:
     httpGet:
       path: /healthz
-  readinessProbe: 
+  readinessProbe:
     httpGet:
       path: /healthz
-  updateConfig:
-    order: start-first
   environments:
     HASURA_GRAPHQL_ENABLE_CONSOLE: "true"
-    HASURA_GRAPHQL_DEV_MODE: "true"
+    HASURA_GRAPHQL_DEV_MODE: "false"
     HASURA_GRAPHQL_LOG_LEVEL: "warn"
     HASURA_GRAPHQL_ENABLED_LOG_TYPES: "startup, http-log, webhook-log, websocket-log, query-log"
     HASURA_GRAPHQL_UNAUTHORIZED_ROLE: user
@@ -95,30 +83,28 @@ hasura:
     # provided via secrets
     # HASURA_GRAPHQL_ADMIN_SECRET:
     # HASURA_GRAPHQL_DATABASE_URL:
-  resources:
-    limits:
-      memory: 512Mi
-    requests:
-      memory: 384Mi
- 
-tzkt: 
-  enabled: false
-  network: mainnet
+    HASURA_GRAPHQL_PG_TIMEOUT: 30
+    HASURA_GRAPHQL_PG_CONN_LIFETIME: 600
+    HASURA_GRAPHQL_PG_CONNECTIONS: 20
+tzkt:
+  updateConfig:
+    order: start-first
+  instances: []
   api:
     image:
-      repository: bakingbad/tzkt-api
-      tag: 1.9.4
+      repository: mystdeim/tzkt-api
+      tag: 1.10.2
     resources:
       limits:
         cpu: 300m
-        memory: 384Mi
+        memory: 768Mi
       requests:
         cpu: 100m
-        memory: 256Mi
+        memory: 512Mi
   indexer:
     image:
-      repository: bakingbad/tzkt-sync
-      tag: 1.9.4
+      repository: mystdeim/tzkt-indexer
+      tag: 1.10.2
     resources:
       limits:
         cpu: 300m
@@ -128,10 +114,10 @@ tzkt:
         memory: 192Mi
   service:
     port: 5000
-    # nodePort: 
+    # nodePort:
   environments:
     Logging__LogLevel__Default: Warning
     TokenMetadata__DipDup__Url: http://hasura:8080/v1/graphql
     TezosNode__Endpoint: http://dev-tezos-node:8732/
     # provided via secrets
-    # ConnectionStrings__DefaultConnection: 
+    # ConnectionStrings__DefaultConnection:

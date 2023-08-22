@@ -1,5 +1,5 @@
 {{- if .Values.global }}
-{{- if and .Values.tzkt.enabled .Values.global.deployToKube }}
+{{- if .Values.tzkt.instances }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -12,7 +12,8 @@ data:
         "Validation": true
       },
       "TezosNode": {
-        "Timeout": 60
+        "Timeout": 60,
+        "Lag": 2
       },
       "Quotes": {
         "Async": true,

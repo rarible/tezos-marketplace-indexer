@@ -1,0 +1,73 @@
+spec_version: 1.2
+
+datasources:
+  tzkt:
+    kind: tzkt
+    url: ${TZKT_URL:-https://api.ghostnet.tzkt.io}
+    http:
+      connection_timeout: 60
+  metadata:
+    kind: metadata
+    url: https://metadata.dipdup.net
+    network: ghostnet
+  ipfs:
+    kind: ipfs
+    url: https://nftstorage.link/ipfs # this should makes tests faster because QA upload images there
+
+hooks:
+  process_token_metadata:
+    callback: process_token_metadata
+    atomic: False
+  process_collection_metadata:
+    callback: process_collection_metadata
+    atomic: False
+  process_token_royalties:
+    callback: process_token_royalties
+    atomic: False
+
+jobs:
+  process_token_metadata:
+    hook: process_token_metadata
+    crontab: "* * * * *"
+  process_collection_metadata:
+    hook: process_collection_metadata
+    crontab: "* * * * *"
+  process_token_royalties:
+    hook: process_token_royalties
+    crontab: "* * * * *"
+
+advanced:
+  rollback_depth: 0
+  early_realtime: True
+  metadata_interface: False
+  reindex:
+    manual: wipe
+    migration: exception
+    rollback: ignore
+    config_modified: ignore
+    schema_modified: ignore
+
+custom:
+  enabled: ${KAFKA_ENABLED:-false}
+  migration: True
+  kafka_address: ${KAFKA_ADDRESS:-kafka:9092}
+  client_id: dipdup-rarible-${APPLICATION_ENVIRONMENT:-mainnet}-producer
+  kafka_security_protocol: ${KAFKA_SECURITY_PROTOCOL:-SASL_PLAINTEXT}
+  sasl:
+    mechanism: ${KAFKA_SASL_MECHANISM:-PLAIN}
+    username: ${KAFKA_USERNAME:-rarible}
+    password: ${KAFKA_PASSWORD:-changeme}
+  run_fix_jobs: False
+  royalties:
+    hen: "KT1P2VyFd61A3ukizJoX37nFF9fqZnihv7Lw"
+    hen_royalties: "KT1L5hpLw7vJ3n9EU4cWrh2zCxkuFbtocNur"
+    kalamint: ""
+    fxhash_v1: ""
+    fxhash_v1_manager: ""
+    fxhash_v2: ""
+    versum: "KT1UH5RSbomuV1o6UuDB9yeACbqRMup3utGu"
+    royalties_manager: "KT1AZfqFGFLMUrscNFyawDYAyqXYydz714ya"
+    bidou_8x8: ""
+    bidou_24x24: ""
+    dogami: ""
+    dogami_gap: ""

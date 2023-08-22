@@ -1,43 +1,93 @@
 import logging
 import os
-from threading import Thread
+import socketserver
+import threading
 
 from dipdup.context import HookContext
-from prometheus_client.twisted import MetricsResource
-from twisted.internet import reactor
-from twisted.web.resource import Resource
-from twisted.web.server import Site
+from prometheus_client import MetricsHandler
 
-from rarible_marketplace_indexer.event.fxhash_v2_action import FxhashV2ListingOrderListEvent
+from rarible_marketplace_indexer.event.fxhash_v2_action import fxhash_nft_addresses
+from rarible_marketplace_indexer.models import IndexEnum
+from rarible_marketplace_indexer.models import IndexingStatus
 from rarible_marketplace_indexer.producer.container import ProducerContainer
 from rarible_marketplace_indexer.prometheus.rarible_metrics import RaribleMetrics
+
+logger = logging.getLogger("dipdup.on_restart")
 
 
 async def on_restart(
     ctx: HookContext,
 ) -> None:
-    logging.getLogger('dipdup').setLevel('INFO')
-    logging.getLogger('aiokafka').setLevel('INFO')
-    logging.getLogger('db_client').setLevel('INFO')
-    await ctx.execute_sql('on_restart')
+
+    if ctx.config.custom.get("debug") == "True":
+        ctx.logger.setLevel("DEBUG")
+        logging.getLogger('dipdup').setLevel('DEBUG')
+        logging.getLogger('aiokafka').setLevel('DEBUG')
+        logging.getLogger('db_client').setLevel('DEBUG')
+    else:
+        ctx.logger.setLevel("INFO")
+        logging.getLogger('dipdup').setLevel('INFO')
+        logging.getLogger('aiokafka').setLevel('INFO')
+        logging.getLogger('db_client').setLevel('INFO')
+
+
+    if ctx.config.custom.get("migration") is not None:
+        logger.info("Running db migrations")
+        await ctx.execute_sql('migration')
+        logger.info("Migrations have been done")
+
     ProducerContainer.create_instance(ctx.config.custom, ctx.logger)
     await ProducerContainer.get_instance().start()
 
     if ctx.config.prometheus is not None:
         RaribleMetrics.enabled = True
-        root = Resource()
-        status = Resource()
-        root.putChild(b'_status', status)
-        status.putChild(b'prometheus', MetricsResource())
-        factory = Site(root)
-        reactor.listenTCP(8080, factory)
-        Thread(target=reactor.run, args=(False,)).start()
+        prometheus_port = 8080
+        metrics_handler = MetricsHandler
+        prometheus_httpd = socketserver.TCPServer(("", prometheus_port), metrics_handler)
+        prometheus_http_thread = threading.Thread(target=prometheus_httpd.serve_forever)
+        prometheus_http_thread.daemon = True
+        prometheus_http_thread.start()
 
     if ctx.config.indexes.get("fxhash_v2_actions") is not None:
-        FxhashV2ListingOrderListEvent.fxhash_nft_addresses = {
-            "0": ctx.config.custom.get("fxhash_nft_v1"),
-            "1": ctx.config.custom.get("fxhash_nft_v2"),
-        }
+        for i in range(3):
+            address = ctx.config.custom.get(f"fxhash_nft_v{i}")
+            if address is not None:
+                fxhash_nft_addresses[str(i)] = address
 
     if os.getenv('APPLICATION_ENVIRONMENT') == 'prod' and ctx.config.hooks.get("import_legacy_orders") is not None:
         await ctx.fire_hook("import_legacy_orders")
+
+    if ctx.config.custom.get("token_indexing") is not None:
+        token_config = ctx.config.custom.get("token_indexing")
+        if token_config["enabled"] == "true":
+            if token_config.get("level") is not None:
+                await ctx.execute_sql('reset_token_transfers')
+
+    if ctx.config.hooks.get("process_collection_events") is not None:
+        index = await IndexingStatus.get_or_none(index=IndexEnum.COLLECTION)
+        if index is None:
+            first_level = ctx.config.custom.get("first_collection_level")
+            if first_level is None:
+                first_level = 0
+            await ctx.fire_hook("process_collection_events", level=first_level, wait=False)
+
+    if ctx.config.custom.get("reset_new_persistence") == "True":
+        await ctx.execute_sql('reset_token_transfers')
+
+    if ctx.config.custom.get("reset_order_data") == "True":
+        await ctx.execute_sql('reset_order_data')
+
+    if ctx.config.hooks.get('import_origination_transfers') is not None:
+        await ctx.fire_hook('import_origination_transfers')
+
+    if ctx.config.hooks.get('reprocess_transactions') is not None:
+        await ctx.fire_hook(
+            'reprocess_transactions',
+            index_name=ctx.config.hooks.get("reprocess_transactions").args.get("index_name"),
+            contract=ctx.config.hooks.get("reprocess_transactions").args.get("contract"),
+            first_level=ctx.config.hooks.get("reprocess_transactions").args.get("first_level"),
+            last_level=ctx.config.hooks.get("reprocess_transactions").args.get("last_level")
+        )
+
+    if ctx.config.hooks.get('consume_ownerships'):
+        await ctx.fire_hook('consume_ownerships', wait=False)

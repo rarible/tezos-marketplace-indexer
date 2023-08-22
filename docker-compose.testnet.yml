@@ -1,0 +1,138 @@
+version: "3.8"
+
+services:
+  indexer-rarible:
+    image: rarible_indexer:dev
+    ports:
+      - "28080:8080"
+    depends_on:
+      - db
+      - kafka
+    command: [ "dipdup", "-c", "dipdup.yml", "-c", "dipdup.testnet.rarible.yml", "run" ]
+    restart: always
+    environment:
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-changeme}
+      - ADMIN_SECRET=${ADMIN_SECRET:-changeme}
+      - KAFKA_ADDRESS=kafka:9092
+      - KAFKA_ENABLED=false
+      - KAFKA_SECURITY_PROTOCOL=PLAINTEXT
+      - NETWORK=ghostnet
+      - APPLICATION_ENVIRONMENT=testnet
+
+  indexer-metadata:
+    image: rarible_indexer:dev
+    ports:
+      - "28082:8080"
+    depends_on:
+      - db
+      - kafka
+    command: [ "dipdup", "-c", "dipdup.yml", "-c", "dipdup.prod.metadata.yml", "run" ]
+    restart: always
+    environment:
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-changeme}
+      - ADMIN_SECRET=${ADMIN_SECRET:-changeme}
+      - KAFKA_ADDRESS=kafka:9092
+      - KAFKA_ENABLED=false
+      - KAFKA_SECURITY_PROTOCOL=PLAINTEXT
+      - NETWORK=ghostnet
+      - APPLICATION_ENVIRONMENT=testnet
+
+  db:
+    image: postgres:14
+    restart: always
+    ports:
+      - "127.0.0.1:5432:5432"
+    environment:
+      - POSTGRES_USER=dipdup
+      - POSTGRES_DB=dipdup
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-changeme}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dipdup"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  hasura:
+    image: hasura/graphql-engine:v2.17.1
+    ports:
+      - "127.0.0.1:49180:8080"
+    depends_on:
+      - db
+    restart: always
+    environment:
+      - HASURA_GRAPHQL_DATABASE_URL=postgres://dipdup:${POSTGRES_PASSWORD:-changeme}@db:5432/dipdup
+      - HASURA_GRAPHQL_ENABLE_CONSOLE=true
+      - HASURA_GRAPHQL_DEV_MODE=true
+      - HASURA_GRAPHQL_ENABLED_LOG_TYPES=startup, http-log, webhook-log, websocket-log, query-log
+      - HASURA_GRAPHQL_ADMIN_SECRET=${ADMIN_SECRET:-changeme}
+      - HASURA_GRAPHQL_UNAUTHORIZED_ROLE=user
+      - HASURA_GRAPHQL_STRINGIFY_NUMERIC_TYPES=true
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.0.1
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - 22181:2181
+
+  kafka:
+    image: confluentinc/cp-kafka:7.0.1
+    depends_on:
+      - zookeeper
+    ports:
+      - 29092:29092
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+
+  kafdrop:
+    depends_on:
+      - kafka
+    image: obsidiandynamics/kafdrop
+    environment:
+      KAFKA_BROKERCONNECT: "kafka:9092"
+      JVM_OPTS: "-Xms16M -Xmx48M -Xss180K -XX:-TieredCompilation -XX:+UseStringDeduplication -noverify"
+    ports:
+      - "127.0.0.1:9000:9000"
+
+  prometheus:
+    image: prom/prometheus
+    restart: always
+    volumes:
+      - ./prometheus:/etc/prometheus/
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+    ports:
+      - 9090:9090
+
+  grafana:
+    image: grafana/grafana:8.4.6
+    user: '472'
+    restart: always
+    environment:
+      GF_INSTALL_PLUGINS: 'grafana-clock-panel,grafana-simple-json-datasource'
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana/provisioning/:/etc/grafana/provisioning/
+    env_file:
+      - ./grafana/config.monitoring
+    ports:
+      - 3000:3000
+    depends_on:
+      - prometheus
+
+volumes:
+  zookeeper-data:
+  zookeeper-log:
+  kafka-data:
+  prometheus_data:
+  grafana_data:
