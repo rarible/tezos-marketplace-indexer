@@ -19,7 +19,8 @@ drop index if exists token_transfer_db_updated_at_id;
 create index if not exists token_transfer_db_updated_at_id_desc on token_transfer (db_updated_at desc, id desc);
 
 create index if not exists ownership_owner on ownership (owner);
-create index if not exists ownership_contract_updated on ownership (contract, updated);
+drop index if exists ownership_contract_updated;
+create index if not exists ownership_contract on ownership (contract);
 
 drop index if exists idx_marketplace_order_make_contract;
 create index if not exists idx_marketplace_order_make_contract_graphql on marketplace_order (make_token_id, make_contract);
