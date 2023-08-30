@@ -22,6 +22,8 @@ create index if not exists ownership_owner on ownership (owner);
 drop index if exists ownership_contract_updated;
 create index if not exists ownership_contract on ownership (contract);
 
+create index if not exists token_contract_token_id on token (contract, token_id);
+
 drop index if exists idx_marketplace_order_make_contract;
 create index if not exists idx_marketplace_order_make_contract_graphql on marketplace_order (make_token_id, make_contract);
 create index if not exists idx_marketplace_order_take_contract_graphql on marketplace_order (take_token_id, take_contract);
