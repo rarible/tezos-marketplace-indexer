@@ -1,50 +1,65 @@
 import json
 import logging
+import math
 import os
 import random
 import string
+import traceback
 import uuid
 from datetime import datetime
+from decimal import Decimal
 from typing import Dict
 from typing import List
 from typing import Optional
 from uuid import uuid5
 
-import requests
 from base58 import b58encode_check
 from pytezos import MichelsonType
 from pytezos import michelson_to_micheline
+from pytezos.michelson.forge import forge_script_expr
+from requests import Response
 
+from dipdup.context import DipDupContext
+from rarible_marketplace_indexer.enums import PlatformEnum, TransactionTypeEnum, OrderStatusEnum, ActivityTypeEnum
 from rarible_marketplace_indexer.event.dto import MakeDto
 from rarible_marketplace_indexer.event.dto import TakeDto
-from rarible_marketplace_indexer.models import ActivityModel
-from rarible_marketplace_indexer.models import ActivityTypeEnum
-from rarible_marketplace_indexer.models import LegacyOrderModel
-from rarible_marketplace_indexer.models import OrderModel
-from rarible_marketplace_indexer.models import OrderStatusEnum
-from rarible_marketplace_indexer.models import PlatformEnum
-from rarible_marketplace_indexer.models import TransactionTypeEnum
+from rarible_marketplace_indexer.models import Activity
+from rarible_marketplace_indexer.models import LegacyOrder
+from rarible_marketplace_indexer.models import Order
 from rarible_marketplace_indexer.prometheus.rarible_metrics import RaribleMetrics
-from rarible_marketplace_indexer.types.rarible_api_objects import AbstractRaribleApiObject
-from rarible_marketplace_indexer.types.rarible_api_objects.activity.order.activity import RaribleApiOrderCancelActivity
-from rarible_marketplace_indexer.types.rarible_api_objects.activity.order.activity import RaribleApiOrderListActivity
-from rarible_marketplace_indexer.types.rarible_api_objects.activity.order.activity import RaribleApiOrderMatchActivity
-from rarible_marketplace_indexer.types.rarible_api_objects.activity.token.activity import RaribleApiTokenActivity
-from rarible_marketplace_indexer.types.rarible_api_objects.asset.asset import TokenAsset
 from rarible_marketplace_indexer.types.rarible_api_objects.asset.enum import AssetClassEnum
-from rarible_marketplace_indexer.types.rarible_api_objects.collection.collection import RaribleApiCollection
-from rarible_marketplace_indexer.types.rarible_api_objects.order.order import RaribleApiOrder
 from rarible_marketplace_indexer.types.rarible_exchange.parameter.sell import Part
 from rarible_marketplace_indexer.types.tezos_objects.asset_value.asset_value import AssetValue
 from rarible_marketplace_indexer.types.tezos_objects.asset_value.xtz_value import Xtz
 from rarible_marketplace_indexer.types.tezos_objects.tezos_object_hash import ImplicitAccountAddress
 from rarible_marketplace_indexer.types.tezos_objects.tezos_object_hash import OriginatedAccountAddress
 
+date_pattern = "%Y-%m-%dT%H:%M:%SZ"
+
+
+def assert_token_id_length(token_id: str):
+    if len(token_id) > 256:
+        logging.getLogger("dipdup").warning(f"Ignoring too big token id ({len(token_id)} > 256): {token_id}")
+        return False
+    else:
+        return True
+
+
+def assert_value_length(value: str):
+    if len(value) > 100:
+        logging.getLogger("dipdup").warning(f"Ignoring too big value ({len(value)} > 100): {value}")
+        return False
+    else:
+        return True
+
 
 def get_json_parts(parts: List[Part]):
     json_parts: List[Part] = []
     for part in parts:
-        json_parts.append({'part_account': part.part_account, 'part_value': part.part_value})
+        if type(part) is dict:
+            json_parts.append({'part_account': part.get("part_account"), 'part_value': part.get("part_value")})
+        else:
+            json_parts.append({'part_account': part.part_account, 'part_value': part.part_value})
     return json_parts
 
 
@@ -52,15 +67,33 @@ def generate_random_unique_ophash(size=50, chars=(string.ascii_lowercase + strin
     return ''.join(random.choice(chars) for _ in range(size))
 
 
-def reconcile_item(contract, token_id):
-    logger = logging.getLogger('dipdup.reconcile')
-    response = requests.post(
-        f"{os.getenv('UNION_API')}/v0.1/refresh/item/TEZOS:{contract}:{token_id}/reconcile?full=true"
-    )
-    if not response.ok:
-        logger.info(f"{contract}:{token_id} need reconcile: Error {response.status_code} - {response.reason}")
-    else:
-        logger.info(f"{contract}:{token_id} synced properly after legacy cancel")
+async def process_decimal_value(datasource, contract, token_id, asset_class, asset_value):
+    logger = logging.getLogger('process_decimal_value')
+    if asset_class == AssetClassEnum.FUNGIBLE_TOKEN:
+        ft_result = None
+        if token_id is not None:
+            ft_result = await datasource.request(
+                method='get', url=f"v1/tokens?contract={contract}&tokenId={token_id}"
+            )
+        else:
+            ft_result = await datasource.request(
+                method='get', url=f"v1/tokens?contract={contract}"
+            )
+        # TODO: We need to double-check code below
+        if ft_result is not None and "metadata" in ft_result[0]:
+            ft = ft_result[0]
+            meta = ft["metadata"]
+            try:
+                decimals = int(meta["decimals"])
+                asset_value = asset_value / Decimal(math.pow(10, decimals))
+            except Exception:
+                logger.info(
+                    f"Failed to get decimals for FT token {contract}:{token_id} "
+                    f"with meta: {meta}"
+                )
+    elif asset_class == AssetClassEnum.XTZ:
+        asset_value = Xtz.from_u_tezos(asset_value)
+    return asset_value
 
 
 class RaribleUtils:
@@ -207,8 +240,6 @@ async def import_legacy_order(order: dict):
     logger = logging.getLogger('dipdup.legacy')
     logger.info(f"Importing order: {order}")
 
-    date_pattern = "%Y-%m-%dT%H:%M:%SZ"
-
     make = MakeDto(
         asset_class=AssetClassEnum.MULTI_TOKEN,
         contract=OriginatedAccountAddress(order["make"]["assetType"]["contract"]),
@@ -282,14 +313,14 @@ async def import_legacy_order(order: dict):
     for fee in order["data"]["payouts"]:
         payouts.append(Part(part_account=fee["account"], part_value=fee["value"]))
 
-    order_model = await OrderModel.get_or_none(
+    order_model = await Order.get_or_none(
         internal_order_id=internal_order_id,
         network=os.getenv('NETWORK'),
         platform=PlatformEnum.RARIBLE_V1,
     )
 
     if order_model is None:
-        order_model = await OrderModel.create(
+        order_model = await Order.create(
             network=os.getenv('NETWORK'),
             platform=PlatformEnum.RARIBLE_V1,
             internal_order_id=internal_order_id,
@@ -304,6 +335,7 @@ async def import_legacy_order(order: dict):
             make_contract=make.contract,
             make_token_id=make.token_id,
             make_value=make.value,
+            make_stock=make.value,
             make_price=take.value / make.value,
             take_asset_class=take.asset_class,
             take_contract=take.contract,
@@ -316,6 +348,7 @@ async def import_legacy_order(order: dict):
     else:
         order_model.last_updated_at = datetime.strptime(order["lastUpdateAt"], date_pattern)
         order_model.make_value = make.value
+        order_model.make_stock = make.value
         order_model.make_price = take.value / make.value
         order_model.take_value = take.value
         order_model.origin_fees = get_json_parts(origin_fees)
@@ -324,8 +357,7 @@ async def import_legacy_order(order: dict):
         await order_model.save()
 
     last_order_activity = (
-        await ActivityModel.filter(
-            network=os.getenv("NETWORK"),
+        await Activity.filter(
             platform=PlatformEnum.RARIBLE_V1,
             internal_order_id=internal_order_id,
             operation_timestamp=datetime.strptime(order["createdAt"], date_pattern),
@@ -335,7 +367,7 @@ async def import_legacy_order(order: dict):
     )
 
     if last_order_activity is None:
-        await ActivityModel.create(
+        await Activity.create(
             type=ActivityTypeEnum.ORDER_LIST,
             network=os.getenv('NETWORK'),
             platform=PlatformEnum.RARIBLE_V1,
@@ -346,6 +378,7 @@ async def import_legacy_order(order: dict):
             make_contract=make.contract,
             make_token_id=make.token_id,
             make_value=make.value,
+            make_price=take.value,
             take_asset_class=take.asset_class,
             take_contract=take.contract,
             take_token_id=take.token_id,
@@ -357,81 +390,66 @@ async def import_legacy_order(order: dict):
             operation_nonce=None,
         )
 
-    legacy_order = await LegacyOrderModel.get_or_none(hash=order["hash"])
+    legacy_order = await LegacyOrder.get_or_none(hash=order["hash"])
     if legacy_order is None:
-        await LegacyOrderModel.create(hash=order["hash"], id=order_model.id, data=order)
+        await LegacyOrder.create(hash=order["hash"], id=order_model.id, data=order)
 
     if RaribleMetrics.enabled is True:
         RaribleMetrics.set_order_activity(PlatformEnum.RARIBLE_V1, ActivityTypeEnum.ORDER_LIST, 1)
 
 
-def get_rarible_order_list_activity_kafka_key(activity: RaribleApiOrderListActivity) -> str:
-    if isinstance(activity.make, TokenAsset):
-        make: TokenAsset = activity.make
-        return f"{make.asset_type.contract}:{make.asset_type.token_id}"
-    elif isinstance(activity.take, TokenAsset):
-        take: TokenAsset = activity.take
-        return f"{take.asset_type.contract}:{take.asset_type.token_id}"
+def get_token_id_big_map_key_hash(token_id: str):
+    ty = MichelsonType.match({'prim': 'nat'})
+    key = ty.from_micheline_value({'int': f'{token_id}'}).pack(legacy=True)
+    return forge_script_expr(key)
+
+
+def get_string_id_big_map_key_hash(value: str):
+    ty = MichelsonType.match({'prim': 'string'})
+    key = ty.from_micheline_value({'string': f'{value}'}).pack(legacy=True)
+    return forge_script_expr(key)
+
+
+def unpack_str(value: str):
+    ty = MichelsonType.match({'prim': 'string'})
+    return ty.unpack(value).to_python_object()
+
+
+def get_royalties_manager_big_map_key_hash(contract: str, token_id: Optional[str]):
+    ty = MichelsonType.match(
+        {'prim': 'pair', 'args': [{'prim': 'address'}, {'prim': 'option', 'args': [{'prim': 'nat'}]}]}
+    )
+    if token_id is None:
+        key = ty.from_micheline_value({'prim': 'Pair', 'args': [{'string': contract}, {'prim': 'None'}]}).pack(
+            legacy=True
+        )
+        return forge_script_expr(key)
     else:
-        return activity.order_id
+        key = ty.from_micheline_value(
+            {'prim': 'Pair', 'args': [{'string': contract}, {'prim': 'Some', 'args': [{'int': token_id}]}]}
+        ).pack(legacy=True)
+        return forge_script_expr(key)
 
 
-def get_rarible_order_match_activity_kafka_key(activity: RaribleApiOrderMatchActivity) -> str:
-    if isinstance(activity.nft, TokenAsset):
-        make: TokenAsset = activity.nft
-        return f"{make.asset_type.contract}:{make.asset_type.token_id}"
-    elif isinstance(activity.payment, TokenAsset):
-        take: TokenAsset = activity.payment
-        return f"{take.asset_type.contract}:{take.asset_type.token_id}"
-    else:
-        return activity.order_id
+async def get_key_for_big_map(ctx: DipDupContext, contract: str, name: str, key: str) -> Optional[Response]:
+    try:
+        url = f'v1/contracts/{contract}/bigmaps/{name}/keys/{key}'
+        datasource = ctx.get_tzkt_datasource("tzkt")
+        return await datasource.request(
+            method='get', url=url
+        )
+    except Exception as ex:
+        # for local debugging
+        # logging.getLogger("get_key_for_big_map").error(ex)
+        tb = traceback.format_exc()
+        logging.getLogger("get_key_for_big_map").error(f'Error request with {datasource.url}/{url}')
+        return None
 
 
-def get_rarible_order_cancel_activity_kafka_key(activity: RaribleApiOrderCancelActivity) -> str:
-    if isinstance(activity.make, TokenAsset):
-        make: TokenAsset = activity.make
-        return f"{make.asset_type.contract}:{make.asset_type.token_id}"
-    elif isinstance(activity.take, TokenAsset):
-        take: TokenAsset = activity.take
-        return f"{take.asset_type.contract}:{take.asset_type.token_id}"
-    else:
-        return activity.order_id
-
-
-def get_rarible_order_kafka_key(order: RaribleApiOrder) -> str:
-    assert order
-    if isinstance(order.make, TokenAsset):
-        make: TokenAsset = order.make
-        return f"{make.asset_type.contract}:{make.asset_type.token_id}"
-    elif isinstance(order.take, TokenAsset):
-        take: TokenAsset = order.take
-        return f"{take.asset_type.contract}:{take.asset_type.token_id}"
-    else:
-        return order.id
-
-
-def get_rarible_token_activity_kafka_key(activity: RaribleApiTokenActivity) -> str:
-    return f"{activity.contract}:{activity.token_id}"
-
-
-def get_rarible_collection_activity_kafka_key(activity: RaribleApiCollection) -> str:
-    return f"{activity.collection.id}"
-
-
-def get_kafka_key(api_object: AbstractRaribleApiObject) -> str:
-    key = api_object.id
-    if isinstance(api_object, RaribleApiOrder):
-        key = get_rarible_order_kafka_key(api_object)
-    elif isinstance(api_object, RaribleApiOrderListActivity):
-        key = get_rarible_order_list_activity_kafka_key(api_object)
-    elif isinstance(api_object, RaribleApiOrderMatchActivity):
-        key = get_rarible_order_match_activity_kafka_key(api_object)
-    elif isinstance(api_object, RaribleApiOrderCancelActivity):
-        key = get_rarible_order_cancel_activity_kafka_key(api_object)
-    elif isinstance(api_object, RaribleApiTokenActivity):
-        key = get_rarible_token_activity_kafka_key(api_object)
-    elif isinstance(api_object, RaribleApiCollection):
-        key = get_rarible_collection_activity_kafka_key(api_object)
-    else:
-        key = str(api_object.id)
-    return key
+async def get_bidou_data(ctx: DipDupContext, contract: str, token_id: str):
+    try:
+        key = await get_key_for_big_map(ctx, contract, "rgb", get_token_id_big_map_key_hash(token_id))
+        bidou_data = key.get("value")
+        return bidou_data
+    except Exception as ex:
+        raise Exception(f"Could not fetch data for bidou token: ${ex}")

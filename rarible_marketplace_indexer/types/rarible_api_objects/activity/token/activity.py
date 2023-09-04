@@ -1,10 +1,8 @@
-import uuid
 from datetime import datetime
 from typing import Any
 from typing import Literal
 from typing import Optional
 from typing import Union
-from uuid import uuid5
 
 from pydantic import Field
 
@@ -18,8 +16,9 @@ from rarible_marketplace_indexer.types.tezos_objects.tezos_object_hash import Or
 
 class BaseRaribleApiTokenActivity(AbstractRaribleApiObject):
     _kafka_topic = KafkaTopic.ACTIVITY_TOPIC
-    id: Optional[uuid.UUID]
+    id: str
     transfer_id: int
+    network: Optional[str]
     contract: OriginatedAccountAddress
     token_id: int
     value: AssetValue
@@ -29,7 +28,7 @@ class BaseRaribleApiTokenActivity(AbstractRaribleApiObject):
 
     def __init__(self, **data: Any) -> None:
         super().__init__(**data)
-        self.id = uuid5(namespace=uuid.NAMESPACE_OID, name=f"{self.network}.{self.transfer_id}")
+        self.id = str(self.transfer_id)
 
 
 class RaribleApiTokenMintActivity(BaseRaribleApiTokenActivity):

@@ -1,0 +1,215 @@
+spec_version: 1.2
+
+contracts:
+  tzprofile_old:
+    address: KT1KsmdYxuJHCMqLRX1PH7JJeXvXaMeicEa7
+    typename: tzprofile
+  tzprofile:
+    address: KT1G6jaUQkRcxJcnrNLjCTn7xgD686PM2mEd
+    typename: tzprofile
+  tezos_domains_registry:
+    address: KT1GBZmSxmnKJXGMdMLbugPfLyUPmuLSMwKS
+    typename: tezos_domains_registry
+
+templates:
+  tzprofiles:
+    kind: operation
+    datasource: tzkt
+    contracts:
+      - <contract>
+    types:
+      - transaction
+      - origination
+    handlers:
+      - callback: on_tzprofile_origination
+        pattern:
+          - type: origination
+            originated_contract: <contract>
+      - callback: on_tzprofile_update
+        pattern:
+          - destination: <contract>
+            entrypoint: default
+  tezos_domains_big_map:
+    kind: big_map
+    datasource: <datasource>
+    skip_history: once
+    handlers:
+      - callback: on_tezos_domains_update_records
+        contract: <name_registry>
+        path: store.records
+
+indexes:
+#  tzprofiles_originations:
+#    kind: operation
+#    datasource: tzkt
+#    types:
+#      - origination
+#    handlers:
+#       - callback: on_tzprofile_factory_origination
+#         pattern:
+#           - type: origination
+#             similar_to: tzprofile
+#       - callback: on_tzprofile_factory_origination
+#         pattern:
+#           - type: origination
+#             similar_to: tzprofile_old
+#  tezos_domains_big_map_mainnet:
+#    template: tezos_domains_big_map
+#    values:
+#      datasource: tzkt
+#      name_registry: tezos_domains_registry
+
+
+hooks:
+  process_token_metadata:
+    callback: process_token_metadata
+    atomic: False
+  process_collection_metadata:
+    callback: process_collection_metadata
+    atomic: False
+  process_tasks:
+    callback: process_tasks
+    atomic: False
+  reset_index:
+    callback: reset_index
+    atomic: False
+    args:
+      id: int
+  process_negative_ownerships:
+    callback: process_negative_ownerships
+    atomic: False
+  recalculate_ownerships_by_item:
+    callback: recalculate_ownerships_by_item
+    atomic: False
+  recalculate_ownerships_by_owner:
+    callback: recalculate_ownerships_by_owner
+    atomic: False
+  recalculate_ownerships_by_collection:
+    callback: recalculate_ownerships_by_collection
+    atomic: False
+  recalculate_ownerships_by_id:
+    callback: recalculate_ownerships_by_id
+    atomic: False
+  recalculate_ownerships:
+    callback: recalculate_ownerships
+    atomic: False
+    args:
+      batch: 1000
+  recalculate_ownerships_by_transfers:
+    callback: recalculate_ownerships_by_transfers
+    atomic: False
+    args:
+      batch: 2500
+  reset_royalty_by_id:
+    callback: reset_royalty_by_id
+    atomic: False
+  reset_royalty_by_contract:
+    callback: reset_royalty_by_contract
+    atomic: False
+  reset_royalty_flag:
+    callback: reset_royalty_flag
+    atomic: False
+  fix_db_updated_at:
+    callback: fix_db_updated_at
+    atomic: False
+    args:
+      batch: 10000
+  remove_reverted_transfers:
+    callback: remove_reverted_transfers
+    atomic: False
+  send_orders:
+    callback: send_orders
+    atomic: False
+  change_status_legacy_orders:
+    callback: change_status_legacy_orders
+    atomic: False
+  reindex_collections:
+    callback: reindex_collections
+    atomic: False
+    args:
+      batch: 5
+  send_collections:
+    callback: send_collections
+    atomic: False
+  recalculate_orders:
+    callback: recalculate_orders
+    atomic: False
+  fix_null_make:
+    callback: fix_null_make
+    atomic: False
+  start_end:
+    callback: start_end
+    atomic: False
+#  fill_db_updated_at:
+#    callback: fill_db_updated_at
+#    atomic: False
+#    args:
+#      batch: 10000
+
+jobs:
+  process_tasks:
+    hook: process_tasks
+    interval: 60 # seconds
+  process_token_metadata:
+    hook: process_token_metadata
+    crontab: "* * * * *"
+  process_collection_metadata:
+    hook: process_collection_metadata
+    crontab: "* * * * *"
+  process_negative_ownerships:
+    hook: process_negative_ownerships
+    interval: 120
+    args:
+      batch: 2
+      remove: True
+  start_end:
+    hook: start_end
+    interval: 120
+    args:
+      batch: 100
+#  change_status_legacy_orders:
+#    hook: change_status_legacy_orders
+#    interval: 300
+#    args:
+#      batch: 100
+#  fill_db_updated_at:
+#    hook: fill_db_updated_at
+#    crontab: "* * * * *"
+
+advanced:
+  rollback_depth: 0
+  early_realtime: False
+  metadata_interface: False
+  merge_subscriptions: True
+  reindex:
+    manual: wipe
+    migration: exception
+    rollback: ignore
+    config_modified: ignore
+    schema_modified: ignore
+
+custom:
+  enabled: ${KAFKA_ENABLED:-false}
+  migration: True
+  kafka_address: ${KAFKA_ADDRESS:-kafka:9092}
+  client_id: dipdup-rarible-${APPLICATION_ENVIRONMENT:-mainnet}-producer
+  kafka_security_protocol: ${KAFKA_SECURITY_PROTOCOL:-SASL_PLAINTEXT}
+  sasl:
+    mechanism: ${KAFKA_SASL_MECHANISM:-PLAIN}
+    username: ${KAFKA_USERNAME:-rarible}
+    password: ${KAFKA_PASSWORD:-changeme}
+  run_fix_jobs: False
+  royalties:
+    hen: "KT1RJ6PbjHpwc3M5rw5s2Nbmefwbuwbdxton"
+    hen_royalties: "KT1Hkg5qeNhfwpKW4fXvq7HGZB9z2EnmCCA9"
+    kalamint: "KT1EpGgjQs73QfFJs9z7m1Mxm5MTnpC2tqse"
+    fxhash_v1: "KT1KEa8z6vWXDJrVqtMrAeDVzsvxat3kHaCE"
+    fxhash_v1_manager: "KT1XCoGnfupWk7Sp8536EfrxcP73LmT68Nyr"
+    fxhash_v2: "KT1U6EHmNxJTkvaWJ4ThczG4FSDaHC21ssvi"
+    versum: "KT1LjmAdYQCLBjwv4S2oFkEzyHVkomAf5MrW"
+    royalties_manager: "KT1HNNrmCk1fpqveRDz8Fvww2GM4gPzmA7fo"
+    bidou_8x8: "KT1MxDwChiDwd6WBVs24g1NjERUoK622ZEFp"
+    bidou_24x24: "KT1TR1ErEQPTdtaJ7hbvKTJSa1tsGnHGZTpf"
+    bidou_24x24_color: "KT1VikAWA8wQHLZgHoAGL7Z9kCjgbCEnvWA3"
+    dogami: "KT1NVvPsNDChrLRH5K2cy6Sc9r1uuUwdiZQd"
+    dogami_gap: "KT1CAbPGHUWvkSA9bxMPkqSgabgsjtmRYEda"

@@ -1,0 +1,49 @@
+spec_version: 1.2
+package: rarible_marketplace_indexer
+
+database:
+  kind: postgres
+  host: ${POSTGRES_HOST:-localhost}
+  port: ${POSTGRES_PORT:-5432}
+  user: ${POSTGRES_USER:-dipdup}
+  password: ${POSTGRES_PASS:-changeme}
+  database: ${POSTGRES_DB:-dipdup}
+
+hasura:
+  url: ${HASURA_URL:-http://localhost:49180}
+  admin_secret: ${HASURA_GRAPHQL_ADMIN_SECRET:-changeme}
+  select_limit: ${HASURA_SELECT_LIMIT:-1000}
+  allow_aggregations: false
+  rest: true
+
+datasources:
+  tzkt:
+    kind: tzkt
+    url: ${TZKT_URL:-https://api.tzkt.io}
+    http:
+      retry_count: 5
+      retry_sleep: 1
+      retry_multiplier: 1.2
+      ratelimit_rate: 100
+      ratelimit_period: 60
+      connection_limit: 25
+      batch_size: 1000
+  metadata:
+    kind: metadata
+    url: https://metadata.dipdup.net
+    network: mainnet
+    http:
+      retry_count: 5
+      retry_sleep: 5
+      connection_limit: 1000
+      connection_timeout: 60
+      batch_size: 1000
+  ipfs:
+    kind: ipfs
+    url: https://cloudflare-ipfs.com/ipfs
+    http:
+      retry_count: 5
+      retry_sleep: 5
+      connection_limit: 1000
+      connection_timeout: 60
+      batch_size: 1000

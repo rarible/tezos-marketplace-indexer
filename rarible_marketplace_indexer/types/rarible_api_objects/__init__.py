@@ -18,7 +18,6 @@ class AbstractRaribleApiObject(BaseModel):
     _id_prefix = "tezos"
     _kafka_topic: str
     id: uuid.UUID
-    network: str
 
     @property
     def kafka_topic(self) -> str:

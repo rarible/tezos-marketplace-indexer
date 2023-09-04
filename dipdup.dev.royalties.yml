@@ -1,0 +1,93 @@
+spec_version: 1.2
+package: rarible_marketplace_indexer
+
+database:
+  kind: postgres
+  host: ${POSTGRES_HOST:-dev-pg2.rarible.int}
+  port: ${POSTGRES_PORT:-5432}
+  user: ${POSTGRES_USER:-dipdup}
+  password: ${POSTGRES_PASS:-changeme}
+  database: ${POSTGRES_DB:-dipdup}
+
+hasura:
+  url: http://hasura:8080
+  admin_secret: ${HASURA_GRAPHQL_ADMIN_SECRET:-changeme}
+  select_limit: ${HASURA_SELECT_LIMIT:-1000}
+  allow_aggregations: false
+  rest: true
+
+datasources:
+  tzkt:
+    kind: tzkt
+    url: ${TZKT_URL:-https://api.ghostnet.tzkt.io}
+    http:
+      retry_count: 5
+      retry_sleep: 5
+      connection_limit: 1000
+      connection_timeout: 60
+      batch_size: 1000
+  metadata:
+    kind: metadata
+    url: https://metadata.dipdup.net
+    network: ghostnet
+    http:
+      retry_count: 5
+      retry_sleep: 5
+      connection_limit: 1000
+      connection_timeout: 60
+      batch_size: 1000
+  ipfs:
+    kind: ipfs
+    url: https://nftstorage.link/ipfs # this should makes tests faster because QA upload images there
+    http:
+      retry_count: 1
+      retry_sleep: 0
+      connection_limit: 100
+      connection_timeout: 60
+      batch_size: 10000
+
+hooks:
+  process_token_royalties:
+    callback: process_token_royalties
+    atomic: False
+
+jobs:
+  process_token_royalties:
+    hook: process_token_royalties
+    crontab: "* * * * *"
+
+advanced:
+  rollback_depth: 0
+  early_realtime: True
+  metadata_interface: False
+  merge_subscriptions: True
+  reindex:
+    manual: wipe
+    migration: exception
+    rollback: ignore
+    config_modified: ignore
+    schema_modified: ignore
+
+custom:
+  enabled: ${KAFKA_ENABLED:-false}
+  kafka_address: ${KAFKA_ADDRESS:-kafka:9092}
+  client_id: dipdup-rarible-${APPLICATION_ENVIRONMENT:-mainnet}-producer
+  kafka_security_protocol: ${KAFKA_SECURITY_PROTOCOL:-SASL_PLAINTEXT}
+  sasl:
+    mechanism: ${KAFKA_SASL_MECHANISM:-PLAIN}
+    username: ${KAFKA_USERNAME:-rarible}
+    password: ${KAFKA_PASSWORD:-changeme}
+  run_fix_jobs: False
+  royalties:
+    hen: "KT1P2VyFd61A3ukizJoX37nFF9fqZnihv7Lw"
+    hen_royalties: "KT1L5hpLw7vJ3n9EU4cWrh2zCxkuFbtocNur"
+    kalamint: ""
+    fxhash_v1: ""
+    fxhash_v1_manager: ""
+    fxhash_v2: "KT1WSwXCWPPAxAy4ibPmFyCm4NhmSJT9UuxQ"
+    versum: "KT1UH5RSbomuV1o6UuDB9yeACbqRMup3utGu"
+    royalties_manager: "KT1AZfqFGFLMUrscNFyawDYAyqXYydz714ya"
+    bidou_8x8: ""
+    bidou_24x24: ""
+    dogami: ""
+    dogami_gap: ""

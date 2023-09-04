@@ -42,7 +42,7 @@ from rarible_marketplace_indexer.types.rarible_exchange_legacy_data.parameter.re
 from rarible_marketplace_indexer.types.tezos_objects.asset_value.asset_value import AssetValue
 from rarible_marketplace_indexer.types.tezos_objects.tezos_object_hash import ImplicitAccountAddress
 from rarible_marketplace_indexer.types.tezos_objects.tezos_object_hash import OriginatedAccountAddress
-from rarible_marketplace_indexer.utils.rarible_utils import RaribleUtils
+from rarible_marketplace_indexer.utils.rarible_utils import RaribleUtils, process_decimal_value
 
 
 class RaribleOrderListEvent(AbstractOrderListEvent):
@@ -217,7 +217,7 @@ class RariblePutBidEvent(AbstractPutBidEvent):
     RariblePutBidTransaction = Transaction[PutBidParameter, RaribleBidsStorage]
 
     @staticmethod
-    def _get_bid_dto(
+    async def _get_bid_dto(
         transaction: RariblePutBidTransaction,
         datasource: TzktDatasource,
     ) -> ListDto:
@@ -234,6 +234,13 @@ class RariblePutBidEvent(AbstractPutBidEvent):
             sale_type=int(transaction.parameter.pb_bid_type),
             value=int(transaction.parameter.pb_bid.bid_amount),
             asset_bytes=bytes.fromhex(transaction.parameter.pb_bid_asset),
+        )
+        make.value = await process_decimal_value(
+                datasource,
+                make.contract,
+                make.token_id,
+                AssetClassEnum.XTZ if transaction.parameter.pb_bid_type == "0" else AssetClassEnum.FUNGIBLE_TOKEN,
+                int(transaction.parameter.pb_bid.bid_amount)
         )
 
         take = TakeDto(
@@ -260,7 +267,7 @@ class RariblePutFloorBidEvent(AbstractPutBidEvent):
     RariblePutFloorBidTransaction = Transaction[PutFloorBidParameter, RaribleBidsStorage]
 
     @staticmethod
-    def _get_bid_dto(
+    async def _get_bid_dto(
         transaction: RariblePutFloorBidTransaction,
         datasource: TzktDatasource,
     ) -> ListDto:
@@ -276,6 +283,14 @@ class RariblePutFloorBidEvent(AbstractPutBidEvent):
             sale_type=int(transaction.parameter.pfb_bid_type),
             value=int(transaction.parameter.pfb_bid.bid_amount),
             asset_bytes=bytes.fromhex(transaction.parameter.pfb_bid_asset),
+        )
+
+        make.value = await process_decimal_value(
+            datasource,
+            make.contract,
+            make.token_id,
+            AssetClassEnum.XTZ if transaction.parameter.pfb_bid_type == 0 else AssetClassEnum.FUNGIBLE_TOKEN,
+            int(transaction.parameter.pfb_bid.bid_amount)
         )
 
         take = TakeDto(

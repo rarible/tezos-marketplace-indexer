@@ -1,0 +1,257 @@
+spec_version: 1.2
+
+contracts:
+  rarible_exchange_legacy:
+    address: KT198mqFKkiWerXLmMCw69YB1i6yzYtmGVrC
+    typename: rarible_exchange_legacy
+  rarible_exchange_legacy_data:
+    address: KT1D2fZiUNo6RPj3zKofH8DqDDgoV7KoyEbb
+    typename: rarible_exchange_legacy_data
+  rarible_exchange:
+    address: KT1N4Rrm6BU6229drs6scrH3vard1pPngMyA
+    typename: rarible_exchange
+  rarible_exchange_old:
+    address:  KT1GbPqXZ3yLUNWa7MdMiksJddD7TskTpuGU
+    typename: rarible_exchange
+  rarible_aggregator_tracker:
+    address: KT1Gv1tPJ3nU5T6VmFc12M6NKc5i51MYVPjG
+    typename: rarible_aggregator_tracker
+  versum_v1:
+    address: KT1GyRAJNdizF1nojQz62uGYkx8WFRUJm9X5
+    typename: versum_v1
+  teia_v1:
+    address: KT1PHubm9HtyQEJ4BBpMTVomq6mhbfNZ9z5w
+    typename: teia_v1
+  fxhash_v1:
+    address: KT1Xo5B7PNBAeynZPmca4bRh6LQow4og1Zb9
+    typename: fxhash_v1
+  fxhash_v2:
+    address: KT1GbyoDi7H1sfXmimXpptZJuCdHMh66WS9u
+    typename: fxhash_v2
+  hen:
+    address: KT1HbQepzV1nVGg8QVznG7z4RcHseD5kwqBn
+    typename: hen_marketplace
+  objkt_v1:
+    address: KT1FvqJwEDWb1Gwc55Jd1jjTHRVWbYKUUpyq
+    typename: objkt_marketplace
+  objkt_v2:
+    address: KT1WvzYHCNBvDSdwafTHv7nJ1dWmZ8GCYuuC
+    typename: objkt_marketplace_v2
+
+indexes:
+  teia_v1_actions:
+     kind: operation
+     datasource: tzkt
+     contracts:
+       - teia_v1
+     types:
+       - transaction
+     handlers:
+       - callback: teia_v1_list_order
+         pattern:
+           - destination: teia_v1
+             type: transaction
+             entrypoint: swap
+       - callback: teia_v1_cancel_order
+         pattern:
+           - destination: teia_v1
+             type: transaction
+             entrypoint: cancel_swap
+       - callback: teia_v1_match_order
+         pattern:
+           - destination: teia_v1
+             type: transaction
+             entrypoint: collect
+
+  versum_v1_actions:
+    kind: operation
+    datasource: tzkt
+    contracts:
+      - versum_v1
+    types:
+      - transaction
+    handlers:
+      - callback: versum_v1_order_list
+        pattern:
+          - type: transaction
+            destination: versum_v1
+            entrypoint: create_swap
+      - callback: versum_v1_order_cancel
+        pattern:
+          - type: transaction
+            destination: versum_v1
+            entrypoint: cancel_swap
+      - callback: versum_v1_order_match
+        pattern:
+          - type: transaction
+            destination: versum_v1
+            entrypoint: collect_swap
+
+  fxhash_v1_actions:
+    kind: operation
+    datasource: tzkt
+    contracts:
+      - fxhash_v1
+    types:
+      - transaction
+    first_level: 1832146
+    handlers:
+      - callback: fxhash_v1_order_list
+        pattern:
+          - destination: fxhash_v1
+            type: transaction
+            entrypoint: offer
+      - callback: fxhash_v1_order_cancel
+        pattern:
+          - destination: fxhash_v1
+            type: transaction
+            entrypoint: cancel_offer
+      - callback: fxhash_v1_order_match
+        pattern:
+          - destination: fxhash_v1
+            type: transaction
+            entrypoint: collect
+
+  fxhash_v2_actions:
+     kind: operation
+     datasource: tzkt
+     contracts:
+       - fxhash_v2
+     types:
+       - transaction
+     first_level: 2280663
+     handlers:
+       - callback: fxhash_v2_listing_order_list
+         pattern:
+           - destination: fxhash_v2
+             type: transaction
+             entrypoint: listing
+       - callback: fxhash_v2_listing_order_cancel
+         pattern:
+           - destination: fxhash_v2
+             type: transaction
+             entrypoint: listing_cancel
+       - callback: fxhash_v2_listing_order_match
+         pattern:
+           - destination: fxhash_v2
+             type: transaction
+             entrypoint: listing_accept
+
+  hen_actions:
+    kind: operation
+    datasource: tzkt
+    contracts:
+      - hen
+    types:
+      - transaction
+    handlers:
+      - callback: hen_order_list
+        pattern:
+          - destination: hen
+            type: transaction
+            entrypoint: swap
+      - callback: hen_order_cancel_list
+        pattern:
+          - destination: hen
+            type: transaction
+            entrypoint: cancel_swap
+      - callback: hen_order_match
+        pattern:
+          - destination: hen
+            type: transaction
+            entrypoint: collect
+
+  objkt_v1_actions:
+    kind: operation
+    datasource: tzkt
+    contracts:
+      - objkt_v1
+    types:
+      - transaction
+    handlers:
+      - callback: objkt_v1_order_list
+        pattern:
+          - destination: objkt_v1
+            type: transaction
+            entrypoint: ask
+      - callback: objkt_v1_order_cancel_list
+        pattern:
+          - destination: objkt_v1
+            type: transaction
+            entrypoint: retract_ask
+      - callback: objkt_v1_order_match
+        pattern:
+          - destination: objkt_v1
+            type: transaction
+            entrypoint: fulfill_ask
+
+  objkt_v2_actions:
+    kind: operation
+    datasource: tzkt
+    contracts:
+      - objkt_v2
+    types:
+      - transaction
+    handlers:
+      - callback: objkt_v2_order_list
+        pattern:
+          - destination: objkt_v2
+            type: transaction
+            entrypoint: ask
+      - callback: objkt_v2_order_cancel_list
+        pattern:
+          - destination: objkt_v2
+            type: transaction
+            entrypoint: retract_ask
+      - callback: objkt_v2_order_match
+        pattern:
+          - destination: objkt_v2
+            type: transaction
+            entrypoint: fulfill_ask
+
+advanced:
+  rollback_depth: 0
+  early_realtime: False
+  skip_version_check: True
+  metadata_interface: False
+  reindex:
+    manual: wipe
+    migration: exception
+    rollback: ignore
+    config_modified: ignore
+    schema_modified: ignore
+
+custom:
+  enabled: ${KAFKA_ENABLED:-false}
+  kafka_address: ${KAFKA_ADDRESS:-kafka:9092}
+  client_id: dipdup-rarible-${APPLICATION_ENVIRONMENT:-mainnet}-producer
+  kafka_security_protocol: ${KAFKA_SECURITY_PROTOCOL:-SASL_PLAINTEXT}
+  sasl:
+    mechanism: ${KAFKA_SASL_MECHANISM:-PLAIN}
+    username: ${KAFKA_USERNAME:-rarible}
+    password: ${KAFKA_PASSWORD:-changeme}
+  run_fix_jobs: True
+  first_collection_level: 1212040
+  reset_new_persistence: False
+  reset_order_data: False
+  fxhash_nft_v0: KT1KEa8z6vWXDJrVqtMrAeDVzsvxat3kHaCE
+  fxhash_nft_v1: KT1U6EHmNxJTkvaWJ4ThczG4FSDaHC21ssvi
+  fxhash_nft_v2: KT1EfsNuqwLAWDd3o4pvfUx1CAh5GMdTrRvr
+  royalties:
+    hen: "KT1RJ6PbjHpwc3M5rw5s2Nbmefwbuwbdxton"
+    hen_royalties: "KT1Hkg5qeNhfwpKW4fXvq7HGZB9z2EnmCCA9"
+    kalamint: "KT1EpGgjQs73QfFJs9z7m1Mxm5MTnpC2tqse"
+    fxhash_v1: "KT1KEa8z6vWXDJrVqtMrAeDVzsvxat3kHaCE"
+    fxhash_v1_manager: "KT1XCoGnfupWk7Sp8536EfrxcP73LmT68Nyr"
+    fxhash_v2: "KT1U6EHmNxJTkvaWJ4ThczG4FSDaHC21ssvi"
+    versum: "KT1LjmAdYQCLBjwv4S2oFkEzyHVkomAf5MrW"
+    royalties_manager: "KT1HNNrmCk1fpqveRDz8Fvww2GM4gPzmA7fo"
+    bidou_8x8: "KT1MxDwChiDwd6WBVs24g1NjERUoK622ZEFp"
+    bidou_24x24: "KT1TR1ErEQPTdtaJ7hbvKTJSa1tsGnHGZTpf"
+    dogami: "KT1NVvPsNDChrLRH5K2cy6Sc9r1uuUwdiZQd"
+    dogami_gap: "KT1CAbPGHUWvkSA9bxMPkqSgabgsjtmRYEda"
+
+prometheus:
+  host: 0.0.0.0
+  port: 9191
+  update_interval: 5

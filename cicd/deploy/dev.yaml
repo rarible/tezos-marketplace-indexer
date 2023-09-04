@@ -2,33 +2,32 @@ hasura:
   service:
     nodePort: 30339
 
-tezos-marketplace-indexer-rarible:
+tezos-marketplace-indexer-rarible: &tezos-marketplace-indexer-dev
   environments:
-    TZKT_URL: http://tzkt:5000
+    TZKT_URL: https://api.ghostnet.tzkt.io
+    HASURA_URL: http://hasura:8080
     NETWORK: ghostnet
-    LEGACY_API: https://test-tezos-api.rarible.org
+  resources:
+    limits:
+      cpu: '1'
+      memory: 768Mi
+    requests:
+      cpu: 200m
+      memory: 512Mi
 
-tezos-marketplace-indexer-tezos:
-  environments:
-    TZKT_URL: http://tzkt:5000
-    NETWORK: ghostnet
-    LEGACY_API: https://test-tezos-api.rarible.org
+tezos-marketplace-indexer-marketplaces:
+  enabled: false
+  replicas: 0
+
+tezos-marketplace-indexer-metadata: *tezos-marketplace-indexer-dev
+
+tezos-marketplace-indexer-royalties: *tezos-marketplace-indexer-dev
+
+tezos-marketplace-indexer-ophash:
+  enabled: false
+  replicas: 0
 
 tzkt:
-  enabled: true
-  api:
-    image:
-      repository: bakingbad/tzkt-api
-      tag: 1.10.0
-    resources:
-      limits:
-        memory: 768Mi
-      requests:
-        memory: 512Mi
-  indexer:
-    image:
-      repository: bakingbad/tzkt-sync
-      tag: 1.10.0
   network: ghostnet
   service:
     nodePort: 30340

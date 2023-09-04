@@ -8,21 +8,7 @@ from typing import List
 from pydantic import BaseModel
 from pydantic import Extra
 
-
-class AfbOriginFee(BaseModel):
-    class Config:
-        extra = Extra.forbid
-
-    part_account: str
-    part_value: str
-
-
-class AfbPayout(BaseModel):
-    class Config:
-        extra = Extra.forbid
-
-    part_account: str
-    part_value: str
+from rarible_marketplace_indexer.types.rarible_exchange.parameter.sell import Part
 
 
 class AcceptFloorBidParameter(BaseModel):
@@ -34,5 +20,5 @@ class AcceptFloorBidParameter(BaseModel):
     afb_bidder: str
     afb_bid_type: str
     afb_bid_asset: str
-    afb_origin_fees: List[AfbOriginFee]
-    afb_payouts: List[AfbPayout]
+    afb_origin_fees: List[Part]
+    afb_payouts: List[Part]

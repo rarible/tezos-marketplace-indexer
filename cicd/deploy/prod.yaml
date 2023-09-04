@@ -1,64 +1,75 @@
 hasura:
-  replicas: 1
   service:
     nodePort: 30139
+  resources:
+    limits:
+      cpu: '2'
+      memory: 512Mi
+    requests:
+      cpu: 400m
+      memory: 512Mi
+
+tezos-marketplace-indexer-prod: &tezos-marketplace-indexer-prod
+  environments:
+    TZKT_URL: https://api.tzkt.io
+    NETWORK: mainnet
+  resources:
+    limits:
+      cpu: '2'
+      memory: 3Gi
+    requests:
+      cpu: 200m
+      memory: 512Mi
 
 tezos-marketplace-indexer-rarible:
-  replicas: 1
-  environments: 
-    TZKT_URL: https://api.tzkt.io
-    NETWORK: mainnet
-    LEGACY_API: https://tezos-api.rarible.org
-  resources:
-     requests:
-       cpu: '2'
-       memory: 2Gi
-     limits:
-       cpu: '2'
-       memory: 2Gi
-
-tezos-marketplace-indexer-tezos:
-  replicas: 1
-  environments:
-    TZKT_URL: https://api.tzkt.io
-    NETWORK: mainnet
-    LEGACY_API: https://tezos-api.rarible.org
-
-
-tzkt:
   enabled: true
-  api:
-    resources:
-      limits:
-        cpu: '1'
-        memory: 3Gi
-      requests:
-        cpu: 200m
-        memory: 1384Mi
-    image:
-      repository: fpto/rarible-tzkt-api
-      tag: 1.10.0
-  indexer:
-    image:
-      repository: fpto/rarible-tzkt-indexer
-      tag: 1.10.0
-    resources:
-      limits:
-        cpu: 400m
-        memory: 2Gi
-      requests:
-        cpu: 200m
-        memory: 384Mi
-  network: mainnet
-  service:
-    nodePort: 30140
+  replicas: 1
+  <<: *tezos-marketplace-indexer-prod
+  resources:
+    limits:
+      cpu: '2'
+      memory: 3Gi
+    requests:
+      cpu: '1'
+      memory: 1384Mi
   environments:
-    TezosNode__Endpoint: https://rpc.tzkt.io/mainnet
-    TokenMetadata__DipDup__Url: https://metadata.dipdup.net/v1/graphql
-  ingress:
-    hostname: 'tezos-tzkt.rarible.int'
-    path: /
-    ingressClassName: ingress-internal
-    backend:
-      service: tzkt
-      port: http
+    KAFKA_ENABLED: true
+    NETWORK: mainnet
+
+tezos-marketplace-indexer-marketplaces:
+  replicas: 1
+  enabled: true
+  <<: *tezos-marketplace-indexer-prod
+  environments:
+    TZKT_URL: https://api.tzkt.io
+    NETWORK: mainnet
+
+tezos-marketplace-indexer-metadata:
+  replicas: 1
+  enabled: true
+  <<: *tezos-marketplace-indexer-prod
+  environments:
+    TZKT_URL: https://api.tzkt.io
+    NETWORK: mainnet
+
+tezos-marketplace-indexer-royalties:
+  replicas: 1
+  enabled: true
+  environments:
+    TZKT_URL: https://api.tzkt.io
+  resources:
+    limits:
+      cpu: '2'
+      memory: 3Gi
+    requests:
+      cpu: '1'
+      memory: 1384Mi
+
+tezos-marketplace-indexer-ophash:
+  replicas: 1
+  enabled: true
+  <<: *tezos-marketplace-indexer-prod
+  environments:
+    TZKT_URL: https://api.tzkt.io
+    NETWORK: mainnet
+

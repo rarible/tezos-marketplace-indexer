@@ -8,7 +8,19 @@ dependencies:
   repository: file://../resources/helm/rarible
   version: 0.1.0
 - name: rarible-helm-chart
-  alias: tezos-marketplace-indexer-tezos
+  alias: tezos-marketplace-indexer-marketplaces
+  repository: file://../resources/helm/rarible
+  version: 0.1.0
+- name: rarible-helm-chart
+  alias: tezos-marketplace-indexer-metadata
+  repository: file://../resources/helm/rarible
+  version: 0.1.0
+- name: rarible-helm-chart
+  alias: tezos-marketplace-indexer-royalties
+  repository: file://../resources/helm/rarible
+  version: 0.1.0
+- name: rarible-helm-chart
+  alias: tezos-marketplace-indexer-ophash
   repository: file://../resources/helm/rarible
   version: 0.1.0
 - name: rarible-helm-chart

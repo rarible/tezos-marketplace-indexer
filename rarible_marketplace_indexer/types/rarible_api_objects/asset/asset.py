@@ -8,8 +8,7 @@ from pydantic import Field
 from pydantic import parse_obj_as
 from typing_extensions import Annotated
 
-from rarible_marketplace_indexer.models import ActivityModel
-from rarible_marketplace_indexer.models import OrderModel
+from dipdup.models import Model
 from rarible_marketplace_indexer.types.rarible_api_objects.asset.asset_type import TokenAssetType
 from rarible_marketplace_indexer.types.rarible_api_objects.asset.asset_type import XtzAssetType
 from rarible_marketplace_indexer.types.rarible_api_objects.asset.enum import AssetClassEnum
@@ -44,7 +43,7 @@ class Asset(AbstractAsset):
     __root__: Annotated[Union[TokenAsset, XtzAsset], Field(discriminator_key='_asset_class')]
 
     @classmethod
-    def make_from_model(cls, model: Union[OrderModel, ActivityModel]) -> AbstractAsset:
+    def make_from_model(cls, model: Model) -> AbstractAsset:
         asset = parse_obj_as(
             cls,
             {
@@ -59,7 +58,7 @@ class Asset(AbstractAsset):
         return asset.__root__
 
     @classmethod
-    def take_from_model(cls, model: Union[OrderModel, ActivityModel]) -> Optional[AbstractAsset]:
+    def take_from_model(cls, model: Model) -> Optional[AbstractAsset]:
         if not model.take_asset_class:
             return None
 

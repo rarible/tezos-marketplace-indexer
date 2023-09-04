@@ -1,0 +1,1 @@
+update royalties set royalties_synced = true where contract = 'KT1VikAWA8wQHLZgHoAGL7Z9kCjgbCEnvWA3';

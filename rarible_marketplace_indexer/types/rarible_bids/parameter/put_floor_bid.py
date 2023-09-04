@@ -9,29 +9,14 @@ from typing import Optional
 from pydantic import BaseModel
 from pydantic import Extra
 
-
-class BidOriginFee(BaseModel):
-    class Config:
-        extra = Extra.forbid
-
-    part_account: str
-    part_value: str
-
-
-class BidPayout(BaseModel):
-    class Config:
-        extra = Extra.forbid
-
-    part_account: str
-    part_value: str
-
+from rarible_marketplace_indexer.types.rarible_exchange.parameter.sell import Part
 
 class PfbBid(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    bid_origin_fees: List[BidOriginFee]
-    bid_payouts: List[BidPayout]
+    bid_origin_fees: List[Part]
+    bid_payouts: List[Part]
     bid_amount: str
     bid_asset_qty: str
     bid_expiry_date: Optional[str]
