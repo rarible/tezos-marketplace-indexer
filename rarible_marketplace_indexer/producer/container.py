@@ -40,6 +40,7 @@ class ProducerContainer:
                 sasl_mechanism=config['sasl']['mechanism'],
                 value_serializer=kafka_value_serializer,
                 key_serializer=kafka_key_serializer,
+                compression_type='snappy',
             )
         else:
             producer = NullKafkaProducer()
